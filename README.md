@@ -40,3 +40,16 @@ When setup is documented, include:
 Work one milestone and one meaningful checkpoint at a time. Each checkpoint must have a defined outcome, verification steps, and an explicit status in `IMPLEMENTATION-PLAN.md`. Do not claim a checkpoint or milestone is complete until its acceptance criteria have been verified.
 
 Do not commit, push, or deploy without the user's explicit approval.
+
+## Local database tooling
+
+Supabase CLI is installed as a development dependency. The project configuration lives in `supabase/config.toml`, and reviewed, ordered SQL migrations belong in `supabase/migrations/`.
+
+- Check the CLI: `npx supabase --version`
+- Initialize a new local Supabase project only if one does not already exist: `npx supabase init`
+- Create a migration: `npx supabase migration new descriptive_change`
+- Start the local Supabase stack when Docker is available: `npx supabase start`
+- Apply pending migrations to the running local database: `npx supabase migration up`
+- Inspect migration history: `npx supabase migration list`
+
+Starting the local stack requires Docker. Do not commit secrets or environment-specific credentials. No application schema migration is defined yet; add one after the initial domain and user-ownership requirements are agreed.

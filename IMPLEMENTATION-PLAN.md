@@ -69,3 +69,12 @@ At the end of each milestone, record:
 - user review outcome
 
 Do not mark a milestone Accepted while a required criterion is unverified or failing. Record exceptions explicitly and obtain approval before changing the agreed scope.
+
+### Checkpoint record — M0-C02: Database foundation
+
+**Status:** In review  
+**Scope:** Add the local Supabase CLI and project configuration; document the SQL migration workflow without inventing application tables.  
+**Implemented so far:** Supabase CLI `2.120.0` installed as a development dependency; `supabase/config.toml` generated; migration directory guidance and local database instructions added; seeding is disabled with `enabled = false` and `sql_paths = []`; no placeholder migration exists.  
+**Verification:** `npx supabase --version`, lint, TypeScript checking, formatting, production build, and the E2E suite completed successfully. The E2E suite ran one test and passed. Full local database migration execution has not been verified; it requires the local Supabase stack.  
+**Security note:** `npm audit` reports five high-severity findings in the existing ESLint/Next.js lint dependency tree. The suggested automatic fix downgrades `eslint-config-next` to `14.2.35`; that downgrade was not applied.  
+**Acceptance still required:** Review the diff, run project checks, and verify local database migration execution when Docker is available. Do not mark this checkpoint Accepted until verification is complete and the user has committed it through VS Code Source Control.
