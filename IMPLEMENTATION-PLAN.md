@@ -78,3 +78,12 @@ Do not mark a milestone Accepted while a required criterion is unverified or fai
 **Verification:** `npx supabase --version`, lint, TypeScript checking, formatting, production build, and the E2E suite completed successfully. The E2E suite ran one test and passed. Full local database migration execution has not been verified; it requires the local Supabase stack.  
 **Security note:** `npm audit` reports five high-severity findings in the existing ESLint/Next.js lint dependency tree. The suggested automatic fix downgrades `eslint-config-next` to `14.2.35`; that downgrade was not applied.  
 **Acceptance still required:** Review the diff, run project checks, and verify local database migration execution when Docker is available. Do not mark this checkpoint Accepted until verification is complete and the user has committed it through VS Code Source Control.
+
+### Checkpoint record — M0-C03: Starter asset cleanup
+
+**Status:** In review  
+**Scope:** Remove unused Next.js starter assets and integrate the supplied Thungatha brand assets into the app shell and browser icon.  
+**Changes:** Replaced the default starter page with a branded Thungatha shell using `public/brand/thungatha-logo.svg`; added `src/app/icon.svg` for the App Router favicon convention; removed the conflicting default `src/app/favicon.ico` and unused `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, and `public/file.svg`. The remaining `public/window.svg` has no references but was not removed because it is not a standard Next.js starter asset and its ownership is not established.  
+**Verification:** Confirmed no application or source references remain to the removed assets or `favicon.ico`. Lint, TypeScript checking, formatting, production build, and the E2E suite passed. The E2E suite ran one test and passed.  
+**Open issues or decisions:** The E2E dev server still reports the existing Next.js cross-origin HMR warning for `127.0.0.1`; it does not fail the test.  
+**Next checkpoint:** User review of the M0-C03 diff.
