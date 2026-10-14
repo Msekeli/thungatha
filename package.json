@@ -2,6 +2,10 @@
   "name": "thungatha",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,9 +18,12 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.15",
+    "@supabase/supabase-js": "^2.109.0",
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",

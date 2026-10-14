@@ -24,16 +24,61 @@ Thungatha is an AI-assisted personal job-search and application-management produ
 
 See `PROJECT-CONTEXT.md` for the concise working context and `THUNGATHA-MASTER-PRODUCT-SPECIFICATION.md` for the authoritative product specification. Technology choices and their status are recorded in `DECISIONS.md`; detailed technical reference documents may be consulted when relevant.
 
-## Getting started
+## Local development
 
-Setup commands and required environment variables must be added after the repository's actual package configuration and service integrations are confirmed. Do not invent credentials or assume an integration is configured.
+### Prerequisites
 
-When setup is documented, include:
-1. Supported runtime and package-manager versions.
-2. Install and local-run commands.
-3. Required environment variable names (never secret values).
-4. Database migration and test commands.
-5. Troubleshooting for common setup failures.
+- Node.js 20.19 or newer (or Node.js 22.12 or newer) and npm 10 or newer.
+- A Clerk application. Clerk provides sign-in, sign-up, and session tokens.
+- Docker Desktop only when running the local Supabase database. The app itself does not require Docker.
+- A Supabase project for a hosted database, or the Supabase CLI local stack for development.
+
+### Install and configure
+
+```bash
+npm ci
+if [ ! -f .env.local ]; then cp .env.example .env.local; fi
+```
+
+If `.env.local` already exists, keep it and add only missing variables. Fill in the Clerk and Supabase values listed in `.env.example`; never commit `.env.local` or put a service-role key in it. The application uses only Supabase's publishable key and sends the signed-in Clerk session token to Supabase.
+
+In Clerk, create an application and configure its Supabase integration. Register Clerk as a third-party auth provider for the Supabase project, and make sure Clerk session tokens include the `authenticated` role claim required by Supabase. For local Supabase, set `CLERK_DOMAIN` to the Clerk instance domain so the CLI can verify those JWTs. The Supabase project URL and publishable key are available in the project API settings.
+
+For the local stack, use the API URL and publishable/anon key shown by `npx supabase status` in `.env.local`. For a hosted database, use the values from that Supabase project's API settings.
+
+### Start the local database and app
+
+With Docker running, apply the versioned schema from an empty local database:
+
+```bash
+npx supabase start
+npx supabase db reset
+```
+
+`db reset` recreates the local database and applies every migration. To apply only pending migrations to a running local database, use `npx supabase migration up`; inspect applied migrations with `npx supabase migration list`.
+
+Start Next.js in another terminal:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`. The landing page remains public. Sign-in, sign-up, and `/dashboard` require Clerk configuration. The profile endpoint returns only the current Clerk user's profile and enforces ownership in both the server repository and database RLS policies.
+
+### Checks
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run format:check
+npm test
+npx playwright install chromium
+npm run test:e2e
+npm run build
+npm audit
+```
+
+Playwright starts the Next.js dev server itself. If the local environment prevents binding to port 3000, the E2E suite cannot run there. `npm audit` needs access to the npm registry. For a clean migration check, use `npx supabase db reset` with Docker running.
 
 ## Delivery workflow
 

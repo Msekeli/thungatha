@@ -1,8 +1,10 @@
 import Image from "next/image";
+import { HomeAuthActions } from "@/components/auth/home-auth-actions";
+import { hasClerkConfiguration } from "@/lib/auth/identity";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 items-center justify-center bg-[#07172a] px-6 py-12 font-sans">
+    <div className="flex flex-1 items-center justify-center bg-brand-ink px-6 py-12 font-sans">
       <main className="flex w-full max-w-3xl flex-col items-center gap-8 text-center">
         <Image
           src="/brand/thungatha-logo.svg"
@@ -20,6 +22,7 @@ export default function Home() {
             applications with confidence.
           </p>
         </div>
+        <HomeAuthActions configured={hasClerkConfiguration()} />
       </main>
     </div>
   );
