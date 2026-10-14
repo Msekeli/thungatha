@@ -1,13 +1,14 @@
 "use client";
 
 import { SignOutButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 export function SignOutControl() {
   return (
     <SignOutButton redirectUrl="/">
-      <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">
+      <Button variant="secondary" size="md">
         Sign out
-      </button>
+      </Button>
     </SignOutButton>
   );
 }

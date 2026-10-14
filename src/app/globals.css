@@ -1,4 +1,14 @@
-@layer theme, base, mui, components, utilities;
+/*
+ * Layer order must be the first statement. Clerk gets its own layer (see cssLayerName in
+ * clerk-appearance.ts) so our classes in "components" beat Clerk without !important.
+ * Also set, in src/app/layout.tsx:
+ *   <InitColorSchemeScript attribute="data-theme" defaultMode="system" />
+ *   <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+ *     <ThemeProvider theme={theme}> <CssBaseline /> {children} </ThemeProvider>
+ *   </AppRouterCacheProvider>
+ * and load Inter with next/font, exposing --font-inter on <html>.
+ */
+@layer theme, base, mui, clerk, components, utilities;
 
 @import "tailwindcss";
 @import "../styles/tokens.css";

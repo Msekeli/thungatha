@@ -1,7 +1,18 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { AuthProviders } from "@/components/auth/auth-providers";
 import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
+
+// Inter powers the design system through the --font-inter variable.
+// Weight 800 is used only by the THUNGATHA wordmark.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "800"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Thungatha",
@@ -10,7 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <AuthProviders configured={hasClerkConfiguration()}>
           {children}

@@ -1,46 +1,61 @@
 "use client";
 
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
-import Link from "next/link";
+import { Button, ButtonLink } from "@/components/ui/button";
 
-const buttonClass =
-  "rounded-full px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-teal";
+type Variant = "nav" | "hero" | "cta";
 
-export function HomeAuthActions({ configured }: { configured: boolean }) {
+export function HomeAuthActions({
+  configured,
+  variant = "hero",
+}: {
+  configured: boolean;
+  variant?: Variant;
+}) {
+  const size = variant === "nav" ? "md" : "lg";
+  const signUpLabel = variant === "nav" ? "Sign up" : "Create your account";
+  const signInVariant = variant === "nav" ? "ghost" : "secondary";
+
   if (!configured) {
     return (
-      <p className="max-w-lg rounded-xl border border-white/15 bg-white/5 px-5 py-4 text-sm leading-6 text-slate-300">
-        Sign in will be available after Clerk is configured. Copy the required
-        values from <code>.env.example</code> into your local environment.
-      </p>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href="/sign-up" variant="primary" size={size}>
+            {signUpLabel}
+          </ButtonLink>
+          <ButtonLink href="/sign-in" variant={signInVariant} size={size}>
+            Sign in
+          </ButtonLink>
+        </div>
+        {variant === "hero" ? (
+          <p className="max-w-lg rounded-panel border border-line bg-panel px-5 py-4 text-detail text-fg-muted">
+            Sign in will be available after Clerk is configured. Copy the
+            required values from <code>.env.example</code> into your local
+            environment.
+          </p>
+        ) : null}
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="flex flex-wrap gap-2">
       <Show when="signed-out">
         <SignUpButton mode="modal">
-          <button
-            className={`${buttonClass} bg-brand-teal text-slate-950 hover:brightness-95`}
-          >
-            Create your account
-          </button>
+          <Button variant="primary" size={size}>
+            {signUpLabel}
+          </Button>
         </SignUpButton>
         <SignInButton mode="modal">
-          <button
-            className={`${buttonClass} border border-white/25 text-white hover:bg-white/10`}
-          >
+          <Button variant={signInVariant} size={size}>
             Sign in
-          </button>
+          </Button>
         </SignInButton>
       </Show>
       <Show when="signed-in">
-        <Link
-          href="/dashboard"
-          className={`${buttonClass} bg-brand-teal text-slate-950 hover:brightness-95`}
-        >
+        <ButtonLink href="/dashboard" variant="primary" size={size}>
           Open your workspace
-        </Link>
+        </ButtonLink>
       </Show>
     </div>
   );

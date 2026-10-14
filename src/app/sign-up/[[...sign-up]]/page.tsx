@@ -1,18 +1,21 @@
 import { SignUp } from "@clerk/nextjs";
 import { AuthConfigurationNotice } from "@/components/auth/auth-configuration-notice";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { hasClerkConfiguration } from "@/lib/auth/identity";
 
 export default function SignUpPage() {
-  if (!hasClerkConfiguration()) return <AuthConfigurationNotice />;
-
   return (
-    <main className="flex flex-1 items-center justify-center bg-[var(--background)] px-4 py-12">
-      <SignUp
-        routing="path"
-        path="/sign-up"
-        signInUrl="/sign-in"
-        oauthFlow="popup"
-      />
-    </main>
+    <AuthPageShell>
+      {hasClerkConfiguration() ? (
+        <SignUp
+          routing="path"
+          path="/sign-up"
+          signInUrl="/sign-in"
+          oauthFlow="popup"
+        />
+      ) : (
+        <AuthConfigurationNotice />
+      )}
+    </AuthPageShell>
   );
 }
