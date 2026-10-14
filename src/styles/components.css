@@ -1,0 +1,90 @@
+/*
+ * Thungatha domain components: things MUI does not provide.
+ * Use data attributes from React, for example:
+ *   <span className="th-match" data-tier="strong">82 Strong</span>
+ * Rules: colour is never the only signal (always pair with icon or text),
+ * glow is only for Add job and strong match, unknown is never negative.
+ */
+@layer components {
+  .th-glow { box-shadow: var(--th-glow); }
+
+  /* Match badge */
+  .th-match {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; white-space: nowrap;
+    background: var(--th-tag-bg); color: var(--th-fg-muted);
+  }
+  .th-match[data-tier="strong"] { background: var(--th-success-bg); color: var(--th-success); box-shadow: var(--th-glow); }
+  .th-match[data-tier="fair"]   { background: var(--th-warn-bg); color: var(--th-warn); }
+  .th-match[data-tier="lower"]  { background: var(--th-tag-bg); color: var(--th-fg-muted); }
+  .th-match[data-tier="stale"]  { background: transparent; color: var(--th-fg-muted); border: 1px dashed var(--th-fg-muted); }
+
+  /* Tag */
+  .th-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: var(--th-radius-tag);
+    font-size: 11px; background: var(--th-tag-bg); color: var(--th-fg-muted);
+  }
+  .th-tag[data-tone="accent"]  { background: var(--th-accent-bg); color: var(--th-accent-text); }
+  .th-tag[data-tone="success"] { background: var(--th-success-bg); color: var(--th-success); }
+  .th-tag[data-tone="warning"] { background: var(--th-warn-bg); color: var(--th-warn); }
+
+  /* Verification badge: always render an icon and text with it */
+  .th-verify {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: var(--th-radius-tag);
+    font-size: 11px; border: 1px solid var(--th-line); color: var(--th-fg-muted);
+  }
+  .th-verify[data-state="found"] { background: var(--th-success-bg); color: var(--th-success); border-color: transparent; }
+  .th-verify[data-state="checking"],
+  .th-verify[data-state="not-found"] { background: transparent; }
+
+  /* Requirement assessment tag (match detail) */
+  .th-req { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: var(--th-radius-tag); font-size: 11px; background: var(--th-tag-bg); color: var(--th-fg-muted); }
+  .th-req[data-state="met"]     { background: var(--th-success-bg); color: var(--th-success); }
+  .th-req[data-state="partial"] { background: var(--th-warn-bg); color: var(--th-warn); }
+  .th-req[data-state="unknown"] { background: var(--th-tag-bg); color: var(--th-fg-muted); }
+  .th-req[data-state="missing"] { background: transparent; color: var(--th-fg); border: 1px solid var(--th-line); }
+
+  /* Application status pill */
+  .th-status {
+    display: inline-flex; align-items: center; padding: 3px 8px;
+    border-radius: var(--th-radius-tag); font-size: 11px; font-weight: 500;
+    background: var(--th-tag-bg); color: var(--th-fg-muted);
+  }
+  .th-status[data-status="interviewing"] { background: var(--th-accent-bg); color: var(--th-accent-text); }
+  .th-status[data-status="offer"]        { background: var(--th-success-bg); color: var(--th-success); }
+  .th-status[data-status="rejected"]     { background: var(--th-warn-bg); color: var(--th-warn); }
+
+  /* Job and application rows */
+  .th-row {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 12px 16px; border-bottom: 1px solid var(--th-line);
+  }
+  .th-row:last-child { border-bottom: 0; }
+  .th-row[data-selected="true"] { background: var(--th-selected); }
+  .th-row[data-unavailable="true"] { color: var(--th-fg-muted); }
+
+  /* Panel with header strip */
+  .th-panel { background: var(--th-panel); border: 1px solid var(--th-line); border-radius: var(--th-radius-panel); overflow: hidden; }
+  .th-panel__head { background: var(--th-panel-2); padding: 10px 16px; border-bottom: 1px solid var(--th-line); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .th-panel__body { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  /* Status progress bar (application detail) */
+  .th-steps { display: flex; gap: 6px; }
+  .th-steps > span { flex: 1; height: 6px; border-radius: 3px; background: var(--th-tag-bg); }
+  .th-steps > span[data-done="true"] { background: var(--th-btn); }
+
+  /* CV preview stays paper-white in both themes */
+  .th-paper { background: #fff; color: #14202e; border-radius: var(--th-radius-control); padding: 28px; font-size: 12px; line-height: 1.5; }
+  .th-paper h2 { color: #0b1626; }
+  .th-paper h3 { color: #0b3a66; border-bottom: 1px solid #c9d6e4; padding-bottom: 3px; }
+  .th-paper mark { background: #bfe3fa; color: #0b1626; }
+
+  /* Uncertain imported field */
+  .th-uncertain { background: var(--th-warn-bg); color: var(--th-warn); border-radius: 4px; padding: 1px 6px; }
+
+  /* Tailored CV before/after text */
+  .th-before { color: var(--th-fg-muted); text-decoration: line-through; }
+}

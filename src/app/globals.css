@@ -1,27 +1,45 @@
+@layer theme, base, mui, components, utilities;
+
 @import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/components.css";
 
-:root {
-  --background: #f4f7f7;
-  --foreground: #10212b;
-  --brand-ink: #07172a;
-  --brand-teal: #83e4d1;
-  --surface: #ffffff;
-  --muted: #647581;
-}
+/* Tailwind's dark: variant follows data-theme (the name MUI sets), not only the OS. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --color-brand-ink: var(--brand-ink);
-  --color-brand-teal: var(--brand-teal);
-  --color-surface: var(--surface);
-  --color-muted: var(--muted);
-}
+@layer base {
+  html {
+    background: var(--th-page);
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  body {
+    background: var(--th-page);
+    color: var(--th-fg);
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--th-accent-text);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--th-accent-bg);
+    color: var(--th-fg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
