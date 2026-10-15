@@ -2,6 +2,7 @@
 
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { SignOutControl } from "@/components/auth/sign-out-control";
 
 type Variant = "nav" | "hero" | "cta";
 
@@ -27,6 +28,7 @@ export function HomeAuthActions({
             Sign in
           </ButtonLink>
         </div>
+
         {variant === "hero" ? (
           <p className="max-w-lg rounded-panel border border-line bg-panel px-5 py-4 text-detail text-fg-muted">
             Sign in will be available after Clerk is configured. Copy the
@@ -39,7 +41,7 @@ export function HomeAuthActions({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Show when="signed-out">
         <SignUpButton mode="modal">
           <Button variant="primary" size={size}>
@@ -52,10 +54,12 @@ export function HomeAuthActions({
           </Button>
         </SignInButton>
       </Show>
+
       <Show when="signed-in">
         <ButtonLink href="/jobs" variant="primary" size={size}>
           Browse jobs
         </ButtonLink>
+        {variant === "nav" ? <SignOutControl /> : null}
       </Show>
     </div>
   );
