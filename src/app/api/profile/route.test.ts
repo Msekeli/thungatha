@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GET, PATCH } from "./route";
 import {
   getAuthenticatedIdentity,
@@ -6,16 +6,25 @@ import {
 } from "@/lib/auth/identity";
 import { readProfile, saveProfile } from "@/lib/profile/repository";
 
+class MockSupabaseConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SupabaseConfigurationError";
+  }
+}
+
 vi.mock("@/lib/auth/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
   hasClerkConfiguration: vi.fn(),
 }));
+
 vi.mock("@/lib/profile/repository", () => ({
   readProfile: vi.fn(),
   saveProfile: vi.fn(),
 }));
+
 vi.mock("@/lib/supabase/server", () => ({
-  SupabaseConfigurationError: class SupabaseConfigurationError extends Error {},
+  SupabaseConfigurationError: MockSupabaseConfigurationError,
 }));
 
 const identity = vi.mocked(getAuthenticatedIdentity);
@@ -23,16 +32,21 @@ const configured = vi.mocked(hasClerkConfiguration);
 const read = vi.mocked(readProfile);
 const save = vi.mocked(saveProfile);
 
-describe("profile API authorization", () => {
+describe("profile API authorization and failure handling", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     configured.mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns 401 for reads and writes without a signed-in identity", async () => {
     identity.mockResolvedValue(null);
 
     const readResponse = await GET();
+
     const writeResponse = await PATCH(
       new Request("http://local/api/profile", {
         method: "PATCH",
@@ -47,24 +61,53 @@ describe("profile API authorization", () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it("returns 503 with a useful setup error when Clerk is not configured", async () => {
+  it("returns 503 when Clerk is not configured", async () => {
     configured.mockReturnValue(false);
 
     const response = await PATCH(
-      new Request("http://local/api/profile", { method: "PATCH" }),
+      new Request("http://local/api/profile", {
+        method: "PATCH",
+      }),
     );
 
     expect(response.status).toBe(503);
     expect(identity).not.toHaveBeenCalled();
   });
 
-  it("rejects an attempted client-supplied user ID", async () => {
-    identity.mockResolvedValue({ userId: "user_real", getToken: vi.fn() });
+  it("returns a safe error when identity resolution fails", async () => {
+    const logSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    identity.mockRejectedValue(new Error("sensitive internal details"));
+
+    const response = await GET();
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toBe("Authentication could not be verified");
+    expect(JSON.stringify(body)).not.toContain("sensitive internal details");
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "Authentication identity resolution failed:",
+      { errorName: "Error" },
+    );
+  });
+
+  it("rejects a client-supplied user ID", async () => {
+    identity.mockResolvedValue({
+      userId: "user_real",
+      getToken: vi.fn(),
+    });
+
     const response = await PATCH(
       new Request("http://local/api/profile", {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ displayName: "A User", userId: "user_other" }),
+        body: JSON.stringify({
+          displayName: "A User",
+          userId: "user_other",
+        }),
       }),
     );
 
@@ -72,24 +115,33 @@ describe("profile API authorization", () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it("reads and writes only with the server-resolved Clerk identity", async () => {
+  it("reads and writes using the server-resolved identity", async () => {
     const getToken = vi.fn().mockResolvedValue("clerk-session-jwt");
-    identity.mockResolvedValue({ userId: "user_alice", getToken });
+
+    identity.mockResolvedValue({
+      userId: "user_alice",
+      getToken,
+    });
+
     read.mockResolvedValue({
       data: { display_name: "Alice" },
       error: null,
     } as never);
+
     save.mockResolvedValue({
       data: { display_name: "Alice Cooper" },
       error: null,
     } as never);
 
     const getResponse = await GET();
+
     const patchResponse = await PATCH(
       new Request("http://local/api/profile", {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ displayName: "Alice Cooper" }),
+        body: JSON.stringify({
+          displayName: "Alice Cooper",
+        }),
       }),
     );
 
@@ -99,15 +151,25 @@ describe("profile API authorization", () => {
     expect(patchResponse.status).toBe(200);
   });
 
-  it("returns the record scoped to each authenticated user", async () => {
+  it("returns records scoped to each authenticated user", async () => {
     const getToken = vi.fn().mockResolvedValue("token");
+
     identity
-      .mockResolvedValueOnce({ userId: "user_alice", getToken })
-      .mockResolvedValueOnce({ userId: "user_bob", getToken });
+      .mockResolvedValueOnce({
+        userId: "user_alice",
+        getToken,
+      })
+      .mockResolvedValueOnce({
+        userId: "user_bob",
+        getToken,
+      });
+
     read.mockImplementation(
       async (userId) =>
         ({
-          data: { display_name: userId === "user_alice" ? "Alice" : "Bob" },
+          data: {
+            display_name: userId === "user_alice" ? "Alice" : "Bob",
+          },
           error: null,
         }) as never,
     );
@@ -119,19 +181,29 @@ describe("profile API authorization", () => {
       "user_alice",
       "user_bob",
     ]);
+
     await expect(alice.json()).resolves.toEqual({
       profile: { displayName: "Alice" },
     });
+
     await expect(bob.json()).resolves.toEqual({
       profile: { displayName: "Bob" },
     });
   });
 
   it("rejects malformed JSON and invalid display names", async () => {
-    identity.mockResolvedValue({ userId: "user_alice", getToken: vi.fn() });
+    identity.mockResolvedValue({
+      userId: "user_alice",
+      getToken: vi.fn(),
+    });
+
     const malformed = await PATCH(
-      new Request("http://local/api/profile", { method: "PATCH", body: "{" }),
+      new Request("http://local/api/profile", {
+        method: "PATCH",
+        body: "{",
+      }),
     );
+
     const invalid = await PATCH(
       new Request("http://local/api/profile", {
         method: "PATCH",
@@ -143,5 +215,55 @@ describe("profile API authorization", () => {
     expect(malformed.status).toBe(400);
     expect(invalid.status).toBe(400);
     expect(save).not.toHaveBeenCalled();
+  });
+
+  it("returns 503 when profile storage is not configured", async () => {
+    identity.mockResolvedValue({
+      userId: "user_alice",
+      getToken: vi.fn(),
+    });
+
+    read.mockRejectedValue(
+      new MockSupabaseConfigurationError("Storage unavailable"),
+    );
+
+    const response = await GET();
+
+    expect(response.status).toBe(503);
+
+    await expect(response.json()).resolves.toEqual({
+      error: "Profile storage is not configured",
+    });
+  });
+
+  it("returns a safe error and request ID for unexpected API failures", async () => {
+    const logSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    identity.mockResolvedValue({
+      userId: "user_alice",
+      getToken: vi.fn(),
+    });
+
+    read.mockRejectedValue(new Error("sensitive database details"));
+
+    const response = await GET();
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.error).toBe(
+      "The request could not be completed. Please try again.",
+    );
+    expect(body.requestId).toEqual(expect.any(String));
+    expect(body.error).not.toContain("sensitive database details");
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "API request failed:",
+      expect.objectContaining({
+        requestId: body.requestId,
+        errorName: "Error",
+      }),
+    );
   });
 });
