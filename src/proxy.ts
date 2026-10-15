@@ -5,23 +5,37 @@ import {
   type NextRequest,
 } from "next/server";
 
+const protectedPrefixes = [
+  "/jobs",
+  "/cv-studio",
+  "/applications",
+  "/profile",
+  "/account",
+];
+
+function isProtectedPath(path: string) {
+  return protectedPrefixes.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
 const clerkHandler = clerkMiddleware(async (auth, request) => {
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  if (isProtectedPath(request.nextUrl.pathname)) {
     await auth.protect();
   }
 });
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const path = request.nextUrl.pathname;
-  const isProtectedPath = path.startsWith("/dashboard");
   const configured = Boolean(
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-    process.env.CLERK_SECRET_KEY,
+      process.env.CLERK_SECRET_KEY,
   );
 
-  if (!configured) {
-    if (isProtectedPath)
+  if (configured === false) {
+    if (isProtectedPath(path)) {
       return NextResponse.redirect(new URL("/?auth=setup", request.url));
+    }
     return NextResponse.next();
   }
 
@@ -30,7 +44,11 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
+    "/jobs/:path*",
+    "/cv-studio/:path*",
+    "/applications/:path*",
+    "/profile/:path*",
+    "/account/:path*",
     "/sign-in/:path*",
     "/sign-up/:path*",
     "/api/profile",

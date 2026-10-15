@@ -53,8 +53,8 @@ export function HomeAuthActions({
         </SignInButton>
       </Show>
       <Show when="signed-in">
-        <ButtonLink href="/dashboard" variant="primary" size={size}>
-          Open your workspace
+        <ButtonLink href="/jobs" variant="primary" size={size}>
+          Browse jobs
         </ButtonLink>
       </Show>
     </div>
