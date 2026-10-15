@@ -121,15 +121,23 @@ export default function Home() {
             aria-label="Product"
             className="hidden gap-8 text-control md:flex"
           >
-            {modules.map((m) => (
-              <a
-                key={m.id}
-                href={`#${m.id}`}
-                className="rounded-tag py-2 font-medium text-fg underline decoration-success/50 decoration-2 underline-offset-[10px] transition-colors hover:text-accent-text hover:decoration-success focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-text"
-              >
-                {m.name}
-              </a>
-            ))}
+            {modules.map((m) => {
+              const routes: Record<string, string> = {
+                discovery: "/jobs",
+                studio: "/cv-studio",
+                tracking: "/applications",
+              };
+
+              return (
+                <a
+                  key={m.id}
+                  href={routes[m.id]}
+                  className="rounded-tag py-2 font-medium text-fg underline decoration-success/50 decoration-2 underline-offset-[10px] transition-colors hover:text-accent-text hover:decoration-success focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-text"
+                >
+                  {m.name}
+                </a>
+              );
+            })}
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
