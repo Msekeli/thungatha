@@ -111,7 +111,15 @@ export default function JobsDiscovery() {
       }
       setIsAuthenticated(true);
       const data = (await response.json()) as Feed;
-      if (!Array.isArray(data.jobs) || !Number.isFinite(data.totalPages)) {
+      if (
+        !Array.isArray(data.jobs) ||
+        !Number.isInteger(data.page) || data.page < 1 ||
+        !Number.isInteger(data.pageSize) || data.pageSize < 1 ||
+        !Number.isInteger(data.total) || data.total < 0 ||
+        !Number.isInteger(data.totalPages) || data.totalPages < 0 ||
+        data.totalPages !== Math.ceil(data.total / data.pageSize) ||
+        data.jobs.some((job) => !job || typeof job.id !== "string" || typeof job.title !== "string")
+      ) {
         setFeed(null);
         setError("The jobs service returned an unexpected response. Please retry.");
         return;
