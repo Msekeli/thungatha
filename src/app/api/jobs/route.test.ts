@@ -77,7 +77,7 @@ describe("GET /api/jobs", () => {
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
     expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
     expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
-    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full-time%");
+    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
     expect(jobs.range).toHaveBeenCalledWith(10, 19);
   });
 
