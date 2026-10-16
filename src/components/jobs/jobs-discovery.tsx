@@ -34,10 +34,10 @@ type Job = {
 };
 
 type Feed = { jobs: Job[]; page: number; pageSize: number; total: number; totalPages: number };
-type Filters = { query: string; location: string; countryCode: string; workMode: string; employmentType: string };
+type Filters = { query: string; location: string; countryCode: string; workMode: string; employmentType: string; publishedWithin: string };
 type ApiError = { error?: string; requestId?: string };
 
-const EMPTY_FILTERS: Filters = { query: "", location: "", countryCode: "", workMode: "", employmentType: "" };
+const EMPTY_FILTERS: Filters = { query: "", location: "", countryCode: "", workMode: "", employmentType: "", publishedWithin: "30d" };
 const PAGE_SIZE = 25;
 
 function sourceFor(job: Job | null): JobSource | null {
@@ -197,13 +197,13 @@ export default function JobsDiscovery() {
   };
 
   const changeDraft = (key: keyof Filters, value: string) => setDraft((current) => ({ ...current, [key]: value }));
-  const resetDisabled = !Object.values(draft).some(Boolean) && !Object.values(filters).some(Boolean);
+  const resetDisabled = JSON.stringify(draft) === JSON.stringify(EMPTY_FILTERS) && JSON.stringify(filters) === JSON.stringify(EMPTY_FILTERS);
   const selectedDetail = detail?.id === selectedId ? detail : null;
   const selectedSource = sourceFor(selectedDetail);
   const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   const range = !feed || feed.total === 0 ? "0 jobs" : `${(feed.page - 1) * feed.pageSize + 1}–${Math.min(feed.page * feed.pageSize, feed.total)} of ${feed.total}`;
-  const hasFilters = Object.values(filters).some(Boolean);
+  const hasFilters = Object.entries(filters).some(([key, value]) => key === "publishedWithin" ? value !== "30d" : Boolean(value));
 
   return (
     <main className="th-jobs-page">
@@ -245,6 +245,12 @@ export default function JobsDiscovery() {
               </select>
             </label>
             <label className="th-jobs-field">
+              <span>Posted within</span>
+              <select className="th-input" name="publishedWithin" value={draft.publishedWithin} onChange={(event) => changeDraft("publishedWithin", event.target.value)}>
+                <option value="24h">Last 24 hours</option><option value="7d">Last 7 days</option><option value="14d">Last 14 days</option><option value="30d">Last 30 days</option>
+              </select>
+            </label>
+            <label className="th-jobs-field">
               <span>Employment type</span>
               <input className="th-input" name="employmentType" maxLength={100} placeholder="e.g. Full-time, contract" value={draft.employmentType} onChange={(event) => changeDraft("employmentType", event.target.value)} />
             </label>
@@ -253,7 +259,7 @@ export default function JobsDiscovery() {
               <Button type="button" variant="ghost" block onClick={clearFilters} disabled={resetDisabled}>Clear filters</Button>
             </div>
           </form>
-          <p className="th-jobs-filter-note">Filters use listing data only. No match score is calculated here.</p>
+          <p className="th-jobs-filter-note">Only listings published within the selected period are shown. Listings without a publication date are excluded. No match score is calculated here.</p>
         </aside>
 
         <section className={`th-jobs-results-panel ${mobileDetail ? "th-jobs-mobile-hidden" : ""}`} aria-label="Job search results" aria-busy={loading}>
