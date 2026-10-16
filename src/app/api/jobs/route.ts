@@ -2,7 +2,7 @@ import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
+import { createAuthenticatedSupabaseClient, createPublicSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
 
 const querySchema = z.object({
   query: z.string().trim().max(200).optional(),
@@ -17,15 +17,21 @@ const querySchema = z.object({
 
 export async function GET(request: Request) {
   await connection();
-  if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
-  let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;
-  try {
-    identity = await getAuthenticatedIdentity();
-  } catch (error) {
-    console.error("[jobs feed API] Clerk authentication failed:", error);
-    return apiError("Authentication could not be verified", 503);
+  // Temporary local-only bypass while the Clerk/Supabase JWT integration is being finalized.
+  // Production always follows the authenticated path, regardless of this environment variable.
+  const authBypass = process.env.NODE_ENV !== "production" && process.env.THUNGATHA_AUTH_BYPASS === "true";
+  let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>> = null;
+
+  if (!authBypass) {
+    if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
+    try {
+      identity = await getAuthenticatedIdentity();
+    } catch (error) {
+      console.error("[jobs feed API] Clerk authentication failed:", error);
+      return apiError("Authentication could not be verified", 503);
+    }
+    if (!identity) return apiError("Authentication required", 401);
   }
-  if (!identity) return apiError("Authentication required", 401);
 
   const params = new URL(request.url).searchParams;
   const raw: Record<string, string> = {};
@@ -38,12 +44,22 @@ export async function GET(request: Request) {
   const input = parsed.data;
 
   try {
-    const db = await createAuthenticatedSupabaseClient(identity.getToken);
-    let stateQuery = db.from("user_job_states").select("job_id,state").eq("user_id", identity.userId);
-    if (input.state !== "all") stateQuery = stateQuery.eq("state", input.state);
-    const { data: userStates, error: stateError } = await stateQuery;
-    if (stateError) throw stateError;
-    const states = userStates ?? [];
+    const db = authBypass
+      ? await createPublicSupabaseClient()
+      : await createAuthenticatedSupabaseClient(identity!.getToken);
+    let states: Array<{ job_id: string; state: string }> = [];
+
+    // Personal saved/dismissed state is intentionally omitted in local auth-bypass mode.
+    if (identity) {
+      let stateQuery = db.from("user_job_states").select("job_id,state").eq("user_id", identity.userId);
+      if (input.state !== "all") stateQuery = stateQuery.eq("state", input.state);
+      const { data: userStates, error: stateError } = await stateQuery;
+      if (stateError) throw stateError;
+      states = userStates ?? [];
+    } else if (input.state !== "all") {
+      return NextResponse.json({ jobs: [], page: input.page, pageSize: input.pageSize, total: 0, totalPages: 0 });
+    }
+
     const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
 
     let query = db.from("jobs").select("id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)", { count: "exact" })
