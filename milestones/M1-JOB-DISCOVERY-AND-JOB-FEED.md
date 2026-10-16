@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C01 in review; confirm against the live repository before updating  
+**Status:** In progress — C04 database-side scope verified; C05 under investigation; C06 next active checkpoint  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -133,6 +133,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C05 — Optional AI boundary for job content
 
+**Status: Under investigation — implementation decision pending.**
+
 **Goal:** use AI only if the source audit shows a concrete need.
 
 **Work**
@@ -149,6 +151,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - No future matching score or CV tailoring is pulled into M1.
 
 ### M1-C06 — Discovery query and action contracts
+
+**Next active checkpoint.** C05 remains open while the AI-extraction decision is investigated. C06 may proceed because its documented API/data-operation scope does not require AI extraction; do not treat this sequencing decision as C05 acceptance.
 
 **Goal:** provide safe data operations for the Discovery UI without adding manual job creation.
 
@@ -239,3 +243,10 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 This is evidence for the tested RPC/database path, not a claim that every live provider or the complete scheduled application pipeline has been end-to-end verified. Treat C04 as complete for its scoped database reliability work and avoid repeating checks absent a concrete failure.
 
 **Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.
+
+
+## C05 investigation and sequencing decision — 2026-10-16
+
+C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
+
+Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.
