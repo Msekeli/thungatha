@@ -4,7 +4,7 @@ import {
   hasClerkConfiguration,
 } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import {
   createAuthenticatedSupabaseClient,
   SupabaseConfigurationError,
@@ -16,6 +16,7 @@ export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  await connection();
   if (!hasClerkConfiguration())
     return apiError("Authentication is not configured", 503);
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;

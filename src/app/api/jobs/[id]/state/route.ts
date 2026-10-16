@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
@@ -8,6 +8,7 @@ const idSchema = z.string().uuid();
 const bodySchema = z.object({ state: z.enum(["saved", "dismissed"]) }).strict();
 
 async function resolveUser() {
+  await connection();
   if (!hasClerkConfiguration()) return { user: null, response: apiError("Authentication is not configured", 503) };
   try {
     const user = await getAuthenticatedIdentity();
