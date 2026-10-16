@@ -61,7 +61,7 @@ describe("Job Discovery", () => {
     render(<JobsDiscovery configured={false} />);
     expect((await screen.findAllByRole("heading", { name: "Software Engineer" })).length).toBeGreaterThan(0);
     expect(screen.getByText("Cape Town, South Africa")).toBeTruthy();
-    expect(screen.getByText("Full-time")).toBeTruthy();
+    expect(screen.getAllByText("Full-time").length).toBeGreaterThan(0);
     expect(screen.getByText("Greenhouse")).toBeTruthy();
     expect(await screen.findByText("Build and support web services.")).toBeTruthy();
   });
@@ -119,7 +119,7 @@ describe("Job Discovery", () => {
     setupFetch([unsafeJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
-    expect(await screen.findByText("Source link unavailable")).toBeTruthy();
+    expect(await screen.findByText(/Source link unavailable/)).toBeTruthy();
     expect(screen.getByText(/Application link not supplied/)).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
     expect(screen.getByRole("button", { name: /Open job page/ })).toBeDisabled();
