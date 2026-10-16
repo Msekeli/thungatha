@@ -282,3 +282,34 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - **Filter follow-up (2026-10-16):** Investigated the reported filter failure after live jobs loaded. The API used `.or()` for keyword matching and could call `.or()` again for employment-type aliases; PostgREST query builders can overwrite the same `or` parameter, causing combined filters to interfere. Employment-type filtering now normalizes human-readable separators such as `Full-time` to provider values such as `full_time`, without a second `.or()` call. The API test assertion was updated. This is a targeted fix, not yet locally executed or verified against the hosted database.
 - **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
 - **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
+
+
+## C07 implementation follow-up — filter audit (2026-10-16)
+
+**Status: In review — targeted code changes committed; local and hosted verification still required.**
+
+### Audit findings
+
+- The UI submits the documented filter parameters and resets pagination when filters are applied or cleared.
+- The feed endpoint validates supported parameters and applies filters before ordering and pagination.
+- Keyword matching uses a PostgREST OR expression across title and employer. User-provided punctuation was not fully constrained for this expression, so a query could be interpreted as filter grammar rather than plain text.
+- Location filtering similarly used a limited punctuation replacement. Employment type is normalized from human-readable separators to provider-style underscores; the underscore in SQL ILIKE is a single-character wildcard, so it can match common hyphen/underscore variants, but actual stored values still need to be confirmed.
+- Existing route tests use a mocked fluent query builder. They verify query-method calls, not the behaviour of a real PostgREST/Supabase query. The UI tests mock the API and therefore do not prove filters produce the correct records.
+- Feed loading/error/empty/retry, pagination, details, source-vs-application links, and mobile detail state have basic component coverage. Browser/responsive/keyboard checks and a real authenticated Supabase test remain outstanding.
+- The local production build failure reported by the user points at src/styles/components.css, but the committed dev copy inspected during this audit has balanced opening/closing braces. The precise local PostCSS failure remains unresolved; shared CSS was not changed.
+
+### Changes made on dev
+
+- Added plain-text sanitization for keyword, location, and employment-type filter values before constructing Supabase filters. Unicode letters and numbers are preserved, while PostgREST syntax punctuation is removed.
+- Added an API route test for punctuation in keyword and location values.
+- Fixed the Button mock in the component tests so the block styling prop is not forwarded to a native HTML button, addressing the React warning in the test output.
+- No database permissions, RLS policies, authentication checks, shared CSS, or main branch changes were made.
+
+### Next verification steps
+
+1. Pull origin/dev without discarding local changes; inspect the diff.
+2. Run the targeted API and component tests, then the complete test suite, type-check, lint, and production build.
+3. Verify combined filters and result counts against a controlled set of actual Supabase records, including full-time aliases, zero matches, and page boundaries.
+4. Run browser checks for filter application/clear, selection changes, detail retries, keyboard navigation, and narrow viewport behaviour.
+5. Resolve the local CSS build error by comparing the local file with the committed file and locating the exact PostCSS parse failure; do not edit shared styles without a proven defect.
+6. Keep C07 In review until the evidence is recorded and user review is complete.
