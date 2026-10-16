@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 
 type JobSource = {
