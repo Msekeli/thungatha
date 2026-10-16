@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 database-side scope verified; C05 under investigation; C06 next active checkpoint  
+**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 locally verified; C07 UI in review  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -267,3 +267,17 @@ This is evidence for the tested RPC/database path, not a claim that every live p
 C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
 
 Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.
+
+
+---
+
+## M1-C07 — Job Discovery UI (2026-10-16)
+
+- **Status:** In review — implementation committed to `dev`; local test/build verification and user review remain outstanding.
+- **Outcome / scope:** Replace the `/jobs` placeholder with a responsive, persisted-data feed, supported query filters, pagination, selected job details, and honest discovery-source/application-destination links.
+- **Reused implementation:** C06 `GET /api/jobs` and `GET /api/jobs/[id]`; existing shared `Button` component and design tokens. Feed contract: `{ jobs, page, pageSize, total, totalPages }`; details contract: `{ job }`. Filter parameters are `query`, `location`, `countryCode`, `workMode`, `employmentType`, `page`, `pageSize`, and `state`.
+- **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`.
+- **Verification:** The component test file has been added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and Playwright/browser checks were not run in the connected remote-edit workflow.
+- **Limitations:** `Job Discovery · Dark.png` is referenced by this specification but is absent from the live `dev` tree. C07 does not add manual job creation, matching scores, M5 application status, or save/dismiss mutations. Missing source/destination URLs are labelled unavailable.
+- **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
+- **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
