@@ -273,11 +273,11 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 
 ## M1-C07 — Job Discovery UI (2026-10-16)
 
-- **Status:** In review — implementation committed to `dev`; local test/build verification and user review remain outstanding.
+- **Status:** In review — implementation committed to `dev`; local test/build verification and user review remain outstanding. Remote tree inspection confirms the intended six-file diff; `main` remains unchanged.
 - **Outcome / scope:** Replace the `/jobs` placeholder with a responsive, persisted-data feed, supported query filters, pagination, selected job details, and honest discovery-source/application-destination links.
 - **Reused implementation:** C06 `GET /api/jobs` and `GET /api/jobs/[id]`; existing shared `Button` component and design tokens. Feed contract: `{ jobs, page, pageSize, total, totalPages }`; details contract: `{ job }`. Filter parameters are `query`, `location`, `countryCode`, `workMode`, `employmentType`, `page`, `pageSize`, and `state`.
 - **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`.
-- **Verification:** The component test file has been added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and Playwright/browser checks were not run in the connected remote-edit workflow.
+- **Verification:** Remote GitHub tree/compare checks confirmed the intended files and current `dev` head. These checks do not execute the application. The component test file has been added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and Playwright/browser checks were not run in the connected remote-edit workflow.
 - **Limitations:** `Job Discovery · Dark.png` is referenced by this specification but is absent from the live `dev` tree. C07 does not add manual job creation, matching scores, M5 application status, or save/dismiss mutations. Missing source/destination URLs are labelled unavailable.
 - **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
 - **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
