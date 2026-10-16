@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import JobsDiscovery from "./jobs-discovery";
 
 vi.mock("@/components/ui/button", () => ({
-  Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string; block?: boolean }) => <button {...props}>{children}</button>,
+  Button: ({ children, variant: _variant, size: _size, block: _block, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string; block?: boolean }) => <button {...props}>{children}</button>,
 }));
 
 const firstJob = {
