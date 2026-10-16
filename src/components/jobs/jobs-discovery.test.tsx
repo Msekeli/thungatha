@@ -62,7 +62,7 @@ describe("Job Discovery", () => {
     expect((await screen.findAllByRole("heading", { name: "Software Engineer" })).length).toBeGreaterThan(0);
     expect(screen.getByText("Cape Town, South Africa")).toBeTruthy();
     expect(screen.getAllByText("Full-time").length).toBeGreaterThan(0);
-    expect(screen.getByText("Greenhouse")).toBeTruthy();
+    expect(screen.getAllByText("Greenhouse").length).toBeGreaterThan(0);
     expect(await screen.findByText("Build and support web services.")).toBeTruthy();
   });
 
