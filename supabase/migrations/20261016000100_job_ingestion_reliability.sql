@@ -96,18 +96,18 @@ begin
  return jsonb_build_object('received',n_received,'inserted',n_inserted,'updated',n_updated,'skipped',n_skipped);
 end; $$;
 
-create or replace function public.finish_job_ingestion_run(p_run_id uuid,p_status text,p_error_count integer default 0,p_error_message text default null)
+create or replace function public.finish_job_ingestion_run(p_run_id uuid,p_status text,p_error_count integer default 0,p_error_message text default null,p_received_count integer default null)
 returns void language plpgsql security definer set search_path=''
 as $$
 begin
  if p_status not in ('succeeded','partial','failed') then raise exception 'Invalid terminal status'; end if;
- update public.job_ingestion_runs set status=p_status,finished_at=now(),error_count=greatest(p_error_count,0),error_message=left(p_error_message,2000)
+ update public.job_ingestion_runs set status=p_status,finished_at=now(),error_count=greatest(p_error_count,0),error_message=left(p_error_message,2000),received_count=greatest(received_count,coalesce(p_received_count,received_count))
  where id=p_run_id and status='running';
  if not found then raise exception 'Ingestion run missing or already finished'; end if;
 end; $$;
 revoke all on function public.start_job_ingestion_run(text,text) from public,anon,authenticated;
 revoke all on function public.persist_job_ingestion_batch(uuid,jsonb) from public,anon,authenticated;
-revoke all on function public.finish_job_ingestion_run(uuid,text,integer,text) from public,anon,authenticated;
+revoke all on function public.finish_job_ingestion_run(uuid,text,integer,text,integer) from public,anon,authenticated;
 grant execute on function public.start_job_ingestion_run(text,text) to service_role;
 grant execute on function public.persist_job_ingestion_batch(uuid,jsonb) to service_role;
 grant execute on function public.finish_job_ingestion_run(uuid,text,integer,text) to service_role;
