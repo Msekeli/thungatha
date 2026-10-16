@@ -14,7 +14,7 @@ function query(result: unknown) {
   // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
-  for (const method of ["select", "eq", "or", "ilike", "in", "not", "order", "range", "upsert", "delete"]) {
+  for (const method of ["select", "eq", "or", "ilike", "in", "not", "gte", "order", "range", "upsert", "delete"]) {
     builder[method] = vi.fn(() => builder);
   }
   builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) => Promise.resolve(result).then(resolve, reject);
@@ -52,7 +52,7 @@ describe("GET /api/jobs", () => {
   });
 
   it("rejects invalid pagination and filter parameters", async () => {
-    const response = await GET(new Request("http://localhost/api/jobs?page=0&workMode=spaceship"));
+    const response = await GET(new Request("http://localhost/api/jobs?page=0&workMode=spaceship&publishedWithin=90d"));
     expect(response.status).toBe(400);
     expect(client).not.toHaveBeenCalled();
   });
@@ -73,12 +73,28 @@ describe("GET /api/jobs", () => {
     expect(from).toHaveBeenNthCalledWith(2, "jobs");
     expect(userStates.eq).toHaveBeenCalledWith("user_id", "user_alice");
     expect(jobs.eq).toHaveBeenCalledWith("job_sources.availability_status", "active");
+    expect(jobs.gte).toHaveBeenCalledWith("job_sources.published_at", expect.any(String));
+    expect(jobs.not).toHaveBeenCalledWith("job_sources.published_at", "is", null);
+    expect(jobs.order).toHaveBeenCalledWith("updated_at", { ascending: false });
+    expect(jobs.order).toHaveBeenCalledWith("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false });
     expect(jobs.or).toHaveBeenCalled();
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
     expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
     expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
-    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full-time%");
+    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
     expect(jobs.range).toHaveBeenCalledWith(10, 19);
+  });
+
+  it("treats search text as plain text rather than PostgREST filter syntax", async () => {
+    const userStates = query({ data: [], error: null });
+    const jobs = query({ data: [], error: null, count: 0 });
+    client.mockResolvedValue({ from: vi.fn().mockReturnValueOnce(userStates).mockReturnValueOnce(jobs) } as never);
+
+    const response = await GET(new Request("http://localhost/api/jobs?query=engineer%29%2Cid.eq.x&location=Cape%20Town%25"));
+
+    expect(response.status).toBe(200);
+    expect(jobs.or).toHaveBeenCalledWith("title.ilike.%engineer id eq x%,employer_name.ilike.%engineer id eq x%");
+    expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
   });
 
   it("returns an empty result for a saved/dismissed state with no matching user states", async () => {

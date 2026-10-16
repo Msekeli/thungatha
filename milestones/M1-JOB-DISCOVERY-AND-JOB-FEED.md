@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 database-side scope verified; C05 under investigation; C06 next active checkpoint  
+**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 locally verified; C07 UI in review  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -267,3 +267,108 @@ This is evidence for the tested RPC/database path, not a claim that every live p
 C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
 
 Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.
+
+
+---
+
+## M1-C07 — Job Discovery UI (2026-10-16)
+
+- **Status:** In review — implementation committed to `dev`; local test/build verification and user review remain outstanding. Remote tree inspection confirms the intended six-file diff; `main` remains unchanged.
+- **Outcome / scope:** Replace the `/jobs` placeholder with a responsive, persisted-data feed, supported query filters, pagination, selected job details, and honest discovery-source/application-destination links.
+- **Reused implementation:** C06 `GET /api/jobs` and `GET /api/jobs/[id]`; existing shared `Button` component and design tokens. Feed contract: `{ jobs, page, pageSize, total, totalPages }`; details contract: `{ job }`. Filter parameters are `query`, `location`, `countryCode`, `workMode`, `employmentType`, `page`, `pageSize`, and `state`.
+- **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`.
+- **Verification:** Remote GitHub tree/compare checks confirmed the intended files and current `dev` head. These checks do not execute the application. The component test file has been added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and Playwright/browser checks were not run in the connected remote-edit workflow.
+- **Limitations:** `Job Discovery · Dark.png` is referenced by this specification but is absent from the live `dev` tree. C07 does not add manual job creation, matching scores, M5 application status, or save/dismiss mutations. Missing source/destination URLs are labelled unavailable.
+- **Filter follow-up (2026-10-16):** Investigated the reported filter failure after live jobs loaded. The API used `.or()` for keyword matching and could call `.or()` again for employment-type aliases; PostgREST query builders can overwrite the same `or` parameter, causing combined filters to interfere. Employment-type filtering now normalizes human-readable separators such as `Full-time` to provider values such as `full_time`, without a second `.or()` call. The API test assertion was updated. This is a targeted fix, not yet locally executed or verified against the hosted database.
+- **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
+- **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
+
+
+## C07 implementation follow-up — filter audit (2026-10-16)
+
+**Status: In review — targeted code changes committed; local and hosted verification still required.**
+
+### Audit findings
+
+- The UI submits the documented filter parameters and resets pagination when filters are applied or cleared.
+- The feed endpoint validates supported parameters and applies filters before ordering and pagination.
+- Keyword matching uses a PostgREST OR expression across title and employer. User-provided punctuation was not fully constrained for this expression, so a query could be interpreted as filter grammar rather than plain text.
+- Location filtering similarly used a limited punctuation replacement. Employment type is normalized from human-readable separators to provider-style underscores; the underscore in SQL ILIKE is a single-character wildcard, so it can match common hyphen/underscore variants, but actual stored values still need to be confirmed.
+- Existing route tests use a mocked fluent query builder. They verify query-method calls, not the behaviour of a real PostgREST/Supabase query. The UI tests mock the API and therefore do not prove filters produce the correct records.
+- Feed loading/error/empty/retry, pagination, details, source-vs-application links, and mobile detail state have basic component coverage. Browser/responsive/keyboard checks and a real authenticated Supabase test remain outstanding.
+- The local production build failure reported by the user points at src/styles/components.css, but the committed dev copy inspected during this audit has balanced opening/closing braces. The precise local PostCSS failure remains unresolved; shared CSS was not changed.
+
+### Changes made on dev
+
+- Added plain-text sanitization for keyword, location, and employment-type filter values before constructing Supabase filters. Unicode letters and numbers are preserved, while PostgREST syntax punctuation is removed.
+- Added an API route test for punctuation in keyword and location values.
+- Fixed the Button mock in the component tests so the block styling prop is not forwarded to a native HTML button, addressing the React warning in the test output.
+- No database permissions, RLS policies, authentication checks, shared CSS, or main branch changes were made.
+
+### Next verification steps
+
+1. Pull origin/dev without discarding local changes; inspect the diff.
+2. Run the targeted API and component tests, then the complete test suite, type-check, lint, and production build.
+3. Verify combined filters and result counts against a controlled set of actual Supabase records, including full-time aliases, zero matches, and page boundaries.
+4. Run browser checks for filter application/clear, selection changes, detail retries, keyboard navigation, and narrow viewport behaviour.
+5. Resolve the local CSS build error by comparing the local file with the committed file and locating the exact PostCSS parse failure; do not edit shared styles without a proven defect.
+6. Keep C07 In review until the evidence is recorded and user review is complete.
+
+
+### Follow-up hardening
+
+- The feed client now validates page, page size, total, total-pages consistency, and minimum job identity fields before rendering an API response. Malformed responses produce the existing retryable service error rather than being trusted as valid feed data.
+- Added component coverage for inconsistent feed pagination metadata.
+- The API sanitization test and component test mock fix are committed. These changes have not yet been run in a local checkout during this session. GitHub returned no status checks for the latest commit, so there is no CI result to treat as a pass.
+
+
+### C07 external destination hardening — 2026-10-16
+
+- Job Discovery now accepts external source/application destinations only when the URL parses as HTTP or HTTPS. Invalid or non-web schemes are shown as unavailable and cannot be opened through the detail action.
+- Added a component regression test for `javascript:` and `data:` destinations.
+- This is client-side presentation hardening, not a replacement for validating URLs at ingestion and does not change RLS or API access controls.
+- Verification remains pending: the remote GitHub editing tools do not execute the repository's test/build workflow, and no workflow run was reported for the follow-up commit. Keep C07 in review until the local quality suite and browser acceptance checks pass.
+
+
+### C07 publication recency filter — 2026-10-16
+
+- Added a required publication-age filter to the job feed: last 24 hours, 7 days, 14 days, or 30 days (default and maximum window).
+- The API filters on `job_sources.published_at` and excludes listings with missing publication dates, so a refreshed old listing cannot qualify as recent merely because its database record was updated. The parent feed is deterministically ordered by `jobs.updated_at`; the embedded source records are ordered by publication date. Fully ordering parent jobs by a related source publication timestamp may require a database view/RPC or denormalized sort field, and remains a verification/design limitation.
+- Added UI and API regression assertions for the selected date range and publication-date query.
+- Save/dismiss/undo remain out of C07 and are not being added to this screen; those actions stay in C08.
+- **Verification remains pending.** The changes were committed to `dev` through the remote repository workflow; automated tests, type-check, lint, build, and browser checks have not been run in this session. Confirm the Supabase relation filter/order behaviour with the repository's installed Supabase client and a controlled authenticated data set before accepting C07.
+
+
+### C07 final implementation review — 2026-10-16
+
+- Added a validated `publishedWithin` API parameter (`24h`, `7d`, `14d`, `30d`; default `30d`) and a matching UI selector. The 30-day default is also used when clearing filters.
+- The query excludes null publication timestamps and applies the date cutoff before pagination. The route test now rejects unsupported date-window values and asserts the date cutoff plus deterministic ordering calls; the UI test asserts the selected date window is submitted and reset correctly.
+- Added a deterministic parent ordering by `jobs.updated_at`; related source rows are ordered by `published_at`. This does **not** prove parent rows are globally sorted by related publication timestamp. If that exact ordering is required, use a view/RPC or denormalized publication-sort field after checking the database relationship and schema.
+- Clarified the employment type placeholder so it no longer implies comma-separated multi-value search.
+- C08 save/dismiss/undo is intentionally excluded.
+- **C07 remains In review.** Remote file edits are not a substitute for running the repository. No tests, type-check, lint, production build, or browser tests were run in this session. Before user testing, run the full quality suite locally and verify the nested relation filter against an authenticated Supabase dataset; investigate any remaining local CSS parse error without changing shared CSS speculatively.
+
+
+### C07 local verification update — 2026-10-16
+
+**Status: In review — local quality checks passed; acceptance gates remain open.**
+
+The user ran the quality checks locally on `dev` after the test assertion fix:
+
+- `npx tsc --noEmit`: passed with no TypeScript errors.
+- `npm run lint`: 0 errors and 3 warnings for unused destructured props (`_variant`, `_size`, `_block`) in `src/components/jobs/jobs-discovery.test.tsx`.
+- `npm test`: passed — 14 test files, 94 tests.
+- `npm run build`: passed — production build completed.
+- `npm run test:e2e`: passed — 2 Playwright tests.
+
+The earlier unit-test failure was caused by `getByText("Greenhouse")` matching both the card source label and the details-panel label. The assertion was changed to allow multiple matches. This was a test-only correction; no application behaviour changed. Fix commit on `dev`: `6fef2c038bd90537b955286ba20ffed249bee843`.
+
+**Verification limits and remaining actions**
+
+1. Confirm that GitHub Actions for the fix commit is green; the prior workflow run failed on the now-corrected assertion, and a green run for the fix commit has not yet been confirmed.
+2. Complete the outstanding browser/responsive and keyboard/accessibility checks.
+3. Verify combined filters, publication-age filtering, result counts, and pagination against a controlled authenticated Supabase dataset. Mocked unit tests alone do not prove real PostgREST behaviour.
+4. Complete C06 authenticated feed/detail smoke tests and cross-user/RLS isolation checks.
+5. Record user review and explicit acceptance before changing C07 to **Accepted**.
+
+C07 remains **In review**. These local results are meaningful quality evidence, but they do not complete the cloud, browser, security, or user-acceptance gates. C08 save/dismiss/undo remains separate and out of C07 scope.

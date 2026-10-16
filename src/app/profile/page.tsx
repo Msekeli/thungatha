@@ -1,7 +1,10 @@
+import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { ProfileForm } from "@/components/profile/profile-form";
 
 export default function ProfilePage() {
   return (
+    <WorkspaceShell active="/profile" configured={hasClerkConfiguration()}>
     <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-800">
         Your information
@@ -17,5 +20,6 @@ export default function ProfilePage() {
         <ProfileForm />
       </section>
     </main>
+    </WorkspaceShell>
   );
 }

@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation has passed local type-checking, lint, unit tests and production build, but authenticated cloud smoke testing and cross-user/RLS isolation remain unverified. C07 is the Discovery UI checkpoint. C05 remains open and must be resolved before M1 acceptance.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation passed reported local type-checking, lint, unit tests and production build, but authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI is implemented on dev and remains in review: on 2026-10-16, local verification passed `npx tsc --noEmit`, `npm run lint` (0 errors; 3 unused-variable warnings in the test mock), `npm test` (14 files, 94 tests passed), `npm run build`, and `npm run test:e2e` (2 tests passed). The GitHub Actions run on the previous commit failed on the now-fixed duplicate `Greenhouse` text assertion; a run for the latest fix is not yet confirmed green. C07 still needs the remaining browser/responsive and authenticated Supabase verification plus explicit user acceptance. C05 remains open and must be resolved before M1 acceptance.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -310,6 +310,22 @@ Thungatha is ready for final release only when:
 
 This document governs the overall roadmap. It does not replace the detailed milestone specifications.
 
+## M1-C07 — Job Discovery local verification update (2026-10-16)
+
+**Status: In review — local quality checks passed; checkpoint not yet accepted.**
+
+The user ran the local quality suite on branch `dev` after pulling the latest changes:
+
+- `npx tsc --noEmit`: passed (no TypeScript errors).
+- `npm run lint`: passed with 0 errors and 3 warnings for unused destructured props in the component-test button mock.
+- `npm test`: passed — 14 test files and 94 tests.
+- `npm run build`: passed — optimized Next.js production build completed.
+- `npm run test:e2e`: passed — 2 Playwright tests.
+
+The first test run before the latest assertion correction had one failure because the word “Greenhouse” appears in both the job card and selected details panel. The test now allows multiple matching source labels; no application code was changed for this correction. The latest fix was committed to `dev` as `6fef2c038bd90537b955286ba20ffed249bee843`.
+
+**Remaining evidence before C07 acceptance:** confirm GitHub Actions is green for the latest commit; complete the required browser/responsive and keyboard checks; verify combined filters, counts and publication-date behaviour against a controlled authenticated Supabase dataset; record explicit user review. C06's authenticated cloud checks and cross-user/RLS isolation also remain outstanding. Do not mark C07 or M1 Accepted based only on the local suite.
+
 ## M1-C04 — Job ingestion reliability checkpoint (2026-10-16)
 
 **Status: database-side checkpoint verified.** The production Supabase migration `20261016000100_job_ingestion_reliability.sql` was applied successfully. Local and remote migration history matched, and `supabase db lint --linked --schema public` reported no schema errors.
@@ -344,3 +360,18 @@ The implementation covers the persisted jobs feed, query filtering and paginatio
 **Outstanding acceptance gates:** an authenticated cloud smoke test of feed and detail reads, plus cross-user/RLS isolation verification for user-specific state. These have not been performed, so do not describe C06 as fully accepted or claim cloud security verification. Do not write to production user state merely to complete this checkpoint; use an approved isolated test-data strategy for state mutations.
 
 No provider ingestion was re-run and no production database changes were made during this C06 code work. Do not repeat the successful local checks unless a concrete code change or failure warrants it.
+
+
+## M1-C07 — Job Discovery UI (2026-10-16)
+
+**Status:** In review — UI implementation committed to `dev`; local verification and user review pending. Remote commit chain on `dev` contains 11 checkpoint edits after the C06 baseline; `main` is unchanged.
+
+**Implemented:** The `/jobs` placeholder now uses C06's persisted feed/detail API. The UI provides keyword/employer, location, country, work-mode and employment-type filters; paginated results; selected-job details; loading, empty, error, retry and missing-detail states; keyboard-operable selectable cards; responsive small-screen detail navigation; and distinct original discovery-source and application-destination links.
+
+**Reused:** `GET /api/jobs`, `GET /api/jobs/[id]`, shared `Button`, and the existing CSS design tokens. No new dependencies, endpoint, or database schema were added. No mock job data, matching percentages, M5 application state, manual job entry, or save/dismiss state writes were added.
+
+**Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`, `milestones/M1-JOB-DISCOVERY-AND-JOB-FEED.md`, `IMPLEMENTATION-PLAN.md`.
+
+**Verification:** Remote file/diff inspection confirms the six intended files are present on `dev`. This is repository inspection only, not a code execution check. A component test suite was added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and browser tests were not run through the remote-edit workflow. C06 authenticated Supabase smoke and cross-user isolation checks remain outstanding.
+
+**Next action:** Pull latest `origin/dev` locally without discarding work, inspect the diff, run all quality gates and responsive/keyboard browser checks, fix any observed defects, and return for user review. Do not merge to `main` or mark C07 Accepted without verification and explicit acceptance.
