@@ -1,9 +1,10 @@
+import { hasClerkConfiguration } from "@/lib/auth/identity";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import Link from "next/link";
 
 export default function Page() {
   return (
-    <WorkspaceShell active="/account">
+    <WorkspaceShell active="/account" configured={hasClerkConfiguration()}>
     <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-800">
         Thungatha
