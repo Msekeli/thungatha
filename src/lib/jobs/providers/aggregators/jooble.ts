@@ -7,7 +7,7 @@ import {
 } from "../../schema";
 import type { JobProvider } from "../../provider";
 
-const JOOBLE_API_BASE = "https://za.jooble.org/api";
+const JOOBLE_API_BASE = (process.env.JOOBLE_API_BASE_URL?.trim() || "https://jooble.org/api").replace(/\/$/, "");
 
 type JoobleJob = {
   title?: string | null;
@@ -44,7 +44,7 @@ export class JoobleProvider implements JobProvider {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          keywords: query.query ?? "",
+          keywords: query.query ?? "software developer",
           location: query.location ?? "",
           page: query.page,
         }),
