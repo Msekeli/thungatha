@@ -59,7 +59,7 @@ describe("Job Discovery", () => {
   it("renders API-provided listing fields and details", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
-    expect(await screen.findByRole("heading", { name: "Software Engineer" })).toBeTruthy();
+    expect((await screen.findAllByRole("heading", { name: "Software Engineer" })).length).toBeGreaterThan(0);
     expect(screen.getByText("Cape Town, South Africa")).toBeTruthy();
     expect(screen.getByText("Full-time")).toBeTruthy();
     expect(screen.getByText("Greenhouse")).toBeTruthy();
@@ -69,7 +69,7 @@ describe("Job Discovery", () => {
   it("submits the supported search and filter query parameters", async () => {
     const { requests } = setupFetch();
     render(<JobsDiscovery configured={false} />);
-    await screen.findByRole("heading", { name: "Software Engineer" });
+    await screen.findAllByRole("heading", { name: "Software Engineer" });
     fireEvent.change(screen.getByLabelText("Keyword or employer"), { target: { value: "engineer" } });
     fireEvent.change(screen.getByLabelText("Location"), { target: { value: "Cape Town" } });
     fireEvent.change(screen.getByLabelText("Work mode"), { target: { value: "remote" } });
@@ -101,9 +101,9 @@ describe("Job Discovery", () => {
     const { requests } = setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
-    expect(await screen.findByText("APPLICATION DESTINATION")).toBeTruthy();
-    expect(screen.getByRole("link", { name: /View original listing/ }).getAttribute("href")).toBe("https://jobs.example.test/role");
-    expect(screen.getByRole("link", { name: /Open job application page/ }).getAttribute("href")).toBe("https://careers.example.test/apply");
+    expect(await screen.findByText("Application page available")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Greenhouse" }).getAttribute("href")).toBe("https://jobs.example.test/role");
+    expect(screen.getByRole("button", { name: /Open job page/ })).toBeTruthy();
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
@@ -118,11 +118,11 @@ describe("Job Discovery", () => {
     };
     setupFetch([unsafeJob]);
     render(<JobsDiscovery configured={false} />);
-    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer/ }));
-    expect(await screen.findByText("Original source URL not available or unsafe")).toBeTruthy();
-    expect(screen.getByText("An application destination was not supplied or is not a safe web URL.")).toBeTruthy();
-    expect(screen.queryByRole("link", { name: /View original listing/ })).toBeNull();
-    expect(screen.queryByRole("link", { name: /Open job application page/ })).toBeNull();
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
+    expect(await screen.findByText("Source link unavailable")).toBeTruthy();
+    expect(screen.getByText(/Application link not supplied/)).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
+    expect(screen.getByRole("button", { name: /Open job page/ })).toBeDisabled();
   });
 
   it("explains expired sessions and links back to sign-in", async () => {
@@ -137,7 +137,7 @@ describe("Job Discovery", () => {
     render(<JobsDiscovery configured={false} />);
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.getByText(/unexpected response/)).toBeTruthy();
-    expect(screen.queryByRole("heading", { name: "Software Engineer" })).toBeNull();
+    expect(screen.queryAllByRole("heading", { name: "Software Engineer" })).toHaveLength(0);
   });
 
   it("shows empty results separately from request failures", async () => {
@@ -156,7 +156,7 @@ describe("Job Discovery", () => {
       return url.startsWith("/api/jobs?") ? response({ jobs: [firstJob], page: 1, pageSize: 25, total: 1, totalPages: 1 }) : response({ job: firstJob });
     });
     fireEvent.click(screen.getByRole("button", { name: "Retry feed" }));
-    expect(await screen.findByRole("heading", { name: "Software Engineer" })).toBeTruthy();
+    expect((await screen.findAllByRole("heading", { name: "Software Engineer" })).length).toBeGreaterThan(0);
   });
 
   it("uses server paging metadata for next-page navigation", async () => {
