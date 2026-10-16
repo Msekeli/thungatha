@@ -285,7 +285,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  if p_status not in ('succeeded','partial','failed') then
+  if p_status is null or p_status not in ('succeeded','partial','failed') then
     raise exception 'Invalid terminal status';
   end if;
 
