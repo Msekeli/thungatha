@@ -222,3 +222,20 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - No manual job entry is present in Discovery.
 - No critical security, data-loss or core-journey defect remains.
 - Evidence is recorded and the user explicitly accepts M1.
+
+
+---
+
+## M1-C04 completion record — 2026-10-16
+
+**Outcome: PASS for the tested database-side ingestion path.**
+
+- Applied production migration: `20261016000100_job_ingestion_reliability.sql`.
+- Local and remote migration histories matched.
+- Supabase schema lint completed with no schema errors.
+- Smoke-test result: `PASS`; run status `succeeded`; received 1; inserted 1; updated 0; skipped 0; job count 1; source count 1.
+- The test transaction was rolled back, and follow-up counts for the smoke-test provider were both 0.
+
+This is evidence for the tested RPC/database path, not a claim that every live provider or the complete scheduled application pipeline has been end-to-end verified. Treat C04 as complete for its scoped database reliability work and avoid repeating checks absent a concrete failure.
+
+**Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.
