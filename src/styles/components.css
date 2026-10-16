@@ -575,4 +575,8 @@
     .th-jobs-spinner,.th-jobs-skeleton i { animation:none; }
     .th-jobs-card { transition:none; }
   }
+
+  .th-jobs-auth-notice { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; padding:12px 14px; border:1px solid var(--th-line); border-radius:8px; background:var(--th-panel); color:var(--th-fg); font-size:12px; }
+  .th-jobs-auth-notice a { color:var(--th-accent-text); text-decoration:underline; text-underline-offset:3px; }
+
 }
