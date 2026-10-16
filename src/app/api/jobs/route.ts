@@ -15,6 +15,8 @@ const querySchema = z.object({
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
 });
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;
