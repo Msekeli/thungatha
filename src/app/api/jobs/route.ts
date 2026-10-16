@@ -15,6 +15,7 @@ const querySchema = z.object({
   countryCode: z.string().regex(/^[A-Z]{2}$/).optional(),
   workMode: z.enum(["onsite", "hybrid", "remote", "unknown"]).optional(),
   employmentType: z.string().trim().max(100).optional(),
+  publishedWithin: z.enum(["24h", "7d", "14d", "30d"]).default("30d"),
   page: z.coerce.number().int().min(1).max(10000).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
 
   const params = new URL(request.url).searchParams;
   const raw: Record<string, string> = {};
-  for (const key of ["query", "location", "countryCode", "workMode", "employmentType", "page", "pageSize", "state"]) {
+  for (const key of ["query", "location", "countryCode", "workMode", "employmentType", "publishedWithin", "page", "pageSize", "state"]) {
     const value = params.get(key);
     if (value !== null) raw[key] = value;
   }
@@ -63,6 +64,9 @@ export async function GET(request: Request) {
     }
     if (input.countryCode) query = query.eq("country_code", input.countryCode);
     if (input.workMode) query = query.eq("work_mode", input.workMode);
+    const ageInHours = { "24h": 24, "7d": 168, "14d": 336, "30d": 720 }[input.publishedWithin];
+    const publishedAfter = new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString();
+    query = query.gte("job_sources.published_at", publishedAfter).not("job_sources.published_at", "is", null);
     if (input.employmentType) {
       // Provider records commonly use values such as "full_time", while the UI
       // naturally uses "Full-time". Normalize separators before querying.
@@ -78,7 +82,7 @@ export async function GET(request: Request) {
       if (dismissed.length) query = query.not("id", "in", `(${dismissed.join(",")})`);
     }
     const from = (input.page - 1) * input.pageSize;
-    const { data, error, count } = await query.order("updated_at", { ascending: false }).range(from, from + input.pageSize - 1);
+    const { data, error, count } = await query.order("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false }).range(from, from + input.pageSize - 1);
     if (error) throw error;
     const jobs = (data ?? []).map((job) => ({ ...job, state: stateByJob.get(job.id) ?? null }));
     const total = count ?? 0;
