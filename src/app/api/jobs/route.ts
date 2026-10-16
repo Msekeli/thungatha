@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
@@ -15,9 +15,8 @@ const querySchema = z.object({
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
 });
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: Request) {
+  await connection();
   if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;
   try {
