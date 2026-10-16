@@ -110,4 +110,4 @@ revoke all on function public.persist_job_ingestion_batch(uuid,jsonb) from publi
 revoke all on function public.finish_job_ingestion_run(uuid,text,integer,text,integer) from public,anon,authenticated;
 grant execute on function public.start_job_ingestion_run(text,text) to service_role;
 grant execute on function public.persist_job_ingestion_batch(uuid,jsonb) to service_role;
-grant execute on function public.finish_job_ingestion_run(uuid,text,integer,text) to service_role;
+grant execute on function public.finish_job_ingestion_run(uuid,text,integer,text,integer) to service_role;
