@@ -313,3 +313,10 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 4. Run browser checks for filter application/clear, selection changes, detail retries, keyboard navigation, and narrow viewport behaviour.
 5. Resolve the local CSS build error by comparing the local file with the committed file and locating the exact PostCSS parse failure; do not edit shared styles without a proven defect.
 6. Keep C07 In review until the evidence is recorded and user review is complete.
+
+
+### Follow-up hardening
+
+- The feed client now validates page, page size, total, total-pages consistency, and minimum job identity fields before rendering an API response. Malformed responses produce the existing retryable service error rather than being trusted as valid feed data.
+- Added component coverage for inconsistent feed pagination metadata.
+- The API sanitization test and component test mock fix are committed. These changes have not yet been run in a local checkout during this session. GitHub returned no status checks for the latest commit, so there is no CI result to treat as a pass.
