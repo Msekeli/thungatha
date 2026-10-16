@@ -320,3 +320,11 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - The feed client now validates page, page size, total, total-pages consistency, and minimum job identity fields before rendering an API response. Malformed responses produce the existing retryable service error rather than being trusted as valid feed data.
 - Added component coverage for inconsistent feed pagination metadata.
 - The API sanitization test and component test mock fix are committed. These changes have not yet been run in a local checkout during this session. GitHub returned no status checks for the latest commit, so there is no CI result to treat as a pass.
+
+
+### C07 external destination hardening — 2026-10-16
+
+- Job Discovery now accepts external source/application destinations only when the URL parses as HTTP or HTTPS. Invalid or non-web schemes are shown as unavailable and cannot be opened through the detail action.
+- Added a component regression test for `javascript:` and `data:` destinations.
+- This is client-side presentation hardening, not a replacement for validating URLs at ingestion and does not change RLS or API access controls.
+- Verification remains pending: the remote GitHub editing tools do not execute the repository's test/build workflow, and no workflow run was reported for the follow-up commit. Keep C07 in review until the local quality suite and browser acceptance checks pass.
