@@ -106,6 +106,30 @@ describe("Job Discovery", () => {
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
+  it("does not render unsafe non-web source or application URLs", async () => {
+    const unsafeJob = {
+      ...firstJob,
+      job_sources: [{
+        ...firstJob.job_sources[0],
+        source_url: "javascript:alert(1)",
+        application_url: "data:text/html,unsafe",
+      }],
+    };
+    render(<JobsDiscovery />);
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      return url.startsWith("/api/jobs?")
+        ? response({ jobs: [unsafeJob], page: 1, pageSize: 25, total: 1, totalPages: 1 })
+        : response({ job: unsafeJob });
+    }));
+    // The initial effect may have started before the fetch stub is replaced; reload by retrying.
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer/ }));
+    expect(await screen.findByText("Original source URL not available or unsafe")).toBeTruthy();
+    expect(screen.getByText("An application destination was not supplied or is not a safe web URL.")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /View original listing/ })).toBeNull();
+    expect(screen.queryByRole("link", { name: /Open job application page/ })).toBeNull();
+  });
+
   it("explains expired sessions and links back to sign-in", async () => {
     setupFetch([firstJob], { feedStatus: 401 });
     render(<JobsDiscovery />);
