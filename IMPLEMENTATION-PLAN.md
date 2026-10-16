@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. Its repository-audit checkpoint, C01, is in review. Work that depends on the audit's approval must wait until the relevant findings and decisions are approved.
+M1 is the current implementation milestone. C01 remains in review. C04 ingestion-reliability code and migration have been added on dev and are awaiting local verification; do not mark C04 accepted until tests and migration checks have actually passed.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
