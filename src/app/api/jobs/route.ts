@@ -72,6 +72,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ jobs, page: input.page, pageSize: input.pageSize, total, totalPages: Math.ceil(total / input.pageSize) });
   } catch (error) {
     if (error instanceof SupabaseConfigurationError) return apiError("Job storage is not configured", 503);
+    console.error("[jobs feed API] Database query failed:", {
+      errorName: error instanceof Error ? error.name : "unknown",
+      message: error instanceof Error ? error.message : String(error),
+      details: typeof error === "object" && error !== null && "details" in error ? error.details : undefined,
+      hint: typeof error === "object" && error !== null && "hint" in error ? error.hint : undefined,
+      code: typeof error === "object" && error !== null && "code" in error ? error.code : undefined,
+    });
     return apiFailure(error);
   }
 }
