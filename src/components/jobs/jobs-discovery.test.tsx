@@ -115,14 +115,8 @@ describe("Job Discovery", () => {
         application_url: "data:text/html,unsafe",
       }],
     };
+    setupFetch([unsafeJob]);
     render(<JobsDiscovery />);
-    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-      return url.startsWith("/api/jobs?")
-        ? response({ jobs: [unsafeJob], page: 1, pageSize: 25, total: 1, totalPages: 1 })
-        : response({ job: unsafeJob });
-    }));
-    // The initial effect may have started before the fetch stub is replaced; reload by retrying.
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer/ }));
     expect(await screen.findByText("Original source URL not available or unsafe")).toBeTruthy();
     expect(screen.getByText("An application destination was not supplied or is not a safe web URL.")).toBeTruthy();
