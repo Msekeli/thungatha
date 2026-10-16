@@ -210,8 +210,18 @@ begin
            country_code = coalesce(country_value, j.country_code),
            work_mode = case when item->>'workMode' in ('onsite','hybrid','remote','unknown') then item->>'workMode' else j.work_mode end,
            employment_type = coalesce(employment_value, j.employment_type),
-           salary_min = coalesce(salary_min_value, j.salary_min),
-           salary_max = coalesce(salary_max_value, j.salary_max),
+           salary_min = case
+             when salary_min_value is null then j.salary_min
+             when salary_max_value is not null then salary_min_value
+             when j.salary_max is null or salary_min_value <= j.salary_max then salary_min_value
+             else j.salary_min
+           end,
+           salary_max = case
+             when salary_max_value is null then j.salary_max
+             when salary_min_value is not null then salary_max_value
+             when j.salary_min is null or salary_max_value >= j.salary_min then salary_max_value
+             else j.salary_max
+           end,
            salary_currency = coalesce(currency_value, j.salary_currency),
            updated_at = now_at
      where j.id = job_id;
