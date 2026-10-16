@@ -221,6 +221,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       </header>
 
       <div className="th-jobs-workspace">
+        <div className="th-jobs-feed-column">
         <aside className="th-jobs-search-panel" aria-label="Search and filter jobs">
           <form onSubmit={submitFilters}>
             <div className="th-jobs-panel-title">
@@ -305,6 +306,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
             </>
           )}
         </section>
+        </div>
 
         <section className={`th-jobs-detail-panel ${mobileDetail ? "th-jobs-mobile-visible" : ""}`} aria-label="Selected job details" aria-busy={detailLoading}>
           <div className="th-jobs-detail-head"><div><p className="th-jobs-label">ROLE OVERVIEW</p><h2>Job details</h2></div><button className="th-jobs-detail-close" type="button" onClick={() => setMobileDetail(false)} aria-label="Back to results">← Back</button></div>
