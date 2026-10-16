@@ -200,7 +200,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
 
   const changeDraft = (key: keyof Filters, value: string) => setDraft((current) => ({ ...current, [key]: value }));
   const resetDisabled = JSON.stringify(draft) === JSON.stringify(EMPTY_FILTERS) && JSON.stringify(filters) === JSON.stringify(EMPTY_FILTERS);
-  const selectedDetail = detail?.id === selectedId ? detail : null;
+  const selectedDetail = detail?.id === selectedId ? detail : feed?.jobs.find((job) => job.id === selectedId) ?? null;
   const selectedSource = sourceFor(selectedDetail);
   const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
@@ -316,9 +316,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           <div className="th-jobs-detail-head"><div><p className="th-jobs-label">ROLE OVERVIEW</p><h2>Job details</h2></div><button className="th-jobs-detail-close" type="button" onClick={() => setMobileDetail(false)} aria-label="Back to results">← Back</button></div>
           {!selectedId ? (
             <div className="th-jobs-detail-placeholder"><span aria-hidden="true">↖</span><strong>Select a job to inspect it</strong><p>Choose a listing from the feed to see full details and source links.</p></div>
-          ) : detailLoading ? (
+          ) : detailLoading && !selectedDetail ? (
             <div className="th-jobs-detail-placeholder" role="status"><span className="th-jobs-spinner" aria-hidden="true" /><strong>Loading job details</strong><p>Fetching the latest listing from the job service…</p></div>
-          ) : detailError ? (
+          ) : detailError && !selectedDetail ? (
             <div className="th-jobs-detail-placeholder" role="alert"><span className="th-jobs-state-symbol" aria-hidden="true">!</span><strong>Details are unavailable</strong><p>{detailError}</p><Button variant="secondary" onClick={() => setRetryDetail((value) => value + 1)}>Retry details</Button></div>
           ) : selectedDetail ? (
             <div className="th-jobs-detail-content" key={selectedDetail.id}>
