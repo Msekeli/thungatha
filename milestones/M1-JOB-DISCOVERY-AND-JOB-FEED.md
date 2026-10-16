@@ -170,7 +170,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - External navigation alone never creates or confirms an application.
 
 
-**Implementation status: In progress (backend/API only).** Initial implementation and follow-up test/security changes are committed to `dev`; C06 is not accepted until the quality checks and authenticated behaviour are verified.
+**Implementation status: In progress (backend/API only).** Feed, detail, and user-state API handlers are implemented on `dev`. The authenticated routes call Next.js `connection()` so Clerk/request-header access occurs at request time under Cache Components. Route unit tests mock `connection()` because they invoke handlers outside Next's request context. C06 is not accepted until authenticated cloud behaviour and the remaining data-access checks are verified.
 
 Initial API contract:
 - `GET /api/jobs`: persisted catalogue feed with validated query, location, country, work-mode and employment-type filters; page/pageSize pagination; active source records; optional `state=all|saved|dismissed`. The default feed excludes dismissed jobs.
@@ -181,9 +181,10 @@ Initial API contract:
 Security and lifecycle boundaries:
 - Handlers require configured Clerk authentication and use the authenticated Supabase client. User-state queries/writes are scoped by the server-derived user ID and subject to database RLS.
 - The state API rejects `applied`; opening an external application URL is not an application submission. Creating an M5 application record is not included because the M5 application-tracking contract is not yet available.
-- Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion. These tests have been authored but **have not yet been executed in this session**.
-- Added a GitHub Actions quality workflow on `dev` to run type-check, lint, unit tests and production build. Workflow results must be inspected before claiming verification.
-- Still required before acceptance: execute the full checks; verify the authenticated API against the stored records; confirm RLS/cross-user isolation and pagination/filter behaviour against Supabase; resolve any failures; record actual evidence and user review.
+- Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion.
+- **Quality evidence:** GitHub Actions run `38900111432` passed type-check, lint, unit tests, and production build for PR #5. Local verification previously reported 82 tests passing, with type-check, lint, and build completing; the prerender warning was the reason for the `connection()` follow-up.
+- PR #5 was squash-merged into `dev` as `bb48c42fafd09f09fad0b3850db978c8efc469c3`. `main` was not changed.
+- Still required before acceptance: verify authenticated feed/detail behaviour against stored Supabase records, confirm RLS/cross-user isolation and pagination/filter behaviour against Supabase, and record user review. Do not perform save/dismiss/delete against live user data without an isolated test strategy.
 
 ### M1-C07 — Job Discovery feed, search, filters and details
 
