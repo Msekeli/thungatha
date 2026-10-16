@@ -81,6 +81,18 @@ describe("GET /api/jobs", () => {
     expect(jobs.range).toHaveBeenCalledWith(10, 19);
   });
 
+  it("treats search text as plain text rather than PostgREST filter syntax", async () => {
+    const userStates = query({ data: [], error: null });
+    const jobs = query({ data: [], error: null, count: 0 });
+    client.mockResolvedValue({ from: vi.fn().mockReturnValueOnce(userStates).mockReturnValueOnce(jobs) } as never);
+
+    const response = await GET(new Request("http://localhost/api/jobs?query=engineer%29%2Cid.eq.x&location=Cape%20Town%25"));
+
+    expect(response.status).toBe(200);
+    expect(jobs.or).toHaveBeenCalledWith("title.ilike.%engineer id eq x%,employer_name.ilike.%engineer id eq x%");
+    expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
+  });
+
   it("returns an empty result for a saved/dismissed state with no matching user states", async () => {
     const userStates = query({ data: [], error: null });
     const from = vi.fn().mockReturnValue(userStates);
