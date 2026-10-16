@@ -35,10 +35,10 @@ type Job = {
 };
 
 type Feed = { jobs: Job[]; page: number; pageSize: number; total: number; totalPages: number };
-type Filters = { query: string; location: string; countryCode: string; workMode: string; employmentType: string; publishedWithin: string };
+type Filters = { query: string; location: string; workMode: string; employmentType: string; publishedWithin: string };
 type ApiError = { error?: string; requestId?: string };
 
-const EMPTY_FILTERS: Filters = { query: "", location: "", countryCode: "", workMode: "", employmentType: "", publishedWithin: "30d" };
+const EMPTY_FILTERS: Filters = { query: "", location: "", workMode: "", employmentType: "", publishedWithin: "30d" };
 const PAGE_SIZE = 25;
 
 function sourceFor(job: Job | null): JobSource | null {
@@ -243,12 +243,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
               <input className="th-input" name="location" maxLength={200} placeholder="City, province or country" value={draft.location} onChange={(event) => changeDraft("location", event.target.value)} />
             </label>
             <label className="th-jobs-field">
-              <span>Country</span>
-              <select className="th-input" name="countryCode" value={draft.countryCode} onChange={(event) => changeDraft("countryCode", event.target.value)}>
-                <option value="">All countries</option><option value="ZA">South Africa</option>
-              </select>
-            </label>
-            <label className="th-jobs-field">
               <span>Work mode</span>
               <select className="th-input" name="workMode" value={draft.workMode} onChange={(event) => changeDraft("workMode", event.target.value)}>
                 <option value="">Any work mode</option><option value="onsite">On-site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option><option value="unknown">Not specified</option>
@@ -323,7 +317,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           ) : selectedDetail ? (
             <div className="th-jobs-detail-content" key={selectedDetail.id}>
               <div className="th-jobs-detail-brand"><span className="th-jobs-employer-mark th-jobs-employer-mark-large" aria-hidden="true">{(selectedDetail.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</span><div><h3>{selectedDetail.title}</h3><p>{shown(selectedDetail.employer_name)}</p></div></div>
-              <div className="th-jobs-detail-tags">{selectedDetail.work_mode && selectedDetail.work_mode !== "unknown" && <span className="th-tag" data-tone="accent">{selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"}</span>}{selectedDetail.employment_type && <span className="th-tag">{selectedDetail.employment_type}</span>}{selectedDetail.country_code && <span className="th-tag">{selectedDetail.country_code}</span>}</div>
+              <div className="th-jobs-detail-tags">{selectedDetail.work_mode && selectedDetail.work_mode !== "unknown" && <span className="th-tag" data-tone="accent">{selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"}</span>}{selectedDetail.employment_type && <span className="th-tag">{selectedDetail.employment_type}</span>}</div>
               <dl className="th-jobs-facts"><div><dt>Location</dt><dd>{shown(selectedDetail.location_text)}</dd></div>{formatSalary(selectedDetail) && <div><dt>Salary</dt><dd>{formatSalary(selectedDetail)}</dd></div>}<div><dt>Published</dt><dd>{formatDate(selectedSource?.published_at) ?? "Date not provided"}</dd></div><div><dt>Last updated</dt><dd>{formatDate(selectedDetail.updated_at) ?? "Date not provided"}</dd></div></dl>
               <div className="th-jobs-description"><h4>Job description</h4>{selectedDetail.description?.trim() ? <p>{selectedDetail.description}</p> : <p className="th-jobs-muted">The source did not provide a job description.</p>}</div>
               <div className="th-jobs-source-block"><p className="th-jobs-label">DISCOVERY SOURCE</p><strong>{sourceLabel(selectedSource)}</strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <span aria-hidden="true">↗</span></a> : <span className="th-jobs-muted">Original source URL not available or unsafe</span>}</div>
