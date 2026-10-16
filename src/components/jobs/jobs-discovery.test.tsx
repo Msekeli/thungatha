@@ -4,6 +4,7 @@ import JobsDiscovery from "./jobs-discovery";
 
 vi.mock("@/components/ui/button", () => ({
   Button: ({ children, variant: _variant, size: _size, block: _block, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string; block?: boolean }) => <button {...props}>{children}</button>,
+  ButtonLink: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => <a href={href} {...props}>{children}</a>,
 }));
 
 const firstJob = {
