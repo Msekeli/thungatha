@@ -18,7 +18,12 @@ const querySchema = z.object({
 export async function GET(request: Request) {
   if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;
-  try { identity = await getAuthenticatedIdentity(); } catch { return apiError("Authentication could not be verified", 503); }
+  try {
+    identity = await getAuthenticatedIdentity();
+  } catch (error) {
+    console.error("[jobs feed API] Clerk authentication failed:", error);
+    return apiError("Authentication could not be verified", 503);
+  }
   if (!identity) return apiError("Authentication required", 401);
 
   const params = new URL(request.url).searchParams;
