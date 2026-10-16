@@ -105,6 +105,17 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 **Goal:** make repeated ingestion safe and preserve useful history.
 
+**Implementation record (remote changes on dev; verification pending)**
+
+- Added migration `20261016000100_job_ingestion_reliability.sql` with an ingestion-run ledger and service-role-only RPCs for starting runs, persisting batches, and recording terminal outcomes.
+- Added `src/lib/jobs/ingestion.ts` to validate provider records, isolate provider failures, persist bounded batches, and report per-provider counts.
+- Added `src/lib/jobs/ingestion.test.ts` covering success, provider outage, malformed records, and no configured providers.
+- The database write path preserves existing known fields when incoming data is null/unknown, keeps user save/dismiss state separate, and only reactivates a source when it is observed again. A failed provider does not mark stored listings unavailable.
+- Secondary deduplication is conservative: exact source URL plus normalized title, employer, and location.
+- **Tests actually run:** none from the remote GitHub connector. Local unit tests, typecheck, lint, build, and migration execution remain pending.
+- **User review:** pending local pull and verification.
+
+
 **Work**
 
 - Normalize fields without inventing unknown values.
