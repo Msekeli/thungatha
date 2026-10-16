@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";

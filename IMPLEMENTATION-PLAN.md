@@ -320,7 +320,7 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 **C05 status:** Under investigation — no AI extraction implementation is approved yet. The decision is deferred until the source/content audit establishes a concrete need. Do not mark C05 accepted or imply that investigation is complete.
 
-**Next active checkpoint:** M1-C06 — Discovery query and action contracts. This is a sequencing decision to allow independent API/data-operation work to proceed; C05 remains open and must be resolved before M1 acceptance.
+**Next active checkpoint:** M1-C06 — Discovery query and action contracts. Backend/API implementation has started on `dev`; see the detailed milestone record for endpoint scope and verification status. C05 remains open and must be resolved before M1 acceptance.
 
 
 ## M1-C05 status update — 2026-10-16
