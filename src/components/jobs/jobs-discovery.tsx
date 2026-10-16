@@ -88,6 +88,7 @@ export default function JobsDiscovery() {
   const [detailError, setDetailError] = useState<string | null>(null);
   const [retryDetail, setRetryDetail] = useState(0);
   const [mobileDetail, setMobileDetail] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), state: "all" });
@@ -103,8 +104,10 @@ export default function JobsDiscovery() {
       if (!response.ok) {
         setFeed(null);
         setError(await getApiError(response));
+        setIsAuthenticated(response.status !== 401);
         return;
       }
+      setIsAuthenticated(true);
       const data = (await response.json()) as Feed;
       if (!Array.isArray(data.jobs) || !Number.isFinite(data.totalPages)) {
         setFeed(null);
@@ -187,6 +190,7 @@ export default function JobsDiscovery() {
 
   return (
     <main className="th-jobs-page">
+      {!isAuthenticated && <div className="th-jobs-auth-notice" role="status"><p>Your session has expired. Sign in again to browse job listings.</p><a href="/sign-in">Go to sign in</a></div>}
       <header className="th-jobs-header">
         <div>
           <p className="th-jobs-eyebrow">THUNGATHA / JOBS</p>
