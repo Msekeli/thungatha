@@ -105,6 +105,17 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 **Goal:** make repeated ingestion safe and preserve useful history.
 
+**Implementation record (remote changes on dev; verification pending)**
+
+- Added migration `20261016000100_job_ingestion_reliability.sql` with an ingestion-run ledger and service-role-only RPCs for starting runs, persisting batches, and recording terminal outcomes.
+- Added `src/lib/jobs/ingestion.ts` to validate provider records, isolate provider failures, persist bounded batches, and report per-provider counts.
+- Added `src/lib/jobs/ingestion.test.ts` covering success, provider outage, malformed records, and no configured providers.
+- The database write path preserves existing known fields when incoming data is null/unknown, keeps user save/dismiss state separate, and only reactivates a source when it is observed again. A failed provider does not mark stored listings unavailable.
+- Secondary deduplication is conservative: exact source URL plus normalized title, employer, and location.
+- **Tests actually run:** none from the remote GitHub connector. Local unit tests, typecheck, lint, build, and migration execution remain pending.
+- **User review:** pending local pull and verification.
+
+
 **Work**
 
 - Normalize fields without inventing unknown values.
@@ -211,3 +222,20 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - No manual job entry is present in Discovery.
 - No critical security, data-loss or core-journey defect remains.
 - Evidence is recorded and the user explicitly accepts M1.
+
+
+---
+
+## M1-C04 completion record — 2026-10-16
+
+**Outcome: PASS for the tested database-side ingestion path.**
+
+- Applied production migration: `20261016000100_job_ingestion_reliability.sql`.
+- Local and remote migration histories matched.
+- Supabase schema lint completed with no schema errors.
+- Smoke-test result: `PASS`; run status `succeeded`; received 1; inserted 1; updated 0; skipped 0; job count 1; source count 1.
+- The test transaction was rolled back, and follow-up counts for the smoke-test provider were both 0.
+
+This is evidence for the tested RPC/database path, not a claim that every live provider or the complete scheduled application pipeline has been end-to-end verified. Treat C04 as complete for its scoped database reliability work and avoid repeating checks absent a concrete failure.
+
+**Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.

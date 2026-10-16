@@ -6,12 +6,16 @@ import {
 } from "@/lib/auth/identity";
 import { readProfile, saveProfile } from "@/lib/profile/repository";
 
-class MockSupabaseConfigurationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "SupabaseConfigurationError";
+const { MockSupabaseConfigurationError } = vi.hoisted(() => {
+  class MockSupabaseConfigurationError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "SupabaseConfigurationError";
+    }
   }
-}
+
+  return { MockSupabaseConfigurationError };
+});
 
 vi.mock("@/lib/auth/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
