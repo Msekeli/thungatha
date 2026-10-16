@@ -87,7 +87,7 @@ async function getApiError(response: Response): Promise<string> {
   return payload.error || "The request could not be completed. Please try again.";
 }
 
-export default function JobsDiscovery() {
+export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -208,7 +208,7 @@ export default function JobsDiscovery() {
   const hasFilters = Object.entries(filters).some(([key, value]) => key === "publishedWithin" ? value !== "30d" : Boolean(value));
 
   return (
-    <WorkspaceShell active="/jobs">
+    <WorkspaceShell active="/jobs" configured={configured}>
     <main className="th-jobs-page">
       {!isAuthenticated && <div className="th-jobs-auth-notice" role="status"><p>Your session has expired. Sign in again to browse job listings.</p><Link href="/sign-in">Go to sign in</Link></div>}
       <header className="th-jobs-header">
