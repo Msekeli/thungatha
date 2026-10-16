@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C01 remains in review. C04 ingestion-reliability code and migration have been added on dev and are awaiting local verification; do not mark C04 accepted until tests and migration checks have actually passed.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 is under investigation; its AI-extraction decision and implementation scope remain unresolved. Work may proceed to C06's Discovery query and action contracts while C05 remains explicitly open, provided C06 does not assume or depend on AI extraction.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -318,4 +318,13 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 **Scope of evidence:** this verifies the tested database RPC path only. It does not establish that every provider integration, scheduled execution, or the full application ingestion pipeline has been end-to-end verified. Do not repeat C04 checks unless a concrete failure appears.
 
-**Next:** proceed to M1-C05, keeping the AI extraction boundary optional and ensuring deterministic application logic remains authoritative.
+**C05 status:** Under investigation — no AI extraction implementation is approved yet. The decision is deferred until the source/content audit establishes a concrete need. Do not mark C05 accepted or imply that investigation is complete.
+
+**Next active checkpoint:** M1-C06 — Discovery query and action contracts. This is a sequencing decision to allow independent API/data-operation work to proceed; C05 remains open and must be resolved before M1 acceptance.
+
+
+## M1-C05 status update — 2026-10-16
+
+**Status: Under investigation; implementation decision pending.** The checkpoint will determine whether any concrete job-content extraction gap justifies AI. No AI extraction feature is approved or claimed complete. Deterministic validation, normalization, deduplication and persistence remain authoritative, and Discovery must remain usable with AI disabled.
+
+**Sequencing decision:** proceed with M1-C06 — Discovery query and action contracts, because its documented scope is API/data-operation work and does not require AI extraction. C05 remains open; this does not change the M1 checkpoint requirements or constitute C05 acceptance.
