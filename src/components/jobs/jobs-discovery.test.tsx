@@ -106,6 +106,13 @@ describe("Job Discovery", () => {
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
+  it("explains expired sessions and links back to sign-in", async () => {
+    setupFetch([firstJob], { feedStatus: 401 });
+    render(<JobsDiscovery />);
+    expect(await screen.findByText(/Your session has expired/)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Go to sign in" }).getAttribute("href")).toBe("/sign-in");
+  });
+
   it("shows empty results separately from request failures", async () => {
     setupFetch([]);
     render(<JobsDiscovery />);
