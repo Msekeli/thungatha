@@ -85,7 +85,7 @@ describe("Job Discovery", () => {
   it("clears filters and resets pagination", async () => {
     const { requests } = setupFetch();
     render(<JobsDiscovery configured={false} />);
-    await screen.findByRole("heading", { name: "Software Engineer" });
+    await screen.findAllByRole("heading", { name: "Software Engineer" });
     fireEvent.change(screen.getByLabelText("Keyword or employer"), { target: { value: "engineer" } });
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     await waitFor(() => expect(requests.some((url) => new URL(url, "http://local").searchParams.get("query") === "engineer")).toBe(true));
@@ -101,7 +101,7 @@ describe("Job Discovery", () => {
     const { requests } = setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
-    expect(await screen.findByText("Application page available")).toBeTruthy();
+    expect(await screen.findByText(/Application page available/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Greenhouse" }).getAttribute("href")).toBe("https://jobs.example.test/role");
     expect(screen.getByRole("button", { name: /Open job page/ })).toBeTruthy();
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
@@ -162,7 +162,7 @@ describe("Job Discovery", () => {
   it("uses server paging metadata for next-page navigation", async () => {
     const { requests } = setupFetch([firstJob], { total: 30 });
     render(<JobsDiscovery configured={false} />);
-    await screen.findByRole("heading", { name: "Software Engineer" });
+    await screen.findAllByRole("heading", { name: "Software Engineer" });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     await waitFor(() => expect(requests.some((url) => new URL(url, "http://local").searchParams.get("page") === "2")).toBe(true));
   });
