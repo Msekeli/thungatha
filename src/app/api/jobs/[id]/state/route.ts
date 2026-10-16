@@ -7,6 +7,8 @@ import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@
 const idSchema = z.string().uuid();
 const bodySchema = z.object({ state: z.enum(["saved", "dismissed"]) }).strict();
 
+export const dynamic = "force-dynamic";
+
 async function resolveUser() {
   if (!hasClerkConfiguration()) return { user: null, response: apiError("Authentication is not configured", 503) };
   try {
