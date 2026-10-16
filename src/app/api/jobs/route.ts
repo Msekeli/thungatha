@@ -16,6 +16,7 @@ const querySchema = z.object({
   workMode: z.enum(["onsite", "hybrid", "remote", "unknown"]).optional(),
   employmentType: z.string().trim().max(100).optional(),
   publishedWithin: z.enum(["24h", "7d", "14d", "30d"]).default("30d"),
+  publishedWithin: z.enum(["24h", "7d", "14d", "30d"]).default("30d"),
   page: z.coerce.number().int().min(1).max(10000).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
@@ -64,6 +65,9 @@ export async function GET(request: Request) {
     }
     if (input.countryCode) query = query.eq("country_code", input.countryCode);
     if (input.workMode) query = query.eq("work_mode", input.workMode);
+    const ageInHours = { "24h": 24, "7d": 168, "14d": 336, "30d": 720 }[input.publishedWithin];
+    const publishedAfter = new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString();
+    query = query.gte("job_sources.published_at", publishedAfter).not("job_sources.published_at", "is", null);
     const ageInHours = { "24h": 24, "7d": 168, "14d": 336, "30d": 720 }[input.publishedWithin];
     const publishedAfter = new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString();
     query = query.gte("job_sources.published_at", publishedAfter).not("job_sources.published_at", "is", null);
