@@ -348,7 +348,7 @@ No provider ingestion was re-run and no production database changes were made du
 
 ## M1-C07 — Job Discovery UI (2026-10-16)
 
-**Status:** In review — UI implementation committed to `dev`; local verification and user review pending.
+**Status:** In review — UI implementation committed to `dev`; local verification and user review pending. Remote commit chain on `dev` contains 11 checkpoint edits after the C06 baseline; `main` is unchanged.
 
 **Implemented:** The `/jobs` placeholder now uses C06's persisted feed/detail API. The UI provides keyword/employer, location, country, work-mode and employment-type filters; paginated results; selected-job details; loading, empty, error, retry and missing-detail states; keyboard-operable selectable cards; responsive small-screen detail navigation; and distinct original discovery-source and application-destination links.
 
@@ -356,6 +356,6 @@ No provider ingestion was re-run and no production database changes were made du
 
 **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`, `milestones/M1-JOB-DISCOVERY-AND-JOB-FEED.md`, `IMPLEMENTATION-PLAN.md`.
 
-**Verification:** A component test suite was added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and browser tests were not run through the remote-edit workflow. C06 authenticated Supabase smoke and cross-user isolation checks remain outstanding.
+**Verification:** Remote file/diff inspection confirms the six intended files are present on `dev`. This is repository inspection only, not a code execution check. A component test suite was added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and browser tests were not run through the remote-edit workflow. C06 authenticated Supabase smoke and cross-user isolation checks remain outstanding.
 
 **Next action:** Pull latest `origin/dev` locally without discarding work, inspect the diff, run all quality gates and responsive/keyboard browser checks, fix any observed defects, and return for user review. Do not merge to `main` or mark C07 Accepted without verification and explicit acceptance.
