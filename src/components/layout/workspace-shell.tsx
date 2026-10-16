@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/components/auth/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { ButtonLink } from "@/components/ui/button";
 
 type Destination = { href: string; label: string; icon: string };
 const workspace: Destination[] = [
@@ -19,9 +20,11 @@ const personal: Destination[] = [
 
 export function WorkspaceShell({
   active,
+  configured,
   children,
 }: {
   active: string;
+  configured: boolean;
   children: ReactNode;
 }) {
   return (
@@ -45,7 +48,7 @@ export function WorkspaceShell({
         <div className="th-workspace-sidebar-footer">
           <Link href="/" className="th-workspace-home-link">← Home</Link>
           <ThemeToggle />
-          <SignOutControl />
+          {configured ? <SignOutControl /> : <ButtonLink href="/sign-in" variant="secondary" size="md">Sign in</ButtonLink>}
         </div>
       </aside>
       <div className="th-workspace-content">{children}</div>
