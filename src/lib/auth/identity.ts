@@ -8,7 +8,8 @@ export async function getAuthenticatedIdentity() {
 
   return {
     userId: session.userId,
-    getToken: session.getToken,
+    // Keep the getter bound to the Auth object when Supabase invokes it later.
+    getToken: () => session.getToken(),
   };
 }
 
