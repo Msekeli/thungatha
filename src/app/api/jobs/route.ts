@@ -4,6 +4,11 @@ import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/iden
 import { apiError, apiFailure } from "@/lib/http/api-response";
 import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
 
+function sanitizeFilterTerm(value: string): string {
+  // Treat search input as plain text, never as PostgREST filter syntax.
+  return value.replace(/[^a-zA-Z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+}
+
 const querySchema = z.object({
   query: z.string().trim().max(200).optional(),
   location: z.string().trim().max(200).optional(),
@@ -49,17 +54,20 @@ export async function GET(request: Request) {
     let query = db.from("jobs").select("id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)", { count: "exact" })
       .eq("job_sources.availability_status", "active");
     if (input.query) {
-      const term = input.query.replace(/[,%()_*]/g, " ").trim();
+      const term = sanitizeFilterTerm(input.query);
       if (term) query = query.or(`title.ilike.%${term}%,employer_name.ilike.%${term}%`);
     }
-    if (input.location) query = query.ilike("location_text", `%${input.location.replace(/[%_*]/g, " ")}%`);
+    if (input.location) {
+      const location = sanitizeFilterTerm(input.location);
+      if (location) query = query.ilike("location_text", `%${location}%`);
+    }
     if (input.countryCode) query = query.eq("country_code", input.countryCode);
     if (input.workMode) query = query.eq("work_mode", input.workMode);
     if (input.employmentType) {
       // Provider records commonly use values such as "full_time", while the UI
       // naturally uses "Full-time". Normalize separators before querying.
-      const term = input.employmentType.trim().toLowerCase().replace(/[%_*]/g, " ").replace(/[\s-]+/g, "_");
-      query = query.ilike("employment_type", `%${term}%`);
+      const term = sanitizeFilterTerm(input.employmentType).toLowerCase().replace(/[\s-]+/g, "_");
+      if (term) query = query.ilike("employment_type", `%${term}%`);
     }
     if (input.state === "saved" || input.state === "dismissed") {
       const ids = states.map((item) => item.job_id);
