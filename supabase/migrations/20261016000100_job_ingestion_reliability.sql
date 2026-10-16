@@ -43,7 +43,7 @@ begin
   title_value:=nullif(btrim(item->>'title'),''); employer_value:=nullif(btrim(item->>'employerName'),'');
   location_value:=nullif(btrim(item->>'locationText'),''); url_value:=nullif(btrim(item->>'sourceUrl'),'');
   provider_value:=item->>'providerKey'; external_value:=nullif(btrim(item->>'externalJobId'),'');
-  if title_value is null or url_value !~ '^https?://' or external_value is null or
+  if title_value is null or url_value is null or url_value !~ '^https?://' or external_value is null or
      provider_value is distinct from (select provider_key from public.job_ingestion_runs where id=p_run_id) then
    n_skipped:=n_skipped+1; continue;
   end if;
