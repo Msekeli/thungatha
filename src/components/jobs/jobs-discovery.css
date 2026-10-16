@@ -202,3 +202,14 @@
  .th-jobs-detail-panel { display:none; }
  .th-jobs-detail-panel.th-jobs-mobile-visible { display:block; }
 }
+
+.th-jobs-category-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 2px; }
+.th-jobs-category-tab { min-height:38px; padding:8px 13px; border:1px solid var(--th-line); border-radius:999px; background:transparent; color:var(--th-fg-muted); font:inherit; font-size:12px; cursor:pointer; }
+.th-jobs-category-tab:hover:not(:disabled) { border-color:var(--th-accent); color:var(--th-fg); }
+.th-jobs-category-tab[data-active="true"] { border-color:var(--th-accent); background:var(--th-accent-bg); color:var(--th-accent-text); }
+.th-jobs-category-tab:disabled { cursor:not-allowed; opacity:.55; }
+.th-jobs-search-panel .th-jobs-field { gap:5px; }
+.th-jobs-search-panel .th-jobs-field > span { color:var(--th-fg-muted); }
+.th-jobs-search-panel .th-jobs-field select { border-radius:999px; }
+.th-jobs-search-panel .th-jobs-field input { border-radius:10px; }
+.th-jobs-detail-actions { align-items:center; }
