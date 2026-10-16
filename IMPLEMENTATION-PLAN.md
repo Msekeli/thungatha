@@ -328,3 +328,9 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 **Status: Under investigation; implementation decision pending.** The checkpoint will determine whether any concrete job-content extraction gap justifies AI. No AI extraction feature is approved or claimed complete. Deterministic validation, normalization, deduplication and persistence remain authoritative, and Discovery must remain usable with AI disabled.
 
 **Sequencing decision:** proceed with M1-C06 — Discovery query and action contracts, because its documented scope is API/data-operation work and does not require AI extraction. C05 remains open; this does not change the M1 checkpoint requirements or constitute C05 acceptance.
+
+## M1-C06 status update — 2026-10-16
+
+**Status: In progress; not yet accepted.** The `dev` branch now has broader endpoint tests for the persisted jobs feed, pagination/filter query construction, job details, saved/dismissed state transitions, malformed inputs, inactive listings, and user-scoped state deletion. State changes are restricted to active listings. A GitHub Actions workflow was added to run type-check, lint, unit tests, and production build on pushes and pull requests to `dev`.
+
+**Verification honesty:** these new tests and the workflow have not yet produced a verified result in this session. Do not mark C06 accepted until the workflow/local quality checks pass and the authenticated endpoints are tested against stored records with cross-user/RLS isolation confirmed. UI remains M1-C07; no UI implementation is included in C06. No provider ingestion was re-run and no production database changes were made during this C06 code work.
