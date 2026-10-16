@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type JobSource = {
@@ -127,7 +128,7 @@ export default function JobsDiscovery() {
 
   useEffect(() => {
     const controller = new AbortController();
-    void refreshFeed(controller.signal);
+    void Promise.resolve().then(() => refreshFeed(controller.signal));
     return () => controller.abort();
   }, [refreshFeed, retryFeed]);
 
@@ -156,14 +157,9 @@ export default function JobsDiscovery() {
   }, []);
 
   useEffect(() => {
-    if (!selectedId) {
-      setDetail(null);
-      setDetailError(null);
-      setDetailLoading(false);
-      return;
-    }
+    if (!selectedId) return;
     const controller = new AbortController();
-    void refreshDetail(selectedId, controller.signal);
+    void Promise.resolve().then(() => refreshDetail(selectedId, controller.signal));
     return () => controller.abort();
   }, [selectedId, refreshDetail, retryDetail]);
 
@@ -190,7 +186,7 @@ export default function JobsDiscovery() {
 
   return (
     <main className="th-jobs-page">
-      {!isAuthenticated && <div className="th-jobs-auth-notice" role="status"><p>Your session has expired. Sign in again to browse job listings.</p><a href="/sign-in">Go to sign in</a></div>}
+      {!isAuthenticated && <div className="th-jobs-auth-notice" role="status"><p>Your session has expired. Sign in again to browse job listings.</p><Link href="/sign-in">Go to sign in</Link></div>}
       <header className="th-jobs-header">
         <div>
           <p className="th-jobs-eyebrow">THUNGATHA / JOBS</p>
