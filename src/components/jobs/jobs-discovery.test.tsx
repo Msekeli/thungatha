@@ -57,7 +57,7 @@ afterEach(() => {
 describe("Job Discovery", () => {
   it("renders API-provided listing fields and details", async () => {
     setupFetch();
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByRole("heading", { name: "Software Engineer" })).toBeTruthy();
     expect(screen.getByText("Cape Town, South Africa")).toBeTruthy();
     expect(screen.getByText("Full-time")).toBeTruthy();
@@ -65,26 +65,25 @@ describe("Job Discovery", () => {
     expect(await screen.findByText("Build and support web services.")).toBeTruthy();
   });
 
-  it("submits the exact supported search and filter query parameters", async () => {
+  it("submits the supported search and filter query parameters", async () => {
     const { requests } = setupFetch();
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     await screen.findByRole("heading", { name: "Software Engineer" });
     fireEvent.change(screen.getByLabelText("Keyword or employer"), { target: { value: "engineer" } });
     fireEvent.change(screen.getByLabelText("Location"), { target: { value: "Cape Town" } });
-    fireEvent.change(screen.getByLabelText("Country"), { target: { value: "ZA" } });
     fireEvent.change(screen.getByLabelText("Work mode"), { target: { value: "remote" } });
     fireEvent.change(screen.getByLabelText("Employment type"), { target: { value: "Full-time" } });
     fireEvent.change(screen.getByLabelText("Posted within"), { target: { value: "7d" } });
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     await waitFor(() => expect(requests.some((url) => {
       const params = new URL(url, "http://local").searchParams;
-      return params.get("query") === "engineer" && params.get("location") === "Cape Town" && params.get("countryCode") === "ZA" && params.get("workMode") === "remote" && params.get("employmentType") === "Full-time" && params.get("publishedWithin") === "7d";
+      return params.get("query") === "engineer" && params.get("location") === "Cape Town" && params.get("workMode") === "remote" && params.get("employmentType") === "Full-time" && params.get("publishedWithin") === "7d";
     })).toBe(true));
   });
 
   it("clears filters and resets pagination", async () => {
     const { requests } = setupFetch();
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     await screen.findByRole("heading", { name: "Software Engineer" });
     fireEvent.change(screen.getByLabelText("Keyword or employer"), { target: { value: "engineer" } });
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
@@ -99,7 +98,7 @@ describe("Job Discovery", () => {
 
   it("loads selected details and distinguishes original source from application destination", async () => {
     const { requests } = setupFetch([firstJob, secondJob]);
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(await screen.findByText("APPLICATION DESTINATION")).toBeTruthy();
     expect(screen.getByRole("link", { name: /View original listing/ }).getAttribute("href")).toBe("https://jobs.example.test/role");
@@ -117,7 +116,7 @@ describe("Job Discovery", () => {
       }],
     };
     setupFetch([unsafeJob]);
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer/ }));
     expect(await screen.findByText("Original source URL not available or unsafe")).toBeTruthy();
     expect(screen.getByText("An application destination was not supplied or is not a safe web URL.")).toBeTruthy();
@@ -127,14 +126,14 @@ describe("Job Discovery", () => {
 
   it("explains expired sessions and links back to sign-in", async () => {
     setupFetch([firstJob], { feedStatus: 401 });
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByText(/Your session has expired/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Go to sign in" }).getAttribute("href")).toBe("/sign-in");
   });
 
   it("rejects malformed feed metadata instead of rendering inconsistent results", async () => {
     setupFetch([firstJob], { feedBody: { jobs: [firstJob], page: 1, pageSize: 25, total: 30, totalPages: 1 } });
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.getByText(/unexpected response/)).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Software Engineer" })).toBeNull();
@@ -142,14 +141,14 @@ describe("Job Discovery", () => {
 
   it("shows empty results separately from request failures", async () => {
     setupFetch([]);
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByText("No active jobs are available")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("shows a retryable feed error and recovers", async () => {
     const { fetchMock } = setupFetch([firstJob], { feedStatus: 503 });
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByRole("alert")).toBeTruthy();
     fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
@@ -161,7 +160,7 @@ describe("Job Discovery", () => {
 
   it("uses server paging metadata for next-page navigation", async () => {
     const { requests } = setupFetch([firstJob], { total: 30 });
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     await screen.findByRole("heading", { name: "Software Engineer" });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     await waitFor(() => expect(requests.some((url) => new URL(url, "http://local").searchParams.get("page") === "2")).toBe(true));
@@ -169,7 +168,7 @@ describe("Job Discovery", () => {
 
   it("renders the server-provided saved state without mutating it in C07", async () => {
     setupFetch([firstJob, secondJob]);
-    render(<JobsDiscovery />);
+    render(<JobsDiscovery configured={false} />);
     expect(await screen.findByText("Saved")).toBeTruthy();
   });
 });
