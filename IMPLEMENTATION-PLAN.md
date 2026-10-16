@@ -309,3 +309,13 @@ Thungatha is ready for final release only when:
 | `README.md` | Project introduction, setup and development commands |
 
 This document governs the overall roadmap. It does not replace the detailed milestone specifications.
+
+## M1-C04 — Job ingestion reliability checkpoint (2026-10-16)
+
+**Status: database-side checkpoint verified.** The production Supabase migration `20261016000100_job_ingestion_reliability.sql` was applied successfully. Local and remote migration history matched, and `supabase db lint --linked --schema public` reported no schema errors.
+
+The SQL smoke test returned `PASS`: one record received, one job inserted, one source record created, zero updates, zero skipped records, and the ingestion run status was `succeeded`. The test transaction ended with `ROLLBACK`; a follow-up count confirmed zero retained smoke-test runs and source records.
+
+**Scope of evidence:** this verifies the tested database RPC path only. It does not establish that every provider integration, scheduled execution, or the full application ingestion pipeline has been end-to-end verified. Do not repeat C04 checks unless a concrete failure appears.
+
+**Next:** proceed to M1-C05, keeping the AI extraction boundary optional and ensuring deterministic application logic remains authoritative.
