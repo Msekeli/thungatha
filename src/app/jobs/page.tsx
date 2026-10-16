@@ -4,7 +4,8 @@ export default function Page() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-800">
-        Thungatha
+        Thungatha to be replaced during the next milestone with a more
+        descriptive tagline which is C07
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-brand-ink">
         Job Discovery

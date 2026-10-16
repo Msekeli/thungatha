@@ -45,7 +45,7 @@ The product specification and architecture document will define these experience
 | Milestone | Name | Status |
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
-| M1 | Job Discovery and Job Feed | In progress — C01 in review |
+| M1 | Job Discovery and Job Feed | In progress — C05 under investigation; C06 locally verified, cloud acceptance gates outstanding |
 | M2 | Profile and CV Import | Not started |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C01 remains in review. C04 ingestion-reliability code and migration have been added on dev and are awaiting local verification; do not mark C04 accepted until tests and migration checks have actually passed.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation has passed local type-checking, lint, unit tests and production build, but authenticated cloud smoke testing and cross-user/RLS isolation remain unverified. C07 is the Discovery UI checkpoint. C05 remains open and must be resolved before M1 acceptance.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -318,4 +318,29 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 **Scope of evidence:** this verifies the tested database RPC path only. It does not establish that every provider integration, scheduled execution, or the full application ingestion pipeline has been end-to-end verified. Do not repeat C04 checks unless a concrete failure appears.
 
-**Next:** proceed to M1-C05, keeping the AI extraction boundary optional and ensuring deterministic application logic remains authoritative.
+**C05 status:** Under investigation — no AI extraction implementation is approved yet. The decision is deferred until the source/content audit establishes a concrete need. Do not mark C05 accepted or imply that investigation is complete.
+
+**Next active checkpoint:** M1-C06 — Discovery query and action contracts. Backend/API implementation has started on `dev`; see the detailed milestone record for endpoint scope and verification status. C05 remains open and must be resolved before M1 acceptance.
+
+
+## M1-C05 status update — 2026-10-16
+
+**Status: Under investigation; implementation decision pending.** The checkpoint will determine whether any concrete job-content extraction gap justifies AI. No AI extraction feature is approved or claimed complete. Deterministic validation, normalization, deduplication and persistence remain authoritative, and Discovery must remain usable with AI disabled.
+
+**Sequencing decision:** proceed with M1-C06 — Discovery query and action contracts, because its documented scope is API/data-operation work and does not require AI extraction. C05 remains open; this does not change the M1 checkpoint requirements or constitute C05 acceptance.
+
+## M1-C06 status update — 2026-10-16
+
+**Status: In progress — local verification passed; cloud acceptance gates outstanding.** The C06 API implementation is on `dev` at `cbeb21dc06a2a44e402c4f4712caf5f00fb235ea`. The local working tree was clean and aligned with `origin/dev`.
+
+**Local verification completed by the user:**
+- `npx tsc --noEmit` — passed.
+- `npm run lint` — passed.
+- `npm test` — 13 test files passed; 82 tests passed. Expected stderr from tests simulating Clerk/database failures did not fail the suite.
+- `npm run build` — passed on Next.js 16.4.0; the previous API prerender warning did not recur.
+
+The implementation covers the persisted jobs feed, query filtering and pagination, job details, saved/dismissed state transitions, malformed inputs, inactive listings and user-scoped state deletion. State changes are restricted to active listings. The API routes defer request-dependent work until request time. C06 remains API-only; the Discovery UI belongs to C07.
+
+**Outstanding acceptance gates:** an authenticated cloud smoke test of feed and detail reads, plus cross-user/RLS isolation verification for user-specific state. These have not been performed, so do not describe C06 as fully accepted or claim cloud security verification. Do not write to production user state merely to complete this checkpoint; use an approved isolated test-data strategy for state mutations.
+
+No provider ingestion was re-run and no production database changes were made during this C06 code work. Do not repeat the successful local checks unless a concrete code change or failure warrants it.

@@ -47,7 +47,7 @@ describe("JoobleProvider", () => {
 
     const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
 
-    expect(url).toBe("https://za.jooble.org/api/test-key");
+    expect(url).toBe("https://jooble.org/api/test-key");
     expect(options.method).toBe("POST");
     expect(options.headers).toEqual({
       Accept: "application/json",

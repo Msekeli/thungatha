@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C01 in review; confirm against the live repository before updating  
+**Status:** In progress — C04 database-side scope verified; C05 under investigation; C06 next active checkpoint  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -133,6 +133,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C05 — Optional AI boundary for job content
 
+**Status: Under investigation — implementation decision pending.**
+
 **Goal:** use AI only if the source audit shows a concrete need.
 
 **Work**
@@ -150,6 +152,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C06 — Discovery query and action contracts
 
+**Next active checkpoint.** C05 remains open while the AI-extraction decision is investigated. C06 may proceed because its documented API/data-operation scope does not require AI extraction; do not treat this sequencing decision as C05 acceptance.
+
 **Goal:** provide safe data operations for the Discovery UI without adding manual job creation.
 
 **Work**
@@ -164,6 +168,23 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - API/data-operation tests cover valid and invalid input, access control, pagination, filters and failure states.
 - There is no Discovery “Add job” path.
 - External navigation alone never creates or confirms an application.
+
+
+**Implementation status: In progress (backend/API only).** Feed, detail, and user-state API handlers are implemented on `dev`. The authenticated routes call Next.js `connection()` so Clerk/request-header access occurs at request time under Cache Components. Route unit tests mock `connection()` because they invoke handlers outside Next's request context. C06 is not accepted until authenticated cloud behaviour and the remaining data-access checks are verified.
+
+Initial API contract:
+- `GET /api/jobs`: persisted catalogue feed with validated query, location, country, work-mode and employment-type filters; page/pageSize pagination; active source records; optional `state=all|saved|dismissed`. The default feed excludes dismissed jobs.
+- `GET /api/jobs/{id}`: retrieve an active persisted listing and the signed-in user's state.
+- `PUT /api/jobs/{id}/state`: set only `saved` or `dismissed`, using server-resolved identity. Updates are limited to active listings.
+- `DELETE /api/jobs/{id}/state`: clear only the signed-in user's state for that job.
+
+Security and lifecycle boundaries:
+- Handlers require configured Clerk authentication and use the authenticated Supabase client. User-state queries/writes are scoped by the server-derived user ID and subject to database RLS.
+- The state API rejects `applied`; opening an external application URL is not an application submission. Creating an M5 application record is not included because the M5 application-tracking contract is not yet available.
+- Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion.
+- **Quality evidence:** GitHub Actions run `38900111432` passed type-check, lint, unit tests, and production build for PR #5. Local verification previously reported 82 tests passing, with type-check, lint, and build completing; the prerender warning was the reason for the `connection()` follow-up.
+- PR #5 was squash-merged into `dev` as `bb48c42fafd09f09fad0b3850db978c8efc469c3`. `main` was not changed.
+- Still required before acceptance: verify authenticated feed/detail behaviour against stored Supabase records, confirm RLS/cross-user isolation and pagination/filter behaviour against Supabase, and record user review. Do not perform save/dismiss/delete against live user data without an isolated test strategy.
 
 ### M1-C07 — Job Discovery feed, search, filters and details
 
@@ -239,3 +260,10 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 This is evidence for the tested RPC/database path, not a claim that every live provider or the complete scheduled application pipeline has been end-to-end verified. Treat C04 as complete for its scoped database reliability work and avoid repeating checks absent a concrete failure.
 
 **Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.
+
+
+## C05 investigation and sequencing decision — 2026-10-16
+
+C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
+
+Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.

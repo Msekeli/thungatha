@@ -36,7 +36,20 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Configure the required Clerk and Supabase environment variables in `.env.local` before using authenticated features. If `.env.local` already exists, preserve it and add only missing variables. Never commit secrets.
+Configure the required environment variables in `.env.local` before using authenticated features. If `.env.local` already exists, preserve it and add only missing variables from `.env.example`. Never commit secrets.
+
+### Job ingestion
+
+The job catalogue is populated by a protected server-side runner; visiting the feed does not trigger provider calls. Configure at least one provider (Adzuna or Jooble), `NEXT_PUBLIC_SUPABASE_URL`, and the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Also set `INGESTION_CRON_SECRET` to a long random secret. Do not expose the Supabase secret key to the browser or commit it.
+
+With the app running locally, trigger one ingestion run from a trusted terminal:
+
+```bash
+curl -X POST http://localhost:3000/api/internal/jobs/ingest \
+  -H "Authorization: Bearer $INGESTION_CRON_SECRET"
+```
+
+The endpoint returns per-provider received/inserted/updated/skipped counts. HTTP 207 indicates that at least one provider reported a failure; inspect the response before treating the run as successful. A missing server key or missing provider configuration returns HTTP 503. For production, schedule this endpoint using a server-side scheduler and store the same secret in its protected configuration.
 
 See [Local Development](#local-development) below for the database and verification commands.
 
