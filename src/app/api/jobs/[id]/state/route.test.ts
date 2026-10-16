@@ -12,6 +12,8 @@ const client = vi.mocked(createAuthenticatedSupabaseClient);
 const id = "123e4567-e89b-42d3-a456-426614174000";
 
 function query(result: unknown) {
+  // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
   for (const method of ["select", "eq", "upsert", "delete"]) builder[method] = vi.fn(() => builder);
   builder.maybeSingle = vi.fn(async () => result);
