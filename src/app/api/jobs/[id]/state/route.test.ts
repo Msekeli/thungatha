@@ -41,6 +41,20 @@ describe("job state API", () => {
     expect(client).not.toHaveBeenCalled();
   });
 
+  it("returns 503 when authentication is not configured", async () => {
+    configured.mockReturnValue(false);
+    const response = await DELETE(new Request("http://localhost"), { params: Promise.resolve({ id }) });
+    expect(response.status).toBe(503);
+    expect(client).not.toHaveBeenCalled();
+  });
+
+  it("returns 503 when Clerk identity verification throws", async () => {
+    identity.mockRejectedValue(new Error("Clerk unavailable"));
+    const response = await DELETE(new Request("http://localhost"), { params: Promise.resolve({ id }) });
+    expect(response.status).toBe(503);
+    expect(client).not.toHaveBeenCalled();
+  });
+
   it("requires authentication before allowing state changes", async () => {
     identity.mockResolvedValue(null);
     const response = await DELETE(new Request("http://localhost"), { params: Promise.resolve({ id }) });
