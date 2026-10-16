@@ -81,7 +81,7 @@ describe("GET /api/jobs", () => {
     const response = await GET(new Request("http://localhost/api/jobs?state=saved"));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ jobs: [], page: 1, pageSize: 25, total: 0, totalPages: 0 });
-    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledTimes(2);
   });
 
   it("returns a safe server error when the database query fails", async () => {
