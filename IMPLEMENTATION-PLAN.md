@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation passed reported local type-checking, lint, unit tests and production build, but authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI is implemented on dev and in review; local verification and user review remain outstanding. C05 remains open and must be resolved before M1 acceptance.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation passed reported local type-checking, lint, unit tests and production build, but authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI is implemented on dev and remains in review: on 2026-10-16, local verification passed `npx tsc --noEmit`, `npm run lint` (0 errors; 3 unused-variable warnings in the test mock), `npm test` (14 files, 94 tests passed), `npm run build`, and `npm run test:e2e` (2 tests passed). The GitHub Actions run on the previous commit failed on the now-fixed duplicate `Greenhouse` text assertion; a run for the latest fix is not yet confirmed green. C07 still needs the remaining browser/responsive and authenticated Supabase verification plus explicit user acceptance. C05 remains open and must be resolved before M1 acceptance.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -309,6 +309,22 @@ Thungatha is ready for final release only when:
 | `README.md` | Project introduction, setup and development commands |
 
 This document governs the overall roadmap. It does not replace the detailed milestone specifications.
+
+## M1-C07 — Job Discovery local verification update (2026-10-16)
+
+**Status: In review — local quality checks passed; checkpoint not yet accepted.**
+
+The user ran the local quality suite on branch `dev` after pulling the latest changes:
+
+- `npx tsc --noEmit`: passed (no TypeScript errors).
+- `npm run lint`: passed with 0 errors and 3 warnings for unused destructured props in the component-test button mock.
+- `npm test`: passed — 14 test files and 94 tests.
+- `npm run build`: passed — optimized Next.js production build completed.
+- `npm run test:e2e`: passed — 2 Playwright tests.
+
+The first test run before the latest assertion correction had one failure because the word “Greenhouse” appears in both the job card and selected details panel. The test now allows multiple matching source labels; no application code was changed for this correction. The latest fix was committed to `dev` as `6fef2c038bd90537b955286ba20ffed249bee843`.
+
+**Remaining evidence before C07 acceptance:** confirm GitHub Actions is green for the latest commit; complete the required browser/responsive and keyboard checks; verify combined filters, counts and publication-date behaviour against a controlled authenticated Supabase dataset; record explicit user review. C06's authenticated cloud checks and cross-user/RLS isolation also remain outstanding. Do not mark C07 or M1 Accepted based only on the local suite.
 
 ## M1-C04 — Job ingestion reliability checkpoint (2026-10-16)
 
