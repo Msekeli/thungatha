@@ -333,7 +333,17 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 ### C07 publication recency filter — 2026-10-16
 
 - Added a required publication-age filter to the job feed: last 24 hours, 7 days, 14 days, or 30 days (default and maximum window).
-- The API filters on `job_sources.published_at`, excludes listings with missing publication dates, and sorts by publication date rather than database update time. This prevents refreshed old listings from appearing recent merely because their records were updated.
+- The API filters on `job_sources.published_at` and excludes listings with missing publication dates, so a refreshed old listing cannot qualify as recent merely because its database record was updated. The parent feed is deterministically ordered by `jobs.updated_at`; the embedded source records are ordered by publication date. Fully ordering parent jobs by a related source publication timestamp may require a database view/RPC or denormalized sort field, and remains a verification/design limitation.
 - Added UI and API regression assertions for the selected date range and publication-date query.
 - Save/dismiss/undo remain out of C07 and are not being added to this screen; those actions stay in C08.
 - **Verification remains pending.** The changes were committed to `dev` through the remote repository workflow; automated tests, type-check, lint, build, and browser checks have not been run in this session. Confirm the Supabase relation filter/order behaviour with the repository's installed Supabase client and a controlled authenticated data set before accepting C07.
+
+
+### C07 final implementation review — 2026-10-16
+
+- Added a validated `publishedWithin` API parameter (`24h`, `7d`, `14d`, `30d`; default `30d`) and a matching UI selector. The 30-day default is also used when clearing filters.
+- The query excludes null publication timestamps and applies the date cutoff before pagination. The route test now rejects unsupported date-window values and asserts the date cutoff plus deterministic ordering calls; the UI test asserts the selected date window is submitted and reset correctly.
+- Added a deterministic parent ordering by `jobs.updated_at`; related source rows are ordered by `published_at`. This does **not** prove parent rows are globally sorted by related publication timestamp. If that exact ordering is required, use a view/RPC or denormalized publication-sort field after checking the database relationship and schema.
+- Clarified the employment type placeholder so it no longer implies comma-separated multi-value search.
+- C08 save/dismiss/undo is intentionally excluded.
+- **C07 remains In review.** Remote file edits are not a substitute for running the repository. No tests, type-check, lint, production build, or browser tests were run in this session. Before user testing, run the full quality suite locally and verify the nested relation filter against an authenticated Supabase dataset; investigate any remaining local CSS parse error without changing shared CSS speculatively.
