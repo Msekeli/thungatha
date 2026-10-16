@@ -28,7 +28,7 @@ function response(body: unknown, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => body };
 }
 
-function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; detailStatus?: number; feedStatus?: number } = {}) {
+function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; detailStatus?: number; feedStatus?: number; feedBody?: unknown } = {}) {
   const requests: string[] = [];
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
@@ -36,7 +36,7 @@ function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; det
     if (url.startsWith("/api/jobs?")) {
       if (options.feedStatus && options.feedStatus !== 200) return response({ error: "Service unavailable" }, options.feedStatus);
       const requestUrl = new URL(url, "http://local");
-      return response({ jobs, page: Number(requestUrl.searchParams.get("page") ?? "1"), pageSize: 25, total: options.total ?? jobs.length, totalPages: Math.ceil((options.total ?? jobs.length) / 25) });
+      return response(options.feedBody ?? { jobs, page: Number(requestUrl.searchParams.get("page") ?? "1"), pageSize: 25, total: options.total ?? jobs.length, totalPages: Math.ceil((options.total ?? jobs.length) / 25) });
     }
     if (url.startsWith("/api/jobs/")) {
       if (options.detailStatus && options.detailStatus !== 200) return response({ error: "Job not found" }, options.detailStatus);
@@ -111,6 +111,14 @@ describe("Job Discovery", () => {
     render(<JobsDiscovery />);
     expect(await screen.findByText(/Your session has expired/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Go to sign in" }).getAttribute("href")).toBe("/sign-in");
+  });
+
+  it("rejects malformed feed metadata instead of rendering inconsistent results", async () => {
+    setupFetch([firstJob], { feedBody: { jobs: [firstJob], page: 1, pageSize: 25, total: 30, totalPages: 1 } });
+    render(<JobsDiscovery />);
+    expect(await screen.findByRole("alert")).toBeTruthy();
+    expect(screen.getByText(/unexpected response/)).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Software Engineer" })).toBeNull();
   });
 
   it("shows empty results separately from request failures", async () => {
