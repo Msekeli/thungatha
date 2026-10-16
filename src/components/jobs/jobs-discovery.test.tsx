@@ -74,10 +74,11 @@ describe("Job Discovery", () => {
     fireEvent.change(screen.getByLabelText("Country"), { target: { value: "ZA" } });
     fireEvent.change(screen.getByLabelText("Work mode"), { target: { value: "remote" } });
     fireEvent.change(screen.getByLabelText("Employment type"), { target: { value: "Full-time" } });
+    fireEvent.change(screen.getByLabelText("Posted within"), { target: { value: "7d" } });
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     await waitFor(() => expect(requests.some((url) => {
       const params = new URL(url, "http://local").searchParams;
-      return params.get("query") === "engineer" && params.get("location") === "Cape Town" && params.get("countryCode") === "ZA" && params.get("workMode") === "remote" && params.get("employmentType") === "Full-time";
+      return params.get("query") === "engineer" && params.get("location") === "Cape Town" && params.get("countryCode") === "ZA" && params.get("workMode") === "remote" && params.get("employmentType") === "Full-time" && params.get("publishedWithin") === "7d";
     })).toBe(true));
   });
 
@@ -91,7 +92,7 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
     await waitFor(() => expect(requests.some((url) => {
       const p = new URL(url, "http://local").searchParams;
-      return !p.get("query") && p.get("page") === "1" && p.get("pageSize") === "25";
+      return !p.get("query") && p.get("publishedWithin") === "30d" && p.get("page") === "1" && p.get("pageSize") === "25";
     })).toBe(true));
     expect((screen.getByLabelText("Keyword or employer") as HTMLInputElement).value).toBe("");
   });
