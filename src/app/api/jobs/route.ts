@@ -82,7 +82,7 @@ export async function GET(request: Request) {
       if (dismissed.length) query = query.not("id", "in", `(${dismissed.join(",")})`);
     }
     const from = (input.page - 1) * input.pageSize;
-    const { data, error, count } = await query.order("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false }).range(from, from + input.pageSize - 1);
+    const { data, error, count } = await query.order("updated_at", { ascending: false }).order("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false }).range(from, from + input.pageSize - 1);
     if (error) throw error;
     const jobs = (data ?? []).map((job) => ({ ...job, state: stateByJob.get(job.id) ?? null }));
     const total = count ?? 0;
