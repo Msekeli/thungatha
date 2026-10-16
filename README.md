@@ -38,8 +38,6 @@ npm run dev
 
 Configure the required environment variables in `.env.local` before using authenticated features. If `.env.local` already exists, preserve it and add only missing variables from `.env.example`. Never commit secrets.
 
-For local job-feed testing while the Clerk/Supabase integration is being resolved, set `THUNGATHA_AUTH_BYPASS=true` in `.env.local` and restart the dev server. This bypass is ignored in production. In bypass mode, the public jobs feed works without a session; saved/dismissed filters and per-user state are unavailable. Apply the migration `20261016000100_allow_public_job_discovery.sql` to the Supabase project first. Keep profile, CV, and application endpoints authenticated, and set the bypass back to `false` before deployment.
-
 ### Job ingestion
 
 The job catalogue is populated by a protected server-side runner; visiting the feed does not trigger provider calls. Configure at least one provider (Adzuna or Jooble), `NEXT_PUBLIC_SUPABASE_URL`, and the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Also set `INGESTION_CRON_SECRET` to a long random secret. Do not expose the Supabase secret key to the browser or commit it.
