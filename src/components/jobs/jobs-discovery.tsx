@@ -318,13 +318,17 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
             <div className="th-jobs-detail-placeholder" role="alert"><span className="th-jobs-state-symbol" aria-hidden="true">!</span><strong>Details are unavailable</strong><p>{detailError}</p><Button variant="secondary" onClick={() => setRetryDetail((value) => value + 1)}>Retry details</Button></div>
           ) : selectedDetail ? (
             <div className="th-jobs-detail-content" key={selectedDetail.id}>
-              <div className="th-jobs-detail-brand"><span className="th-jobs-employer-mark th-jobs-employer-mark-large" aria-hidden="true">{(selectedDetail.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</span><div><h3>{selectedDetail.title}</h3><p>{shown(selectedDetail.employer_name)}</p></div></div>
-              <div className="th-jobs-detail-tags">{selectedDetail.work_mode && selectedDetail.work_mode !== "unknown" && <span className="th-tag" data-tone="accent">{selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"}</span>}{selectedDetail.employment_type && <span className="th-tag">{selectedDetail.employment_type}</span>}</div>
-              <dl className="th-jobs-facts"><div><dt>Location</dt><dd>{shown(selectedDetail.location_text)}</dd></div>{formatSalary(selectedDetail) && <div><dt>Salary</dt><dd>{formatSalary(selectedDetail)}</dd></div>}<div><dt>Published</dt><dd>{formatDate(selectedSource?.published_at) ?? "Date not provided"}</dd></div><div><dt>Last updated</dt><dd>{formatDate(selectedDetail.updated_at) ?? "Date not provided"}</dd></div></dl>
-              <div className="th-jobs-description"><h4>Job description</h4>{selectedDetail.description?.trim() ? <p>{selectedDetail.description}</p> : <p className="th-jobs-muted">The source did not provide a job description.</p>}</div>
-              <div className="th-jobs-source-block"><p className="th-jobs-label">DISCOVERY SOURCE</p><strong>{sourceLabel(selectedSource)}</strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <span aria-hidden="true">↗</span></a> : <span className="th-jobs-muted">Original source URL not available or unsafe</span>}</div>
-              <div className="th-jobs-application-block"><p className="th-jobs-label">APPLICATION DESTINATION</p>{applicationUrl ? <><a className="th-jobs-apply-link" href={applicationUrl} target="_blank" rel="noopener noreferrer">Open job application page <span aria-hidden="true">↗</span></a><p>Opens the external website. Thungatha does not submit an application.</p></> : <p className="th-jobs-muted">An application destination was not supplied or is not a safe web URL.</p>}</div>
-              <div className="th-jobs-detail-actions"><Link className="th-jobs-tailor-link" href={`/cv-studio?jobId=${encodeURIComponent(selectedDetail.id)}`}>Tailor my CV</Link><Button variant="secondary" onClick={() => { if (sourceUrl) window.open(sourceUrl, "_blank", "noopener,noreferrer"); }} disabled={!sourceUrl}>Open job page</Button><Button variant="ghost" className="th-jobs-desktop-back" onClick={() => setMobileDetail(false)}>Back to results</Button></div>
+              <div className="th-jobs-detail-topline">
+                <div className="th-jobs-detail-brand"><div><h3>{selectedDetail.title}</h3><p>{shown(selectedDetail.employer_name)} · {shown(selectedDetail.location_text)}{selectedDetail.work_mode && selectedDetail.work_mode !== "unknown" ? ` · ${selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"}` : ""}</p></div></div>
+              </div>
+              <div className="th-jobs-detail-actions">
+                <Link className="th-jobs-tailor-link" href={`/cv-studio?jobId=${encodeURIComponent(selectedDetail.id)}`}>▤ Tailor my CV</Link>
+                <Button variant="secondary" disabled title="Saving jobs is introduced in a later milestone">♧ Save</Button>
+                <Button variant="ghost" disabled title="Dismissing jobs is introduced in a later milestone">× Dismiss</Button>
+                <Button variant="secondary" onClick={() => { if (sourceUrl) window.open(sourceUrl, "_blank", "noopener,noreferrer"); }} disabled={!sourceUrl}>↗ Open job page</Button>
+                <Button variant="secondary" disabled title="Application tracking is introduced in a later milestone">→ I applied</Button>
+              </div>
+              <div className="th-jobs-source-status"><span data-available={Boolean(sourceUrl)}>✓ {sourceUrl ? "Official site found" : "Source link unavailable"}</span><p>Found via {sourceLabel(selectedSource)}{applicationUrl ? " · Application page available" : " · Application link not supplied"}</p></div>
               <section className="th-jobs-match-placeholder" aria-label="Future job match analysis">
                 <header><div><h4>Match</h4><p>Based on your confirmed profile</p></div><span className="th-jobs-match-coming">Coming in a later checkpoint</span></header>
                 <div className="th-jobs-match-score"><strong>—</strong><span>Match analysis not available yet</span></div>
@@ -332,7 +336,21 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                 <div className="th-jobs-match-categories"><span>Confirmed</span><span>Inferred</span><span>Missing</span><span>Can’t verify</span></div>
                 <p>Match scores and requirement evidence will appear here when profile-based matching is implemented. No score is calculated in this checkpoint.</p>
               </section>
-              <p className="th-jobs-integrity-note">No fit score or application status is shown unless the corresponding feature supplies a verified record.</p>
+              <section className="th-jobs-detail-card">
+                <header><h4>Job details</h4></header>
+                <dl className="th-jobs-facts">
+                  <div><dt>Employer</dt><dd>{shown(selectedDetail.employer_name)}</dd></div>
+                  <div><dt>Location</dt><dd>{shown(selectedDetail.location_text)}{selectedDetail.work_mode && selectedDetail.work_mode !== "unknown" ? ` (${selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"})` : ""}</dd></div>
+                  <div><dt>Job type</dt><dd>{shown(selectedDetail.employment_type)}</dd></div>
+                  <div><dt>Salary</dt><dd>{formatSalary(selectedDetail) ?? "Not stated in the listing"}</dd></div>
+                  <div><dt>Posted</dt><dd>{formatDate(selectedSource?.published_at) ?? "Date not provided"}</dd></div>
+                  <div><dt>Source</dt><dd>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceLabel(selectedSource)}</a> : sourceLabel(selectedSource)}</dd></div>
+                </dl>
+                <div className="th-jobs-description"><h4>Job description</h4>{selectedDetail.description?.trim() ? <p>{selectedDetail.description}</p> : <p className="th-jobs-muted">The source did not provide a job description.</p>}</div>
+              </section>
+              <p className="th-jobs-integrity-note">Match scores and application tracking are placeholders for later milestones. No score is calculated in this checkpoint.</p>
+              {detailLoading && <p className="th-jobs-muted" role="status">Refreshing job details…</p>}
+              {detailError && <p className="th-jobs-muted" role="status">Showing the listing data available in the feed. Full detail refresh failed: {detailError} <button type="button" onClick={() => setRetryDetail((value) => value + 1)}>Retry</button></p>}
             </div>
           ) : null}
         </section>
