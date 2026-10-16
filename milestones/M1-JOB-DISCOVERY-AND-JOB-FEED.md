@@ -328,3 +328,12 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Added a component regression test for `javascript:` and `data:` destinations.
 - This is client-side presentation hardening, not a replacement for validating URLs at ingestion and does not change RLS or API access controls.
 - Verification remains pending: the remote GitHub editing tools do not execute the repository's test/build workflow, and no workflow run was reported for the follow-up commit. Keep C07 in review until the local quality suite and browser acceptance checks pass.
+
+
+### C07 publication recency filter — 2026-10-16
+
+- Added a required publication-age filter to the job feed: last 24 hours, 7 days, 14 days, or 30 days (default and maximum window).
+- The API filters on `job_sources.published_at`, excludes listings with missing publication dates, and sorts by publication date rather than database update time. This prevents refreshed old listings from appearing recent merely because their records were updated.
+- Added UI and API regression assertions for the selected date range and publication-date query.
+- Save/dismiss/undo remain out of C07 and are not being added to this screen; those actions stay in C08.
+- **Verification remains pending.** The changes were committed to `dev` through the remote repository workflow; automated tests, type-check, lint, build, and browser checks have not been run in this session. Confirm the Supabase relation filter/order behaviour with the repository's installed Supabase client and a controlled authenticated data set before accepting C07.
