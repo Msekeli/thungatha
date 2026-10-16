@@ -25,3 +25,22 @@ export async function createAuthenticatedSupabaseClient(
     },
   });
 }
+
+
+/**
+ * Anonymous read-only client for public job discovery.
+ * It never uses a service-role key or a user session token.
+ */
+export async function createPublicSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !publishableKey) throw new SupabaseConfigurationError();
+
+  return createClient(url, publishableKey, {
+    auth: {
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      persistSession: false,
+    },
+  });
+}
