@@ -54,8 +54,26 @@ export async function GET(request: Request) {
     }
     if (input.location) query = query.ilike("location_text", `%${input.location.replace(/[%_*]/g, " ")}%`);
     if (input.countryCode) query = query.eq("country_code", input.countryCode);
-    if (input.workMode) query = query.eq("work_mode", input.workMode);
-    if (input.employmentType) query = query.ilike("employment_type", `%${input.employmentType.replace(/[%_*]/g, " ")}%`);
+    if (input.workMode === "unknown") {
+      // Providers commonly leave work mode NULL rather than explicitly storing "unknown".
+      query = query.or("work_mode.is.null,work_mode.eq.unknown");
+    } else if (input.workMode) {
+      query = query.eq("work_mode", input.workMode);
+    }
+    if (input.employmentType) {
+      const term = input.employmentType.trim().toLowerCase().replace(/[%_*]/g, " ").replace(/\s+/g, " ");
+      const variants: Record<string, string[]> = {
+        "full-time": ["full-time", "full_time", "full time"],
+        "full time": ["full-time", "full_time", "full time"],
+        "full_time": ["full-time", "full_time", "full time"],
+        "part-time": ["part-time", "part_time", "part time"],
+        "part time": ["part-time", "part_time", "part time"],
+        "part_time": ["part-time", "part_time", "part time"],
+      };
+      const terms = variants[term] ?? [term];
+      const clauses = [...new Set(terms)].map((value) => `employment_type.ilike.%${value}%`);
+      query = clauses.length > 1 ? query.or(clauses.join(",")) : query.ilike("employment_type", `%${terms[0]}%`);
+    }
     if (input.state === "saved" || input.state === "dismissed") {
       const ids = states.map((item) => item.job_id);
       if (!ids.length) return NextResponse.json({ jobs: [], page: input.page, pageSize: input.pageSize, total: 0, totalPages: 0 });
