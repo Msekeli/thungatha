@@ -27,7 +27,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
   if (!parsed.success) return apiError("State must be saved or dismissed", 400);
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
-    const { data: job, error: jobError } = await db.from("jobs").select("id").eq("id", id).maybeSingle();
+    const { data: job, error: jobError } = await db.from("jobs").select("id,job_sources!inner(availability_status)").eq("id", id).eq("job_sources.availability_status", "active").maybeSingle();
     if (jobError) throw jobError;
     if (!job) return apiError("Job not found", 404);
     const { data, error } = await db.from("user_job_states").upsert(
