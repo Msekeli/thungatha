@@ -6,7 +6,7 @@ import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@
 
 function sanitizeFilterTerm(value: string): string {
   // Treat search input as plain text, never as PostgREST filter syntax.
-  return value.replace(/[^a-zA-Z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+  return value.replace(/[^\p{L}\p{N}\s-]/gu, " ").replace(/\s+/g, " ").trim();
 }
 
 const querySchema = z.object({
