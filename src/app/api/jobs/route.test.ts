@@ -52,7 +52,7 @@ describe("GET /api/jobs", () => {
   });
 
   it("rejects invalid pagination and filter parameters", async () => {
-    const response = await GET(new Request("http://localhost/api/jobs?page=0&workMode=spaceship"));
+    const response = await GET(new Request("http://localhost/api/jobs?page=0&workMode=spaceship&publishedWithin=90d"));
     expect(response.status).toBe(400);
     expect(client).not.toHaveBeenCalled();
   });
@@ -75,6 +75,7 @@ describe("GET /api/jobs", () => {
     expect(jobs.eq).toHaveBeenCalledWith("job_sources.availability_status", "active");
     expect(jobs.gte).toHaveBeenCalledWith("job_sources.published_at", expect.any(String));
     expect(jobs.not).toHaveBeenCalledWith("job_sources.published_at", "is", null);
+    expect(jobs.order).toHaveBeenCalledWith("updated_at", { ascending: false });
     expect(jobs.order).toHaveBeenCalledWith("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false });
     expect(jobs.or).toHaveBeenCalled();
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
