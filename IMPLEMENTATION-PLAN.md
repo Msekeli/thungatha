@@ -45,7 +45,7 @@ The product specification and architecture document will define these experience
 | Milestone | Name | Status |
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
-| M1 | Job Discovery and Job Feed | In progress — C01 in review |
+| M1 | Job Discovery and Job Feed | In progress — C05 under investigation; C06 locally verified, cloud acceptance gates outstanding |
 | M2 | Profile and CV Import | Not started |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 is under investigation; its AI-extraction decision and implementation scope remain unresolved. Work may proceed to C06's Discovery query and action contracts while C05 remains explicitly open, provided C06 does not assume or depend on AI extraction.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation has passed local type-checking, lint, unit tests and production build, but authenticated cloud smoke testing and cross-user/RLS isolation remain unverified. C07 is the Discovery UI checkpoint. C05 remains open and must be resolved before M1 acceptance.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -331,6 +331,16 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 ## M1-C06 status update — 2026-10-16
 
-**Status: In progress; not yet accepted.** The `dev` branch now has broader endpoint tests for the persisted jobs feed, pagination/filter query construction, job details, saved/dismissed state transitions, malformed inputs, inactive listings, and user-scoped state deletion. State changes are restricted to active listings. A GitHub Actions workflow was added to run type-check, lint, unit tests, and production build on pushes and pull requests to `dev`.
+**Status: In progress — local verification passed; cloud acceptance gates outstanding.** The C06 API implementation is on `dev` at `cbeb21dc06a2a44e402c4f4712caf5f00fb235ea`. The local working tree was clean and aligned with `origin/dev`.
 
-**Verification honesty:** these new tests and the workflow have not yet produced a verified result in this session. Do not mark C06 accepted until the workflow/local quality checks pass and the authenticated endpoints are tested against stored records with cross-user/RLS isolation confirmed. UI remains M1-C07; no UI implementation is included in C06. No provider ingestion was re-run and no production database changes were made during this C06 code work.
+**Local verification completed by the user:**
+- `npx tsc --noEmit` — passed.
+- `npm run lint` — passed.
+- `npm test` — 13 test files passed; 82 tests passed. Expected stderr from tests simulating Clerk/database failures did not fail the suite.
+- `npm run build` — passed on Next.js 16.4.0; the previous API prerender warning did not recur.
+
+The implementation covers the persisted jobs feed, query filtering and pagination, job details, saved/dismissed state transitions, malformed inputs, inactive listings and user-scoped state deletion. State changes are restricted to active listings. The API routes defer request-dependent work until request time. C06 remains API-only; the Discovery UI belongs to C07.
+
+**Outstanding acceptance gates:** an authenticated cloud smoke test of feed and detail reads, plus cross-user/RLS isolation verification for user-specific state. These have not been performed, so do not describe C06 as fully accepted or claim cloud security verification. Do not write to production user state merely to complete this checkpoint; use an approved isolated test-data strategy for state mutations.
+
+No provider ingestion was re-run and no production database changes were made during this C06 code work. Do not repeat the successful local checks unless a concrete code change or failure warrants it.
