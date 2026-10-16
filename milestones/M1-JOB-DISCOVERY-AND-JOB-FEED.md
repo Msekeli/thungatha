@@ -170,18 +170,20 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - External navigation alone never creates or confirms an application.
 
 
-**Implementation status: In progress (backend/API only).** Initial implementation is committed to `dev`; this is not checkpoint acceptance. Type-check, lint, build, full test suite, and live authenticated API behaviour have not been run from this session.
+**Implementation status: In progress (backend/API only).** Initial implementation and follow-up test/security changes are committed to `dev`; C06 is not accepted until the quality checks and authenticated behaviour are verified.
 
 Initial API contract:
 - `GET /api/jobs`: persisted catalogue feed with validated query, location, country, work-mode and employment-type filters; page/pageSize pagination; active source records; optional `state=all|saved|dismissed`. The default feed excludes dismissed jobs.
 - `GET /api/jobs/{id}`: retrieve an active persisted listing and the signed-in user's state.
-- `PUT /api/jobs/{id}/state`: set only `saved` or `dismissed`, using server-resolved identity.
+- `PUT /api/jobs/{id}/state`: set only `saved` or `dismissed`, using server-resolved identity. Updates are limited to active listings.
 - `DELETE /api/jobs/{id}/state`: clear only the signed-in user's state for that job.
 
 Security and lifecycle boundaries:
 - Handlers require configured Clerk authentication and use the authenticated Supabase client. User-state queries/writes are scoped by the server-derived user ID and subject to database RLS.
 - The state API rejects `applied`; opening an external application URL is not an application submission. Creating an M5 application record is not included because the M5 application-tracking contract is not yet available.
-- Tests currently cover authentication and request-validation boundaries only. Successful database interactions, real pagination/filter semantics, RLS cross-user isolation, and end-to-end behaviour still require execution and review before acceptance.
+- Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion. These tests have been authored but **have not yet been executed in this session**.
+- Added a GitHub Actions quality workflow on `dev` to run type-check, lint, unit tests and production build. Workflow results must be inspected before claiming verification.
+- Still required before acceptance: execute the full checks; verify the authenticated API against the stored records; confirm RLS/cross-user isolation and pagination/filter behaviour against Supabase; resolve any failures; record actual evidence and user review.
 
 ### M1-C07 — Job Discovery feed, search, filters and details
 
