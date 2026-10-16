@@ -43,11 +43,11 @@ async function ingestProvider(client:RpcClient,provider:JobProvider):Promise<Pro
    counts.inserted=saved.inserted;counts.updated=saved.updated;counts.skipped=saved.skipped+invalid;
   }else counts.skipped=invalid;
   const status=invalid||counts.skipped?"partial":"succeeded";
-  await rpc(client,"finish_job_ingestion_run",{p_run_id:runId,p_status:status,p_error_count:invalid,p_error_message:invalid?String(invalid)+" provider records failed schema validation.":null});
+  await rpc(client,"finish_job_ingestion_run",{p_run_id:runId,p_status:status,p_error_count:invalid,p_error_message:invalid?String(invalid)+" provider records failed schema validation.":null,p_received_count:counts.received});
   return {providerKey:provider.key,status,...counts};
  }catch(error){
   const message=errorMessage(error);
-  if(runId) try{await rpc(client,"finish_job_ingestion_run",{p_run_id:runId,p_status:"failed",p_error_count:1,p_error_message:message});}catch{/* Preserve original failure and never overwrite a terminal run. */}
+  if(runId) try{await rpc(client,"finish_job_ingestion_run",{p_run_id:runId,p_status:"failed",p_error_count:1,p_error_message:message,p_received_count:counts.received});}catch{/* Preserve original failure and never overwrite a terminal run. */}
   return {providerKey:provider.key,status:"failed",...counts,error:message};
  }
 }
