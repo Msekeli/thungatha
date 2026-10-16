@@ -347,3 +347,28 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Clarified the employment type placeholder so it no longer implies comma-separated multi-value search.
 - C08 save/dismiss/undo is intentionally excluded.
 - **C07 remains In review.** Remote file edits are not a substitute for running the repository. No tests, type-check, lint, production build, or browser tests were run in this session. Before user testing, run the full quality suite locally and verify the nested relation filter against an authenticated Supabase dataset; investigate any remaining local CSS parse error without changing shared CSS speculatively.
+
+
+### C07 local verification update — 2026-10-16
+
+**Status: In review — local quality checks passed; acceptance gates remain open.**
+
+The user ran the quality checks locally on `dev` after the test assertion fix:
+
+- `npx tsc --noEmit`: passed with no TypeScript errors.
+- `npm run lint`: 0 errors and 3 warnings for unused destructured props (`_variant`, `_size`, `_block`) in `src/components/jobs/jobs-discovery.test.tsx`.
+- `npm test`: passed — 14 test files, 94 tests.
+- `npm run build`: passed — production build completed.
+- `npm run test:e2e`: passed — 2 Playwright tests.
+
+The earlier unit-test failure was caused by `getByText("Greenhouse")` matching both the card source label and the details-panel label. The assertion was changed to allow multiple matches. This was a test-only correction; no application behaviour changed. Fix commit on `dev`: `6fef2c038bd90537b955286ba20ffed249bee843`.
+
+**Verification limits and remaining actions**
+
+1. Confirm that GitHub Actions for the fix commit is green; the prior workflow run failed on the now-corrected assertion, and a green run for the fix commit has not yet been confirmed.
+2. Complete the outstanding browser/responsive and keyboard/accessibility checks.
+3. Verify combined filters, publication-age filtering, result counts, and pagination against a controlled authenticated Supabase dataset. Mocked unit tests alone do not prove real PostgREST behaviour.
+4. Complete C06 authenticated feed/detail smoke tests and cross-user/RLS isolation checks.
+5. Record user review and explicit acceptance before changing C07 to **Accepted**.
+
+C07 remains **In review**. These local results are meaningful quality evidence, but they do not complete the cloud, browser, security, or user-acceptance gates. C08 save/dismiss/undo remains separate and out of C07 scope.
