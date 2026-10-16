@@ -336,3 +336,30 @@
 .th-workspace-content .th-jobs-detail-actions .th-jobs-tailor-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border-radius:9px;background:var(--th-accent);color:var(--th-on-accent,#071018);font-size:13px;font-weight:600;text-decoration:none}
 @media(max-width:1100px) and (min-width:701px){.th-workspace-content>.th-jobs-page{padding:20px}.th-workspace-content .th-jobs-workspace{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:14px}}
 @media(max-width:700px){.th-workspace-shell{height:auto;min-height:100dvh;overflow:visible;flex-direction:column}.th-workspace-sidebar{height:auto;min-height:0;width:100%;overflow:visible}.th-workspace-content{height:auto;min-height:0;overflow:visible}.th-workspace-content>.th-jobs-page{height:auto;min-height:0;padding:20px 14px 28px;overflow:visible}.th-workspace-content .th-jobs-workspace{display:flex;flex-direction:column;min-height:0;overflow:visible;gap:12px}.th-workspace-content .th-jobs-feed-column{display:contents;overflow:visible}.th-workspace-content .th-jobs-search-panel{order:0;padding:0 0 14px;overflow:visible}.th-workspace-content .th-jobs-search-panel form{display:flex;flex-direction:column;gap:10px}.th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(2),.th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(3),.th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(4){display:flex;width:100%}.th-workspace-content .th-jobs-results-panel{order:1;padding:14px 0 0;border:0;border-top:1px solid var(--th-line);overflow:visible}.th-workspace-content .th-jobs-detail-panel{order:2;display:none;padding:16px 0 0;border:0;border-top:1px solid var(--th-line);overflow:visible}.th-workspace-content .th-jobs-detail-panel.th-jobs-mobile-visible{display:block}.th-workspace-content .th-jobs-detail-close{display:inline-flex}.th-workspace-content .th-jobs-desktop-back{display:none}.th-workspace-content .th-jobs-pagination{position:static}}
+
+/* Selected-role hierarchy from the approved reference. */
+.th-jobs-detail-topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.th-jobs-detail-topline .th-jobs-detail-brand{flex:1;min-width:0}
+.th-jobs-detail-topline .th-jobs-detail-brand h3{margin:0 0 4px;font-size:22px;font-weight:600}
+.th-jobs-detail-topline .th-jobs-detail-brand p{margin:0;color:var(--th-fg-muted);font-size:13px;line-height:1.5}
+.th-workspace-content .th-jobs-detail-actions{margin:16px 0;gap:8px}
+.th-workspace-content .th-jobs-detail-actions button{min-height:40px}
+.th-jobs-detail-actions button:disabled{opacity:.55;cursor:not-allowed}
+.th-jobs-source-status{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:0 0 18px;font-size:12px}
+.th-jobs-source-status>span{padding:8px 10px;border-radius:7px;background:var(--th-tag-bg);color:var(--th-fg-muted);font-size:11px}
+.th-jobs-source-status>span[data-available=true]{background:var(--th-success-bg,var(--th-tag-bg));color:var(--th-success,var(--th-fg-muted))}
+.th-jobs-source-status p{margin:0;color:var(--th-fg-muted);overflow-wrap:anywhere}
+.th-workspace-content .th-jobs-match-placeholder{margin:0 0 18px}
+.th-jobs-detail-card{overflow:hidden;border:1px solid var(--th-line);border-radius:12px;background:var(--th-surface,var(--th-page))}
+.th-jobs-detail-card>header{padding:14px 16px;border-bottom:1px solid var(--th-line);background:var(--th-tag-bg)}
+.th-jobs-detail-card>header h4{margin:0;font-size:15px;font-weight:600}
+.th-jobs-detail-card .th-jobs-facts{grid-template-columns:minmax(0,1fr);gap:0;padding:6px 16px;border:0}
+.th-jobs-detail-card .th-jobs-facts>div{display:grid;grid-template-columns:minmax(92px,.45fr) minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--th-line)}
+.th-jobs-detail-card .th-jobs-facts>div:last-child{border-bottom:0}
+.th-jobs-detail-card .th-jobs-facts dt{margin:0;font-size:12px}
+.th-jobs-detail-card .th-jobs-facts dd{font-size:12px}
+.th-jobs-detail-card .th-jobs-facts a{color:var(--th-accent-text)}
+.th-jobs-detail-card .th-jobs-description{padding:0 16px 16px}
+.th-jobs-detail-card .th-jobs-description h4{margin-bottom:8px;color:var(--th-fg);font-size:13px}
+.th-jobs-detail-card .th-jobs-description p{font-size:12px}
+@media(max-width:700px){.th-jobs-detail-topline .th-jobs-detail-brand h3{font-size:20px}.th-workspace-content .th-jobs-detail-actions{gap:6px}.th-jobs-detail-card .th-jobs-facts>div{grid-template-columns:100px minmax(0,1fr)}}
