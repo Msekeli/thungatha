@@ -101,13 +101,14 @@ export default function JobsDiscovery() {
   const [detailError, setDetailError] = useState<string | null>(null);
   const [retryDetail, setRetryDetail] = useState(0);
   const [mobileDetail, setMobileDetail] = useState(false);
+  const [category, setCategory] = useState("new");
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const params = useMemo(() => {
-    const search = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), state: "all" });
+    const search = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), state: category === "saved" || category === "dismissed" ? category : "all" });
     for (const [key, value] of Object.entries(filters)) if (value.trim()) search.set(key, value.trim());
     return search.toString();
-  }, [filters, page]);
+  }, [filters, page, category]);
 
   const refreshFeed = useCallback(async (signal: AbortSignal) => {
     setLoading(true);
@@ -230,6 +231,13 @@ export default function JobsDiscovery() {
               <span>Keyword or employer</span>
               <input className="th-input" name="query" maxLength={200} placeholder="e.g. Software Engineer" value={draft.query} onChange={(event) => changeDraft("query", event.target.value)} />
             </label>
+            <div className="th-jobs-category-tabs" role="group" aria-label="Job categories">
+              {(["new", "saved", "applied", "dismissed"] as const).map((item) => (
+                <button key={item} type="button" className="th-jobs-category-tab" data-active={category === item} disabled={item === "applied"} title={item === "applied" ? "Application tracking is introduced in a later milestone" : undefined} onClick={() => { setCategory(item); setPage(1); setMobileDetail(false); }}>
+                  {item === "new" ? "New" : item === "saved" ? "Saved" : item === "applied" ? "Applied" : "Dismissed"}
+                </button>
+              ))}
+            </div>
             <label className="th-jobs-field">
               <span>Location</span>
               <input className="th-input" name="location" maxLength={200} placeholder="City, province or country" value={draft.location} onChange={(event) => changeDraft("location", event.target.value)} />
