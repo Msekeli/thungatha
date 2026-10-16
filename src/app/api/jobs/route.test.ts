@@ -14,7 +14,7 @@ function query(result: unknown) {
   // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
-  for (const method of ["select", "eq", "or", "ilike", "in", "not", "order", "range", "upsert", "delete"]) {
+  for (const method of ["select", "eq", "or", "ilike", "in", "not", "gte", "order", "range", "upsert", "delete"]) {
     builder[method] = vi.fn(() => builder);
   }
   builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) => Promise.resolve(result).then(resolve, reject);
@@ -73,6 +73,9 @@ describe("GET /api/jobs", () => {
     expect(from).toHaveBeenNthCalledWith(2, "jobs");
     expect(userStates.eq).toHaveBeenCalledWith("user_id", "user_alice");
     expect(jobs.eq).toHaveBeenCalledWith("job_sources.availability_status", "active");
+    expect(jobs.gte).toHaveBeenCalledWith("job_sources.published_at", expect.any(String));
+    expect(jobs.not).toHaveBeenCalledWith("job_sources.published_at", "is", null);
+    expect(jobs.order).toHaveBeenCalledWith("published_at", { referencedTable: "job_sources", ascending: false, nullsFirst: false });
     expect(jobs.or).toHaveBeenCalled();
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
     expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
