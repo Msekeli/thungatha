@@ -252,7 +252,7 @@ export default function JobsDiscovery() {
             </label>
             <label className="th-jobs-field">
               <span>Employment type</span>
-              <input className="th-input" name="employmentType" maxLength={100} placeholder="e.g. Full-time, contract" value={draft.employmentType} onChange={(event) => changeDraft("employmentType", event.target.value)} />
+              <input className="th-input" name="employmentType" maxLength={100} placeholder="e.g. Full-time" value={draft.employmentType} onChange={(event) => changeDraft("employmentType", event.target.value)} />
             </label>
             <div className="th-jobs-filter-actions">
               <Button type="submit" variant="primary" block>Apply filters</Button>
