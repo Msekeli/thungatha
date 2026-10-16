@@ -34,7 +34,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-016 | AI must not invent professional facts or silently overwrite confirmed information | User review and deterministic validation remain authoritative. | Confirmed |
 
 ## 3. Job discovery and provider strategy
-
+**M1-C03 implementation note:** Adzuna, Jooble and Greenhouse adapters have been implemented. Their presence in the provider registry does not imply production approval. Ongoing-use permission, attribution, quotas and operational suitability remain subject to source-specific validation.
 The following direction is established by the M1 — Job Discovery & Job Feed specification. It must not be treated as an undecided overall strategy.
 
 ### D-017 — Source-agnostic job discovery
