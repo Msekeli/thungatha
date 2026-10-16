@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
+import { WorkspaceShell } from "@/components/layout/workspace-shell";
 
 type JobSource = {
   id: string;
@@ -206,6 +207,7 @@ export default function JobsDiscovery() {
   const hasFilters = Object.entries(filters).some(([key, value]) => key === "publishedWithin" ? value !== "30d" : Boolean(value));
 
   return (
+    <WorkspaceShell active="/jobs">
     <main className="th-jobs-page">
       {!isAuthenticated && <div className="th-jobs-auth-notice" role="status"><p>Your session has expired. Sign in again to browse job listings.</p><Link href="/sign-in">Go to sign in</Link></div>}
       <header className="th-jobs-header">
@@ -325,5 +327,6 @@ export default function JobsDiscovery() {
         </section>
       </div>
     </main>
+    </WorkspaceShell>
   );
 }
