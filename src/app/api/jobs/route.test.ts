@@ -37,6 +37,13 @@ describe("GET /api/jobs", () => {
     expect(client).not.toHaveBeenCalled();
   });
 
+  it("returns 503 when Clerk identity verification throws", async () => {
+    identity.mockRejectedValue(new Error("Clerk unavailable"));
+    const response = await GET(new Request("http://localhost/api/jobs"));
+    expect(response.status).toBe(503);
+    expect(client).not.toHaveBeenCalled();
+  });
+
   it("requires an authenticated identity", async () => {
     identity.mockResolvedValue(null);
     const response = await GET(new Request("http://localhost/api/jobs"));
