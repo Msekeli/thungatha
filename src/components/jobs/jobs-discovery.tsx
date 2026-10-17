@@ -34,6 +34,11 @@ type Job = {
   state: "saved" | "dismissed" | null;
 };
 
+type JobActivity = {
+  application_link_opened_at: string | null;
+  applied_at: string | null;
+};
+
 type Feed = {
   jobs: Job[];
   page: number;
@@ -153,6 +158,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
   const [undoAction, setUndoAction] = useState<{ jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null>(null);
+  const [jobActivity, setJobActivity] = useState<JobActivity | null>(null);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState<string | null>(null);
+  const [promptDismissedForJobId, setPromptDismissedForJobId] = useState<string | null>(null);
+  const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -274,6 +284,35 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     return () => controller.abort();
   }, [selectedId, refreshDetail, retryDetail]);
 
+  useEffect(() => {
+    if (!selectedId) {
+      setJobActivity(null);
+      return;
+    }
+    const controller = new AbortController();
+    setJobActivity(null);
+    setActivityError(null);
+    setActivityLoading(true);
+    setPromptDismissedForJobId(null);
+    setForceAppliedPrompt(false);
+    void fetch(`/api/jobs/${encodeURIComponent(selectedId)}/activity`, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+      signal: controller.signal,
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(await getApiError(response));
+      const payload = (await response.json()) as { activity?: JobActivity };
+      if (!payload.activity) throw new Error("Unexpected activity response");
+      setJobActivity(payload.activity);
+    }).catch((reason) => {
+      if (reason instanceof Error && reason.name === "AbortError") return;
+      setActivityError("Application activity could not be loaded.");
+    }).finally(() => {
+      if (!controller.signal.aborted) setActivityLoading(false);
+    });
+    return () => controller.abort();
+  }, [selectedId]);
+
   const updateJobState = useCallback(
     async (
       job: Job,
@@ -376,6 +415,60 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     }
   };
 
+  useEffect(() => {
+    if (!undoAction) return;
+    const timeoutId = window.setTimeout(() => setUndoAction(null), 10_000);
+    return () => window.clearTimeout(timeoutId);
+  }, [undoAction]);
+
+  const openApplicationLink = (job: Job, url: string) => {
+    // Open synchronously from the click so the browser does not block the new tab.
+    window.open(url, "_blank", "noopener,noreferrer");
+    setPromptDismissedForJobId(job.id);
+    setForceAppliedPrompt(false);
+    setStateError(null);
+    void fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "opened_application" }),
+      cache: "no-store",
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(await getApiError(response));
+      const payload = (await response.json()) as { activity: JobActivity };
+      setJobActivity(payload.activity);
+    }).catch(() => {
+      setStateError("The application page opened, but Thungatha could not record that visit.");
+    });
+  };
+
+  const confirmApplied = async () => {
+    if (!selectedDetail || stateBusy) return;
+    setStateBusy(true);
+    setStateError(null);
+    try {
+      const response = await fetch(`/api/jobs/${encodeURIComponent(selectedDetail.id)}/activity`, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "confirm_applied" }),
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        setStateError(await getApiError(response));
+        return;
+      }
+      const payload = (await response.json()) as { activity: JobActivity };
+      setJobActivity(payload.activity);
+      setForceAppliedPrompt(false);
+      setPromptDismissedForJobId(selectedDetail.id);
+      setStateMessage("Application confirmation recorded.");
+      setRetryFeed((value) => value + 1);
+    } catch {
+      setStateError("Could not record your application confirmation. Please try again.");
+    } finally {
+      setStateBusy(false);
+    }
+  };
+
   const submitFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFilters({ ...draft });
@@ -437,7 +530,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         </header>
 
         {undoAction && (
-          <div className="th-jobs-state-notice" role="status" aria-live="polite">
+          <div className="th-jobs-undo-snackbar" role="status" aria-live="polite">
             <span>
               {undoAction.nextState === "saved" ? (
                 <>{undoAction.title} saved.</>
@@ -895,12 +988,32 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </Button>
                   <Button
                     variant="secondary"
-                    disabled
-                    title="Application tracking is introduced in a later milestone"
+                    onClick={() => applicationUrl && openApplicationLink(selectedDetail, applicationUrl)}
+                    disabled={!applicationUrl || stateBusy || detailLoading}
                   >
-                    → I applied
+                    ↗ Open application
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setForceAppliedPrompt(true)}
+                    disabled={stateBusy || detailLoading || Boolean(jobActivity?.applied_at)}
+                  >
+                    {jobActivity?.applied_at ? "✓ Applied" : "→ I applied"}
                   </Button>
                 </div>
+                {(forceAppliedPrompt || (jobActivity?.application_link_opened_at && !jobActivity.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
+                  <section className="th-jobs-applied-prompt" aria-labelledby="th-jobs-applied-prompt-title">
+                    <div>
+                      <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
+                      <p>You previously opened this application link. Opening it does not mean an application was submitted.</p>
+                    </div>
+                    <div className="th-jobs-applied-prompt-actions">
+                      <Button disabled={stateBusy || activityLoading} onClick={() => void confirmApplied()}>Yes, I applied</Button>
+                      <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
+                    </div>
+                  </section>
+                )}
+                {activityError && <p className="th-jobs-state-error" role="status">{activityError}</p>}
                 <div className="th-jobs-source-status">
                   <span data-available={Boolean(sourceUrl)}>
                     ✓{" "}
@@ -1013,8 +1126,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </div>
                 </section>
                 <p className="th-jobs-integrity-note">
-                  Match scores and application tracking are placeholders for
-                  later milestones. No score is calculated in this checkpoint.
+                  Opening an application link records a visit only. Your application is recorded only after you confirm it.
                 </p>
                 {detailLoading && (
                   <p className="th-jobs-muted" role="status">
