@@ -291,11 +291,12 @@ describe("Job Discovery", () => {
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
     fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
+    expect(await screen.findByRole("dialog", { name: "Did you apply for this role?" })).toBeTruthy();
+    expect(screen.getByText(/Software Engineer at Example Employer/)).toBeTruthy();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "opened_application" }) }),
     ));
-    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Yes, I applied" }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
