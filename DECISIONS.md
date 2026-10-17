@@ -33,6 +33,14 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-015 | Preserve job and application history | Temporary provider failures must not erase stored jobs or falsely mark listings unavailable. Submitted application materials must be preserved as appropriate snapshots. | Confirmed |
 | D-016 | AI must not invent professional facts or silently overwrite confirmed information | User review and deterministic validation remain authoritative. | Confirmed |
 
+### D-034 — UI icon library
+
+- **Status:** Confirmed
+- **Decision:** Use Lucide React (`lucide-react`) for general-purpose application UI icons.
+- **Rationale:** Consistent, lightweight outline icons fit the Thungatha SaaS interface and support configurable size, stroke width, colour, and theme-aware styling.
+- **Constraints:** Use icons consistently across navigation, job discovery, forms, and actions. Prefer CSS/Tailwind classes for theme-aware colours; avoid mixing icon libraries without a specific need. Keep the existing brand SVG assets separate from the UI icon system.
+- **Implementation note:** The package installation and replacement of existing Unicode glyphs must be completed and verified on `dev`; this decision entry alone does not mean the dependency has been installed.
+
 ## 3. Job discovery and provider strategy
 **M1-C03 implementation note:** Adzuna, Jooble and Greenhouse adapters have been implemented. Their presence in the provider registry does not imply production approval. Ongoing-use permission, attribution, quotas and operational suitability remain subject to source-specific validation.
 The following direction is established by the M1 — Job Discovery & Job Feed specification. It must not be treated as an undecided overall strategy.
