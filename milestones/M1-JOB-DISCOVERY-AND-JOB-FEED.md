@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 cloud acceptance gates outstanding; C07 UI in review; C08 save/dismiss/undo implementation in review  
+**Status:** In progress — C04 scoped database path verified; C05 decision open; C06 cloud/RLS acceptance gates outstanding; C07 UI in review; C08 implementation and user-tested application reminder in review; C09 audit in progress  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -407,3 +407,64 @@ GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9
 - Component tests were added for link-open tracking, the repeat-visit prompt, explicit confirmation, and dismissing/reopening the prompt. GitHub Actions Quality checks passed for commit `580253a9e7d383ae6e87213b9750d8f2339c25ef`: TypeScript check, lint, unit tests (15 files, 103 tests), and production build. Run: https://github.com/Msekeli/thungatha/actions/runs/38989215975. These automated checks do not replace authenticated Supabase/RLS and browser acceptance checks.
 - Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation. Apply the migration through the project's normal migration workflow and test with isolated users/data.
 - C08 remains **In review**, not Accepted, until migration, automated/local verification, authenticated RLS checks, and user review are complete.
+
+
+---
+
+## M1-C08 execution record — 2026-10-17
+
+**Status: In review — the application reminder is user-verified; the full C08 acceptance criteria are not yet evidenced.**
+
+### Changes and evidence
+
+- Added `public.user_job_activity` through migration `supabase/migrations/20261017000100_job_application_activity.sql`, with per-user row ownership enforced by RLS. The user ran the linked migration workflow: the dry run listed only this migration, then the migration was applied to hosted Supabase. The user confirmed the reminder works correctly after the migration.
+- Added authenticated `GET/POST /api/jobs/[id]/activity` handlers for loading per-user application activity, recording an external application-link visit, and persisting explicit applied confirmation. A link visit does not itself mark a job applied.
+- Updated Job Discovery to restore pending reminders from persisted activity and support the source-listing fallback when no separate application URL is available.
+- Added/updated activity API and component tests. These use mocked Supabase/query responses and do not prove live RLS enforcement or cross-user isolation.
+- Files changed for the application reminder work: `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/app/api/jobs/[id]/activity/route.ts`, `src/app/api/jobs/[id]/activity/route.test.ts`, and `supabase/migrations/20261017000100_job_application_activity.sql`.
+
+### Automated verification actually observed
+
+GitHub Actions Quality run [38994227871](https://github.com/Msekeli/thungatha/actions/runs/38994227871) passed on commit `1687578a69734aaa85ed626ed5077cb7fef2fbfe`:
+- `npx tsc --noEmit`: passed.
+- `npm run lint`: passed.
+- `npm test`: passed — 15 test files, 105 tests.
+- `npm run build`: passed.
+
+The workflow does not run `npm run test:e2e`. The current Playwright tests cover the home page and protected-route redirects, not the complete Job Discovery journey.
+
+### Remaining C08/C09 verification
+
+- Run an authenticated smoke test against hosted Supabase for activity GET/POST and save/dismiss/undo.
+- Verify per-user isolation with two authenticated users and the actual RLS policies; mocked route tests are insufficient evidence.
+- Exercise the application reminder, source-listing fallback, explicit applied confirmation, and saved/dismissed undo flow in a browser, including refresh and return navigation.
+- Verify the 10-second Undo snackbar and restoration of the exact prior state.
+- Keep C08 **In review** until the above evidence and user review are recorded.
+
+**User review:** The user confirmed the application reminder works after the migration was applied. Full C08 acceptance: pending.
+
+---
+
+## M1-C09 audit record — 2026-10-17
+
+**Status: In review — repository/CI audit completed; end-to-end and hosted acceptance remain open.**
+
+### Repository and CI findings
+
+- Audited `dev` at `1687578a69734aaa85ed626ed5077cb7fef2fbfe`; `main` was not changed.
+- The latest Quality workflow passed TypeScript, lint, 15 unit-test files / 105 tests, and production build.
+- Playwright currently has two tests: the landing page and protected-route authentication redirects. It does not test the Job Discovery user journey.
+- Existing API and ingestion tests cover many deterministic contracts, malformed data, provider failure, state writes, and activity actions. Their mocked database clients do not establish real hosted PostgREST filtering behaviour or actual RLS isolation.
+
+### Outstanding acceptance gates
+
+1. **C03/source approval:** Adzuna is implemented but the decision log explicitly excludes it from the approved integration plan unless the user reopens that decision. Jooble and Greenhouse are also present in the provider registry, but the repository does not contain complete source-specific approval evidence for terms, intended use, attribution, quotas/costs, and operational limits. Do not treat the current adapters as approved production sources solely because they work technically.
+2. **C05/AI boundary:** Current adapters consume structured JSON and use deterministic normalization. No concrete M1 AI-extraction requirement is evidenced in the current implementation. Record a decision to omit AI extraction from M1 unless a permitted source audit demonstrates a specific gap; C05 is not marked accepted by this audit alone.
+3. **C06/cloud security:** Authenticated feed/detail/state/activity behaviour against hosted records, plus cross-user RLS isolation, remains unverified in the recorded evidence.
+4. **C07/browser/data:** Verify combined filters, publication-age filtering, pagination and result counts against controlled hosted data. Complete responsive, keyboard and browser-console checks.
+5. **C08/browser lifecycle:** The user verified that the application reminder works after applying the migration. The complete save/dismiss/undo and activity journeys, cross-user isolation, and 10-second Undo behaviour still need recorded acceptance evidence.
+6. **C09 final review:** Record the above results, document approved source limitations, and obtain the user's explicit M1 acceptance only after critical gates pass.
+
+### Audit decision
+
+The repository and latest CI run are in a better state, but **M1 is not accepted**. No deployment or merge to `main` was performed. The next action is to resolve source approval and the C05 decision, then complete the hosted-data/RLS and browser checks with evidence.

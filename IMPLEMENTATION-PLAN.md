@@ -45,7 +45,7 @@ The product specification and architecture document will define these experience
 | Milestone | Name | Status |
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
-| M1 | Job Discovery and Job Feed | In progress — C05 under investigation; C06 locally verified, cloud acceptance gates outstanding |
+| M1 | Job Discovery and Job Feed | In progress — C05 decision open; C06 cloud/RLS gates outstanding; C07/C08 in review; C09 audit underway |
 | M2 | Profile and CV Import | Not started |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
@@ -64,7 +64,11 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06 authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI remains in review pending hosted-data, browser/responsive, accessibility, and user-acceptance gates. C08 save/dismiss/undo and the expanded application-activity workflow are implemented on `dev`. GitHub Actions Quality checks passed for commit `580253a9e7d383ae6e87213b9750d8f2339c25ef`: TypeScript, lint, unit tests (15 files, 103 tests), and production build (https://github.com/Msekeli/thungatha/actions/runs/38989215975). The new activity migration, endpoint, repeat-visit prompt, explicit applied confirmation and 10-second bottom Undo snackbar remain in review pending migration application, authenticated Supabase/RLS checks, local browser verification and user review. M5 will extend the minimal confirmation into the full application lifecycle. C05 remains open and must be resolved before M1 acceptance.
+M1 remains in progress. C04's database-side ingestion reliability path passed its scoped smoke test (see the dated record below). C05 remains open: the current provider adapters consume structured provider responses and normalize deterministically, and the repository does not yet establish a concrete need for AI extraction in M1. Record an explicit decision to omit AI extraction from M1 unless testing a permitted source reveals a specific gap. C06 authenticated Supabase smoke tests and real cross-user/RLS isolation are not evidenced. C07 remains in review pending hosted-data filter/pagination validation, responsive and keyboard/browser review, and user acceptance.
+
+C08's application-activity migration `20261017000100_job_application_activity.sql` was applied by the user to hosted Supabase after a dry run showed only that migration pending. The user confirmed the persisted application reminder now works. GitHub Actions passed on `1687578a69734aaa85ed626ed5077cb7fef2fbfe`: TypeScript check, lint, 15 unit-test files / 105 tests, and production build. The workflow does not run Playwright. The current Playwright suite covers the landing page and authentication redirects, not the end-to-end Job Discovery journey.
+
+Source approval remains unresolved. The decision log says Adzuna is excluded unless the user explicitly reopens that decision; the repository does not yet evidence final source-term and operational approval for the enabled Jooble/Greenhouse integrations. C09 audit is in progress. Do not accept M1 until the remaining source, cloud/RLS, browser, and user-review gates are resolved.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
