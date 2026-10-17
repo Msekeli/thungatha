@@ -996,7 +996,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     {selectedActivity?.applied_at ? "✓ Applied" : "→ I applied"}
                   </Button>
                 </div>
-                {(forceAppliedPrompt || (selectedActivity?.application_link_opened_at && !jobActivity.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
+                {(forceAppliedPrompt || (selectedActivity?.application_link_opened_at && !selectedActivity?.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
                   <section className="th-jobs-applied-prompt" aria-labelledby="th-jobs-applied-prompt-title">
                     <div>
                       <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
