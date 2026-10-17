@@ -286,22 +286,47 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   useEffect(() => {
     if (!selectedId) return;
     const jobId = selectedId;
-    const controller = new AbortController();
-    void fetch(`/api/jobs/${encodeURIComponent(jobId)}/activity`, {
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-      signal: controller.signal,
-    }).then(async (response) => {
-      if (!response.ok) throw new Error(await getApiError(response));
-      const payload = (await response.json()) as { activity?: JobActivity };
-      if (!payload.activity) throw new Error("Unexpected activity response");
-      setActivityError(null);
-      setJobActivity({ jobId, activity: payload.activity });
-    }).catch((reason) => {
-      if (reason instanceof Error && reason.name === "AbortError") return;
-      setActivityError("Application activity could not be loaded.");
-    });
-    return () => controller.abort();
+    let controller: AbortController | null = null;
+
+    // A dismissal only lasts for the current selection. Returning to a job
+    // should ask again when its application link was opened but not confirmed.
+    setPromptDismissedForJobId(null);
+    setForceAppliedPrompt(false);
+
+    const loadActivity = () => {
+      controller?.abort();
+      controller = new AbortController();
+      const requestController = controller;
+      void fetch(`/api/jobs/${encodeURIComponent(jobId)}/activity`, {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+        signal: requestController.signal,
+      }).then(async (response) => {
+        if (!response.ok) throw new Error(await getApiError(response));
+        const payload = (await response.json()) as { activity?: JobActivity };
+        if (!payload.activity) throw new Error("Unexpected activity response");
+        setActivityError(null);
+        setJobActivity({ jobId, activity: payload.activity });
+      }).catch((reason) => {
+        if (reason instanceof Error && reason.name === "AbortError") return;
+        setActivityError("Application activity could not be loaded.");
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") loadActivity();
+    };
+
+    loadActivity();
+    window.addEventListener("focus", loadActivity);
+    window.addEventListener("pageshow", loadActivity);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      controller?.abort();
+      window.removeEventListener("focus", loadActivity);
+      window.removeEventListener("pageshow", loadActivity);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [selectedId]);
 
   const updateJobState = useCallback(
