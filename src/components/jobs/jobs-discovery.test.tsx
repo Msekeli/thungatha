@@ -342,7 +342,7 @@ describe("Job Discovery", () => {
     // The popover is non-blocking: unrelated job actions remain available.
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
-    expect(screen.getByRole("button", { name: "♧ Save" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /Saved · Remove save/ })).not.toBeDisabled();
   });
 
   it("renders the server-provided saved state", async () => {
