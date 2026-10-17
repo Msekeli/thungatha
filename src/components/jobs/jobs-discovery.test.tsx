@@ -316,6 +316,14 @@ describe("Job Discovery", () => {
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Dismiss job" })).toBeTruthy();
 
+    // Selecting a different role closes the inline check-in immediately.
+    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
+    await screen.findByText("Build and support web services.");
+    fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
