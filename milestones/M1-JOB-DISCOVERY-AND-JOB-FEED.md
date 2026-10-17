@@ -383,7 +383,7 @@ C07 remains **In review**. These local results are meaningful quality evidence, 
 
 ## M1-C08 implementation record — 2026-10-17
 
-**Status: In review — the expanded C08 implementation is committed to `dev`; migration application, automated workflow results, local browser checks, authenticated Supabase/RLS verification, and user review remain outstanding.**
+**Status: In review — the expanded C08 implementation is committed to `dev` and GitHub Actions quality checks passed; migration application, local browser checks, authenticated Supabase/RLS verification, and user review remain outstanding.**
 
 ### Changes made
 
