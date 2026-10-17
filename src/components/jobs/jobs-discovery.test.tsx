@@ -287,6 +287,10 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
+
+    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
   });
 
   it("renders the server-provided saved state", async () => {
