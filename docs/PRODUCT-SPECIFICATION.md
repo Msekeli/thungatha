@@ -55,8 +55,11 @@ Help users find and organize real job opportunities, prioritizing roles in South
 - Present persisted listings from approved sources, with search, practical filters, and a useful detail view.
 - Show the employer, role title, location/work mode where known, description, relevant dates, discovery source, and application destination.
 - Preserve original source identifiers and links, and distinguish the site where a job was discovered from the site where the user applies.
-- Support saving, dismissing, and undoing a dismissal where specified by the approved design.
+- Support saving, dismissing, and undoing a dismissal where specified by the approved design. Undo appears in a bottom snackbar for 10 seconds and then disappears.
 - Persist per-user actions and enforce ownership.
+- When a user opens an external application destination, record the visit timestamp; do not treat it as proof of submission.
+- When a previously opened role is revisited and has no applied confirmation, ask “Did you apply for this role?” A “Yes, I applied” response persists an explicit job-linked applied marker; “No, not yet” dismisses only that occurrence of the prompt, which may appear again on a later visit.
+- Do not show the prompt again after the user confirms they applied. Keep the applied marker separate from saved/dismissed discovery state.
 - Represent unavailable, stale, incomplete, or unverified data honestly.
 - Provide loading, empty, error, retry, and responsive states.
 - Keep the feed usable when an AI provider is unavailable.
@@ -64,7 +67,7 @@ Help users find and organize real job opportunities, prioritizing roles in South
 
 ### Application boundary
 
-Job Discovery is not the application lifecycle system. Finding, opening, saving, or dismissing a job does not create an application record. There is no manual job-entry feature in Job Discovery.
+Job Discovery is not the complete application lifecycle system. Finding, opening, saving, or dismissing a job does not create an application record. An external-link open is recorded only as a visit. If the user explicitly confirms that they applied, Discovery stores a minimal job-linked applied marker so the prompt does not keep returning; M5 Job Tracking remains responsible for the full application record, submitted materials, status history, contacts, outcomes, and follow-ups. There is no manual job-entry feature in Job Discovery.
 
 Users may record a job found elsewhere when they are recording an actual application in Job Tracking. External application submission remains on the employer or application destination site; Thungatha does not claim to submit applications automatically.
 
