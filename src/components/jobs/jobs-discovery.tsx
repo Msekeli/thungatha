@@ -157,11 +157,21 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [stateBusy, setStateBusy] = useState(false);
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
-  const [undoAction, setUndoAction] = useState<{ jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null>(null);
-  const [jobActivity, setJobActivity] = useState<{ jobId: string; activity: JobActivity } | null>(null);
+  const [undoAction, setUndoAction] = useState<{
+    jobId: string;
+    title: string;
+    previousState: "saved" | "dismissed" | null;
+    nextState: "saved" | "dismissed" | null;
+  } | null>(null);
+  const [jobActivity, setJobActivity] = useState<{
+    jobId: string;
+    activity: JobActivity;
+  } | null>(null);
   const [activityError, setActivityError] = useState<string | null>(null);
   const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
-  const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<string | null>(null);
+  const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<
+    string | null
+  >(null);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -296,20 +306,23 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         headers: { Accept: "application/json" },
         cache: "no-store",
         signal: requestController.signal,
-      }).then(async (response) => {
-        if (!response.ok) throw new Error(await getApiError(response));
-        const payload = (await response.json()) as { activity?: JobActivity };
-        if (!payload.activity) throw new Error("Unexpected activity response");
-        setActivityError(null);
-        setJobActivity({ jobId, activity: payload.activity });
-      }).catch((reason) => {
-        if (reason instanceof Error && reason.name === "AbortError") return;
-        setActivityError("Application activity could not be loaded.");
-      });
+      })
+        .then(async (response) => {
+          if (!response.ok) throw new Error(await getApiError(response));
+          const payload = (await response.json()) as { activity?: JobActivity };
+          if (!payload.activity)
+            throw new Error("Unexpected activity response");
+          setActivityError(null);
+          setJobActivity({ jobId, activity: payload.activity });
+        })
+        .catch((reason) => {
+          if (reason instanceof Error && reason.name === "AbortError") return;
+          setActivityError("Application activity could not be loaded.");
+        });
     };
 
     // Refresh persisted activity on return, but do not reopen a prompt the
-    // user has already dismissed. Confirmation is shown only after an action. 
+    // user has already dismissed. Confirmation is shown only after an action.
     const handleReturnToPage = () => {
       // A pending reminder is durable: returning from the employer tab should
       // surface it again unless the application was confirmed.
@@ -353,7 +366,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
               Accept: "application/json",
               ...(nextState ? { "Content-Type": "application/json" } : {}),
             },
-            ...(nextState ? { body: JSON.stringify({ state: nextState }) } : {}),
+            ...(nextState
+              ? { body: JSON.stringify({ state: nextState }) }
+              : {}),
             cache: "no-store",
           },
         );
@@ -451,16 +466,23 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     setStateError(null);
     void fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
       method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ action: "opened_application" }),
       cache: "no-store",
-    }).then(async (response) => {
-      if (!response.ok) throw new Error(await getApiError(response));
-      const payload = (await response.json()) as { activity: JobActivity };
-      setJobActivity({ jobId: job.id, activity: payload.activity });
-    }).catch(() => {
-      setStateError("The application page opened, but Thungatha could not record that visit.");
-    });
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await getApiError(response));
+        const payload = (await response.json()) as { activity: JobActivity };
+        setJobActivity({ jobId: job.id, activity: payload.activity });
+      })
+      .catch(() => {
+        setStateError(
+          "The application page opened, but Thungatha could not record that visit.",
+        );
+      });
   };
 
   const confirmApplied = async () => {
@@ -468,12 +490,18 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     setStateBusy(true);
     setStateError(null);
     try {
-      const response = await fetch(`/api/jobs/${encodeURIComponent(selectedDetail.id)}/activity`, {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "confirm_applied" }),
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `/api/jobs/${encodeURIComponent(selectedDetail.id)}/activity`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "confirm_applied" }),
+          cache: "no-store",
+        },
+      );
       if (!response.ok) {
         setStateError(await getApiError(response));
         return;
@@ -485,7 +513,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       setStateMessage("Application confirmation recorded.");
       setRetryFeed((value) => value + 1);
     } catch {
-      setStateError("Could not record your application confirmation. Please try again.");
+      setStateError(
+        "Could not record your application confirmation. Please try again.",
+      );
     } finally {
       setStateBusy(false);
     }
@@ -515,7 +545,8 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       ? detail
       : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
   const selectedSource = sourceFor(selectedDetail);
-  const selectedActivity = jobActivity?.jobId === selectedId ? jobActivity.activity : null;
+  const selectedActivity =
+    jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   // Some providers only expose the job listing URL. Keep Apply usable by
@@ -556,7 +587,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         </header>
 
         {undoAction && (
-          <div className="th-jobs-undo-snackbar" role="status" aria-live="polite">
+          <div
+            className="th-jobs-undo-snackbar"
+            role="status"
+            aria-live="polite"
+          >
             <span>
               {undoAction.nextState === "saved" ? (
                 <>{undoAction.title} saved.</>
@@ -584,10 +619,14 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           </div>
         )}
         {stateMessage && !undoAction && (
-          <p className="th-jobs-state-message" role="status">{stateMessage}</p>
+          <p className="th-jobs-state-message" role="status">
+            {stateMessage}
+          </p>
         )}
         {stateError && (
-          <p className="th-jobs-state-error" role="alert">{stateError}</p>
+          <p className="th-jobs-state-error" role="alert">
+            {stateError}
+          </p>
         )}
 
         <div className="th-jobs-workspace">
@@ -831,7 +870,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                             {sourceLabel(source)}
                           </span>
                           {job.state === "saved" && (
-                            <span className="th-tag" data-tone="success">Saved</span>
+                            <span className="th-tag" data-tone="success">
+                              Saved
+                            </span>
                           )}
                           {job.state === "dismissed" && (
                             <span className="th-tag">Dismissed</span>
@@ -942,9 +983,15 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     selectedDetail.state === "dismissed" ? null : "dismissed",
                   )
                 }
-                aria-label={selectedDetail.state === "dismissed" ? "Restore job to feed" : "Dismiss job"}
+                aria-label={
+                  selectedDetail.state === "dismissed"
+                    ? "Restore job to feed"
+                    : "Dismiss job"
+                }
               >
-                {selectedDetail.state === "dismissed" ? "↶ Restore" : "× Dismiss"}
+                {selectedDetail.state === "dismissed"
+                  ? "↶ Restore"
+                  : "× Dismiss"}
               </Button>
             )}
             {!selectedId ? (
@@ -1001,7 +1048,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     ▤ Tailor my CV
                   </Link>
                   <Button
-                    variant={selectedDetail.state === "saved" ? "primary" : "secondary"}
+                    variant={
+                      selectedDetail.state === "saved" ? "primary" : "secondary"
+                    }
                     disabled={stateBusy || detailLoading}
                     onClick={() =>
                       void updateJobState(
@@ -1010,44 +1059,72 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                       )
                     }
                   >
-                    {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
+                    {selectedDetail.state === "saved"
+                      ? "✓ Saved · Remove save"
+                      : "♧ Save"}
                   </Button>
                   <div
                     className="th-jobs-apply-wrap"
                     onBlur={(event) => {
-                      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      if (
+                        !event.currentTarget.contains(
+                          event.relatedTarget as Node | null,
+                        )
+                      ) {
                         setForceAppliedPrompt(false);
                       }
                     }}
                   >
                     <Button
                       variant="primary"
-                      title={applicationUrl
-                        ? "Opens the employer's application page. This does not mark the role as applied."
-                        : "Opens the original job listing so you can find the application link. This does not mark the role as applied."}
-                      onClick={() => applyUrl && openApplicationLink(selectedDetail, applyUrl)}
+                      title={
+                        applicationUrl
+                          ? "Opens the employer's application page. This does not mark the role as applied."
+                          : "Opens the original job listing so you can find the application link. This does not mark the role as applied."
+                      }
+                      onClick={() =>
+                        applyUrl &&
+                        openApplicationLink(selectedDetail, applyUrl)
+                      }
                       disabled={!applyUrl || stateBusy || detailLoading}
                     >
                       ↗ Apply
                     </Button>
-                    {(forceAppliedPrompt || (
-                      Boolean(selectedActivity?.application_link_opened_at) &&
-                      !selectedActivity?.applied_at &&
-                      dismissedPromptForJobId !== selectedId
-                    )) && (
+                    {(forceAppliedPrompt ||
+                      (Boolean(selectedActivity?.application_link_opened_at) &&
+                        !selectedActivity?.applied_at &&
+                        dismissedPromptForJobId !== selectedId)) && (
                       <section
                         className="th-jobs-applied-popover"
                         aria-labelledby="th-jobs-applied-prompt-title"
                         aria-describedby="th-jobs-applied-prompt-description"
                       >
                         <p className="th-jobs-label">APPLICATION CHECK-IN</p>
-                        <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
+                        <h4 id="th-jobs-applied-prompt-title">
+                          Did you apply for this role?
+                        </h4>
                         <p id="th-jobs-applied-prompt-description">
-                          {selectedDetail.title} at {shown(selectedDetail.employer_name)}. Did you submit an application?
+                          {selectedDetail.title} at{" "}
+                          {shown(selectedDetail.employer_name)}. Did you submit
+                          an application?
                         </p>
                         <div className="th-jobs-applied-prompt-actions">
-                          <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
-                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setForceAppliedPrompt(false); setDismissedPromptForJobId(selectedDetail.id); }}>No, not yet</Button>
+                          <Button
+                            disabled={stateBusy}
+                            onClick={() => void confirmApplied()}
+                          >
+                            Yes, I applied
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            disabled={stateBusy}
+                            onClick={() => {
+                              setForceAppliedPrompt(false);
+                              setDismissedPromptForJobId(selectedDetail.id);
+                            }}
+                          >
+                            No, not yet
+                          </Button>
                         </div>
                       </section>
                     )}
@@ -1055,13 +1132,21 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   <Button
                     variant="secondary"
                     onClick={() => setForceAppliedPrompt(true)}
-                    disabled={stateBusy || detailLoading || Boolean(selectedActivity?.applied_at)}
+                    disabled={
+                      stateBusy ||
+                      detailLoading ||
+                      Boolean(selectedActivity?.applied_at)
+                    }
                   >
                     {selectedActivity?.applied_at ? "✓ Applied" : "→ I applied"}
                   </Button>
                 </div>
 
-                {activityError && <p className="th-jobs-state-error" role="status">{activityError}</p>}
+                {activityError && (
+                  <p className="th-jobs-state-error" role="status">
+                    {activityError}
+                  </p>
+                )}
                 <div className="th-jobs-source-status">
                   <span data-available={Boolean(sourceUrl)}>
                     ✓{" "}
@@ -1176,7 +1261,8 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </div>
                 </section>
                 <p className="th-jobs-integrity-note">
-                  Opening an application link records a visit only. Your application is recorded only after you confirm it.
+                  Opening an application link records a visit only. Your
+                  application is recorded only after you confirm it.
                 </p>
                 {detailLoading && (
                   <p className="th-jobs-muted" role="status">
@@ -1203,3 +1289,4 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     </WorkspaceShell>
   );
 }
+// this component is the main job discovery interface, allowing users to search, filter, and view job listings. It handles user interactions such as saving jobs, dismissing them, and confirming applications. The component also manages state for loading, errors, and user actions, providing feedback through messages and prompts.
