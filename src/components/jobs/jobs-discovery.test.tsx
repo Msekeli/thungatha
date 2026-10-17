@@ -37,6 +37,7 @@ function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; det
       return [item.id, item.state ?? null] as const;
     }),
   );
+  const activities = new Map<string, { application_link_opened_at: string | null; applied_at: string | null }>();
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
     requests.push(url);
@@ -60,6 +61,20 @@ function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; det
         total: options.total ?? visibleJobs.length,
         totalPages: Math.ceil((options.total ?? visibleJobs.length) / 25),
       });
+    }
+    if (url.endsWith("/activity")) {
+      const jobId = url.split("/").at(-2) ?? "";
+      const current = activities.get(jobId) ?? { application_link_opened_at: null, applied_at: null };
+      if (init?.method === "POST") {
+        const body = JSON.parse(String(init.body ?? "{}")) as { action: "opened_application" | "confirm_applied" };
+        const next = {
+          application_link_opened_at: body.action === "opened_application" ? "2026-10-17T10:00:00Z" : current.application_link_opened_at ?? "2026-10-17T10:00:00Z",
+          applied_at: body.action === "confirm_applied" ? current.applied_at ?? "2026-10-17T10:01:00Z" : current.applied_at,
+        };
+        activities.set(jobId, next);
+        return response({ activity: next });
+      }
+      return response({ activity: current });
     }
     if (url.endsWith("/state")) {
       const jobId = url.split("/").at(-2) ?? "";
@@ -230,6 +245,48 @@ describe("Job Discovery", () => {
     await waitFor(() => expect(screen.queryByRole("button", { name: "Undo" })).toBeNull());
     fireEvent.click(screen.getByRole("button", { name: "New" }));
     expect(await screen.findByRole("button", { name: "× Dismiss" })).toBeTruthy();
+  });
+
+  it("records application-link opens and asks whether the user applied when the role is revisited", async () => {
+    const { fetchMock } = setupFetch([firstJob, secondJob]);
+    vi.spyOn(window, "open").mockImplementation(() => null);
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+    fireEvent.click(screen.getByRole("button", { name: "↗ Open application" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "opened_application" }) }),
+    ));
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
+
+    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Yes, I applied" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "confirm_applied" }) }),
+    ));
+    expect(await screen.findByRole("button", { name: "✓ Applied" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
+  });
+
+  it("lets the user dismiss the application prompt for this visit without marking the role applied", async () => {
+    const { fetchMock } = setupFetch([firstJob, secondJob]);
+    vi.spyOn(window, "open").mockImplementation(() => null);
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+    fireEvent.click(screen.getByRole("button", { name: "↗ Open application" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
+      expect.objectContaining({ method: "POST" }),
+    ));
+    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
   });
 
   it("renders the server-provided saved state", async () => {
