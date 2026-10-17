@@ -64,7 +64,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06 authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI remains in review pending hosted-data, browser/responsive, accessibility, and user-acceptance gates. C08 save/dismiss/undo is implemented on `dev`: GitHub Actions run 38986812290 passed TypeScript checking, lint, unit tests (14 files, 96 tests), and production build. C08 remains in review because local UX and authenticated Supabase/RLS verification are still required, and application-record integration depends on the not-yet-started M5 Job Tracking contract. C05 remains open and must be resolved before M1 acceptance.
+M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06 authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI remains in review pending hosted-data, browser/responsive, accessibility, and user-acceptance gates. C08 save/dismiss/undo is implemented on `dev`; the latest confirmed automated run passed TypeScript checking, lint, unit tests (14 files, 96 tests), and production build. C08 remains in review. Its agreed scope now also includes per-user tracking of application-link opens, a repeat-visit prompt to confirm whether the user applied, a minimal persisted applied confirmation linked to the job, and a 10-second bottom snackbar for Undo. M5 will extend the minimal confirmation into the full application lifecycle rather than being the first place these Discovery behaviours appear. C05 remains open and must be resolved before M1 acceptance.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
@@ -92,12 +92,14 @@ Scope includes:
 - Establishing a normalized job data model and persistence.
 - Building reliable source ingestion, refresh and deduplication.
 - Providing job feeds, details, search and filters.
-- Supporting save and dismiss actions with appropriate persistence.
+- Supporting save and dismiss actions with appropriate persistence and a short-lived, bottom-positioned Undo snackbar.
+- Recording when a user opens an external application destination without treating the click as submission.
+- Prompting users to confirm whether they applied when a previously opened role reappears, and persisting their explicit confirmation.
 - Distinguishing the discovery source from the destination where a user applies.
 - Handling unavailable sources, incomplete listings and errors honestly.
 - Verifying security, reliability, accessibility and the end-to-end experience.
 
-M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. Job Discovery must not imply that opening an external application page submits an application.
+M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
 
 **Dependency:** M0.
 
