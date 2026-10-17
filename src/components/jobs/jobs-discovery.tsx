@@ -313,18 +313,22 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       });
     };
 
+    const handleReturnToPage = () => {
+      setPromptDismissedForJobId(null);
+      loadActivity();
+    };
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") loadActivity();
+      if (document.visibilityState === "visible") handleReturnToPage();
     };
 
     loadActivity();
-    window.addEventListener("focus", loadActivity);
-    window.addEventListener("pageshow", loadActivity);
+    window.addEventListener("focus", handleReturnToPage);
+    window.addEventListener("pageshow", handleReturnToPage);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       controller?.abort();
-      window.removeEventListener("focus", loadActivity);
-      window.removeEventListener("pageshow", loadActivity);
+      window.removeEventListener("focus", handleReturnToPage);
+      window.removeEventListener("pageshow", handleReturnToPage);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [selectedId]);
