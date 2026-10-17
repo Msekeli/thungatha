@@ -414,49 +414,67 @@
 }
 
 
-/* Application confirmation must be a visible modal immediately after Apply. */
-.th-jobs-applied-modal-backdrop {
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  display:flex;
+/* Small, non-blocking application check-in anchored to the Apply action. */
+.th-jobs-apply-wrap {
+  position:relative;
+  display:inline-flex;
   align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgb(8 12 20 / 68%);
-  backdrop-filter:blur(4px);
 }
-.th-jobs-applied-modal {
-  width:min(100%, 440px);
-  padding:26px;
+.th-jobs-applied-popover {
+  position:absolute;
+  z-index:30;
+  top:calc(100% + 10px);
+  right:0;
+  width:min(320px, calc(100vw - 40px));
+  padding:16px;
   border:1px solid var(--th-line);
-  border-radius:16px;
+  border-radius:12px;
   background:var(--th-surface, var(--th-page));
   color:var(--th-fg);
-  box-shadow:0 24px 80px rgb(0 0 0 / 30%);
+  box-shadow:0 12px 36px rgb(0 0 0 / 22%);
 }
-.th-jobs-applied-modal h3 {
-  margin:8px 0 10px;
+.th-jobs-applied-popover::before {
+  content:"";
+  position:absolute;
+  top:-6px;
+  right:24px;
+  width:10px;
+  height:10px;
+  transform:rotate(45deg);
+  border-top:1px solid var(--th-line);
+  border-left:1px solid var(--th-line);
+  background:var(--th-surface, var(--th-page));
+}
+.th-jobs-applied-popover h4 {
+  margin:6px 0 8px;
   color:var(--th-fg);
-  font-size:22px;
-  line-height:1.25;
+  font-size:15px;
+  line-height:1.35;
 }
-.th-jobs-applied-modal > p:not(.th-jobs-label) {
+.th-jobs-applied-popover > p:not(.th-jobs-label) {
   margin:0;
   color:var(--th-fg-muted);
-  font-size:14px;
-  line-height:1.6;
+  font-size:12px;
+  line-height:1.5;
 }
-.th-jobs-applied-modal .th-jobs-applied-prompt-actions {
+.th-jobs-applied-popover .th-jobs-applied-prompt-actions {
   display:flex;
-  gap:10px;
-  margin-top:22px;
+  gap:8px;
+  margin-top:14px;
 }
-.th-jobs-applied-modal .th-jobs-applied-prompt-actions button {
+.th-jobs-applied-popover .th-jobs-applied-prompt-actions button {
   flex:1;
-  min-height:42px;
+  min-height:36px;
+  padding:8px 10px;
+  font-size:12px;
 }
-@media(max-width:520px) {
-  .th-jobs-applied-modal { padding:22px; }
-  .th-jobs-applied-modal .th-jobs-applied-prompt-actions { flex-direction:column; }
+@media(max-width:700px) {
+  .th-jobs-applied-popover {
+    right:auto;
+    left:0;
+  }
+  .th-jobs-applied-popover::before {
+    right:auto;
+    left:24px;
+  }
 }
