@@ -291,7 +291,7 @@ describe("Job Discovery", () => {
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
     fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
-    expect(await screen.findByRole("dialog", { name: "Did you apply for this role?" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     expect(screen.getByText(/Software Engineer at Example Employer/)).toBeTruthy();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
@@ -306,30 +306,34 @@ describe("Job Discovery", () => {
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
   });
 
-  it("lets the user dismiss the application prompt for this visit without marking the role applied", async () => {
+  it("keeps the application check-in non-blocking and closes it when another job is selected", async () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
+
     fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
-      expect.objectContaining({ method: "POST" }),
-    ));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dismiss job" })).toBeTruthy();
+
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
 
-    // Returning from the external application tab refreshes persisted activity
-    // and brings the prompt back for the currently selected job.
+    // Returning from the application tab refreshes activity without reopening
+    // a prompt that the user has already dismissed.
     fireEvent(window, new Event("focus"));
-    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
+      expect.objectContaining({ method: "GET" }),
+    ));
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
 
+    // The job feed remains interactive and changing the selected job closes
+    // the check-in rather than blocking the rest of the page.
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
-    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
-    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
+    expect(await screen.findByText("Build and support web services.")).toBeTruthy();
   });
 
   it("renders the server-provided saved state", async () => {
