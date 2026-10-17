@@ -515,6 +515,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const selectedActivity = jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
+  // Some providers only expose the job listing URL. Keep Apply usable by
+  // falling back to that listing when no dedicated application URL is supplied.
+  const applyUrl = applicationUrl ?? sourceUrl;
   const range =
     !feed || feed.total === 0
       ? "0 jobs"
@@ -1008,9 +1011,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </Button>
                   <Button
                     variant="primary"
-                    title="Opens the employer's application page. This does not mark the role as applied."
-                    onClick={() => applicationUrl && openApplicationLink(selectedDetail, applicationUrl)}
-                    disabled={!applicationUrl || stateBusy || detailLoading}
+                    title={applicationUrl
+                      ? "Opens the employer's application page. This does not mark the role as applied."
+                      : "Opens the original job listing so you can find the application link. This does not mark the role as applied."}
+                    onClick={() => applyUrl && openApplicationLink(selectedDetail, applyUrl)}
+                    disabled={!applyUrl || stateBusy || detailLoading}
                   >
                     ↗ Apply
                   </Button>
