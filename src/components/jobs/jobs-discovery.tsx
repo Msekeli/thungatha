@@ -981,23 +981,12 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
                   </Button>
                   <Button
-                    variant="secondary"
-                    title="Opens the page where Thungatha found this job."
-                    onClick={() => {
-                      if (sourceUrl)
-                        window.open(sourceUrl, "_blank", "noopener,noreferrer");
-                    }}
-                    disabled={!sourceUrl}
-                  >
-                    ↗ View job listing
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    title="Opens the application destination. This does not mark the role as applied."
+                    variant="primary"
+                    title="Opens the employer's application page. This does not mark the role as applied."
                     onClick={() => applicationUrl && openApplicationLink(selectedDetail, applicationUrl)}
                     disabled={!applicationUrl || stateBusy || detailLoading}
                   >
-                    ↗ Go to application page
+                    ↗ Apply
                   </Button>
                   <Button
                     variant="secondary"
