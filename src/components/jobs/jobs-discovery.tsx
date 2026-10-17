@@ -803,7 +803,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         data-selected={selected}
                         onClick={() => {
                           setSelectedId(job.id);
-                          setPromptDismissedForJobId(null);
                           setForceAppliedPrompt(false);
                           setActivityError(null);
                           setMobileDetail(true);
