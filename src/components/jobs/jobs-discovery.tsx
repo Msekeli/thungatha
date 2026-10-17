@@ -1000,7 +1000,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   <section className="th-jobs-applied-prompt" aria-labelledby="th-jobs-applied-prompt-title">
                     <div>
                       <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
-                      <p>You previously opened this application link. Opening it does not mean an application was submitted.</p>
+                      <p>{selectedActivity?.application_link_opened_at ? "You previously opened this application link. Opening it does not mean an application was submitted." : "Confirm that you submitted an application for this role. Thungatha will record your confirmation."}</p>
                     </div>
                     <div className="th-jobs-applied-prompt-actions">
                       <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
