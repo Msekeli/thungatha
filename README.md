@@ -53,24 +53,45 @@ The endpoint returns per-provider received/inserted/updated/skipped counts. HTTP
 
 See [Local Development](#local-development) below for the database and verification commands.
 
-### Local Development
+### Local Development (using the cloud Supabase project)
 
-Start the local Supabase stack and apply migrations with Docker running:
+Thungatha uses the configured cloud Supabase project for this workflow; you do not need to start a local Supabase stack or Docker.
 
-```bash
-npx supabase start
-npx supabase db reset
-```
+1. Install dependencies and configure `.env.local` using `.env.example`. Keep your existing Clerk and Supabase values; never commit secrets.
+2. Sign in to the Supabase CLI and link this repository to the same project referenced by `NEXT_PUBLIC_SUPABASE_URL`:
 
-Run the application in another terminal:
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref YOUR_SUPABASE_PROJECT_REF
+   ```
 
-```bash
-npm run dev
-```
+   The project ref is the identifier in your Supabase dashboard URL: `https://supabase.com/dashboard/project/YOUR_SUPABASE_PROJECT_REF`.
 
-Open [http://localhost:3000](http://localhost:3000).
+3. Check migration history and preview pending changes before applying anything:
 
-Run the project's checks with the commands documented in the development guide. See the [README's development instructions](#local-development) and the implementation plan for the current verification requirements.
+   ```bash
+   npx supabase migration list --linked
+   npx supabase db push --dry-run
+   ```
+
+   Confirm the preview targets the intended project and includes the new `20261017000100_job_application_activity.sql` migration. If it lists unrelated pending migrations, review them before proceeding. Then apply the reviewed pending migrations:
+
+   ```bash
+   npx supabase db push
+   ```
+
+4. Run the app and checks:
+
+   ```bash
+   npm run dev
+   npm test
+   npm run lint
+   npm run build
+   ```
+
+Open [http://localhost:3000](http://localhost:3000), sign in through Clerk, and test with a job that has an active application URL. The activity API uses the signed-in user's Clerk token and Supabase RLS; do not substitute a service-role key for normal user requests.
+
+If the migration preview or application fails, stop and inspect the error rather than manually changing the hosted schema.
 
 ## Project Status
 
