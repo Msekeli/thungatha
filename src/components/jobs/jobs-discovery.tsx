@@ -1051,7 +1051,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     Found via {sourceLabel(selectedSource)}
                     {applicationUrl
                       ? " · Application page available"
-                      : " · Application link not supplied"}
+                      : sourceUrl
+                        ? " · Apply opens the job listing"
+                        : " · Application link not supplied"}
                   </p>
                 </div>
                 <section
