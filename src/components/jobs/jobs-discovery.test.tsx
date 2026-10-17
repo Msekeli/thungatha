@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import JobsDiscovery from "./jobs-discovery";
 
 vi.mock("@/components/ui/button", () => ({
@@ -100,6 +100,7 @@ function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; det
 }
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
@@ -231,6 +232,27 @@ describe("Job Discovery", () => {
       expect.objectContaining({ method: "DELETE" }),
     ));
     await waitFor(() => expect(screen.queryByRole("button", { name: "Undo" })).toBeNull());
+  });
+
+  it("automatically removes the bottom Undo snackbar after ten seconds", async () => {
+    setupFetch();
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+
+    vi.useFakeTimers();
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "♧ Save" }));
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole("button", { name: "Undo" })).toBeTruthy();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(screen.queryByRole("button", { name: "Undo" })).toBeNull();
   });
 
   it("keeps dismissal undo available when changing feed categories", async () => {
