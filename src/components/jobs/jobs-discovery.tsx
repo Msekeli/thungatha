@@ -158,8 +158,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
   const [undoAction, setUndoAction] = useState<{ jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null>(null);
-  const [jobActivity, setJobActivity] = useState<JobActivity | null>(null);
-  const [activityLoading, setActivityLoading] = useState(false);
+  const [jobActivity, setJobActivity] = useState<{ jobId: string; activity: JobActivity } | null>(null);
   const [activityError, setActivityError] = useState<string | null>(null);
   const [promptDismissedForJobId, setPromptDismissedForJobId] = useState<string | null>(null);
   const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
@@ -285,17 +284,10 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   }, [selectedId, refreshDetail, retryDetail]);
 
   useEffect(() => {
-    if (!selectedId) {
-      setJobActivity(null);
-      return;
-    }
+    if (!selectedId) return;
+    const jobId = selectedId;
     const controller = new AbortController();
-    setJobActivity(null);
-    setActivityError(null);
-    setActivityLoading(true);
-    setPromptDismissedForJobId(null);
-    setForceAppliedPrompt(false);
-    void fetch(`/api/jobs/${encodeURIComponent(selectedId)}/activity`, {
+    void fetch(`/api/jobs/${encodeURIComponent(jobId)}/activity`, {
       headers: { Accept: "application/json" },
       cache: "no-store",
       signal: controller.signal,
@@ -303,12 +295,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       if (!response.ok) throw new Error(await getApiError(response));
       const payload = (await response.json()) as { activity?: JobActivity };
       if (!payload.activity) throw new Error("Unexpected activity response");
-      setJobActivity(payload.activity);
+      setActivityError(null);
+      setJobActivity({ jobId, activity: payload.activity });
     }).catch((reason) => {
       if (reason instanceof Error && reason.name === "AbortError") return;
       setActivityError("Application activity could not be loaded.");
-    }).finally(() => {
-      if (!controller.signal.aborted) setActivityLoading(false);
     });
     return () => controller.abort();
   }, [selectedId]);
@@ -435,7 +426,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     }).then(async (response) => {
       if (!response.ok) throw new Error(await getApiError(response));
       const payload = (await response.json()) as { activity: JobActivity };
-      setJobActivity(payload.activity);
+      setJobActivity({ jobId: job.id, activity: payload.activity });
     }).catch(() => {
       setStateError("The application page opened, but Thungatha could not record that visit.");
     });
@@ -457,7 +448,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         return;
       }
       const payload = (await response.json()) as { activity: JobActivity };
-      setJobActivity(payload.activity);
+      setJobActivity({ jobId: selectedDetail.id, activity: payload.activity });
       setForceAppliedPrompt(false);
       setPromptDismissedForJobId(selectedDetail.id);
       setStateMessage("Application confirmation recorded.");
@@ -493,6 +484,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       ? detail
       : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
   const selectedSource = sourceFor(selectedDetail);
+  const selectedActivity = jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   const range =
@@ -784,6 +776,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         data-selected={selected}
                         onClick={() => {
                           setSelectedId(job.id);
+                          setPromptDismissedForJobId(null);
+                          setForceAppliedPrompt(false);
+                          setActivityError(null);
                           setMobileDetail(true);
                         }}
                         aria-pressed={selected}
@@ -996,19 +991,19 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   <Button
                     variant="secondary"
                     onClick={() => setForceAppliedPrompt(true)}
-                    disabled={stateBusy || detailLoading || Boolean(jobActivity?.applied_at)}
+                    disabled={stateBusy || detailLoading || Boolean(selectedActivity?.applied_at)}
                   >
-                    {jobActivity?.applied_at ? "✓ Applied" : "→ I applied"}
+                    {selectedActivity?.applied_at ? "✓ Applied" : "→ I applied"}
                   </Button>
                 </div>
-                {(forceAppliedPrompt || (jobActivity?.application_link_opened_at && !jobActivity.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
+                {(forceAppliedPrompt || (selectedActivity?.application_link_opened_at && !jobActivity.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
                   <section className="th-jobs-applied-prompt" aria-labelledby="th-jobs-applied-prompt-title">
                     <div>
                       <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
                       <p>You previously opened this application link. Opening it does not mean an application was submitted.</p>
                     </div>
                     <div className="th-jobs-applied-prompt-actions">
-                      <Button disabled={stateBusy || activityLoading} onClick={() => void confirmApplied()}>Yes, I applied</Button>
+                      <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
                       <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
                     </div>
                   </section>
