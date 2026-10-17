@@ -288,11 +288,8 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     const jobId = selectedId;
     let controller: AbortController | null = null;
 
-    // A dismissal only lasts for the current selection. Returning to a job
-    // should ask again when its application link was opened but not confirmed.
-    setPromptDismissedForJobId(null);
-    setForceAppliedPrompt(false);
-
+    // A dismissal only lasts for the current selection. Selection changes
+    // and returning to this page reset it outside this effect.
     const loadActivity = () => {
       controller?.abort();
       controller = new AbortController();
