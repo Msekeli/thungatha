@@ -305,6 +305,12 @@ describe("Job Discovery", () => {
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
 
+    // Returning from the external application tab refreshes persisted activity
+    // and brings the prompt back for the currently selected job.
+    fireEvent(window, new Event("focus"));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
+
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
