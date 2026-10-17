@@ -890,12 +890,31 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
               <button
                 className="th-jobs-detail-close"
                 type="button"
-                onClick={() => setMobileDetail(false)}
+                onClick={() => {
+                  setMobileDetail(false);
+                  setForceAppliedPrompt(false);
+                }}
                 aria-label="Back to results"
               >
-                ← Back
+                ← Back to results
               </button>
             </div>
+            {selectedDetail && (
+              <Button
+                className="th-jobs-dismiss-floating"
+                variant="secondary"
+                disabled={stateBusy || detailLoading}
+                onClick={() =>
+                  void updateJobState(
+                    selectedDetail,
+                    selectedDetail.state === "dismissed" ? null : "dismissed",
+                  )
+                }
+                aria-label={selectedDetail.state === "dismissed" ? "Restore job to feed" : "Dismiss job"}
+              >
+                {selectedDetail.state === "dismissed" ? "↶ Restore" : "× Dismiss"}
+              </Button>
+            )}
             {!selectedId ? (
               <div className="th-jobs-detail-placeholder">
                 <span aria-hidden="true">↖</span>
@@ -962,18 +981,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
                   </Button>
                   <Button
-                    variant="ghost"
-                    disabled={stateBusy || detailLoading}
-                    onClick={() =>
-                      void updateJobState(
-                        selectedDetail,
-                        selectedDetail.state === "dismissed" ? null : "dismissed",
-                      )
-                    }
-                  >
-                    {selectedDetail.state === "dismissed" ? "↶ Restore to feed" : "× Dismiss"}
-                  </Button>
-                  <Button
                     variant="secondary"
                     onClick={() => {
                       if (sourceUrl)
@@ -981,14 +988,14 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     }}
                     disabled={!sourceUrl}
                   >
-                    ↗ Open job page
+                    ↗ View source listing
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={() => applicationUrl && openApplicationLink(selectedDetail, applicationUrl)}
                     disabled={!applicationUrl || stateBusy || detailLoading}
                   >
-                    ↗ Open application
+                    ↗ Go to application page
                   </Button>
                   <Button
                     variant="secondary"
