@@ -306,7 +306,7 @@ describe("Job Discovery", () => {
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
   });
 
-  it("keeps the application check-in non-blocking and closes it when another job is selected", async () => {
+  it("restores pending application reminders when revisiting a job or returning from the employer tab", async () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
@@ -315,33 +315,33 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Dismiss job" })).toBeTruthy();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "opened_application" }) }),
+    ));
 
-    // Selecting a different role closes the inline check-in immediately.
+    // Switching roles hides this job's popover, but does not clear its persisted pending state.
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
-    await screen.findByText("Build and support web services.");
-    fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
 
+    // "No, not yet" only dismisses the current display. It does not erase the pending reminder.
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
 
-    // Returning from the application tab refreshes activity without reopening
-    // a prompt that the user has already dismissed.
+    // Returning from the employer tab restores the reminder from persisted activity.
     fireEvent(window, new Event("focus"));
+    expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ cache: "no-store" }),
     ));
-    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
 
-    // The job feed remains interactive and changing the selected job closes
-    // the check-in rather than blocking the rest of the page.
+    // The popover is non-blocking: unrelated job actions remain available.
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
-    expect(await screen.findByRole("heading", { name: "Frontend Developer" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "♧ Save" })).not.toBeDisabled();
   });
 
