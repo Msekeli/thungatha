@@ -259,14 +259,14 @@ describe("Job Discovery", () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
-    fireEvent.click(screen.getByRole("button", { name: "× Dismiss" }));
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss job" }));
     expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Saved" }));
     expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     await waitFor(() => expect(screen.queryByRole("button", { name: "Undo" })).toBeNull());
     fireEvent.click(screen.getByRole("button", { name: "New" }));
-    expect(await screen.findByRole("button", { name: "× Dismiss" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Dismiss job" })).toBeTruthy();
   });
 
   it("records application-link opens and asks whether the user applied when the role is revisited", async () => {
