@@ -160,7 +160,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [undoAction, setUndoAction] = useState<{ jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null>(null);
   const [jobActivity, setJobActivity] = useState<{ jobId: string; activity: JobActivity } | null>(null);
   const [activityError, setActivityError] = useState<string | null>(null);
-  const [promptDismissedForJobId, setPromptDismissedForJobId] = useState<string | null>(null);
   const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
 
   const params = useMemo(() => {
@@ -440,7 +439,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const openApplicationLink = (job: Job, url: string) => {
     // Show the question immediately for this selected role, independent of
     // whether the activity API succeeds or the user returns from the new tab.
-    setPromptDismissedForJobId(null);
     setForceAppliedPrompt(true);
     // Open synchronously from the click so the browser does not block the new tab.
     window.open(url, "_blank", "noopener,noreferrer");
@@ -1032,7 +1030,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         </p>
                         <div className="th-jobs-applied-prompt-actions">
                           <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
-                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
+                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setForceAppliedPrompt(false); }}>No, not yet</Button>
                         </div>
                       </section>
                     )}
