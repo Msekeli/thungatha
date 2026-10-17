@@ -257,10 +257,6 @@ describe("Job Discovery", () => {
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "opened_application" }) }),
     ));
-    expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
-
-    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
-    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Yes, I applied" }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
@@ -281,8 +277,6 @@ describe("Job Discovery", () => {
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ method: "POST" }),
     ));
-    fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
-    fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
     expect(await screen.findByRole("heading", { name: "Did you apply for this role?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
