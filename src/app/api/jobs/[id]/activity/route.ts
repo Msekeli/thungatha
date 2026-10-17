@@ -55,9 +55,15 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     if (parsed.data.action === "opened_application") {
       const { data: sources, error: sourceError } = await db.from("job_sources")
-        .select("application_url,availability_status").eq("job_id", id).eq("availability_status", "active");
+        .select("application_url,source_url,availability_status").eq("job_id", id).eq("availability_status", "active");
       if (sourceError) throw sourceError;
-      if (!(sources ?? []).some((source) => typeof source.application_url === "string" && /^https?:\/\//i.test(source.application_url))) {
+      // Job Discovery falls back to the source listing when a provider has no
+      // dedicated application URL, so both supported destinations count.
+      if (!(sources ?? []).some((source) =>
+        [source.application_url, source.source_url].some(
+          (url) => typeof url === "string" && /^https?:\/\//i.test(url),
+        ),
+      )) {
         return apiError("No active application destination is available", 409);
       }
     }
