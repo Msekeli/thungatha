@@ -383,7 +383,7 @@ C07 remains **In review**. These local results are meaningful quality evidence, 
 
 ## M1-C08 implementation record — 2026-10-17
 
-**Status: In review — original save/dismiss/undo implementation is on `dev`; the agreed C08 scope has been expanded to include application-link-open tracking, a repeat-visit applied-confirmation prompt, and a 10-second bottom Undo snackbar. These additional behaviours still require implementation and verification.**
+**Status: In review — the expanded C08 implementation is committed to `dev`; migration application, automated workflow results, local browser checks, authenticated Supabase/RLS verification, and user review remain outstanding.**
 
 ### Changes made
 
@@ -391,7 +391,8 @@ C07 remains **In review**. These local results are meaningful quality evidence, 
 - Save and dismissal state are reflected in the selected details and feed cards. The feed refreshes after a successful change, so the Saved, New, and Dismissed categories reflect server-persisted state.
 - Added an Undo notice that remains available while switching feed categories. Undo restores the exact previous state, including replacing a previous Saved state after a dismissal. This original notice is to be replaced by the agreed 10-second bottom snackbar.
 - Added visible, accessible status and error feedback, busy-state protection, and a way to close the undo notice.
-- Follow-up scope approved on 2026-10-17: persist application-link-open timestamps, ask users whether they applied when that job reappears, record an explicit applied confirmation, and let “No, not yet” dismiss only the current prompt occurrence.
+- Follow-up scope approved and implemented on `dev` on 2026-10-17: persist application-link-open timestamps in `user_job_activity`; show a non-blocking “Did you apply for this role?” prompt when a previously opened role is revisited; persist explicit confirmation in `applied_at`; let “No, not yet” dismiss only the current visit's prompt; and automatically remove the bottom Undo snackbar after 10 seconds.
+- Added authenticated `GET/POST /api/jobs/{id}/activity` handling and migration `20261017000100_job_application_activity.sql`, with per-user RLS policies. The existing saved/dismissed state API remains separate. The “I applied” action is an idempotent, minimal job-linked confirmation; M5 will expand it into the full application lifecycle.
 - Added component tests for saving and undoing, and for keeping dismissal undo available across category navigation.
 - No schema or migration change was needed. Existing state writes remain scoped to the authenticated server-resolved user; the state API still accepts only `saved` or `dismissed`.
 
@@ -402,6 +403,7 @@ GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9
 ### Remaining limitations and next actions
 
 - The external-link visit and explicit applied-confirmation workflow is now part of C08, not deferred wholesale to M5. M5 remains responsible for the full application lifecycle and submitted materials.
-- A passing mocked test suite does not prove live Supabase RLS isolation or hosted authenticated behaviour. Verify with isolated test users/data before accepting the checkpoint.
-- Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation.
-- C08 remains **In review**, not Accepted, until implementation, required verification, and user review are complete.
+- The new migration has been committed but has not been applied or verified against the hosted Supabase project in this work session.
+- Component tests were added for link-open tracking, the repeat-visit prompt, explicit confirmation, and dismissing/reopening the prompt. No local test/build command was executed through the remote GitHub editing workflow, and no passing CI result is yet confirmed for these new commits.
+- Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation. Apply the migration through the project's normal migration workflow and test with isolated users/data.
+- C08 remains **In review**, not Accepted, until migration, automated/local verification, authenticated RLS checks, and user review are complete.
