@@ -1006,7 +1006,14 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   >
                     {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
                   </Button>
-                  <div className="th-jobs-apply-wrap">
+                  <div
+                    className="th-jobs-apply-wrap"
+                    onBlur={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                        setForceAppliedPrompt(false);
+                      }
+                    }}
+                  >
                     <Button
                       variant="primary"
                       title={applicationUrl
