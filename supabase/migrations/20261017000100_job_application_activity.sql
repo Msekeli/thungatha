@@ -10,9 +10,7 @@ create table public.user_job_activity (
   applied_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  primary key (user_id, job_id),
-  constraint user_job_activity_applied_requires_open
-    check (applied_at is null or application_link_opened_at is not null)
+  primary key (user_id, job_id)
 );
 
 create index user_job_activity_user_applied_idx
