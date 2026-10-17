@@ -72,7 +72,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       job_id: id,
       application_link_opened_at: parsed.data.action === "opened_application"
         ? now
-        : existing?.application_link_opened_at ?? now,
+        : existing?.application_link_opened_at ?? null,
       applied_at: parsed.data.action === "confirm_applied"
         ? existing?.applied_at ?? now
         : existing?.applied_at ?? null,
