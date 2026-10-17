@@ -325,7 +325,7 @@ describe("Job Discovery", () => {
     fireEvent(window, new Event("focus"));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
-      expect.objectContaining({ method: "GET" }),
+      expect.objectContaining({ cache: "no-store" }),
     ));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
 
@@ -333,7 +333,8 @@ describe("Job Discovery", () => {
     // the check-in rather than blocking the rest of the page.
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(screen.queryByRole("heading", { name: "Did you apply for this role?" })).toBeNull();
-    expect(await screen.findByText("Build and support web services.")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Frontend Developer" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "♧ Save" })).not.toBeDisabled();
   });
 
   it("renders the server-provided saved state", async () => {
