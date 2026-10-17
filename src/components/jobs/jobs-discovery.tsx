@@ -475,7 +475,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       const payload = (await response.json()) as { activity: JobActivity };
       setJobActivity({ jobId: selectedDetail.id, activity: payload.activity });
       setForceAppliedPrompt(false);
-      setPromptDismissedForJobId(selectedDetail.id);
       setStateMessage("Application confirmation recorded.");
       setRetryFeed((value) => value + 1);
     } catch {
