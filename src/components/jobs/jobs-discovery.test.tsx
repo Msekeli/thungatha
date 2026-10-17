@@ -157,6 +157,21 @@ describe("Job Discovery", () => {
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
+  it("keeps Apply enabled and opens the source listing when no dedicated application URL exists", async () => {
+    const listingOnlyJob = {
+      ...firstJob,
+      job_sources: [{ ...firstJob.job_sources[0], application_url: null }],
+    };
+    setupFetch([listingOnlyJob]);
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+    const applyButton = await screen.findByRole("button", { name: "↗ Apply" });
+    expect(applyButton).not.toBeDisabled();
+    fireEvent.click(applyButton);
+    expect(openSpy).toHaveBeenCalledWith("https://jobs.example.test/role", "_blank", "noopener,noreferrer");
+  });
+
   it("does not render unsafe non-web source or application URLs", async () => {
     const unsafeJob = {
       ...firstJob,
