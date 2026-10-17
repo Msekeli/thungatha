@@ -379,3 +379,36 @@
 .th-jobs-applied-prompt p{margin:0;color:var(--th-fg-muted);font-size:12px;line-height:1.5}
 .th-jobs-applied-prompt-actions{display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0}
 @media(max-width:700px){.th-jobs-undo-snackbar{align-items:flex-start;gap:8px;padding:10px;bottom:12px}.th-jobs-undo-snackbar>span{padding-top:8px}.th-jobs-applied-prompt{flex-direction:column;gap:12px}.th-jobs-applied-prompt-actions{width:100%}.th-jobs-applied-prompt-actions button{flex:1}}
+
+
+/* Job detail actions: keep dismissal visible without consuming layout space. */
+.th-jobs-detail-panel { position:relative; }
+.th-jobs-dismiss-floating.th-btn {
+  position:absolute;
+  z-index:5;
+  top:64px;
+  right:14px;
+  min-height:32px;
+  padding:6px 10px;
+  border:1px solid var(--th-warn, #d97706);
+  border-radius:999px;
+  background:var(--th-warn-bg, #fff7ed);
+  color:var(--th-fg, #111827);
+  box-shadow:0 3px 12px rgb(0 0 0 / 12%);
+  font-size:11px;
+  font-weight:600;
+}
+.th-jobs-dismiss-floating.th-btn:hover:not(:disabled) {
+  border-color:var(--th-warn, #d97706);
+  background:var(--th-warn, #d97706);
+  color:var(--th-on-accent, #111827);
+}
+.th-jobs-dismiss-floating.th-btn:focus-visible {
+  outline:2px solid var(--th-accent-text);
+  outline-offset:3px;
+}
+.th-jobs-detail-close { display:none; }
+@media (max-width:700px) {
+  .th-jobs-detail-close { display:inline-flex; }
+  .th-jobs-dismiss-floating.th-btn { top:64px; right:14px; }
+}
