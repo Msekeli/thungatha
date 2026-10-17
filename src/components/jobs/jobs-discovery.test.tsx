@@ -152,7 +152,7 @@ describe("Job Discovery", () => {
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(await screen.findByText(/Application page available/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Greenhouse" }).getAttribute("href")).toBe("https://jobs.example.test/role");
-    expect(screen.getByRole("button", { name: /View source listing/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /View job listing/ })).toBeTruthy();
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
@@ -171,7 +171,7 @@ describe("Job Discovery", () => {
     expect(await screen.findByText(/Source link unavailable/)).toBeTruthy();
     expect(screen.getByText(/Application link not supplied/)).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
-    expect(screen.getByRole("button", { name: /View source listing/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /View job listing/ })).toBeDisabled();
   });
 
   it("explains expired sessions and links back to sign-in", async () => {
