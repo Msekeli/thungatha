@@ -146,13 +146,14 @@ describe("Job Discovery", () => {
     expect((screen.getByLabelText("Keyword or employer") as HTMLInputElement).value).toBe("");
   });
 
-  it("loads selected details and distinguishes original source from application destination", async () => {
+  it("loads selected details and provides a single application action", async () => {
     const { requests } = setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Frontend Developer/ }));
     expect(await screen.findByText(/Application page available/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Greenhouse" }).getAttribute("href")).toBe("https://jobs.example.test/role");
-    expect(screen.getByRole("button", { name: /View job listing/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "↗ Apply" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /View job listing/ })).toBeNull();
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
@@ -171,7 +172,7 @@ describe("Job Discovery", () => {
     expect(await screen.findByText(/Source link unavailable/)).toBeTruthy();
     expect(screen.getByText(/Application link not supplied/)).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
-    expect(screen.getByRole("button", { name: /View job listing/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "↗ Apply" })).toBeDisabled();
   });
 
   it("explains expired sessions and links back to sign-in", async () => {
@@ -274,7 +275,7 @@ describe("Job Discovery", () => {
     vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
-    fireEvent.click(screen.getByRole("button", { name: "↗ Go to application page" }));
+    fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "opened_application" }) }),
@@ -294,7 +295,7 @@ describe("Job Discovery", () => {
     vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
-    fireEvent.click(screen.getByRole("button", { name: "↗ Go to application page" }));
+    fireEvent.click(screen.getByRole("button", { name: "↗ Apply" }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       "/api/jobs/123e4567-e89b-42d3-a456-426614174000/activity",
       expect.objectContaining({ method: "POST" }),
