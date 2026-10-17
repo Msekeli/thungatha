@@ -72,6 +72,27 @@ describe("/api/jobs/[id]/activity", () => {
     }), { onConflict: "user_id,job_id" });
   });
 
+  it("records an application visit when only the source listing URL is available", async () => {
+    const jobQuery = query({ data: { id: jobId }, error: null });
+    const sourceQuery = query({ data: [{ application_url: null, source_url: "https://jobs.example.test/role", availability_status: "active" }], error: null });
+    const existingQuery = query({ data: null, error: null });
+    const writeQuery = query({ data: { application_link_opened_at: "2026-10-17T10:00:00Z", applied_at: null }, error: null });
+    const from = vi.fn()
+      .mockReturnValueOnce(jobQuery)
+      .mockReturnValueOnce(sourceQuery)
+      .mockReturnValueOnce(existingQuery)
+      .mockReturnValueOnce(writeQuery);
+    client.mockResolvedValue({ from } as never);
+    const response = await POST(new Request("http://localhost/api/jobs/" + jobId + "/activity", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "opened_application" }),
+    }), context);
+    expect(response.status).toBe(200);
+    expect(sourceQuery.select).toHaveBeenCalledWith("application_url,source_url,availability_status");
+    expect(writeQuery.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      user_id: "user_alice", job_id: jobId, applied_at: null,
+      application_link_opened_at: expect.any(String),
+    }), { onConflict: "user_id,job_id" });
+  });
   it("preserves an existing applied timestamp on duplicate confirmation", async () => {
     const appliedAt = "2026-10-16T08:30:00Z";
     const jobQuery = query({ data: { id: jobId }, error: null });
