@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 locally verified; C07 UI in review  
+**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 cloud acceptance gates outstanding; C07 UI in review; C08 save/dismiss/undo implementation in review  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -372,3 +372,30 @@ The earlier unit-test failure was caused by `getByText("Greenhouse")` matching b
 5. Record user review and explicit acceptance before changing C07 to **Accepted**.
 
 C07 remains **In review**. These local results are meaningful quality evidence, but they do not complete the cloud, browser, security, or user-acceptance gates. C08 save/dismiss/undo remains separate and out of C07 scope.
+
+
+---
+
+## M1-C08 implementation record — 2026-10-17
+
+**Status: In review — save/dismiss/undo implemented on `dev`; automated quality workflow passed. Local authenticated-data verification, user review, and M5 application-record integration remain open.**
+
+### Changes made
+
+- Replaced the disabled Save and Dismiss controls with authenticated API actions using the existing `PUT /api/jobs/{id}/state` and `DELETE /api/jobs/{id}/state` contracts.
+- Save and dismissal state are reflected in the selected details and feed cards. The feed refreshes after a successful change, so the Saved, New, and Dismissed categories reflect server-persisted state.
+- Added an Undo notice that remains available while switching feed categories. Undo restores the exact previous state, including replacing a previous Saved state after a dismissal.
+- Added visible, accessible status and error feedback, busy-state protection, and a way to close the undo notice.
+- Added component tests for saving and undoing, and for keeping dismissal undo available across category navigation.
+- No schema or migration change was needed. Existing state writes remain scoped to the authenticated server-resolved user; the state API still accepts only `saved` or `dismissed`.
+
+### Verification actually run
+
+GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9b1` passed: TypeScript check, lint, unit tests (14 test files, 96 tests), and production build. Run: https://github.com/Msekeli/thungatha/actions/runs/38986812290
+
+### Remaining limitations and next actions
+
+- `I applied` remains disabled. M5 Job Tracking and its application-record contract are not implemented; opening an external job/application link must not create or imply an application record.
+- A passing mocked test suite does not prove live Supabase RLS isolation or hosted authenticated behaviour. Verify with isolated test users/data before accepting the checkpoint.
+- Pull `origin/dev`, inspect the three implementation files, then test Save, Dismiss, Undo, prior-state restoration, feed category changes, refresh persistence, error handling, and per-user isolation locally.
+- C08 remains **In review**, not Accepted, until the remaining dependency and acceptance gates are resolved and user review is complete.
