@@ -208,21 +208,26 @@ Security and lifecycle boundaries:
 
 ### M1-C08 — Save, dismiss, undo and application-state integration
 
-**Goal:** persist discovery decisions and prevent misleading application status.
+**Goal:** persist discovery decisions, capture external application-link activity, and let users explicitly record an application without mistaking a click for a submission.
 
 **Work**
 
 - Implement save/dismiss and undo according to the approved UX.
-- Ensure private actions are isolated per user and survive refresh.
-- Define feed resurfacing rules for saved, dismissed, previously seen and applied jobs.
-- Link to M5 records when an application exists; do not duplicate the application lifecycle in M1.
+- Replace the persistent undo notice with an accessible bottom snackbar that disappears after 10 seconds; Undo restores the exact prior saved/dismissed state.
+- Ensure private actions and activity are isolated per user and survive refresh.
+- Record the timestamp when a user opens an external application destination. Opening the link is evidence of a visit only, never evidence of submission.
+- When a role whose application link was previously opened appears again and has no applied confirmation, show a compact, non-blocking prompt: “Did you apply for this role?”
+- “Yes, I applied” records an explicit, persisted applied confirmation for that user and job; it must be idempotent and must not create duplicate records. “No, not yet” dismisses the prompt for that occurrence only; the prompt may appear again if the role reappears later.
+- Do not prompt again once the role is confirmed applied. Keep the application confirmation distinct from saved/dismissed discovery state.
 - Preserve state if a listing later becomes unavailable.
+- M5 extends this minimal job-linked confirmation into the full application record, submitted-material snapshot, lifecycle/status history and follow-up workflow.
 
 **Exit criteria**
 
-- State transitions and undo are tested.
-- Cross-user isolation is verified.
-- Applied indicators link to the correct application record.
+- Save/dismiss state, application-link-open activity and applied confirmation persist per user and survive refresh.
+- External-link opening alone never marks a job applied.
+- Repeat-visit prompt behaviour and both user choices are tested, including duplicate prevention and per-user isolation.
+- Undo appears at the bottom for 10 seconds, then disappears; it restores the exact previous state when used in time.
 - Source disappearance does not destroy the user's history.
 
 ### M1-C09 — End-to-end verification and acceptance
@@ -378,14 +383,15 @@ C07 remains **In review**. These local results are meaningful quality evidence, 
 
 ## M1-C08 implementation record — 2026-10-17
 
-**Status: In review — save/dismiss/undo implemented on `dev`; automated quality workflow passed. Local authenticated-data verification, user review, and M5 application-record integration remain open.**
+**Status: In review — original save/dismiss/undo implementation is on `dev`; the agreed C08 scope has been expanded to include application-link-open tracking, a repeat-visit applied-confirmation prompt, and a 10-second bottom Undo snackbar. These additional behaviours still require implementation and verification.**
 
 ### Changes made
 
 - Replaced the disabled Save and Dismiss controls with authenticated API actions using the existing `PUT /api/jobs/{id}/state` and `DELETE /api/jobs/{id}/state` contracts.
 - Save and dismissal state are reflected in the selected details and feed cards. The feed refreshes after a successful change, so the Saved, New, and Dismissed categories reflect server-persisted state.
-- Added an Undo notice that remains available while switching feed categories. Undo restores the exact previous state, including replacing a previous Saved state after a dismissal.
+- Added an Undo notice that remains available while switching feed categories. Undo restores the exact previous state, including replacing a previous Saved state after a dismissal. This original notice is to be replaced by the agreed 10-second bottom snackbar.
 - Added visible, accessible status and error feedback, busy-state protection, and a way to close the undo notice.
+- Follow-up scope approved on 2026-10-17: persist application-link-open timestamps, ask users whether they applied when that job reappears, record an explicit applied confirmation, and let “No, not yet” dismiss only the current prompt occurrence.
 - Added component tests for saving and undoing, and for keeping dismissal undo available across category navigation.
 - No schema or migration change was needed. Existing state writes remain scoped to the authenticated server-resolved user; the state API still accepts only `saved` or `dismissed`.
 
@@ -395,7 +401,7 @@ GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9
 
 ### Remaining limitations and next actions
 
-- `I applied` remains disabled. M5 Job Tracking and its application-record contract are not implemented; opening an external job/application link must not create or imply an application record.
+- The external-link visit and explicit applied-confirmation workflow is now part of C08, not deferred wholesale to M5. M5 remains responsible for the full application lifecycle and submitted materials.
 - A passing mocked test suite does not prove live Supabase RLS isolation or hosted authenticated behaviour. Verify with isolated test users/data before accepting the checkpoint.
-- Pull `origin/dev`, inspect the three implementation files, then test Save, Dismiss, Undo, prior-state restoration, feed category changes, refresh persistence, error handling, and per-user isolation locally.
-- C08 remains **In review**, not Accepted, until the remaining dependency and acceptance gates are resolved and user review is complete.
+- Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation.
+- C08 remains **In review**, not Accepted, until implementation, required verification, and user review are complete.
