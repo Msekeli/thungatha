@@ -439,12 +439,12 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   }, [undoAction]);
 
   const openApplicationLink = (job: Job, url: string) => {
+    // Show the question immediately for this selected role, independent of
+    // whether the activity API succeeds or the user returns from the new tab.
+    setPromptDismissedForJobId(null);
+    setForceAppliedPrompt(true);
     // Open synchronously from the click so the browser does not block the new tab.
     window.open(url, "_blank", "noopener,noreferrer");
-    // The prompt should be waiting when the user returns from the external site.
-    // Do not mark it dismissed merely because the application link was opened.
-    setPromptDismissedForJobId(null);
-    setForceAppliedPrompt(false);
     setStateError(null);
     void fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
       method: "POST",
@@ -1028,16 +1028,25 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </Button>
                 </div>
                 {(forceAppliedPrompt || (selectedActivity?.application_link_opened_at && !selectedActivity?.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
-                  <section className="th-jobs-applied-prompt" aria-labelledby="th-jobs-applied-prompt-title">
-                    <div>
-                      <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
-                      <p>{selectedActivity?.application_link_opened_at ? "You previously opened this application link. Opening it does not mean an application was submitted." : "Confirm that you submitted an application for this role. Thungatha will record your confirmation."}</p>
-                    </div>
-                    <div className="th-jobs-applied-prompt-actions">
-                      <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
-                      <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
-                    </div>
-                  </section>
+                  <div className="th-jobs-applied-modal-backdrop">
+                    <section
+                      className="th-jobs-applied-modal"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="th-jobs-applied-prompt-title"
+                      aria-describedby="th-jobs-applied-prompt-description"
+                    >
+                      <p className="th-jobs-label">APPLICATION CHECK-IN</p>
+                      <h3 id="th-jobs-applied-prompt-title">Did you apply for this role?</h3>
+                      <p id="th-jobs-applied-prompt-description">
+                        {selectedDetail.title} at {shown(selectedDetail.employer_name)}. Did you submit an application after opening the application page?
+                      </p>
+                      <div className="th-jobs-applied-prompt-actions">
+                        <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
+                        <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
+                      </div>
+                    </section>
+                  </div>
                 )}
                 {activityError && <p className="th-jobs-state-error" role="status">{activityError}</p>}
                 <div className="th-jobs-source-status">
