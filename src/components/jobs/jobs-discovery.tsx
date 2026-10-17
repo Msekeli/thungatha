@@ -288,8 +288,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     const jobId = selectedId;
     let controller: AbortController | null = null;
 
-    // A dismissal only lasts for the current selection. Selection changes
-    // and returning to this page reset it outside this effect.
     const loadActivity = () => {
       controller?.abort();
       controller = new AbortController();
@@ -310,8 +308,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       });
     };
 
+    // Refresh persisted activity on return, but do not reopen a prompt the
+    // user has already dismissed. Confirmation is shown only after an action. 
     const handleReturnToPage = () => {
-      setPromptDismissedForJobId(null);
       loadActivity();
     };
     const handleVisibilityChange = () => {
@@ -1009,16 +1008,35 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   >
                     {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
                   </Button>
-                  <Button
-                    variant="primary"
-                    title={applicationUrl
-                      ? "Opens the employer's application page. This does not mark the role as applied."
-                      : "Opens the original job listing so you can find the application link. This does not mark the role as applied."}
-                    onClick={() => applyUrl && openApplicationLink(selectedDetail, applyUrl)}
-                    disabled={!applyUrl || stateBusy || detailLoading}
-                  >
-                    ↗ Apply
-                  </Button>
+                  <div className="th-jobs-apply-wrap">
+                    <Button
+                      variant="primary"
+                      title={applicationUrl
+                        ? "Opens the employer's application page. This does not mark the role as applied."
+                        : "Opens the original job listing so you can find the application link. This does not mark the role as applied."}
+                      onClick={() => applyUrl && openApplicationLink(selectedDetail, applyUrl)}
+                      disabled={!applyUrl || stateBusy || detailLoading}
+                    >
+                      ↗ Apply
+                    </Button>
+                    {forceAppliedPrompt && (
+                      <section
+                        className="th-jobs-applied-popover"
+                        aria-labelledby="th-jobs-applied-prompt-title"
+                        aria-describedby="th-jobs-applied-prompt-description"
+                      >
+                        <p className="th-jobs-label">APPLICATION CHECK-IN</p>
+                        <h4 id="th-jobs-applied-prompt-title">Did you apply for this role?</h4>
+                        <p id="th-jobs-applied-prompt-description">
+                          {selectedDetail.title} at {shown(selectedDetail.employer_name)}. Did you submit an application?
+                        </p>
+                        <div className="th-jobs-applied-prompt-actions">
+                          <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
+                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
+                        </div>
+                      </section>
+                    )}
+                  </div>
                   <Button
                     variant="secondary"
                     onClick={() => setForceAppliedPrompt(true)}
@@ -1027,27 +1045,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     {selectedActivity?.applied_at ? "✓ Applied" : "→ I applied"}
                   </Button>
                 </div>
-                {(forceAppliedPrompt || (selectedActivity?.application_link_opened_at && !selectedActivity?.applied_at && promptDismissedForJobId !== selectedDetail.id)) && (
-                  <div className="th-jobs-applied-modal-backdrop">
-                    <section
-                      className="th-jobs-applied-modal"
-                      role="dialog"
-                      aria-modal="true"
-                      aria-labelledby="th-jobs-applied-prompt-title"
-                      aria-describedby="th-jobs-applied-prompt-description"
-                    >
-                      <p className="th-jobs-label">APPLICATION CHECK-IN</p>
-                      <h3 id="th-jobs-applied-prompt-title">Did you apply for this role?</h3>
-                      <p id="th-jobs-applied-prompt-description">
-                        {selectedDetail.title} at {shown(selectedDetail.employer_name)}. Did you submit an application after opening the application page?
-                      </p>
-                      <div className="th-jobs-applied-prompt-actions">
-                        <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
-                        <Button variant="secondary" disabled={stateBusy} onClick={() => { setPromptDismissedForJobId(selectedDetail.id); setForceAppliedPrompt(false); }}>No, not yet</Button>
-                      </div>
-                    </section>
-                  </div>
-                )}
+
                 {activityError && <p className="th-jobs-state-error" role="status">{activityError}</p>}
                 <div className="th-jobs-source-status">
                   <span data-available={Boolean(sourceUrl)}>
