@@ -415,7 +415,9 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const openApplicationLink = (job: Job, url: string) => {
     // Open synchronously from the click so the browser does not block the new tab.
     window.open(url, "_blank", "noopener,noreferrer");
-    setPromptDismissedForJobId(job.id);
+    // The prompt should be waiting when the user returns from the external site.
+    // Do not mark it dismissed merely because the application link was opened.
+    setPromptDismissedForJobId(null);
     setForceAppliedPrompt(false);
     setStateError(null);
     void fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
