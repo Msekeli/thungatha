@@ -161,6 +161,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [jobActivity, setJobActivity] = useState<{ jobId: string; activity: JobActivity } | null>(null);
   const [activityError, setActivityError] = useState<string | null>(null);
   const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
+  const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<string | null>(null);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -310,6 +311,10 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     // Refresh persisted activity on return, but do not reopen a prompt the
     // user has already dismissed. Confirmation is shown only after an action. 
     const handleReturnToPage = () => {
+      // A pending reminder is durable: returning from the employer tab should
+      // surface it again unless the application was confirmed.
+      setForceAppliedPrompt(false);
+      setDismissedPromptForJobId(null);
       loadActivity();
     };
     const handleVisibilityChange = () => {
@@ -440,6 +445,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     // Show the question immediately for this selected role, independent of
     // whether the activity API succeeds or the user returns from the new tab.
     setForceAppliedPrompt(true);
+    setDismissedPromptForJobId(null);
     // Open synchronously from the click so the browser does not block the new tab.
     window.open(url, "_blank", "noopener,noreferrer");
     setStateError(null);
@@ -475,6 +481,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
       const payload = (await response.json()) as { activity: JobActivity };
       setJobActivity({ jobId: selectedDetail.id, activity: payload.activity });
       setForceAppliedPrompt(false);
+      setDismissedPromptForJobId(null);
       setStateMessage("Application confirmation recorded.");
       setRetryFeed((value) => value + 1);
     } catch {
@@ -804,6 +811,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         onClick={() => {
                           setSelectedId(job.id);
                           setForceAppliedPrompt(false);
+                          setDismissedPromptForJobId(null);
                           setActivityError(null);
                           setMobileDetail(true);
                         }}
@@ -1022,7 +1030,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     >
                       ↗ Apply
                     </Button>
-                    {forceAppliedPrompt && (
+                    {(forceAppliedPrompt || (
+                      Boolean(selectedActivity?.application_link_opened_at) &&
+                      !selectedActivity?.applied_at &&
+                      dismissedPromptForJobId !== selectedId
+                    )) && (
                       <section
                         className="th-jobs-applied-popover"
                         aria-labelledby="th-jobs-applied-prompt-title"
@@ -1035,7 +1047,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         </p>
                         <div className="th-jobs-applied-prompt-actions">
                           <Button disabled={stateBusy} onClick={() => void confirmApplied()}>Yes, I applied</Button>
-                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setForceAppliedPrompt(false); }}>No, not yet</Button>
+                          <Button variant="secondary" disabled={stateBusy} onClick={() => { setForceAppliedPrompt(false); setDismissedPromptForJobId(selectedDetail.id); }}>No, not yet</Button>
                         </div>
                       </section>
                     )}
