@@ -982,16 +982,18 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </Button>
                   <Button
                     variant="secondary"
+                    title="Opens the page where Thungatha found this job."
                     onClick={() => {
                       if (sourceUrl)
                         window.open(sourceUrl, "_blank", "noopener,noreferrer");
                     }}
                     disabled={!sourceUrl}
                   >
-                    ↗ View source listing
+                    ↗ View job listing
                   </Button>
                   <Button
                     variant="secondary"
+                    title="Opens the application destination. This does not mark the role as applied."
                     onClick={() => applicationUrl && openApplicationLink(selectedDetail, applicationUrl)}
                     disabled={!applicationUrl || stateBusy || detailLoading}
                   >
