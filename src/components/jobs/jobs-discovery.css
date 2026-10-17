@@ -363,3 +363,15 @@
 .th-jobs-detail-card .th-jobs-description h4{margin-bottom:8px;color:var(--th-fg);font-size:13px}
 .th-jobs-detail-card .th-jobs-description p{font-size:12px}
 @media(max-width:700px){.th-jobs-detail-topline .th-jobs-detail-brand h3{font-size:20px}.th-workspace-content .th-jobs-detail-actions{gap:6px}.th-jobs-detail-card .th-jobs-facts>div{grid-template-columns:100px minmax(0,1fr)}}
+
+
+/* Persistent save/dismiss feedback and reversible state changes. */
+.th-jobs-state-notice{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:12px 14px;border:1px solid var(--th-line);border-radius:10px;background:var(--th-surface,var(--th-page));color:var(--th-fg);font-size:13px}
+.th-jobs-state-notice>span{flex:1;min-width:0}
+.th-jobs-state-notice .th-jobs-notice-close{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:0;border-radius:7px;background:transparent;color:var(--th-fg-muted);font-size:20px;cursor:pointer}
+.th-jobs-state-notice .th-jobs-notice-close:hover{background:var(--th-tag-bg);color:var(--th-fg)}
+.th-jobs-state-message,.th-jobs-state-error{margin:0 0 14px;padding:10px 12px;border-radius:8px;font-size:13px}
+.th-jobs-state-message{background:var(--th-tag-bg);color:var(--th-fg)}
+.th-jobs-state-error{border:1px solid var(--th-line);color:var(--th-fg);background:var(--th-surface,var(--th-page))}
+.th-jobs-state-notice button:focus-visible,.th-jobs-notice-close:focus-visible{outline:2px solid var(--th-accent-text);outline-offset:2px}
+@media(max-width:700px){.th-jobs-state-notice{align-items:flex-start;gap:8px;padding:10px}.th-jobs-state-notice>span{padding-top:8px}}

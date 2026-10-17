@@ -31,25 +31,58 @@ function response(body: unknown, status = 200) {
 
 function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; detailStatus?: number; feedStatus?: number; feedBody?: unknown } = {}) {
   const requests: string[] = [];
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+  const states = new Map(
+    jobs.map((job) => {
+      const item = job as { id: string; state?: "saved" | "dismissed" | null };
+      return [item.id, item.state ?? null] as const;
+    }),
+  );
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
     requests.push(url);
     if (url.startsWith("/api/jobs?")) {
       if (options.feedStatus && options.feedStatus !== 200) return response({ error: "Service unavailable" }, options.feedStatus);
       const requestUrl = new URL(url, "http://local");
-      return response(options.feedBody ?? { jobs, page: Number(requestUrl.searchParams.get("page") ?? "1"), pageSize: 25, total: options.total ?? jobs.length, totalPages: Math.ceil((options.total ?? jobs.length) / 25) });
+      const currentJobs = jobs.map((job) => {
+        const item = job as { id: string; state?: "saved" | "dismissed" | null };
+        return { ...item, state: states.get(item.id) ?? null };
+      });
+      const stateFilter = requestUrl.searchParams.get("state") ?? "all";
+      const visibleJobs = currentJobs.filter((job) => {
+        if (stateFilter === "saved") return job.state === "saved";
+        if (stateFilter === "dismissed") return job.state === "dismissed";
+        return job.state !== "dismissed";
+      });
+      return response(options.feedBody ?? {
+        jobs: visibleJobs,
+        page: Number(requestUrl.searchParams.get("page") ?? "1"),
+        pageSize: 25,
+        total: options.total ?? visibleJobs.length,
+        totalPages: Math.ceil((options.total ?? visibleJobs.length) / 25),
+      });
+    }
+    if (url.endsWith("/state")) {
+      const jobId = url.split("/").at(-2) ?? "";
+      if (init?.method === "PUT") {
+        const body = JSON.parse(String(init.body ?? "{}")) as { state: "saved" | "dismissed" };
+        states.set(jobId, body.state);
+        return response({ state: { job_id: jobId, state: body.state, updated_at: "2026-10-16T10:00:00Z" } });
+      }
+      states.set(jobId, null);
+      return response({ state: null });
     }
     if (url.startsWith("/api/jobs/")) {
       if (options.detailStatus && options.detailStatus !== 200) return response({ error: "Job not found" }, options.detailStatus);
-      const selected = jobs.find((job) => (job as { id: string }).id === url.split("/").pop()) ?? firstJob;
-      return response({ job: selected });
+      const id = url.split("/").pop() ?? "";
+      const selected = jobs.find((job) => (job as { id: string }).id === id) ?? firstJob;
+      const item = selected as { id: string; state?: "saved" | "dismissed" | null };
+      return response({ job: { ...item, state: states.get(item.id) ?? null } });
     }
     return response({}, 404);
   });
   vi.stubGlobal("fetch", fetchMock);
   return { requests, fetchMock };
 }
-
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -167,7 +200,39 @@ describe("Job Discovery", () => {
     await waitFor(() => expect(requests.some((url) => new URL(url, "http://local").searchParams.get("page") === "2")).toBe(true));
   });
 
-  it("renders the server-provided saved state without mutating it in C07", async () => {
+  it("persists a saved state and can undo it", async () => {
+    const { fetchMock } = setupFetch();
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+    fireEvent.click(screen.getByRole("button", { name: "♧ Save" }));
+    expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/state",
+      expect.objectContaining({ method: "PUT", body: JSON.stringify({ state: "saved" }) }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      "/api/jobs/123e4567-e89b-42d3-a456-426614174000/state",
+      expect.objectContaining({ method: "DELETE" }),
+    ));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Undo" })).toBeNull());
+  });
+
+  it("keeps dismissal undo available when changing feed categories", async () => {
+    setupFetch();
+    render(<JobsDiscovery configured={false} />);
+    await screen.findByText("Build and support web services.");
+    fireEvent.click(screen.getByRole("button", { name: "× Dismiss" }));
+    expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Saved" }));
+    expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Undo" })).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "New" }));
+    expect(await screen.findByRole("button", { name: "× Dismiss" })).toBeTruthy();
+  });
+
+  it("renders the server-provided saved state", async () => {
     setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
     expect(await screen.findByText("Saved")).toBeTruthy();

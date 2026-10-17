@@ -149,6 +149,10 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [mobileDetail, setMobileDetail] = useState(false);
   const [category, setCategory] = useState("new");
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [stateBusy, setStateBusy] = useState(false);
+  const [stateError, setStateError] = useState<string | null>(null);
+  const [stateMessage, setStateMessage] = useState<string | null>(null);
+  const [undoAction, setUndoAction] = useState<{ jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null>(null);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -270,6 +274,108 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     return () => controller.abort();
   }, [selectedId, refreshDetail, retryDetail]);
 
+  const updateJobState = useCallback(
+    async (
+      job: Job,
+      nextState: "saved" | "dismissed" | null,
+      recordUndo = true,
+    ): Promise<boolean> => {
+      if (stateBusy) return false;
+      const previousState = job.state ?? null;
+      setStateBusy(true);
+      setStateError(null);
+      setStateMessage(null);
+      try {
+        const response = await fetch(
+          "/api/jobs/" + encodeURIComponent(job.id) + "/state",
+          {
+            method: nextState ? "PUT" : "DELETE",
+            headers: {
+              Accept: "application/json",
+              ...(nextState ? { "Content-Type": "application/json" } : {}),
+            },
+            ...(nextState ? { body: JSON.stringify({ state: nextState }) } : {}),
+            cache: "no-store",
+          },
+        );
+        if (!response.ok) {
+          setStateError(await getApiError(response));
+          return false;
+        }
+
+        setFeed((current) =>
+          current
+            ? {
+                ...current,
+                jobs: current.jobs.map((item) =>
+                  item.id === job.id ? { ...item, state: nextState } : item,
+                ),
+              }
+            : current,
+        );
+        setDetail((current) =>
+          current?.id === job.id ? { ...current, state: nextState } : current,
+        );
+        if (recordUndo) {
+          setUndoAction({
+            jobId: job.id,
+            title: job.title,
+            previousState,
+            nextState,
+          });
+        }
+        setRetryFeed((value) => value + 1);
+        return true;
+      } catch {
+        setStateError(
+          "Could not update this job decision. Check your connection and try again.",
+        );
+        return false;
+      } finally {
+        setStateBusy(false);
+      }
+    },
+    [stateBusy],
+  );
+
+  const undoLastStateChange = async () => {
+    if (!undoAction || stateBusy) return;
+    const existingJob =
+      detail?.id === undoAction.jobId
+        ? detail
+        : feed?.jobs.find((item) => item.id === undoAction.jobId);
+    const job: Job = {
+      ...(existingJob ?? {
+        id: undoAction.jobId,
+        title: undoAction.title,
+        employer_name: null,
+        description: null,
+        location_text: null,
+        country_code: null,
+        work_mode: null,
+        employment_type: null,
+        salary_min: null,
+        salary_max: null,
+        salary_currency: null,
+        updated_at: null,
+        job_sources: null,
+        state: undoAction.nextState,
+      }),
+      state: undoAction.nextState,
+    };
+    const restored = await updateJobState(job, undoAction.previousState, false);
+    if (restored) {
+      setUndoAction(null);
+      setStateMessage(
+        undoAction.previousState === "saved"
+          ? "Previous saved state restored."
+          : undoAction.previousState === "dismissed"
+            ? "Previous dismissed state restored."
+            : "Job decision undone.",
+      );
+    }
+  };
+
   const submitFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFilters({ ...draft });
@@ -329,6 +435,41 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
             Persisted listings
           </div>
         </header>
+
+        {undoAction && (
+          <div className="th-jobs-state-notice" role="status" aria-live="polite">
+            <span>
+              {undoAction.nextState === "saved" ? (
+                <>{undoAction.title} saved.</>
+              ) : undoAction.nextState === "dismissed" ? (
+                <>{undoAction.title} dismissed.</>
+              ) : (
+                <>{undoAction.title} decision updated.</>
+              )}
+            </span>
+            <Button
+              variant="secondary"
+              disabled={stateBusy}
+              onClick={() => void undoLastStateChange()}
+            >
+              Undo
+            </Button>
+            <button
+              className="th-jobs-notice-close"
+              type="button"
+              aria-label="Dismiss undo notice"
+              onClick={() => setUndoAction(null)}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {stateMessage && !undoAction && (
+          <p className="th-jobs-state-message" role="status">{stateMessage}</p>
+        )}
+        {stateError && (
+          <p className="th-jobs-state-error" role="alert">{stateError}</p>
+        )}
 
         <div className="th-jobs-workspace">
           <div className="th-jobs-feed-column">
@@ -568,9 +709,10 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                             {sourceLabel(source)}
                           </span>
                           {job.state === "saved" && (
-                            <span className="th-tag" data-tone="success">
-                              Saved
-                            </span>
+                            <span className="th-tag" data-tone="success">Saved</span>
+                          )}
+                          {job.state === "dismissed" && (
+                            <span className="th-tag">Dismissed</span>
                           )}
                         </div>
                         <h3>{job.title}</h3>
@@ -718,18 +860,28 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     ▤ Tailor my CV
                   </Link>
                   <Button
-                    variant="secondary"
-                    disabled
-                    title="Saving jobs is introduced in a later milestone"
+                    variant={selectedDetail.state === "saved" ? "primary" : "secondary"}
+                    disabled={stateBusy || detailLoading}
+                    onClick={() =>
+                      void updateJobState(
+                        selectedDetail,
+                        selectedDetail.state === "saved" ? null : "saved",
+                      )
+                    }
                   >
-                    ♧ Save
+                    {selectedDetail.state === "saved" ? "✓ Saved · Remove save" : "♧ Save"}
                   </Button>
                   <Button
                     variant="ghost"
-                    disabled
-                    title="Dismissing jobs is introduced in a later milestone"
+                    disabled={stateBusy || detailLoading}
+                    onClick={() =>
+                      void updateJobState(
+                        selectedDetail,
+                        selectedDetail.state === "dismissed" ? null : "dismissed",
+                      )
+                    }
                   >
-                    × Dismiss
+                    {selectedDetail.state === "dismissed" ? "↶ Restore to feed" : "× Dismiss"}
                   </Button>
                   <Button
                     variant="secondary"
@@ -889,4 +1041,3 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     </WorkspaceShell>
   );
 }
-//  C08 must complete this user experience by making sure all job discovery features are fully functional, including job saving, dismissing, and application tracking. Additionally, ensure that the match analysis feature is implemented to provide users with accurate match scores based on their confirmed profiles.
