@@ -282,7 +282,7 @@ describe("Job Discovery", () => {
             !p.get("query") &&
             p.get("publishedWithin") === "30d" &&
             p.get("page") === "1" &&
-            p.get("pageSize") === "10"
+            p.get("pageSize") === "30"
           );
         }),
       ).toBe(true),
@@ -617,6 +617,6 @@ describe("Job Discovery", () => {
   it("renders the server-provided saved state", async () => {
     setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
-    expect(await screen.findByText("Saved")).toBeTruthy();
+    expect(await screen.findByRole("button", { name: /Saved/ })).toBeTruthy();
   });
 });
