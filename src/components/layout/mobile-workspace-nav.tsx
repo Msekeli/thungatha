@@ -15,7 +15,7 @@ import {
   X,
   House,
 } from "lucide-react";
-import { BrandMark } from "@/components/brand-mark";
+import Image from "next/image";
 import { SignOutControl } from "@/components/auth/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
     <>
       <header className="th-mobile-workspace-header">
         <Link href="/" className="th-mobile-workspace-brand" aria-label="Thungatha home">
-          <BrandMark />
+          <Image src="/brand/thungatha-logo.svg" alt="Thungatha" width={150} height={42} priority />
         </Link>
         <div className="th-mobile-workspace-header-actions">
           <ThemeToggle />
