@@ -45,22 +45,18 @@ thungatha/
 │   │   ├── layout.tsx
 │   │   └── globals.css
 │   ├── features/
-│   │   ├── jobs/
-│   │   │   └── ui/
-│   │   │       ├── jobs-discovery.tsx
-│   │   │       ├── jobs-discovery.css
-│   │   │       ├── jobs-discovery.test.tsx
-│   │   │       ├── public-job-discovery.tsx
-│   │   │       └── public-job-discovery.css
-│   │   ├── jobs/
+│   │   ├── jobs/                       # Feature-owned code; adoption remains incremental
 │   │   │   ├── ui/
+│   │   │   │   ├── jobs-discovery.tsx
+│   │   │   │   ├── jobs-discovery.css
+│   │   │   │   ├── jobs-discovery.test.tsx
 │   │   │   │   ├── public-job-discovery.tsx
-│   │   │   │   └── authenticated-job-discovery.tsx
-│   │   │   ├── client/
+│   │   │   │   └── public-job-discovery.css
+│   │   │   ├── client/                 # Target location; add only when real code is moved
 │   │   │   │   └── jobs-api.ts
-│   │   │   ├── types/
+│   │   │   ├── types/                  # Target location; add only when real code is moved
 │   │   │   │   └── job.ts
-│   │   │   └── utils/
+│   │   │   └── utils/                  # Target location; add only when real code is moved
 │   │   │       └── job-utils.ts
 │   │   ├── cv-studio/
 │   │   ├── job-tracking/
