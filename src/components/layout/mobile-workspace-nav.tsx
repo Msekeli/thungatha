@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Search,
+  Compass,
   PanelsTopLeft,
   ClipboardCheck,
   Bookmark,
@@ -21,10 +21,10 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
 import "./mobile-workspace-nav.css";
 
-type Destination = { href: string; label: string; icon: typeof Search };
+type Destination = { href: string; label: string; icon: typeof Compass };
 
 const primary: Destination[] = [
-  { href: "/jobs", label: "Discover", icon: Search },
+  { href: "/jobs", label: "Discover", icon: Compass },
   { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
   { href: "/applications", label: "Tracking", icon: ClipboardCheck },
   { href: "/jobs?status=saved", label: "Saved", icon: Bookmark },
