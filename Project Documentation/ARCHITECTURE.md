@@ -82,7 +82,7 @@ Dependency rules:
 
 The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/thungatha-features/<descriptive-feature-name>/`. Use explicit names such as `job-discovery`, `authentication`, `user-profile`, `user-account`, `cv-studio`, and `job-tracking`. Job listings are catalogue/domain data owned by Job Discovery, not a separate top-level feature by default. Keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` unless an evidenced reason supports a move. Do not create two shared infrastructure locations for the same responsibility.
 
-The first feature-folder migration is applied on `dev`: discovery UI and job server modules live under `src/thungatha-features/job-discovery/`; authentication UI/server identity live under `src/thungatha-features/authentication/`; and profile UI/server persistence and validation live under `src/thungatha-features/user-profile/`. App Router entry points remain in their existing folders so URLs are unchanged. Continue incrementally and verify each coherent move.
+The first feature-folder migration is applied on `dev`: discovery UI and job server modules live under `src/thungatha-features/job-discovery/`; authentication UI/server identity live under `src/thungatha-features/authentication/`; and profile UI/server persistence and validation live under `src/thungatha-features/user-profile/`. The `user-account`, `cv-studio`, and `job-tracking` feature roots now exist with README.md scaffolds only; their workflows are not implemented yet. App Router entry points remain in their existing folders so URLs are unchanged. Continue incrementally and verify each coherent move.
 
 ```text
 thungatha/
@@ -159,7 +159,7 @@ thungatha/
 
 - The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `../folder-structure.txt`; update that document when the actual tree changes. See `FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the naming standard, verified endpoint inventory, URL-preserving route-group examples, and unresolved route discrepancy.
 - Keep all existing routes, API paths, request/response shapes, authentication boundaries, and business behavior unchanged during structural-only changes. Because App Router folder names normally define URLs, use route groups such as `(user-profile)` around an existing `profile/` route when a clearer physical grouping is needed without changing `/profile`.
-- Do not create empty feature folders or placeholder implementation files just to match the diagram. Add a folder when real code is ready to move into it.
+- Create the approved top-level feature roots early, even before implementation, and keep a concise README.md in each to record its ownership and planned responsibilities. Do not create empty ui/, server/, data/, or other implementation subfolders until code is ready.
 Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
