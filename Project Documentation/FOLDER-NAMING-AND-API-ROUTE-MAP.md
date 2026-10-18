@@ -129,7 +129,7 @@ These are naming examples, not claims that these modules exist today. Do not mov
 
 ### Current filename and file-size findings
 
-The scan of the current `dev` tree found 81 files under `src/`. Repeated basenames include:
+The scan of the current `dev` tree found 81 files under `src/` before the feature-folder migration. Repeated basenames include:
 
 - `page.tsx` (8), `route.ts` (6), `route.test.ts` (6): mostly legitimate Next.js conventions, but they require descriptively named parent directories and thin entry-point files.
 - `loading.tsx` (2): legitimate Next.js convention.
@@ -141,10 +141,10 @@ Largest source files identified by the scan:
 
 | Current file | Approximate size | Initial recommendation |
 |---|---:|---|
-| `src/thungatha-features/jobs/ui/jobs-discovery.tsx` | 1,378 lines | Split page orchestration, job results/list, job details, filter controls, and API/state operations into cohesive modules after dependency review |
-| `src/thungatha-features/jobs/ui/jobs-discovery.css` | 3,445 lines | Split styles by stable UI section/component, keeping feature scoping and responsive behaviour intact |
-| `src/thungatha-features/jobs/ui/public-job-discovery.css` | 3,216 lines | Split by public discovery sections, preserving selector scope and media-query behaviour |
-| `src/thungatha-features/jobs/ui/public-job-discovery.tsx` | 56 physical lines, about 23 KB | Reformat first; many statements are compressed onto single lines. Then assess component boundaries |
+| `src/thungatha-features/job-discovery/ui/jobs-discovery.tsx` | 1,378 lines | Split page orchestration, job results/list, job details, filter controls, and API/state operations into cohesive modules after dependency review |
+| `src/thungatha-features/job-discovery/ui/jobs-discovery.css` | 3,445 lines | Split styles by stable UI section/component, keeping feature scoping and responsive behaviour intact |
+| `src/thungatha-features/job-discovery/ui/public-job-discovery.css` | 3,216 lines | Split by public discovery sections, preserving selector scope and media-query behaviour |
+| `src/thungatha-features/job-discovery/ui/public-job-discovery.tsx` | 56 physical lines, about 23 KB | Reformat first; many statements are compressed onto single lines. Then assess component boundaries |
 | `src/styles/components.css` | 487 lines, about 12 KB | Inspect ownership and group shared styles by component only where it improves discovery |
 
 Sizes are a prioritisation signal, not a mandate to split every large file. CSS splitting can change cascade order, and React splitting can change state/effect behaviour; both require targeted tests and visual verification.
@@ -155,7 +155,7 @@ Sizes are a prioritisation signal, not a mandate to split every large file. CSS 
 - `src/app/api/jobs/[id]/state/route.ts` (about 102 lines) and `src/app/api/jobs/[id]/activity/route.ts` (about 146 lines) each resolve identity and handle user-owned state/activity. Review a shared identity helper only if the existing authentication contract and error handling can remain identical.
 - `src/app/api/profile/route.ts` (about 107 lines) resolves identity and handles GET/PATCH validation and persistence. It should delegate to named profile operations where this improves clarity, without pretending the current display-name API is a full professional-profile API.
 - `src/app/api/jobs/[id]/route.ts` (about 63 lines) and `src/app/api/internal/jobs/ingest/route.ts` (about 60 lines) are smaller; keep them focused rather than splitting them automatically.
-- `src/lib/jobs/providers/aggregators/index.ts` and `src/lib/jobs/providers/ats/index.ts` are tiny files with no exports in the inspected source. Verify whether they are needed; if not imported, remove them as part of a reference-checked cleanup rather than keeping meaningless files.
+- `src/thungatha-features/job-discovery/server/providers/aggregators/index.ts` and `src/thungatha-features/job-discovery/server/providers/ats/index.ts` are tiny files with no exports in the inspected source. Verify whether they are needed; if not imported, remove them as part of a reference-checked cleanup rather than keeping meaningless files.
 - `src/lib/theme.ts` and `src/theme/theme.ts` are not duplicates: the first defines the app's theme preference/bootstrap script, while the second creates a Material UI theme from tokens. Keep them separate or rename them to distinguish those responsibilities; do not merge based on the basename.
 - The current public discovery TSX file is compressed into only 56 physical lines despite being about 23 KB. Reformat it before evaluating its true complexity; formatting should be a behaviour-neutral change.
 

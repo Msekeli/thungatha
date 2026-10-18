@@ -3,8 +3,8 @@ import { GET, PATCH } from "@/app/api/profile/route";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
-} from "@/lib/auth/identity";
-import { readProfile, saveProfile } from "@/lib/profile/repository";
+} from "@/thungatha-features/authentication/server/identity";
+import { readProfile, saveProfile } from "@/thungatha-features/user-profile/server/repository";
 
 const { MockSupabaseConfigurationError } = vi.hoisted(() => {
   class MockSupabaseConfigurationError extends Error {
@@ -17,12 +17,12 @@ const { MockSupabaseConfigurationError } = vi.hoisted(() => {
   return { MockSupabaseConfigurationError };
 });
 
-vi.mock("@/lib/auth/identity", () => ({
+vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
   hasClerkConfiguration: vi.fn(),
 }));
 
-vi.mock("@/lib/profile/repository", () => ({
+vi.mock("@/thungatha-features/user-profile/server/repository", () => ({
   readProfile: vi.fn(),
   saveProfile: vi.fn(),
 }));

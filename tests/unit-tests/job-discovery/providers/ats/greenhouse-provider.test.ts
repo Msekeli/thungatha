@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GreenhouseProvider } from "@/lib/jobs/providers/ats/greenhouse";
+import { GreenhouseProvider } from "@/thungatha-features/job-discovery/server/providers/ats/greenhouse";
 
 describe("GreenhouseProvider", () => {
   afterEach(() => {

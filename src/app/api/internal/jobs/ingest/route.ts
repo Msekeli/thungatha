@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { ingestJobs } from "@/lib/jobs/ingestion";
+import { ingestJobs } from "@/thungatha-features/job-discovery/server/ingestion";
 
 /**
  * Server-to-server ingestion endpoint for a scheduler or an authorised operator.

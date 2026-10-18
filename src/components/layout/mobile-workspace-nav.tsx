@@ -16,7 +16,7 @@ import {
   House,
 } from "lucide-react";
 import Image from "next/image";
-import { SignOutControl } from "@/components/auth/sign-out-control";
+import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
 import "./mobile-workspace-nav.css";

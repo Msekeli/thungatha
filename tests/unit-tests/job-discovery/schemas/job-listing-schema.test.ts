@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { jobSearchQuerySchema, normalizedJobSchema } from "@/lib/jobs/schema";
+import { jobSearchQuerySchema, normalizedJobSchema } from "@/thungatha-features/job-discovery/server/schema";
 
 const validJob = {
   providerKey: "example-ats",

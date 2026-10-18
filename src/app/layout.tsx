@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { AuthProviders } from "@/thungatha-features/authentication/ui/auth-providers";
-import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 

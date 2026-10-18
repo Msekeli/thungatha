@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import PublicJobDiscovery from "@/thungatha-features/job-discovery/ui/public-job-discovery";
 
 export default async function Home() {

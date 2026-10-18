@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import "./workspace-shell.css";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
-import { SignOutControl } from "@/components/auth/sign-out-control";
+import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
 import {

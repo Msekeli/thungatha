@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
-} from "@/lib/auth/identity";
+} from "@/thungatha-features/authentication/server/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
 import {
   createAuthenticatedSupabaseClient,

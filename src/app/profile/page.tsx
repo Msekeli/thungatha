@@ -1,4 +1,4 @@
-import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 

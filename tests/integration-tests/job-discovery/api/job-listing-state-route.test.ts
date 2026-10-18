@@ -3,10 +3,10 @@ import { PUT, DELETE } from "@/app/api/jobs/[id]/state/route";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
-} from "@/lib/auth/identity";
+} from "@/thungatha-features/authentication/server/identity";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
 
-vi.mock("@/lib/auth/identity", () => ({
+vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
   hasClerkConfiguration: vi.fn(),
 }));

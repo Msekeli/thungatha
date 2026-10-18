@@ -1,4 +1,4 @@
-import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
 
 type PageProps = { searchParams: Promise<{ welcome?: string | string[] }> };

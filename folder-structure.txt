@@ -38,7 +38,7 @@ NAMING STANDARD
 - Avoid vague filenames such as helpers.ts, utils.ts, common.ts, data.ts, manager.ts, and service.ts unless their meaning is unambiguous from a tightly scoped directory.
 - Framework filenames such as page.tsx and route.ts are deliberate exceptions. Their parent route folders and the code they call must make the responsibility clear.
 - Do not create empty folders simply to match this diagram. Create a folder when code for that responsibility exists or is being moved into it.
-- The target structure below is proposed. Existing source and tests are not all organised this way yet.
+- This is a target map with the first source-folder migration now applied: Job Discovery UI, authentication UI, and user-profile UI are in their feature folders. Route groups remain proposed.
 
 TARGET FOLDER STRUCTURE
 
@@ -87,22 +87,20 @@ thungatha/
 │   │   ├── job-discovery/               # Job search, filtering, listing display, source provenance, and per-user discovery state.
 │   │   │   └── ui/                      # Job Discovery components and their feature-specific styles.
 │   │   ├── authentication/              # Authentication UI and integration owned by Thungatha; identity must be resolved securely.
+│   │   │   ├── ui/                      # Sign-in, sign-up, provider, and sign-out components.
+│   │   │   └── server/                  # Server-side identity resolution and auth configuration.
 │   │   ├── user-profile/                # Professional skills, experience, qualifications, and profile workflows.
+│   │   │   ├── ui/                      # Profile form and profile-facing components.
+│   │   │   └── server/                  # Profile persistence and validation.
 │   │   ├── user-account/                # Account preferences, privacy controls, and personal-data controls.
 │   │   ├── cv-studio/                   # CV authoring, tailored versions, and CV-related workflows.
 │   │   └── job-tracking/                 # Actual job application records, application status, follow-ups, and submitted-material references.
 │   ├── components/                      # UI components genuinely shared by multiple features.
 │   │   ├── layout/                      # Shared application shell and responsive workspace navigation.
 │   │   ├── ui/                          # Reusable interface primitives such as buttons, modals, skeletons, and toast notifications.
-│   │   ├── auth/                        # CURRENT location of authentication UI; migrate to the authentication feature after import audit.
-│   │   ├── profile/                     # CURRENT location of profile UI; migrate to the user-profile feature after import audit.
 │   │   └── theme/                       # Theme toggle UI; theme configuration and token ownership still need a separate audit.
 │   ├── lib/                             # Existing shared technical modules and integrations; keep only code with a clear cross-feature or infrastructure role.
-│   │   ├── auth/                        # Server-side identity resolution and authentication-related helpers.
 │   │   ├── http/                        # HTTP response and API response utilities.
-│   │   ├── jobs/                        # CURRENT location of job ingestion, provider adapters, search, and listing schema; migrate by responsibility after tests and imports are audited.
-│   │   │   └── providers/               # External job-source provider integrations, separated by provider type.
-│   │   ├── profile/                     # CURRENT location of profile persistence and validation; migrate to user-profile when boundaries are tested.
 │   │   └── supabase/                    # Supabase client construction and access configuration.
 │   ├── styles/                          # Global design tokens and shared component stylesheets.
 │   ├── theme/                           # Theme definitions, Clerk appearance configuration, and theme tokens; audit overlap with src/lib/theme.ts before consolidating.
@@ -146,10 +144,10 @@ Test files have been moved out of production source into `tests/`, grouped by te
 CURRENT IMPLEMENTATION NOTES
 
 - The actual `dev` branch uses the user-approved directory name `Project Documentation/`. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
-- The current discovery UI is in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/.
+- Job Discovery UI and job-search/ingestion modules now live under `src/thungatha-features/job-discovery/`.
 - Unit and integration tests now live under `tests/unit-tests/` and `tests/integration-tests/`; test imports use the `@/` alias to reach source modules. Test support lives under `tests/test-support/`.
 - The Playwright test now lives under `tests/end-to-end-tests/`, and `playwright.config.ts` points to that directory.
-- The current tree contains two theme modules, src/lib/theme.ts and src/theme/theme.ts. Inspect their separate responsibilities and imports before renaming or consolidating.
+- Authentication and user-profile UI and their feature-specific server modules now live under `src/thungatha-features/authentication/` and `src/thungatha-features/user-profile/`. The current tree contains two theme modules, src/lib/theme.ts and src/theme/theme.ts. Inspect their separate responsibilities and imports before renaming or consolidating.
 - No account settings API, CV Studio API, or full Job Tracking application-record API is currently present in the inspected source tree.
 - The current URL /applications and the product's planned /job-tracking naming are a product decision to resolve separately. A folder-only change must not silently change the URL.
 - The proposed (job-listings), (user-profile), and (job-ingestion) API route groups are organisational examples. Before implementing them, verify route uniqueness and the resulting route table/build.

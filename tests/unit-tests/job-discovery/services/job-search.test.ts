@@ -5,15 +5,15 @@ const { getJobProvidersMock, consoleWarnMock } = vi.hoisted(() => ({
   consoleWarnMock: vi.fn(),
 }));
 
-vi.mock("@/lib/jobs/providers/config", () => ({
+vi.mock("@/thungatha-features/job-discovery/server/providers/config", () => ({
   getJobProviders: getJobProvidersMock,
 }));
 
 vi.mock("server-only", () => ({}));
 
-import { searchJobs } from "@/lib/jobs/search";
-import type { JobProvider } from "@/lib/jobs/provider";
-import type { NormalizedJob } from "@/lib/jobs/schema";
+import { searchJobs } from "@/thungatha-features/job-discovery/server/search";
+import type { JobProvider } from "@/thungatha-features/job-discovery/server/provider";
+import type { NormalizedJob } from "@/thungatha-features/job-discovery/server/schema";
 
 function createJob(overrides: Partial<NormalizedJob> = {}): NormalizedJob {
   return {

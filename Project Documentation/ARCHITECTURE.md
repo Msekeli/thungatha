@@ -82,7 +82,7 @@ Dependency rules:
 
 The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/thungatha-features/<descriptive-feature-name>/`. Use explicit names such as `job-discovery`, `authentication`, `user-profile`, `user-account`, `cv-studio`, and `job-tracking`. Job listings are catalogue/domain data owned by Job Discovery, not a separate top-level feature by default. Keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` unless an evidenced reason supports a move. Do not create two shared infrastructure locations for the same responsibility.
 
-This is the **target structure**, not a claim that all target paths exist today. The first discovery UI migration is complete, but its folder is still named `src/thungatha-features/jobs/ui/`. Renaming that existing folder to the target `src/thungatha-features/job-discovery/ui/` is a future migration step, not yet implemented. Job server logic remains under `src/lib/jobs/` and API handlers under `src/app/api/`. Continue incrementally, preserving routes/API contracts and behavior, and verify each coherent move.
+The first feature-folder migration is applied on `dev`: discovery UI and job server modules live under `src/thungatha-features/job-discovery/`; authentication UI/server identity live under `src/thungatha-features/authentication/`; and profile UI/server persistence and validation live under `src/thungatha-features/user-profile/`. App Router entry points remain in their existing folders so URLs are unchanged. Continue incrementally and verify each coherent move.
 
 ```text
 thungatha/
@@ -119,39 +119,29 @@ thungatha/
 │   │   ├── layout.tsx
 │   │   └── globals.css
 │   ├── thungatha-features/              # Feature-owned implementation
-│   │   ├── job-discovery/               # Target name; current files remain under jobs/ until migrated
+│   │   ├── job-discovery/               # Current Job Discovery feature implementation
 │   │   │   ├── ui/
 │   │   │   │   ├── jobs-discovery.tsx
 │   │   │   │   ├── jobs-discovery.css
 │   │   │   │   ├── jobs-discovery.test.tsx
 │   │   │   │   ├── public-job-discovery.tsx
 │   │   │   │   └── public-job-discovery.css
-│   │   │   ├── client/                  # Add only when real code is moved
-│   │   │   │   └── jobs-api.ts
-│   │   │   ├── types/job.ts             # Add only when real code is moved
-│   │   │   └── utils/job-utils.ts       # Add only when real code is moved
+│   │   │   └── server/                  # Existing ingestion, providers, search, and schema modules
 │   │   ├── authentication/
 │   │   ├── user-profile/
 │   │   ├── user-account/
 │   │   ├── cv-studio/
 │   │   └── job-tracking/
-│   ├── server/                         # Only if shared server infrastructure needs a clear home
-│   │   ├── auth/
-│   │   ├── database/
-│   │   └── http/
 │   ├── components/                     # Shared UI, layout, brand, theme
-│   │   ├── auth/
 │   │   ├── layout/
 │   │   ├── brand/
 │   │   ├── theme/
 │   │   └── ui/
-│   ├── lib/                            # Existing cross-cutting helpers/infrastructure
-│   │   ├── auth/
+│   ├── lib/                            # Cross-cutting helpers/infrastructure
 │   │   ├── http/
 │   │   ├── supabase/
 │   │   └── theme.ts
 │   ├── styles/
-│   ├── test/
 │   ├── theme/
 │   └── proxy.ts
 ├── supabase/
@@ -170,7 +160,7 @@ thungatha/
 Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
-- The target `src/thungatha-features/job-discovery/` should contain the two discovery experiences and genuinely shared code. The current implementation is still under `src/thungatha-features/jobs/` pending migration. Do not force public and authenticated pages into one large component.
+- The `src/thungatha-features/job-discovery/` feature now contains the public and authenticated discovery experiences plus the job ingestion/provider/search/schema modules. Do not force public and authenticated pages into one large component.
 - Public discovery can browse/search/inspect jobs. User-owned saved/dismissed state, activity, and job tracking remain authenticated and server-authorized.
 - Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
 - The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.
@@ -180,7 +170,7 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 | Path | Responsibility |
 |---|---|
 | `src/app/` | Next.js routes, page/layout composition and API Route Handlers |
-| `src/thungatha-features/job-discovery/ui/` | Target location for public and authenticated discovery experiences; current files remain under `src/thungatha-features/jobs/ui/` until migrated |
+| `src/thungatha-features/job-discovery/` | Current location for public and authenticated discovery UI and job server modules |
 | `src/thungatha-features/job-discovery/client/` | Future browser-side API callers/hooks shared by both discovery experiences where behavior matches; create only when real code is moved |
 | `src/thungatha-features/job-discovery/types/` | Shared job and feed response types |
 | `src/thungatha-features/job-discovery/utils/` | Shared pure helpers such as safe URL and display formatting |
@@ -189,8 +179,8 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 | `src/thungatha-features/job-tracking/` | Authenticated application lifecycle code when M5 requires it |
 | `src/components/ui/` | Generic buttons, modals, skeletons, toasts and other cross-feature primitives |
 | `src/components/layout/` | Shared application shells and navigation |
-| `src/lib/auth/`, `src/lib/http/`, `src/lib/supabase/` | Existing cross-cutting helpers; retain until a concrete reason to relocate them is agreed |
-| `src/lib/jobs/` | Current job ingestion/provider/search implementation; remains in place until a separately verified extraction |
+| `src/lib/http/`, `src/lib/supabase/` | Cross-cutting HTTP and Supabase infrastructure |
+| `src/thungatha-features/authentication/` | Authentication UI and server-side identity resolution |
 | `supabase/migrations/` | Version-controlled database schema changes |
 | `tests/end-to-end-tests/` | Playwright user journeys; configured through `playwright.config.ts` |
 | `tests/unit-tests/` | Isolated function, schema, provider, repository, and component tests |
