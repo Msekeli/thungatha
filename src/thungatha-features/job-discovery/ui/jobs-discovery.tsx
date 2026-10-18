@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
+import { JobCard } from "./shared/job-card";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
@@ -804,65 +805,21 @@ export default function JobsDiscovery({
               <>
                 {visibleJobs.map((job) => {
                   const source = sourceFor(job);
-                  const selected = job.id === selectedId;
-                  const posted = source?.published_at
-                    ? formatDate(source.published_at)
-                    : null;
-                  const kind = job.employment_type || "Opportunity";
                   return (
-                    <button
+                    <JobCard
                       key={job.id}
-                      type="button"
-                      className="th-jobs-card th-jobs-redesign-card"
-                      data-selected={selected}
-                      onClick={() => {
+                      job={job}
+                      variant="authenticated"
+                      selected={job.id === selectedId}
+                      postedLabel={source?.published_at ? formatDate(source.published_at) : "Date unknown"}
+                      onSelect={() => {
                         setSelectedId(job.id);
                         setForceAppliedPrompt(false);
                         setDismissedPromptForJobId(null);
                         setActivityError(null);
                         setMobileDetail(true);
                       }}
-                      aria-pressed={selected}
-                      aria-label={`${job.title}, ${shown(job.employer_name)}, ${shown(job.location_text)}`}
-                    >
-                      <span
-                        className="th-jobs-employer-mark"
-                        aria-hidden="true"
-                      >
-                        {(job.employer_name?.trim() || "?")
-                          .slice(0, 1)
-                          .toUpperCase()}
-                      </span>
-                      <span className="th-jobs-card-main">
-                        <strong>{job.title}</strong>
-                        <span>{shown(job.employer_name)}</span>
-                        <small>
-                          <MapPin size={12} aria-hidden="true" />{" "}
-                          {shown(job.location_text)}
-                        </small>
-                        <span className="th-jobs-redesign-tags">
-                          <i>{kind}</i>
-                          {job.work_mode && job.work_mode !== "unknown" && (
-                            <i>
-                              {job.work_mode === "onsite"
-                                ? "On-site"
-                                : job.work_mode === "hybrid"
-                                  ? "Hybrid"
-                                  : "Remote"}
-                            </i>
-                          )}
-                          <i>
-                            <CalendarDays size={11} aria-hidden="true" />{" "}
-                            {posted || "Date unknown"}
-                          </i>
-                        </span>
-                      </span>
-                      <ChevronRight
-                        className="th-jobs-card-chevron"
-                        size={18}
-                        aria-hidden="true"
-                      />
-                    </button>
+                    />
                   );
                 })}
                 {feed && feed.page < feed.totalPages && (
