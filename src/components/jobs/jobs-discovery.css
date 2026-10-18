@@ -814,3 +814,6 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+.th-jobs-load-more{display:flex;justify-content:center;align-items:center;min-height:48px;margin:8px 0 18px;color:var(--th-fg-muted);font-size:11px;text-align:center}
+@media(max-width:700px){.th-jobs-load-more{min-height:56px;padding-bottom:12px}}
