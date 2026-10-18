@@ -6,7 +6,7 @@ import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
-import { Search, MapPin, SlidersHorizontal, ArrowDownUp, CalendarDays, ChevronRight, ExternalLink, PanelsTopLeft, Bookmark, EyeOff, BriefcaseBusiness, Clock3, Info, X, Check } from "lucide-react";
+import { Search, MapPin, SlidersHorizontal, ArrowDownUp, CalendarDays, ChevronRight, ExternalLink, PanelsTopLeft, Bookmark, EyeOff, BriefcaseBusiness, Clock3, Info, X, Check, ArrowLeft } from "lucide-react";
 
 type JobSource = {
   id: string;
@@ -579,6 +579,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           </section>
           <section className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail?"th-jobs-mobile-visible":""}`} aria-label="Selected job details" aria-busy={detailLoading}>
             {!selectedDetail?<div className="th-jobs-detail-placeholder"><strong>Select an opportunity</strong><p>Choose a listing to view its description and application destination.</p></div>:<div className="th-jobs-detail-content" key={selectedDetail.id}>
+              <button type="button" className="th-jobs-mobile-back" onClick={() => setMobileDetail(false)}><ArrowLeft size={17} aria-hidden="true" /> Back to results</button>
               <div className="th-jobs-redesign-job-head"><span className="th-jobs-employer-mark th-jobs-detail-logo">{(selectedDetail.employer_name?.trim()||"?").slice(0,1).toUpperCase()}</span><div className="th-jobs-redesign-title"><h2>{selectedDetail.title}</h2><p>{shown(selectedDetail.employer_name)} <ExternalLink className="th-jobs-external-mark" size={13} aria-label="External employer link" /> <span className="th-jobs-verified">✓ Verified company</span></p></div><div className="th-jobs-match-scorebox"><span>Match</span><strong>—</strong><button type="button" onClick={()=>setMatchOpen(true)}>View breakdown</button></div></div>
               <div className="th-jobs-detail-meta"><span><MapPin size={13} /> {shown(selectedDetail.location_text)}</span><span><BriefcaseBusiness size={13} /> {shown(selectedDetail.employment_type)}</span><span><Clock3 size={13} /> {selectedDetail.work_mode&&selectedDetail.work_mode!=="unknown"?(selectedDetail.work_mode==="onsite"?"On-site":selectedDetail.work_mode==="hybrid"?"Hybrid":"Remote"):"Work mode not stated"}</span><span><CalendarDays size={13} /> Posted {formatDate(selectedSource?.published_at)||"date unknown"}</span></div>
               <div className="th-jobs-detail-actions th-jobs-redesign-actions">
@@ -599,4 +600,3 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     </WorkspaceShell>
   );
 }
-// this component is the main job discovery interface, allowing users to search, filter, and view job listings. It handles user interactions such as saving jobs, dismissing them, and confirming applications. The component also manages state for loading, errors, and user actions, providing feedback through messages and prompts.
