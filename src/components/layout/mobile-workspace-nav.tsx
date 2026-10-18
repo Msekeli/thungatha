@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Compass,
   PanelsTopLeft,
@@ -38,12 +38,9 @@ const secondary: Destination[] = [
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
-  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const jobStatus = searchParams.get("status");
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setJobStatus(new URLSearchParams(window.location.search).get("status"));
-  }, [pathname]);
 
   const isActive = (item: Destination) => {
     const [href, query] = item.href.split("?");
