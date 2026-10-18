@@ -17,9 +17,20 @@ NEXT.JS RULES THAT AFFECT THIS STRUCTURE
 - The src/ directory is supported by Next.js for application code. Keep project configuration files and public/ at the repository root.
 - Do not rename framework-required files just to make their names more descriptive. Make the containing folder descriptive and keep the framework entry point thin.
 
+UI STYLING AND FILE SIZE STANDARD
+
+- Prefer Material UI (MUI) components and their built-in styling before reaching for custom styling.
+- Use Tailwind CSS v4 utilities for layout and straightforward styling where appropriate.
+- Create standalone CSS files or custom CSS rules only when MUI and Tailwind cannot reasonably satisfy the requirement, or when a component needs scoped styles for a complex visual treatment.
+- Keep every handwritten source file at 100 physical lines or fewer, including components, CSS, tests, and configuration. Count blank lines and comments. Generated files, dependency lockfiles, and vendored code are excluded.
+- Warn at 80 lines. Before and after each meaningful code change, check line counts and report any changed file at or above 80 lines or over 100 lines.
+- Refactor by cohesive responsibility before exceeding 100 lines. Never compress code just to meet the limit or split it into meaningless fragments.
+- Existing oversized files are technical debt and should be refactored incrementally with behaviour-preserving tests and visual checks.
+- An automated local/CI check should warn at 80 lines and fail above 100. Until implemented and verified, perform the check manually.
+
 NAMING STANDARD
 
-- Use lowercase kebab-case for folder names and ordinary filenames.
+- Use lowercase kebab-case for ordinary source folders and filenames. The user-approved documentation-folder name `Project Documentation/` is an intentional exception.
 - Use explicit product and domain terms: job-discovery, authentication, user-profile, user-account, cv-studio, and job-tracking.
 - Do not use vague feature folder names such as jobs, profile, or account for the target feature architecture.
 - Keep public URLs and API contracts stable during folder-only changes.
@@ -34,7 +45,7 @@ TARGET FOLDER STRUCTURE
 thungatha/
 ├── .github/
 │   └── workflows/                       # Automated repository checks and CI workflows.
-├── product-and-technical-documentation/ # Product specifications, architecture decisions, route maps, and implementation plans; currently stored under docs/.
+├── Project Documentation/                # Product specifications, architecture decisions, route maps, and implementation plans; currently stored under docs/.
 ├── e2e/                                 # CURRENT location of Playwright tests; migrate to tests/end-to-end-tests/ with a matching config update.
 ├── milestones/                          # Scope, acceptance criteria, and implementation notes for each product milestone.
 ├── public/
@@ -137,7 +148,7 @@ The target is to separate test files from production source. The existing reposi
 
 CURRENT IMPLEMENTATION NOTES
 
-- The actual dev branch still has a docs/ directory. The target name is product-and-technical-documentation/; this directory rename has not been implemented. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
+- The actual dev branch still has a `docs/` directory. The user-approved target name is exactly `Project Documentation/`; this directory rename has not been implemented. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
 - The current discovery UI is in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/.
 - Current API tests are named route.test.ts beside their Route Handlers. Current module tests are colocated under src/lib/jobs/, src/lib/profile/, and src/components/profile/. They have not been moved into tests/ yet.
 - The current Playwright test is under e2e/. The proposed destination is tests/end-to-end-tests/ and requires updating playwright.config.ts.
