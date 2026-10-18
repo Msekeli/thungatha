@@ -11,7 +11,7 @@ create policy "Anonymous visitors can read jobs with active sources"
     exists (
       select 1
         from public.job_sources s
-       where s.job_id = id
+       where s.job_id = jobs.id
          and s.availability_status = 'active'
     )
   );
