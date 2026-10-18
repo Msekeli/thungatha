@@ -94,6 +94,7 @@ thungatha/
 ├── Project Documentation/
 │   ├── PRODUCT-SPECIFICATION.md
 │   ├── ARCHITECTURE.md
+│   ├── FOLDER-NAMING-AND-API-ROUTE-MAP.md
 │   └── PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md
 ├── milestones/                         # Existing milestone records remain in place
 ├── public/
@@ -294,7 +295,7 @@ Routine implementation details can evolve within these boundaries, but do not si
 
 - `PRODUCT-SPECIFICATION.md` defines what the product must do and the user-facing rules.
 - `IMPLEMENTATION-PLAN.md` defines the cross-milestone sequence, dependencies, progress, and overall acceptance.
-- `milestones/<folder>/<file>.md` defines detailed work, checkpoints, tests, evidence, and milestone acceptance.
+- `../milestones/<folder>/<file>.md` defines detailed work, checkpoints, tests, evidence, and milestone acceptance.
 - `DECISIONS.md` records rationale, status, and open decisions.
 - `AGENTS.md` tells AI coding agents how to work safely and consistently.
 - `README.md` explains setup, environment configuration, commands, and how to navigate project documentation.
