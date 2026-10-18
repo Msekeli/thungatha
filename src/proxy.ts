@@ -44,6 +44,7 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
+    "/",
     "/jobs/:path*",
     "/cv-studio/:path*",
     "/applications/:path*",
