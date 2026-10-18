@@ -749,3 +749,68 @@
 @media (min-width: 701px) {
   .th-jobs-mobile-back { display: none; }
 }
+
+
+/* Mobile body scrolling: let the document own vertical scrolling instead of
+   trapping the user inside nested panels or sticky action regions. */
+@media (max-width: 700px) {
+  html:has(.th-workspace-shell),
+  body:has(.th-workspace-shell) {
+    min-height: 100%;
+    height: auto;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+  }
+  .th-workspace-shell,
+  .th-workspace-content {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .th-jobs-page.th-jobs-redesign {
+    display: flex;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    overscroll-behavior: auto;
+  }
+  .th-jobs-redesign-workspace,
+  .th-jobs-redesign-results,
+  .th-jobs-redesign-detail,
+  .th-jobs-redesign-detail.th-jobs-mobile-visible,
+  .th-jobs-redesign-description,
+  .th-jobs-redesign-description .th-jobs-description-body {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+  .th-jobs-redesign-results .th-jobs-results-head { position: static; }
+  .th-jobs-redesign-actions {
+    position: static;
+    bottom: auto;
+    margin-top: 8px;
+  }
+  .th-jobs-redesign-detail.th-jobs-mobile-visible {
+    display: flex;
+    flex-direction: column;
+  }
+  .th-jobs-redesign-detail .th-jobs-detail-content {
+    min-width: 0;
+    overflow: visible;
+  }
+  .th-jobs-description-tabs {
+    position: sticky;
+    z-index: 4;
+    top: 58px;
+    background: var(--th-page);
+  }
+  .th-jobs-popover {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
