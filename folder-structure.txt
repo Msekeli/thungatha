@@ -5,9 +5,9 @@ Branch: dev
 
 IMPORTANT
 - This file describes the target structure, not a claim that every path already exists.
-- Jobs UI migration (first pass): public and authenticated discovery screens, their CSS, and the authenticated discovery component test now live under `src/features/jobs/ui/`. Routes stay under `src/app/`; shared UI stays under `src/components/`. Provider adapters, API handlers, and persistence remain under their existing paths.
+- Jobs UI migration (first pass): public and authenticated discovery screens, their CSS, and the authenticated discovery component test now live under `src/thungatha-thungatha-features/jobs/ui/`. Routes stay under `src/app/`; shared UI stays under `src/components/`. Provider adapters, API handlers, and persistence remain under their existing paths.
 - Keep Next.js routes and HTTP Route Handlers in src/app/.
-- Put feature-owned code in src/features/<feature>/.
+- Put feature-owned code in src/thungatha-thungatha-features/<feature>/.
 - Keep generic shared UI in src/components/.
 - Keep existing shared helpers/infrastructure in src/lib/ unless a concrete reason to move them is approved.
 - Do not create empty folders or files just to match this tree.
@@ -44,7 +44,7 @@ thungatha/
 │   │   ├── sign-up/
 │   │   ├── layout.tsx
 │   │   └── globals.css
-│   ├── features/
+│   ├── thungatha-features/                       # Thungatha-owned feature implementations
 │   │   ├── jobs/                       # Feature-owned code; adoption remains incremental
 │   │   │   ├── ui/
 │   │   │   │   ├── jobs-discovery.tsx
@@ -93,6 +93,6 @@ Jobs feature boundaries
 - Public experience: browse/search/filter/inspect listings and open a valid application destination without signing in.
 - Authenticated experience: existing personal state and activity features, with server-side authorization.
 - Shared candidates: job/feed types, safe URL and display formatters, API request helpers, and UI pieces only where markup/behavior truly match.
-- Keep public and authenticated page controllers separate initially. Do not merge them into one large component. Their UI implementations currently live under `src/features/jobs/ui/`.
+- Keep public and authenticated page controllers separate initially. Do not merge them into one large component. Their UI implementations currently live under `src/thungatha-thungatha-features/jobs/ui/`.
 - API Route Handlers remain under src/app/api/jobs/. Extract backend services/repositories only when a focused, tested change justifies it.
 - Job Tracking is private and authenticated. CV Studio may have public explanatory/preview content, while authoring requires authentication.
