@@ -81,7 +81,7 @@ Dependency rules:
 
 The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/features/<feature>/`; keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` or `src/server/` according to the existing convention. Do not create both shared infrastructure locations for the same responsibility.
 
-This is the **target structure**, not a claim that all target paths exist today. The current Jobs components are still under `src/components/jobs/`, and current job server logic remains under `src/lib/jobs/` plus `src/app/api/jobs/`. Do not move or rename these files as part of a documentation-only change. The Jobs feature migration must be incremental, preserve routes/API contracts and behavior, and be separately verified.
+This is the **target structure**, not a claim that all target paths exist today. The first Jobs UI migration is complete: the public and authenticated discovery components, their CSS, and the authenticated discovery component test are now under `src/features/jobs/ui/`. Job server logic remains under `src/lib/jobs/` and `src/app/api/jobs/` for now. Continue the migration incrementally, preserving routes/API contracts and behavior, and verify each coherent move.
 
 ```text
 thungatha/
@@ -117,12 +117,15 @@ thungatha/
 │   ├── features/                       # Feature-owned implementation
 │   │   ├── jobs/
 │   │   │   ├── ui/
+│   │   │   │   ├── jobs-discovery.tsx
+│   │   │   │   ├── jobs-discovery.css
+│   │   │   │   ├── jobs-discovery.test.tsx
 │   │   │   │   ├── public-job-discovery.tsx
-│   │   │   │   └── authenticated-job-discovery.tsx
-│   │   │   ├── client/
+│   │   │   │   └── public-job-discovery.css
+│   │   │   ├── client/                 # Target location; not created until code is moved
 │   │   │   │   └── jobs-api.ts
-│   │   │   ├── types/job.ts
-│   │   │   └── utils/job-utils.ts
+│   │   │   ├── types/job.ts            # Target location; not created until code is moved
+│   │   │   └── utils/job-utils.ts      # Target location; not created until code is moved
 │   │   ├── cv-studio/
 │   │   ├── job-tracking/
 │   │   └── profile/
