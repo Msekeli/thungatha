@@ -5,7 +5,6 @@ import Link from "next/link";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
-import { Modal } from "@/components/ui/modal";
 import { Toast } from "@/components/ui/toast";
 
 type JobSource = {
