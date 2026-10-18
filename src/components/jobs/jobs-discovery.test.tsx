@@ -157,7 +157,7 @@ describe("Job Discovery", () => {
     expect(requests.some((url) => url === "/api/jobs/223e4567-e89b-42d3-a456-426614174000")).toBe(true);
   });
 
-  it("keeps Apply enabled and opens the source listing when no dedicated application URL exists", async () => {
+  it("does not offer application tracking when no direct application destination exists", async () => {
     const listingOnlyJob = {
       ...firstJob,
       job_sources: [{ ...firstJob.job_sources[0], application_url: null }],
@@ -166,10 +166,9 @@ describe("Job Discovery", () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
     await screen.findByText("Build and support web services.");
-    const applyButton = await screen.findByRole("button", { name: "↗ Apply" });
-    expect(applyButton).not.toBeDisabled();
-    fireEvent.click(applyButton);
-    expect(openSpy).toHaveBeenCalledWith("https://jobs.example.test/role", "_blank", "noopener,noreferrer");
+    const applyButton = await screen.findByRole("button", { name: "Application link unavailable" });
+    expect(applyButton).toBeDisabled();
+    expect(openSpy).not.toHaveBeenCalled();
   });
 
   it("does not render unsafe non-web source or application URLs", async () => {
@@ -184,8 +183,8 @@ describe("Job Discovery", () => {
     setupFetch([unsafeJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }));
-    expect(await screen.findByText(/Source link unavailable/)).toBeTruthy();
-    expect(screen.getByText(/Application link not supplied/)).toBeTruthy();
+    expect(await screen.findByText(/Employer application link not verified/)).toBeTruthy();
+    expect(screen.getByText(/placeholder until a legitimate employer application link is verified/)).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
     expect(screen.getByRole("button", { name: "↗ Apply" })).toBeDisabled();
   });
