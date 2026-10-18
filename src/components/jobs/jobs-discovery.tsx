@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
@@ -64,7 +64,7 @@ const EMPTY_FILTERS: Filters = {
   employmentType: "",
   publishedWithin: "30d",
 };
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 10;
 
 function sourceFor(job: Job | null): JobSource | null {
   if (!job?.job_sources) return null;
@@ -156,6 +156,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [matchOpen, setMatchOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("newest");
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -211,9 +212,18 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           );
           return;
         }
-        setFeed(data);
+        setFeed((current) => {
+          if (page > 1 && current) {
+            const knownIds = new Set(current.jobs.map((job) => job.id));
+            return {
+              ...data,
+              jobs: [...current.jobs, ...data.jobs.filter((job) => !knownIds.has(job.id))],
+            };
+          }
+          return data;
+        });
         setSelectedId((current) =>
-          current && data.jobs.some((job) => job.id === current)
+          current && (page > 1 || data.jobs.some((job) => job.id === current))
             ? current
             : (data.jobs[0]?.id ?? null),
         );
@@ -227,7 +237,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         if (!signal.aborted) setLoading(false);
       }
     },
-    [params],
+    [params, page],
   );
 
   useEffect(() => {
@@ -235,6 +245,21 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
     void Promise.resolve().then(() => refreshFeed(controller.signal));
     return () => controller.abort();
   }, [refreshFeed, retryFeed]);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || loading || !feed || page >= feed.totalPages) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setPage((current) => current < feed.totalPages ? current + 1 : current);
+        }
+      },
+      { root: null, rootMargin: "500px 0px", threshold: 0 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [loading, feed, page]);
 
   const refreshDetail = useCallback(async (id: string, signal: AbortSignal) => {
     setDetailLoading(true);
@@ -534,7 +559,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const range =
     !feed || feed.total === 0
       ? "0 jobs"
-      : `${(feed.page - 1) * feed.pageSize + 1}–${Math.min(feed.page * feed.pageSize, feed.total)} of ${feed.total}`;
+      : `1–${Math.min(feed.jobs.length, feed.total)} of ${feed.total}`;
   const hasFilters = Object.entries(filters).some(([key, value]) =>
     key === "publishedWithin" ? value !== "30d" : Boolean(value),
   );
@@ -575,7 +600,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         <div className="th-jobs-workspace th-jobs-redesign-workspace">
           <section className={`th-jobs-results-panel th-jobs-redesign-results ${mobileDetail?"th-jobs-mobile-hidden":""}`} aria-label="Job search results" aria-busy={loading}>
             <div className="th-jobs-results-head"><span>{loading?"Updating…":range+" opportunities"}</span><span className="th-jobs-label">Official-source listings</span></div>
-            {loading&&!feed?<div className="th-jobs-state" role="status"><span className="th-jobs-spinner" aria-hidden="true"/><strong>Loading opportunities</strong></div>:error?<div className="th-jobs-state" role="alert"><strong>We couldn’t load opportunities</strong><p>{error}</p><Button onClick={()=>setRetryFeed(v=>v+1)}>Retry</Button></div>:visibleJobs.length===0?<div className="th-jobs-state"><strong>{hasFilters?"No opportunities match these filters":"No active opportunities available"}</strong><p>Try changing your search or filters.</p></div>:<>{visibleJobs.map(job=>{const source=sourceFor(job);const selected=job.id===selectedId;const posted=source?.published_at?formatDate(source.published_at):null;const kind=job.employment_type||"Opportunity";return <button key={job.id} type="button" className="th-jobs-card th-jobs-redesign-card" data-selected={selected} onClick={()=>{setSelectedId(job.id);setForceAppliedPrompt(false);setDismissedPromptForJobId(null);setActivityError(null);setMobileDetail(true);}} aria-pressed={selected} aria-label={`${job.title}, ${shown(job.employer_name)}, ${shown(job.location_text)}`}><span className="th-jobs-employer-mark" aria-hidden="true">{(job.employer_name?.trim()||"?").slice(0,1).toUpperCase()}</span><span className="th-jobs-card-main"><strong>{job.title}</strong><span>{shown(job.employer_name)}</span><small><MapPin size={12} aria-hidden="true" /> {shown(job.location_text)}</small><span className="th-jobs-redesign-tags"><i>{kind}</i>{job.work_mode&&job.work_mode!=="unknown"&&<i>{job.work_mode==="onsite"?"On-site":job.work_mode==="hybrid"?"Hybrid":"Remote"}</i>}<i><CalendarDays size={11} aria-hidden="true" /> {posted||"Date unknown"}</i></span></span><ChevronRight className="th-jobs-card-chevron" size={18} aria-hidden="true" /></button>})}{feed&&feed.totalPages>1&&<nav className="th-jobs-pagination" aria-label="Job results pages"><Button variant="secondary" size="sm" disabled={feed.page<=1||loading} onClick={()=>setPage(v=>Math.max(1,v-1))}>Previous</Button><span>Page {feed.page} of {feed.totalPages}</span><Button variant="secondary" size="sm" disabled={feed.page>=feed.totalPages||loading} onClick={()=>setPage(v=>Math.min(feed.totalPages,v+1))}>Next</Button></nav>}</>}
+            {loading&&!feed?<div className="th-jobs-state" role="status"><span className="th-jobs-spinner" aria-hidden="true"/><strong>Loading opportunities</strong></div>:error?<div className="th-jobs-state" role="alert"><strong>We couldn’t load opportunities</strong><p>{error}</p><Button onClick={()=>setRetryFeed(v=>v+1)}>Retry</Button></div>:visibleJobs.length===0?<div className="th-jobs-state"><strong>{hasFilters?"No opportunities match these filters":"No active opportunities available"}</strong><p>Try changing your search or filters.</p></div>:<>{visibleJobs.map(job=>{const source=sourceFor(job);const selected=job.id===selectedId;const posted=source?.published_at?formatDate(source.published_at):null;const kind=job.employment_type||"Opportunity";return <button key={job.id} type="button" className="th-jobs-card th-jobs-redesign-card" data-selected={selected} onClick={()=>{setSelectedId(job.id);setForceAppliedPrompt(false);setDismissedPromptForJobId(null);setActivityError(null);setMobileDetail(true);}} aria-pressed={selected} aria-label={`${job.title}, ${shown(job.employer_name)}, ${shown(job.location_text)}`}><span className="th-jobs-employer-mark" aria-hidden="true">{(job.employer_name?.trim()||"?").slice(0,1).toUpperCase()}</span><span className="th-jobs-card-main"><strong>{job.title}</strong><span>{shown(job.employer_name)}</span><small><MapPin size={12} aria-hidden="true" /> {shown(job.location_text)}</small><span className="th-jobs-redesign-tags"><i>{kind}</i>{job.work_mode&&job.work_mode!=="unknown"&&<i>{job.work_mode==="onsite"?"On-site":job.work_mode==="hybrid"?"Hybrid":"Remote"}</i>}<i><CalendarDays size={11} aria-hidden="true" /> {posted||"Date unknown"}</i></span></span><ChevronRight className="th-jobs-card-chevron" size={18} aria-hidden="true" /></button>})}{feed&&feed.page<feed.totalPages&&<div ref={loadMoreRef} className="th-jobs-load-more" aria-live="polite">{loading?"Loading more opportunities…":"Scroll to load more opportunities"}</div>}</>}
           </section>
           <section className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail?"th-jobs-mobile-visible":""}`} aria-label="Selected job details" aria-busy={detailLoading}>
             {!selectedDetail?<div className="th-jobs-detail-placeholder"><strong>Select an opportunity</strong><p>Choose a listing to view its description and application destination.</p></div>:<div className="th-jobs-detail-content" key={selectedDetail.id}>
