@@ -72,15 +72,6 @@ function sourceFor(job: Job | null): JobSource | null {
     : job.job_sources;
 }
 
-function sourceLabel(source: JobSource | null): string {
-  const key = source?.provider_key?.trim();
-  return key
-    ? key
-        .replace(/[_-]+/g, " ")
-        .replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : "Source not supplied";
-}
-
 function shown(value: string | null | undefined): string {
   return value?.trim() || "Not provided";
 }
@@ -529,9 +520,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
 
   const changeDraft = (key: keyof Filters, value: string) =>
     setDraft((current) => ({ ...current, [key]: value }));
-  const resetDisabled =
-    JSON.stringify(draft) === JSON.stringify(EMPTY_FILTERS) &&
-    JSON.stringify(filters) === JSON.stringify(EMPTY_FILTERS);
   const selectedDetail =
     detail?.id === selectedId
       ? detail
@@ -540,7 +528,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
-  const applyUrl = applicationUrl;
   const range =
     !feed || feed.total === 0
       ? "0 jobs"
@@ -585,7 +572,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
         <div className="th-jobs-workspace th-jobs-redesign-workspace">
           <section className={`th-jobs-results-panel th-jobs-redesign-results ${mobileDetail?"th-jobs-mobile-hidden":""}`} aria-label="Job search results" aria-busy={loading}>
             <div className="th-jobs-results-head"><span>{loading?"Updating…":range+" opportunities"}</span><span className="th-jobs-label">Official-source listings</span></div>
-            {loading&&!feed?<div className="th-jobs-state" role="status"><span className="th-jobs-spinner" aria-hidden="true"/><strong>Loading opportunities</strong></div>:error?<div className="th-jobs-state" role="alert"><strong>We couldn’t load opportunities</strong><p>{error}</p><Button onClick={()=>setRetryFeed(v=>v+1)}>Retry</Button></div>:visibleJobs.length===0?<div className="th-jobs-state"><strong>{hasFilters?"No opportunities match these filters":"No active opportunities available"}</strong><p>Try changing your search or filters.</p></div>:<>{visibleJobs.map(job=>{const source=sourceFor(job);const selected=job.id===selectedId;const posted=source?.published_at?Math.max(0,Math.floor((Date.now()-new Date(source.published_at).getTime())/86400000)):null;const kind=job.employment_type||"Opportunity";return <button key={job.id} type="button" className="th-jobs-card th-jobs-redesign-card" data-selected={selected} onClick={()=>{setSelectedId(job.id);setForceAppliedPrompt(false);setDismissedPromptForJobId(null);setActivityError(null);setMobileDetail(true);}} aria-pressed={selected} aria-label={`${job.title}, ${shown(job.employer_name)}, ${shown(job.location_text)}`}><span className="th-jobs-employer-mark" aria-hidden="true">{(job.employer_name?.trim()||"?").slice(0,1).toUpperCase()}</span><span className="th-jobs-card-main"><strong>{job.title}</strong><span>{shown(job.employer_name)}</span><small>⌖ {shown(job.location_text)}</small><span className="th-jobs-redesign-tags"><i>{kind}</i>{job.work_mode&&job.work_mode!=="unknown"&&<i>{job.work_mode==="onsite"?"On-site":job.work_mode==="hybrid"?"Hybrid":"Remote"}</i>}<i>▢ {posted===null?"Date unknown":posted===0?"Today":posted===1?"1 day ago":`${posted} days ago`}</i></span></span><span className="th-jobs-card-chevron">›</span></button>})}{feed&&feed.totalPages>1&&<nav className="th-jobs-pagination" aria-label="Job results pages"><Button variant="secondary" size="sm" disabled={feed.page<=1||loading} onClick={()=>setPage(v=>Math.max(1,v-1))}>Previous</Button><span>Page {feed.page} of {feed.totalPages}</span><Button variant="secondary" size="sm" disabled={feed.page>=feed.totalPages||loading} onClick={()=>setPage(v=>Math.min(feed.totalPages,v+1))}>Next</Button></nav>}</>}
+            {loading&&!feed?<div className="th-jobs-state" role="status"><span className="th-jobs-spinner" aria-hidden="true"/><strong>Loading opportunities</strong></div>:error?<div className="th-jobs-state" role="alert"><strong>We couldn’t load opportunities</strong><p>{error}</p><Button onClick={()=>setRetryFeed(v=>v+1)}>Retry</Button></div>:visibleJobs.length===0?<div className="th-jobs-state"><strong>{hasFilters?"No opportunities match these filters":"No active opportunities available"}</strong><p>Try changing your search or filters.</p></div>:<>{visibleJobs.map(job=>{const source=sourceFor(job);const selected=job.id===selectedId;const posted=source?.published_at?formatDate(source.published_at):null;const kind=job.employment_type||"Opportunity";return <button key={job.id} type="button" className="th-jobs-card th-jobs-redesign-card" data-selected={selected} onClick={()=>{setSelectedId(job.id);setForceAppliedPrompt(false);setDismissedPromptForJobId(null);setActivityError(null);setMobileDetail(true);}} aria-pressed={selected} aria-label={`${job.title}, ${shown(job.employer_name)}, ${shown(job.location_text)}`}><span className="th-jobs-employer-mark" aria-hidden="true">{(job.employer_name?.trim()||"?").slice(0,1).toUpperCase()}</span><span className="th-jobs-card-main"><strong>{job.title}</strong><span>{shown(job.employer_name)}</span><small>⌖ {shown(job.location_text)}</small><span className="th-jobs-redesign-tags"><i>{kind}</i>{job.work_mode&&job.work_mode!=="unknown"&&<i>{job.work_mode==="onsite"?"On-site":job.work_mode==="hybrid"?"Hybrid":"Remote"}</i>}<i>▢ {posted||"Date unknown"}</i></span></span><span className="th-jobs-card-chevron">›</span></button>})}{feed&&feed.totalPages>1&&<nav className="th-jobs-pagination" aria-label="Job results pages"><Button variant="secondary" size="sm" disabled={feed.page<=1||loading} onClick={()=>setPage(v=>Math.max(1,v-1))}>Previous</Button><span>Page {feed.page} of {feed.totalPages}</span><Button variant="secondary" size="sm" disabled={feed.page>=feed.totalPages||loading} onClick={()=>setPage(v=>Math.min(feed.totalPages,v+1))}>Next</Button></nav>}</>}
           </section>
           <section className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail?"th-jobs-mobile-visible":""}`} aria-label="Selected job details" aria-busy={detailLoading}>
             {!selectedDetail?<div className="th-jobs-detail-placeholder"><strong>Select an opportunity</strong><p>Choose a listing to view its description and application destination.</p></div>:<div className="th-jobs-detail-content" key={selectedDetail.id}>
@@ -597,7 +584,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                 <Button variant="secondary" disabled={stateBusy||detailLoading} onClick={()=>void updateJobState(selectedDetail,selectedDetail.state==="saved"?null:"saved")}>{selectedDetail.state==="saved"?"✓ Saved":"♧ Save"}</Button>
                 <Button variant="secondary" disabled={stateBusy||detailLoading} onClick={()=>void updateJobState(selectedDetail,selectedDetail.state==="dismissed"?null:"dismissed")}>{selectedDetail.state==="dismissed"?"↶ Restore":"⊘ Dismiss"}</Button>
               </div>
-              <div className="th-jobs-source-status"><span data-available={Boolean(applicationUrl)}>{applicationUrl?"✓ Application destination available":"! Employer application link not verified"}</span></div>
+              {activityError&&<p className="th-jobs-state-error" role="status">{activityError}</p>}{detailError&&<p className="th-jobs-state-error" role="status">{detailError} <button type="button" onClick={()=>setRetryDetail(v=>v+1)}>Retry</button></p>}<div className="th-jobs-source-status"><span data-available={Boolean(applicationUrl)}>{applicationUrl?"✓ Application destination available":"! Employer application link not verified"}</span></div>
               <section className="th-jobs-description-panel th-jobs-redesign-description"><div className="th-jobs-description-tabs" role="tablist" aria-label="Job information"><button type="button" role="tab" aria-selected="true">Job description</button><button type="button" role="tab" aria-selected="false" onClick={()=>document.getElementById("th-job-requirements")?.scrollIntoView({block:"nearest"})}>Requirements</button><button type="button" role="tab" aria-selected="false" onClick={()=>document.getElementById("th-job-benefits")?.scrollIntoView({block:"nearest"})}>Benefits</button><button type="button" role="tab" aria-selected="false" onClick={()=>document.getElementById("th-job-about")?.scrollIntoView({block:"nearest"})}>About the company</button></div><div className="th-jobs-description-body">{selectedDetail.description?.trim()||"A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}<section id="th-job-requirements"><h3>Requirements</h3><p>Requirements will appear here when provided by the employer. Thungatha will not invent missing requirements.</p></section><section id="th-job-benefits"><h3>Benefits</h3><p>Benefits have not been supplied in the available listing.</p></section><section id="th-job-about"><h3>About the company</h3><p>Company information will appear here when an official employer source is available.</p></section></div></section>
             </div>}
           </section>
