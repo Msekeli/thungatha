@@ -66,6 +66,7 @@ The API folder named `jobs` is currently part of the public contract (`/api/jobs
 - **No full Job Tracking application-record API is present** in the inspected source tree. The current placeholder page is at `/applications`; architecture/product documentation names `/job-tracking`. This is a product/URL discrepancy and must be resolved separately before implementing or moving that page.
 - The existing `/api/jobs/[id]/activity` endpoint writes discovery activity timestamps, including an `applied_at` timestamp for `confirm_applied`. This is not a full application record with a lifecycle, submitted-material snapshot, and follow-up data. Before implementing Job Tracking, reconcile this activity meaning with the product rule that actual applications belong to Job Tracking.
 - The current `/api/profile` endpoint only reads/writes `displayName`; it is not yet an API for the complete professional profile (skills, experience, qualifications, or CV-import confirmation).
+- The authenticated Job Discovery UI links to `/tracking`, but there is no matching `src/app/tracking` route in the inspected tree. Treat this as a stale navigation link to review during the route cleanup; do not assume the route exists or silently redirect it as part of a folder-only change.
 - Existing job Route Handlers currently contain validation, Supabase queries, and orchestration. Keep endpoint contracts stable. Extract use cases/repositories only where a focused change, clear boundary, and tests justify it.
 
 ## 5. Required pre-migration audit
