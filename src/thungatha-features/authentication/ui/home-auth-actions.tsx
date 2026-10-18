@@ -2,7 +2,7 @@
 
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { SignOutControl } from "@/components/auth/sign-out-control";
+import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 
 type Variant = "nav" | "hero" | "cta";
 

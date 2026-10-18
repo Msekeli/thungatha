@@ -1,5 +1,5 @@
 import { SignUp } from "@clerk/nextjs";
-import { AuthConfigurationNotice } from "@/components/auth/auth-configuration-notice";
+import { AuthConfigurationNotice } from "@/thungatha-features/authentication/ui/auth-configuration-notice";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { hasClerkConfiguration } from "@/lib/auth/identity";
 

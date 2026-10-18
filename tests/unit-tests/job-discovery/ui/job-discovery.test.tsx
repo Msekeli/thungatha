@@ -7,7 +7,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import JobsDiscovery from "@/thungatha-features/jobs/ui/jobs-discovery";
+import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
 
 vi.mock("@/components/ui/button", () => ({
   Button: ({

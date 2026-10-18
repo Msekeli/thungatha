@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { ProfileForm } from "@/components/profile/profile-form";
+import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
 afterEach(() => {
   cleanup();

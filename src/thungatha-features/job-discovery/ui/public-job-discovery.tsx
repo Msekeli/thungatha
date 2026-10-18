@@ -7,7 +7,7 @@ import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Bookmark, BriefcaseBusiness, CalendarDays, ChevronDown, ExternalLink, FileUser, MapPin, Menu, Search, SlidersHorizontal, X, ClipboardList, ChartNoAxesColumn, ShieldCheck } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { HomeAuthActions } from "@/components/auth/home-auth-actions";
+import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import "./public-job-discovery.css";
 
 type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };

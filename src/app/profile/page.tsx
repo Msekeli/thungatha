@@ -1,6 +1,6 @@
 import { hasClerkConfiguration } from "@/lib/auth/identity";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
-import { ProfileForm } from "@/components/profile/profile-form";
+import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
 export default function ProfilePage() {
   return (
