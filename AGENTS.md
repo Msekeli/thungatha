@@ -33,8 +33,10 @@
 - Keep detailed milestone documents in their agreed folders under `milestones/`.
 - Empty milestone folders are intentional and must be tracked with a `.gitkeep` file until their milestone document is added.
 - Do not create empty implementation folders under `src/` merely to match the planned structure.
-- Treat the architecture tree as a navigation guide, not proof that every planned route or feature has been implemented.
-- Inspect references before renaming, moving, merging, or deleting existing files. In particular, review the role of `PROJECT-CONTEXT.md`, existing `/dashboard` code, and duplicate-looking components before changing them.
+- Treat the architecture tree and `folder-structure.txt` as the agreed target map, not proof that every target path or feature has been implemented. The actual repository may lag the target during an incremental migration.
+- Inspect references before renaming, moving, merging, or deleting existing files. In particular, review existing `/dashboard` code and duplicate-looking components before changing them.
+- The agreed target uses `src/features/<feature>/` for feature-owned code. Start with Jobs and migrate incrementally; do not move the whole repository at once.
+- For Jobs, preserve separate public and authenticated discovery experiences. Extract only demonstrably shared code and preserve route paths, API contracts, authentication boundaries, and business logic. Job Tracking remains authenticated; public CV Studio access is limited to an introduction/preview until authenticated authoring is available.
 - Do not create a second source of truth for a document or feature. Update references when an authoritative document is intentionally replaced, and report any stale references found.
 
 ## Product and Architecture Rules
