@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -122,10 +122,9 @@ async function getApiError(response: Response): Promise<string> {
   );
 }
 
-export default function JobsDiscovery({ configured }: { configured: boolean }) {
+export default function JobsDiscovery({ configured, showProfileSetupPrompt = false }: { configured: boolean; showProfileSetupPrompt?: boolean }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [profileSetupPrompt, setProfileSetupPrompt] = useState(false);
+  const [profileSetupPrompt, setProfileSetupPrompt] = useState(showProfileSetupPrompt);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -163,10 +162,10 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (searchParams.get("welcome") !== "1") return;
-    setProfileSetupPrompt(true);
-    router.replace("/jobs", { scroll: false });
-  }, [router, searchParams]);
+    if (!showProfileSetupPrompt) return;
+    // Remove the one-time prompt flag without triggering a Next.js RSC navigation.
+    window.history.replaceState(null, "", "/jobs");
+  }, [showProfileSetupPrompt]);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
