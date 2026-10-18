@@ -8,7 +8,8 @@ vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.
 
 const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
-const client = vi.mocked(createAuthenticatedSupabaseClient);\nconst publicClient = vi.mocked(createPublicSupabaseClient);
+const client = vi.mocked(createAuthenticatedSupabaseClient);
+const publicClient = vi.mocked(createPublicSupabaseClient);
 
 function query(result: unknown) {
   // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
