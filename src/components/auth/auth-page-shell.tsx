@@ -28,7 +28,6 @@ export function AuthPageShell({ children }: { children: ReactNode }) {
             </p>
           </div>
         </div>
-        <p className="text-detail text-nav-text">Illustration with sample data</p>
       </aside>
       <main className="th-auth-glow relative flex flex-col items-center justify-center gap-5 px-6 py-16">
         <Link
