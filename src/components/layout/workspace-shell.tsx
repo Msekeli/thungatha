@@ -45,7 +45,7 @@ export function WorkspaceShell({
           <p className="th-workspace-nav-label th-workspace-you-label">You</p>
           {personal.map((item) => (
             <Link key={item.href} href={item.href} className="th-workspace-nav-link" data-active={active === item.href}>
-              <span className="th-workspace-nav-icon" aria-hidden="true">{item.icon}</span>{item.label}
+              <item.icon className="th-workspace-nav-icon" aria-hidden="true" size={17} strokeWidth={1.7} />{item.label}
             </Link>
           ))}
         </nav>
