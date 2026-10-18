@@ -9,6 +9,10 @@ import {
 } from "@testing-library/react";
 import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 vi.mock("@/components/ui/button", () => ({
   Button: ({
     children,
