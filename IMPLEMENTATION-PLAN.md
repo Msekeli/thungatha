@@ -74,7 +74,7 @@ No future milestone or checkpoint may be marked complete without the required ve
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
-The feature-based target structure is recorded in `docs/ARCHITECTURE.md` and `folder-structure.txt`, with the decision in `DECISIONS.md` (D-035). This documentation update does not change M1 scope, checkpoint status, or acceptance criteria and does not move application code.
+The feature-based target structure is recorded in `Project Documentation/ARCHITECTURE.md` and `folder-structure.txt`, with the decision in `DECISIONS.md` (D-035). This documentation update does not change M1 scope, checkpoint status, or acceptance criteria and does not move application code.
 
 The first structural work should focus on the Jobs feature only:
 1. audit the public `/` and authenticated `/jobs` experiences, current API contracts, and tests;
@@ -320,8 +320,8 @@ Thungatha is ready for final release only when:
 | Document | Responsibility |
 |---|---|
 | `IMPLEMENTATION-PLAN.md` | Overall roadmap, milestone summaries, dependencies and status |
-| `docs/PRODUCT-SPECIFICATION.md` | Product behaviour, features and user workflows |
-| `docs/ARCHITECTURE.md` | Application structure, technology choices, security and data access |
+| `Project Documentation/PRODUCT-SPECIFICATION.md` | Product behaviour, features and user workflows |
+| `Project Documentation/ARCHITECTURE.md` | Application structure, technology choices, security and data access |
 | `DECISIONS.md` | Approved decisions and their rationale |
 | `AGENTS.md` | Instructions for AI coding agents |
 | `milestones/Mx-.../` | Detailed milestone scope, checkpoints, evidence and acceptance |
