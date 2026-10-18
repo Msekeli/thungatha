@@ -1,76 +1,157 @@
-Thungatha — Folder Naming Standard and Target Structure
-Status: Naming principles confirmed; physical migration is incremental
-Last updated: 18 October 2026
+Thungatha — Folder Structure and Naming Standard
+Status: Proposed target structure; current implementation is not yet fully migrated
+Last reviewed: 18 October 2026
 Branch: dev
 
 PURPOSE
-This file describes the intended, easy-to-navigate structure. It does not claim that every target path exists today. The verified current tree remains available from the repository tree on dev.
 
-NAMING RULES
-- Use descriptive lowercase kebab-case names for feature-owned folders.
-- Preferred feature names: job-discovery, authentication, user-profile, user-account, cv-studio, and job-tracking.
-- Job Discovery owns job-listing catalogue data, search, filters, source provenance, and per-user discovery state. Do not create a separate top-level job-listings feature unless a future, evidenced boundary requires one.
-- Do not introduce vague feature containers such as jobs, profile, or account in the target structure.
-- Technical/framework boundaries such as app, api, components, lib, and ui may remain where they express an established technical role; their feature-owned children should still be explicit.
-- Next.js App Router folders normally define URLs. Use route groups in parentheses to make the filesystem responsibility explicit without changing the URL. Example: app/(user-profile)/profile/page.tsx still serves /profile.
-- Existing URLs and API contracts are stable interfaces. Do not rename URL segments just to improve folder names. If a URL change is required, handle it as a separate, explicit product/API decision with redirects and consumer migration where appropriate.
-- Do not create empty folders or placeholder files to match the target tree.
-- Inspect all imports, route consumers, tests, auth/ownership checks, and data effects before each move. Verify each coherent migration before proceeding.
+This document describes what each important folder is for, which filenames Next.js requires, and the intended organisation of production code and tests. It is a target map, not a claim that every folder shown already exists.
 
-DOCUMENT AUTHORITY
-- docs/ARCHITECTURE.md defines architectural boundaries.
-- docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md defines folder naming, route-group examples, the inspected API inventory, and known discrepancies.
-- DECISIONS.md records the approved naming principle and migration constraints.
-- This file is the navigational target map; it must be updated as migrations are completed.
+NEXT.JS RULES THAT AFFECT THIS STRUCTURE
+
+- Next.js App Router uses filesystem conventions. Keep framework entry-point filenames such as page.tsx, layout.tsx, route.ts, loading.tsx, error.tsx, global-error.tsx, and not-found.tsx where those roles apply.
+- Normal folders under src/app/ contribute to URL paths. Do not rename a route folder without considering the public URL it creates.
+- Route groups use parentheses, for example (authentication). The group name is omitted from the URL, so src/app/(authentication)/sign-in/[[...sign-in]]/page.tsx still serves /sign-in.
+- Route groups are organisational only. Do not create duplicate routes that resolve to the same URL.
+- Next.js does not require a particular folder architecture for ordinary modules, components, styles, or tests. Use descriptive names that communicate responsibility.
+- The src/ directory is supported by Next.js for application code. Keep project configuration files and public/ at the repository root.
+- Do not rename framework-required files just to make their names more descriptive. Make the containing folder descriptive and keep the framework entry point thin.
+
+NAMING STANDARD
+
+- Use lowercase kebab-case for folder names and ordinary filenames.
+- Use explicit product and domain terms: job-discovery, authentication, user-profile, user-account, cv-studio, and job-tracking.
+- Do not use vague feature folder names such as jobs, profile, or account for the target feature architecture.
+- Keep public URLs and API contracts stable during folder-only changes.
+- Use names that state the responsibility, such as job-listing-schema.ts, get-job-listings.ts, and update-job-listing-state.ts.
+- Avoid vague filenames such as helpers.ts, utils.ts, common.ts, data.ts, manager.ts, and service.ts unless their meaning is unambiguous from a tightly scoped directory.
+- Framework filenames such as page.tsx and route.ts are deliberate exceptions. Their parent route folders and the code they call must make the responsibility clear.
+- Do not create empty folders simply to match this diagram. Create a folder when code for that responsibility exists or is being moved into it.
+- The target structure below is proposed. Existing source and tests are not all organised this way yet.
+
+TARGET FOLDER STRUCTURE
 
 thungatha/
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── FOLDER-NAMING-AND-API-ROUTE-MAP.md
-│   └── PRODUCT-SPECIFICATION.md
+├── .github/
+│   └── workflows/                       # Automated repository checks and CI workflows.
+├── docs/                                # Product, architecture, route, naming, and implementation documentation.
+├── e2e/                                 # CURRENT location of Playwright tests; migrate to tests/end-to-end-tests/ with a matching config update.
+├── milestones/                          # Scope, acceptance criteria, and implementation notes for each product milestone.
+├── public/
+│   └── brand/                           # Static brand assets served directly by Next.js.
+├── scripts/                             # Explicitly named developer and maintenance scripts.
 ├── src/
-│   ├── app/
-│   │   ├── (authentication)/
-│   │   │   ├── sign-in/[[...sign-in]]/page.tsx     # URL remains /sign-in
-│   │   │   └── sign-up/[[...sign-up]]/page.tsx     # URL remains /sign-up
-│   │   ├── (job-discovery)/
-│   │   │   ├── page.tsx                            # URL remains /
-│   │   │   └── jobs/page.tsx                       # URL remains /jobs
-│   │   ├── (user-profile)/profile/page.tsx          # URL remains /profile
-│   │   ├── (user-account)/account/page.tsx          # URL remains /account
-│   │   ├── cv-studio/page.tsx                       # URL remains /cv-studio
-│   │   ├── (job-tracking)/applications/page.tsx     # CURRENT URL /applications; discrepancy documented
-│   │   ├── api/
-│   │   │   ├── (job-listings)/jobs/route.ts         # URL remains /api/jobs
-│   │   │   ├── (job-listings)/jobs/[id]/route.ts
-│   │   │   ├── (job-listings)/jobs/[id]/state/route.ts
-│   │   │   ├── (job-listings)/jobs/[id]/activity/route.ts
-│   │   │   ├── (user-profile)/profile/route.ts     # URL remains /api/profile
-│   │   │   └── (job-ingestion)/internal/jobs/ingest/route.ts
-│   │   ├── layout.tsx
-│   │   └── globals.css
-│   ├── thungatha-features/
-│   │   ├── job-discovery/
-│   │   │   ├── ui/
-│   │   │   ├── client/                             # create when shared client code is moved
-│   │   │   ├── types/                              # create when shared types are moved
-│   │   │   └── server/                             # create when tested extraction is justified
-│   │   ├── authentication/                         # move auth-owned UI after import audit
-│   │   ├── user-profile/                           # move profile-owned UI/data logic after import audit
-│   │   ├── user-account/                           # create when account feature implementation exists
-│   │   ├── cv-studio/                              # feature implementation when built
-│   │   └── job-tracking/                           # feature implementation when built
-│   ├── components/                                 # cross-feature UI and layout
-│   ├── lib/                                        # existing shared infrastructure pending audited extraction
-│   ├── styles/
-│   ├── theme/
-│   ├── test/
-│   └── proxy.ts
+│   ├── app/                             # Next.js App Router entry points; route folders here determine URL paths unless grouped.
+│   │   ├── (authentication)/            # Sign-in and sign-up pages grouped without changing their public URLs.
+│   │   │   ├── sign-in/[[...sign-in]]/  # Sign-in page and Clerk catch-all route segment; URL remains /sign-in.
+│   │   │   └── sign-up/[[...sign-up]]/  # Sign-up page and Clerk catch-all route segment; URL remains /sign-up.
+│   │   ├── (job-discovery)/             # Job Discovery pages grouped without adding a URL segment.
+│   │   │   ├── page.tsx                 # Home page; URL remains /.
+│   │   │   └── jobs/page.tsx            # Job discovery page; URL remains /jobs.
+│   │   ├── (user-profile)/              # Professional profile page grouped without adding a URL segment.
+│   │   │   └── profile/page.tsx         # Professional profile page; URL remains /profile.
+│   │   ├── (user-account)/              # Account settings pages grouped without adding a URL segment.
+│   │   │   └── account/page.tsx         # Account settings page; URL remains /account.
+│   │   ├── (job-tracking)/              # Job application tracking pages grouped without adding a URL segment.
+│   │   │   └── applications/page.tsx    # Existing URL /applications; do not rename the URL in a folder cleanup.
+│   │   ├── cv-studio/                   # CV Studio route; URL is /cv-studio.
+│   │   ├── api/                         # Next.js HTTP API Route Handlers; preserve the existing API paths and methods.
+│   │   │   ├── (job-listings)/jobs/     # Public job-listing endpoints; route group is omitted from /api/jobs.
+│   │   │   │   ├── route.ts             # GET /api/jobs.
+│   │   │   │   └── [id]/                # Endpoints scoped to one job listing.
+│   │   │   │       ├── route.ts         # GET /api/jobs/[id].
+│   │   │   │       ├── state/route.ts   # PUT and DELETE /api/jobs/[id]/state.
+│   │   │   │       └── activity/route.ts# GET and POST /api/jobs/[id]/activity.
+│   │   │   ├── (user-profile)/profile/  # Profile endpoint; route group is omitted from /api/profile.
+│   │   │   │   └── route.ts             # GET and PATCH /api/profile.
+│   │   │   └── (job-ingestion)/internal/jobs/ingest/
+│   │   │                                  # Protected server-side ingestion endpoint; URL remains /api/internal/jobs/ingest.
+│   │   │       └── route.ts             # POST /api/internal/jobs/ingest.
+│   │   ├── layout.tsx                   # Required root layout for the application.
+│   │   ├── globals.css                  # Global CSS imported by the root layout.
+│   │   ├── loading.tsx                  # Root-level loading UI.
+│   │   ├── error.tsx                    # Root route-segment error UI.
+│   │   ├── global-error.tsx             # Application-level fallback error UI.
+│   │   └── not-found.tsx                # Not-found UI.
+│   ├── thungatha-features/              # Product feature implementations grouped by explicit domain responsibility.
+│   │   ├── job-discovery/               # Job search, filtering, listing display, source provenance, and per-user discovery state.
+│   │   │   └── ui/                      # Job Discovery components and their feature-specific styles.
+│   │   ├── authentication/              # Authentication UI and integration owned by Thungatha; identity must be resolved securely.
+│   │   ├── user-profile/                # Professional skills, experience, qualifications, and profile workflows.
+│   │   ├── user-account/                # Account preferences, privacy controls, and personal-data controls.
+│   │   ├── cv-studio/                   # CV authoring, tailored versions, and CV-related workflows.
+│   │   └── job-tracking/                 # Actual job application records, application status, follow-ups, and submitted-material references.
+│   ├── components/                      # UI components genuinely shared by multiple features.
+│   │   ├── layout/                      # Shared application shell and responsive workspace navigation.
+│   │   ├── ui/                          # Reusable interface primitives such as buttons, modals, skeletons, and toast notifications.
+│   │   ├── auth/                        # CURRENT location of authentication UI; migrate to the authentication feature after import audit.
+│   │   ├── profile/                     # CURRENT location of profile UI; migrate to the user-profile feature after import audit.
+│   │   └── theme/                       # Theme toggle UI; theme configuration and token ownership still need a separate audit.
+│   ├── lib/                             # Existing shared technical modules and integrations; keep only code with a clear cross-feature or infrastructure role.
+│   │   ├── auth/                        # Server-side identity resolution and authentication-related helpers.
+│   │   ├── http/                        # HTTP response and API response utilities.
+│   │   ├── jobs/                        # CURRENT location of job ingestion, provider adapters, search, and listing schema; migrate by responsibility after tests and imports are audited.
+│   │   │   └── providers/               # External job-source provider integrations, separated by provider type.
+│   │   ├── profile/                     # CURRENT location of profile persistence and validation; migrate to user-profile when boundaries are tested.
+│   │   └── supabase/                    # Supabase client construction and access configuration.
+│   ├── styles/                          # Global design tokens and shared component stylesheets.
+│   ├── theme/                           # Theme definitions, Clerk appearance configuration, and theme tokens; audit overlap with src/lib/theme.ts before consolidating.
+│   ├── test/                            # Test-runner setup and shared test environment configuration, not product tests.
+│   └── proxy.ts                         # Next.js request proxy entry point.
+├── tests/
+│   ├── unit-tests/                      # Fast isolated tests for one function, schema, component, or module without exercising a complete API flow.
+│   │   ├── job-discovery/               # Unit tests for job search, filters, listing schemas, and discovery state.
+│   │   ├── authentication/              # Unit tests for authentication-specific logic that can be isolated safely.
+│   │   ├── user-profile/                # Unit tests for professional-profile validation and UI behaviour.
+│   │   └── shared-ui-components/        # Unit tests for reusable UI components used across features.
+│   ├── integration-tests/               # Tests that verify cooperating modules or a Route Handler with its dependencies and access rules.
+│   │   ├── job-listing-api/             # Integration tests for GET /api/jobs and GET /api/jobs/[id].
+│   │   ├── job-listing-state-api/       # Integration tests for saving, dismissing, and clearing listing state.
+│   │   ├── job-listing-activity-api/    # Integration tests for listing activity reads and writes.
+│   │   ├── job-ingestion-api/           # Integration tests for the protected ingestion endpoint.
+│   │   └── user-profile-api/            # Integration tests for GET and PATCH /api/profile.
+│   └── end-to-end-tests/                # Playwright browser journeys across the running application and its user-facing flows.
+│       ├── authentication/              # Sign-in and sign-up journeys.
+│       ├── job-discovery/               # Searching, filtering, viewing, saving, and dismissing job listings.
+│       ├── user-profile/                # Viewing and updating professional profile details.
+│       └── job-tracking/                # Creating and updating actual job application records when implemented.
+├── supabase/
+│   └── migrations/                      # Versioned database schema and policy migrations.
+├── package.json                         # Dependencies and documented developer commands.
+├── next.config.ts                       # Next.js configuration.
+├── playwright.config.ts                 # Playwright browser-test configuration; update testDir when end-to-end tests move.
+└── tsconfig.json                        # TypeScript compiler and import-alias configuration.
+
+TEST ORGANISATION AND FILE NAMES
+
+The target is to separate test files from production source. The existing repository still has tests colocated with source, so this is a planned migration, not a completed change.
+
+- Unit-test filenames should identify the behaviour or module under test, for example job-listing-schema.unit.test.ts or profile-form.unit.test.tsx.
+- Integration-test filenames should identify the endpoint or interaction being verified, for example get-job-listings.integration.test.ts or update-job-listing-state.integration.test.ts.
+- End-to-end test filenames should describe a complete user journey, for example search-job-listings.spec.ts or sign-in.spec.ts. Playwright's .spec.ts convention is retained.
+- Do not name all API tests route.test.ts after moving them. The framework requires route.ts for the handler; it does not require that generic name for test files.
+- Keep test configuration and setup in src/test/ only when it is configuration/support code. Actual tests belong under tests/.
+- Before moving tests, inspect vitest and Playwright configuration, import aliases, mocks, setup files, test discovery patterns, and CI commands. Update configuration in the same change as the move.
+- Classify tests by what they actually verify, not only by the source folder they currently occupy. A Route Handler test that verifies request validation, identity, access control, and persistence together belongs in integration-tests; an isolated schema or pure function test belongs in unit-tests.
+- Do not claim the target tests structure exists until the files and configuration have been migrated and the test commands pass.
 
 CURRENT IMPLEMENTATION NOTES
-- The existing discovery UI files currently live in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/; the rename is not implemented yet.
-- Job provider adapters, ingestion, schema, and search currently live in src/lib/jobs/. They have not been moved into the Job Discovery feature.
-- Authentication-owned UI currently lives in src/components/auth/.
-- Professional Profile UI currently lives in src/components/profile/, while profile persistence/schema logic lives in src/lib/profile/.
-- Existing API Route Handlers contain some query, validation, and persistence orchestration. Do not move them or rename API URLs blindly; extract services only where tests and boundaries justify it.
-- Do not move files merely to populate every target directory. This target tree should evolve as code is actually migrated.
+
+- The actual dev branch still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
+- The current discovery UI is in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/.
+- Current API tests are named route.test.ts beside their Route Handlers. Current module tests are colocated under src/lib/jobs/, src/lib/profile/, and src/components/profile/. They have not been moved into tests/ yet.
+- The current Playwright test is under e2e/. The proposed destination is tests/end-to-end-tests/ and requires updating playwright.config.ts.
+- The current tree contains two theme modules, src/lib/theme.ts and src/theme/theme.ts. Inspect their separate responsibilities and imports before renaming or consolidating.
+- No account settings API, CV Studio API, or full Job Tracking application-record API is currently present in the inspected source tree.
+- The current URL /applications and the product's planned /job-tracking naming are a product decision to resolve separately. A folder-only change must not silently change the URL.
+- The proposed (job-listings), (user-profile), and (job-ingestion) API route groups are organisational examples. Before implementing them, verify route uniqueness and the resulting route table/build.
+- Do not create empty target folders before the corresponding code or tests are ready to move.
+
+MIGRATION CHECKLIST
+
+1. Review the current source, tests, and import graph before each move.
+2. Preserve every existing public page URL and API endpoint method/path/response contract during structural-only changes.
+3. Move one coherent feature or test category at a time.
+4. Update imports, test-runner configuration, Playwright testDir, and CI commands in the same change when affected.
+5. Run the relevant Vitest tests, ESLint, and production build when the environment supports them; run Playwright tests where configured.
+6. Record exactly which checks ran and their results. A successful documentation edit or GitHub commit is not proof that the application builds.
