@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Search,
   PanelsTopLeft,
@@ -38,15 +38,19 @@ const secondary: Destination[] = [
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [jobStatus, setJobStatus] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setJobStatus(new URLSearchParams(window.location.search).get("status"));
+  }, [pathname]);
 
   const isActive = (item: Destination) => {
     const [href, query] = item.href.split("?");
     if (pathname !== href) return false;
-    if (!query) return pathname !== "/jobs" || !searchParams.has("status");
+    if (!query) return pathname !== "/jobs" || !jobStatus;
     const status = new URLSearchParams(query).get("status");
-    return status !== null && searchParams.get("status") === status;
+    return status !== null && jobStatus === status;
   };
 
   return (
