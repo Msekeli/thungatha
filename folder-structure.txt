@@ -46,7 +46,6 @@ thungatha/
 ├── .github/
 │   └── workflows/                       # Automated repository checks and CI workflows.
 ├── Project Documentation/                # Product specifications, architecture decisions, route maps, and implementation plans.
-├── e2e/                                 # CURRENT location of Playwright tests; migrate to tests/end-to-end-tests/ with a matching config update.
 ├── milestones/                          # Scope, acceptance criteria, and implementation notes for each product milestone.
 ├── public/
 │   └── brand/                           # Static brand assets served directly by Next.js.
@@ -107,25 +106,23 @@ thungatha/
 │   │   └── supabase/                    # Supabase client construction and access configuration.
 │   ├── styles/                          # Global design tokens and shared component stylesheets.
 │   ├── theme/                           # Theme definitions, Clerk appearance configuration, and theme tokens; audit overlap with src/lib/theme.ts before consolidating.
-│   ├── test/                            # Test-runner setup and shared test environment configuration, not product tests.
 │   └── proxy.ts                         # Next.js request proxy entry point.
 ├── tests/
-│   ├── unit-tests/                      # Fast isolated tests for one function, schema, component, or module without exercising a complete API flow.
-│   │   ├── job-discovery/               # Unit tests for job search, filters, listing schemas, and discovery state.
-│   │   ├── authentication/              # Unit tests for authentication-specific logic that can be isolated safely.
-│   │   ├── user-profile/                # Unit tests for professional-profile validation and UI behaviour.
-│   │   └── shared-ui-components/        # Unit tests for reusable UI components used across features.
-│   ├── integration-tests/               # Tests that verify cooperating modules or a Route Handler with its dependencies and access rules.
-│   │   ├── job-listing-api/             # Integration tests for GET /api/jobs and GET /api/jobs/[id].
-│   │   ├── job-listing-state-api/       # Integration tests for saving, dismissing, and clearing listing state.
-│   │   ├── job-listing-activity-api/    # Integration tests for listing activity reads and writes.
-│   │   ├── job-ingestion-api/           # Integration tests for the protected ingestion endpoint.
-│   │   └── user-profile-api/            # Integration tests for GET and PATCH /api/profile.
-│   └── end-to-end-tests/                # Playwright browser journeys across the running application and its user-facing flows.
-│       ├── authentication/              # Sign-in and sign-up journeys.
-│       ├── job-discovery/               # Searching, filtering, viewing, saving, and dismissing job listings.
-│       ├── user-profile/                # Viewing and updating professional profile details.
-│       └── job-tracking/                # Creating and updating actual job application records when implemented.
+│   ├── unit-tests/                      # Isolated functions, schemas, providers, and component behaviour.
+│   │   ├── job-discovery/               # Job ingestion, search, schemas, providers, and discovery UI.
+│   │   │   ├── providers/               # Provider-specific tests grouped by provider type.
+│   │   │   ├── schemas/                  # Job catalogue schema tests.
+│   │   │   ├── services/                 # Ingestion and search behaviour tests.
+│   │   │   └── ui/                       # Job Discovery component tests.
+│   │   └── user-profile/                # Profile persistence and UI behaviour tests.
+│   │       ├── data/                     # Profile repository tests.
+│   │       └── ui/                       # Profile form tests.
+│   ├── integration-tests/               # Route Handler tests for request validation, auth, ownership, and persistence.
+│   │   ├── job-discovery/api/           # Listing, state, activity, and ingestion endpoint tests.
+│   │   └── user-profile/api/            # GET and PATCH /api/profile tests.
+│   ├── end-to-end-tests/                # Playwright journeys; testDir points here.
+│   │   └── home.spec.ts
+│   └── test-support/                    # Shared Vitest setup and server-only mock.
 ├── supabase/
 │   └── migrations/                      # Versioned database schema and policy migrations.
 ├── package.json                         # Dependencies and documented developer commands.
@@ -135,23 +132,23 @@ thungatha/
 
 TEST ORGANISATION AND FILE NAMES
 
-The target is to separate test files from production source. The existing repository still has tests colocated with source, so this is a planned migration, not a completed change.
+Test files have been moved out of production source into `tests/`, grouped by test type and feature. Application source files remain in their existing locations for the next migration phase.
 
 - Unit-test filenames should identify the behaviour or module under test, for example job-listing-schema.unit.test.ts or profile-form.unit.test.tsx.
 - Integration-test filenames should identify the endpoint or interaction being verified, for example get-job-listings.integration.test.ts or update-job-listing-state.integration.test.ts.
 - End-to-end test filenames should describe a complete user journey, for example search-job-listings.spec.ts or sign-in.spec.ts. Playwright's .spec.ts convention is retained.
 - Do not name all API tests route.test.ts after moving them. The framework requires route.ts for the handler; it does not require that generic name for test files.
-- Keep test configuration and setup in src/test/ only when it is configuration/support code. Actual tests belong under tests/.
+- Keep test configuration and shared mocks under `tests/test-support/`. Actual tests belong under the appropriate test-type and feature directory.
 - The move checked Vitest and Playwright configuration, import aliases, mocks, setup files, test discovery patterns, and CI commands. Keep these in sync with future test moves.
 - Classify tests by what they actually verify, not only by the source folder they currently occupy. A Route Handler test that verifies request validation, identity, access control, and persistence together belongs in integration-tests; an isolated schema or pure function test belongs in unit-tests.
-- Do not claim the target tests structure exists until the files and configuration have been migrated and the test commands pass.
+- The test files and runner paths have been migrated. Run Vitest, Playwright, lint, and build before declaring the migration verified.
 
 CURRENT IMPLEMENTATION NOTES
 
 - The actual `dev` branch uses the user-approved directory name `Project Documentation/`. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
 - The current discovery UI is in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/.
-- Current API tests are named route.test.ts beside their Route Handlers. Current module tests are colocated under src/lib/jobs/, src/lib/profile/, and src/components/profile/. They have not been moved into tests/ yet.
-- The current Playwright test is under e2e/. The proposed destination is tests/end-to-end-tests/ and requires updating playwright.config.ts.
+- Unit and integration tests now live under `tests/unit-tests/` and `tests/integration-tests/`; test imports use the `@/` alias to reach source modules. Test support lives under `tests/test-support/`.
+- The Playwright test now lives under `tests/end-to-end-tests/`, and `playwright.config.ts` points to that directory.
 - The current tree contains two theme modules, src/lib/theme.ts and src/theme/theme.ts. Inspect their separate responsibilities and imports before renaming or consolidating.
 - No account settings API, CV Studio API, or full Job Tracking application-record API is currently present in the inspected source tree.
 - The current URL /applications and the product's planned /job-tracking naming are a product decision to resolve separately. A folder-only change must not silently change the URL.

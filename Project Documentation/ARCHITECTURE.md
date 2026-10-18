@@ -156,7 +156,6 @@ thungatha/
 │   └── proxy.ts
 ├── supabase/
 │   └── migrations/
-├── e2e/
 ├── vitest.config.mts
 ├── playwright.config.ts
 ├── package.json
@@ -168,7 +167,7 @@ thungatha/
 - The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `../folder-structure.txt`; update that document when the actual tree changes. See `FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the naming standard, verified endpoint inventory, URL-preserving route-group examples, and unresolved route discrepancy.
 - Keep all existing routes, API paths, request/response shapes, authentication boundaries, and business behavior unchanged during structural-only changes. Because App Router folder names normally define URLs, use route groups such as `(user-profile)` around an existing `profile/` route when a clearer physical grouping is needed without changing `/profile`.
 - Do not create empty feature folders or placeholder implementation files just to match the diagram. Add a folder when real code is ready to move into it.
-- Keep test files alongside existing implementations unless a specific test organization need is demonstrated.
+Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
 - The target `src/thungatha-features/job-discovery/` should contain the two discovery experiences and genuinely shared code. The current implementation is still under `src/thungatha-features/jobs/` pending migration. Do not force public and authenticated pages into one large component.
@@ -193,8 +192,10 @@ thungatha/
 | `src/lib/auth/`, `src/lib/http/`, `src/lib/supabase/` | Existing cross-cutting helpers; retain until a concrete reason to relocate them is agreed |
 | `src/lib/jobs/` | Current job ingestion/provider/search implementation; remains in place until a separately verified extraction |
 | `supabase/migrations/` | Version-controlled database schema changes |
-| `e2e/` | Playwright user journeys |
-| `src/**/*.test.ts(x)` | Existing colocated unit, API and component tests |
+| `tests/end-to-end-tests/` | Playwright user journeys; configured through `playwright.config.ts` |
+| `tests/unit-tests/` | Isolated function, schema, provider, repository, and component tests |
+| `tests/integration-tests/` | API Route Handler tests for validation, authentication, ownership, and persistence |
+| `tests/test-support/` | Shared Vitest setup and test-only mocks |
 
 Feature-specific business rules must not drift into generic shared utilities. Avoid maintaining two competing locations for the same implementation.
  
