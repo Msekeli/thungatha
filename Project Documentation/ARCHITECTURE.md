@@ -258,6 +258,12 @@ When CV upload and export are implemented, use durable object storage approved f
 - Use the current shared theme and design tokens rather than creating feature-specific competing design systems.
 - Keep only one dominant glow/high-emphasis action per screen, consistent with the supplied design direction.
 - Use the existing MUI + Tailwind v4 approach consistently; do not introduce a second component system without approval.
+- Prefer Material UI components for interactive controls and overlays (dialogs, popovers, menus, tooltips, selects, checkboxes) when they meet the interaction needs; preserve Thungatha's visual design through the shared theme.
+- Prefer Tailwind CSS v4 utilities for routine layout, spacing, flex/grid, responsive behavior, and simple styling. Avoid adding standalone CSS for styles Tailwind can express clearly.
+- Keep standalone/scoped CSS for genuinely complex or distinctive presentation (for example, elaborate job-card treatments, animations, or interactions that are awkward in MUI/Tailwind). Consolidate selectors and avoid repeated override blocks.
+- Use the shared `src/theme/tokens.json` and generated `src/styles/tokens.css` as the source of truth for theme colors, surfaces, borders, text, accents, radii, and related design values. Do not add feature-specific competing palettes or edit generated token CSS by hand.
+- Use `lucide-react` for icons; do not introduce another icon library without approval.
+- When extracting shared UI, migrate styles toward MUI/Tailwind as part of the extraction instead of merely moving legacy CSS into smaller files. Remove old CSS only after confirming both public and authenticated experiences retain their intended light/dark and responsive appearance.
 - Inspect existing dashboard/auth-shell references before removal or migration.
 
 ## 13. Testing and operational visibility
