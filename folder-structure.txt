@@ -37,8 +37,8 @@ NAMING STANDARD
 - Use names that state the responsibility, such as job-listing-schema.ts, get-job-listings.ts, and update-job-listing-state.ts.
 - Avoid vague filenames such as helpers.ts, utils.ts, common.ts, data.ts, manager.ts, and service.ts unless their meaning is unambiguous from a tightly scoped directory.
 - Framework filenames such as page.tsx and route.ts are deliberate exceptions. Their parent route folders and the code they call must make the responsibility clear.
-- Do not create empty folders simply to match this diagram. Create a folder when code for that responsibility exists or is being moved into it.
-- This is a target map with the first source-folder migration now applied: Job Discovery UI, authentication UI, and user-profile UI are in their feature folders. Route groups remain proposed.
+- Create the approved top-level feature folders even before implementation begins. Keep a small README.md placeholder in each planned feature folder to state ownership and planned responsibilities; do not add empty ui/server subfolders until code is ready.
+- This is a target map. Job Discovery, authentication, and user-profile implementation folders have been migrated; user-account, cv-studio, and job-tracking now also have README.md scaffolds. Route groups remain proposed.
 
 TARGET FOLDER STRUCTURE
 
@@ -149,10 +149,10 @@ CURRENT IMPLEMENTATION NOTES
 - Unit and integration tests now live under `tests/unit-tests/` and `tests/integration-tests/`; test imports use the `@/` alias to reach source modules. Test support lives under `tests/test-support/`.
 - The Playwright test now lives under `tests/end-to-end-tests/`, and `playwright.config.ts` points to that directory.
 - Authentication and user-profile UI and their feature-specific server modules now live under `src/thungatha-features/authentication/` and `src/thungatha-features/user-profile/`. The current tree contains two theme modules, src/lib/theme.ts and src/theme/theme.ts. Inspect their separate responsibilities and imports before renaming or consolidating.
-- No account settings API, CV Studio API, or full Job Tracking application-record API is currently present in the inspected source tree.
+- The user-account, cv-studio, and job-tracking feature roots exist as README.md scaffolds, but their workflows and feature-specific APIs are not implemented yet.
 - The current URL /applications and the product's planned /job-tracking naming are a product decision to resolve separately. A folder-only change must not silently change the URL.
 - The proposed (job-listings), (user-profile), and (job-ingestion) API route groups are organisational examples. Before implementing them, verify route uniqueness and the resulting route table/build.
-- Do not create empty target folders before the corresponding code or tests are ready to move.
+- Keep placeholder scaffolding limited to the feature-root README.md. Create ui/, server/, data/, or other implementation subfolders when the corresponding code is ready.
 
 MIGRATION CHECKLIST
 
