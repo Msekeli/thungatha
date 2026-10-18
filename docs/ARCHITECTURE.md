@@ -79,7 +79,9 @@ Dependency rules:
 
 ## 5. Agreed repository structure
 
-This is the **agreed documentation and milestone structure**, with the existing application code retained under `src/`. Milestone folders should be created even before their work begins; use `.gitkeep` in an otherwise-empty folder so Git tracks it. Do not create speculative feature implementation files merely to populate a tree.
+The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/features/<feature>/`; keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` or `src/server/` according to the existing convention. Do not create both shared infrastructure locations for the same responsibility.
+
+This is the **target structure**, not a claim that all target paths exist today. The current Jobs components are still under `src/components/jobs/`, and current job server logic remains under `src/lib/jobs/` plus `src/app/api/jobs/`. Do not move or rename these files as part of a documentation-only change. The Jobs feature migration must be incremental, preserve routes/API contracts and behavior, and be separately verified.
 
 ```text
 thungatha/
@@ -87,130 +89,106 @@ thungatha/
 ├── AGENTS.md
 ├── IMPLEMENTATION-PLAN.md
 ├── DECISIONS.md
-├── PROJECT-CONTEXT.md                 # fate to be reviewed; don't delete silently
+├── folder-structure.txt                # Agreed target map and migration notes
 ├── docs/
 │   ├── PRODUCT-SPECIFICATION.md
-│   └── ARCHITECTURE.md
-├── milestones/
-│   ├── M1-job-discovery-and-job-feed/
-│   │   └── M1-JOB-DISCOVERY-AND-JOB-FEED.md
-│   ├── M2-profile-and-cv-import/
-│   │   └── M2-PROFILE-AND-CV-IMPORT.md
-│   ├── M3-job-matching-and-fit-analysis/
-│   │   └── M3-JOB-MATCHING-AND-FIT-ANALYSIS.md
-│   ├── M4-cv-studio/
-│   │   └── M4-CV-STUDIO.md
-│   ├── M5-job-tracking/
-│   │   └── M5-JOB-TRACKING.md
-│   └── M6-account-and-release/
-│       └── M6-ACCOUNT-AND-RELEASE.md
+│   ├── ARCHITECTURE.md
+│   └── PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md
+├── milestones/                         # Existing milestone records remain in place
 ├── public/
 │   └── brand/
 ├── scripts/
 ├── src/
-│   ├── app/
-│   │   ├── page.tsx                  # public landing page
-│   │   ├── layout.tsx                # root layout/providers
-│   │   ├── globals.css               # global styles and CSS layers
-│   │   ├── sign-in/                  # Clerk sign-in route
-│   │   ├── sign-up/                  # Clerk sign-up route
-│   │   ├── jobs/                     # planned Job Discovery route
-│   │   ├── profile/                  # Profile route
-│   │   ├── cv-studio/                # planned CV Studio route
-│   │   ├── job-tracking/             # planned Job Tracking route
-│   │   ├── account/                  # planned Account route
-│   │   └── api/
-│   │       └── profile/              # existing profile API
-│   ├── components/
+│   ├── app/                            # URL routing and HTTP endpoints
+│   │   ├── api/
+│   │   │   ├── jobs/
+│   │   │   ├── profile/
+│   │   │   └── internal/
+│   │   ├── page.tsx                    # Public Job Discovery at /
+│   │   ├── jobs/page.tsx               # Authenticated Job Discovery at /jobs
+│   │   ├── cv-studio/page.tsx
+│   │   ├── applications/page.tsx        # Current route; product route decision remains in spec
+│   │   ├── profile/page.tsx
+│   │   ├── account/page.tsx
+│   │   ├── sign-in/
+│   │   ├── sign-up/
+│   │   ├── layout.tsx
+│   │   └── globals.css
+│   ├── features/                       # Feature-owned implementation
+│   │   ├── jobs/
+│   │   │   ├── ui/
+│   │   │   │   ├── public-job-discovery.tsx
+│   │   │   │   └── authenticated-job-discovery.tsx
+│   │   │   ├── client/
+│   │   │   │   └── jobs-api.ts
+│   │   │   ├── types/job.ts
+│   │   │   └── utils/job-utils.ts
+│   │   ├── cv-studio/
+│   │   ├── job-tracking/
+│   │   └── profile/
+│   ├── server/                         # Only if shared server infrastructure needs a clear home
 │   │   ├── auth/
-│   │   ├── landing/
-│   │   ├── profile/
+│   │   ├── database/
+│   │   └── http/
+│   ├── components/                     # Shared UI, layout, brand, theme
+│   │   ├── auth/
+│   │   ├── layout/
+│   │   ├── brand/
 │   │   ├── theme/
 │   │   └── ui/
-│   ├── lib/
-│   │   ├── auth/                     # server-derived identity helpers
-│   │   ├── http/                     # API response conventions
-│   │   ├── profile/                  # existing profile schema/repository
-│   │   └── supabase/                 # Supabase server client
-│   ├── styles/                       # shared component styles
-│   └── theme/                        # tokens and theme integration
+│   ├── lib/                            # Existing cross-cutting helpers/infrastructure
+│   │   ├── auth/
+│   │   ├── http/
+│   │   ├── supabase/
+│   │   └── theme.ts
+│   ├── styles/
+│   ├── test/
+│   ├── theme/
+│   └── proxy.ts
 ├── supabase/
-│   └── migrations/                   # version-controlled SQL schema changes
-├── e2e/                              # Playwright end-to-end tests
+│   └── migrations/
+├── e2e/
 ├── vitest.config.mts
 ├── playwright.config.ts
 ├── package.json
 └── tsconfig.json
 ```
 
-### Structure interpretation
+### Structure interpretation and migration constraints
 
-- The tree combines the **agreed target structure** with known current paths to make the repository navigable. Labels such as “planned” mean the route or feature may not exist yet.
-- The supplied milestone ZIP defines the detailed milestone filenames. Keep the master plan at repository root; do not move it into `milestones/`.
-- `PROJECT-CONTEXT.md` currently exists. Review whether its useful content should be retained, merged, or replaced after the new documents are installed; do not delete it as part of this package.
-- Existing `/dashboard` code and `src/components/auth/auth-page-shell copy.tsx` need a reference/use audit before deciding whether to retain, repurpose, redirect, or remove them.
-- Existing `src/app/sign-in/[[...sign-in]]/page.tsx` and `src/app/sign-up/[[...sign-up]]/page.tsx` are nested routes; the abbreviated tree above shows their parent route only.
-- Tests may live beside implementation or in `e2e/`, according to the existing conventions. Do not relocate tests solely to make the tree match the diagram.
-- Empty milestone folders should contain `.gitkeep` until their milestone document is placed there.
-- Do not create every future feature folder under `src/` in advance. Create implementation directories when their milestone needs them.
+- The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `folder-structure.txt`; update that document when the actual tree changes.
+- Keep all existing routes, API paths, request/response shapes, authentication boundaries, and business behavior unchanged during structural-only changes.
+- Do not create empty feature folders or placeholder implementation files just to match the diagram. Add a folder when real code is ready to move into it.
+- Keep test files alongside existing implementations unless a specific test organization need is demonstrated.
+- Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
+- Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
+- `src/features/jobs/` should initially contain only the two discovery experiences and genuinely shared code. Do not force public and authenticated pages into one large component.
+- Public discovery can browse/search/inspect jobs. User-owned saved/dismissed state, activity, and job tracking remain authenticated and server-authorized.
+- Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
+- The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.
 
 ## 6. File and folder guide
 
-### Root documents
-
 | Path | Responsibility |
 |---|---|
-| `README.md` | How to install, configure, run, test, and build the project; links to authoritative docs |
-| `AGENTS.md` | Persistent instructions for AI coding agents: inspect first, respect scope, test, report evidence |
-| `IMPLEMENTATION-PLAN.md` | Cross-milestone sequence, dependencies, status, and overall acceptance |
-| `DECISIONS.md` | Decision log, rationale, status, and unresolved decisions |
-| `PROJECT-CONTEXT.md` | Existing project context; review its role before merging or removing it |
-| `docs/PRODUCT-SPECIFICATION.md` | Product capabilities, business rules, and expected user behaviour |
-| `docs/ARCHITECTURE.md` | Technical design, boundaries, folder map, data flow, security, and implementation conventions |
-
-### Existing app paths
-
-| Path | Responsibility |
-|---|---|
-| `src/app/page.tsx` | Public landing page |
-| `src/app/layout.tsx` | Root layout, providers, and global application shell |
-| `src/app/globals.css` | Global CSS, imports, and CSS-layer ordering |
-| `src/app/sign-in/[[...sign-in]]/page.tsx` | Clerk sign-in page |
-| `src/app/sign-up/[[...sign-up]]/page.tsx` | Clerk sign-up page |
-| `src/app/api/profile/route.ts` | Profile API route; follow its server-side identity and validation pattern |
-| `src/components/auth/` | Authentication-related UI |
-| `src/components/landing/` | Landing-page UI and preview components |
-| `src/components/profile/` | Profile UI, including form and tests |
-| `src/components/theme/` | Theme controls |
-| `src/components/ui/` | Reusable UI primitives |
-| `src/lib/auth/identity.ts` | Server-side authenticated identity resolution |
-| `src/lib/http/api-response.ts` | Consistent API response helpers |
-| `src/lib/profile/schema.ts` | Runtime profile validation schema |
-| `src/lib/profile/repository.ts` | Profile persistence logic |
-| `src/lib/supabase/server.ts` | Supabase server client setup |
-| `src/proxy.ts` | Existing request/auth proxy logic; inspect before changing |
-| `src/theme/tokens.json` | Source of design-token values |
-| `src/theme/theme.ts` | MUI theme configuration |
-| `src/theme/clerk-appearance.ts` | Clerk theme integration |
-| `src/styles/tokens.css` | Generated design-token CSS; do not hand-edit if generated by script |
-| `src/styles/components.css` | Shared styled patterns |
-| `scripts/generate-tokens.mjs` | Regenerates token CSS from the token source |
+| `src/app/` | Next.js routes, page/layout composition and API Route Handlers |
+| `src/features/jobs/ui/` | Public and authenticated discovery experiences plus shared job UI only where useful |
+| `src/features/jobs/client/` | Browser-side API callers/hooks shared by both discovery experiences where behavior matches |
+| `src/features/jobs/types/` | Shared job and feed response types |
+| `src/features/jobs/utils/` | Shared pure helpers such as safe URL and display formatting |
+| `src/features/jobs/server/` | Future home for extracted job use cases/data access when a tested refactor warrants it; do not create empty layers |
+| `src/features/cv-studio/` | CV Studio feature code when M4 requires it |
+| `src/features/job-tracking/` | Authenticated application lifecycle code when M5 requires it |
+| `src/components/ui/` | Generic buttons, modals, skeletons, toasts and other cross-feature primitives |
+| `src/components/layout/` | Shared application shells and navigation |
+| `src/lib/auth/`, `src/lib/http/`, `src/lib/supabase/` | Existing cross-cutting helpers; retain until a concrete reason to relocate them is agreed |
+| `src/lib/jobs/` | Current job ingestion/provider/search implementation; remains in place until a separately verified extraction |
 | `supabase/migrations/` | Version-controlled database schema changes |
-| `e2e/` | Playwright browser journey tests |
-| `src/**/*.test.ts(x)` | Unit/component/API tests alongside their related code |
+| `e2e/` | Playwright user journeys |
+| `src/**/*.test.ts(x)` | Existing colocated unit, API and component tests |
 
-### Where new feature code belongs
-
-Use the existing conventions first. For a new feature:
-- Route composition goes under `src/app/<route>/`.
-- Feature-specific React components go under `src/components/<feature>/` when that matches the existing pattern.
-- Server-side business logic, schema validation, and repository functions should be organized in feature-focused modules under `src/lib/<feature>/` or an explicitly agreed `src/modules/<feature>/` structure.
-- Shared authentication, HTTP, theme, and database utilities remain cross-cutting; feature-specific business rules should not be placed there.
-- SQL schema changes belong in a new migration under `supabase/migrations/`.
-- Add tests beside implementation for unit/API/component tests and in `e2e/` for browser journeys.
-
-Do not introduce both `src/lib/<feature>/` and `src/modules/<feature>/` for the same concern without a documented reason. Choose and record a convention during the relevant checkpoint, based on the repository and scope.
-
+Feature-specific business rules must not drift into generic shared utilities. Avoid maintaining two competing locations for the same implementation.
+ 
 ## 7. Product module boundaries
 
 | Module/experience | Owns | Does not own |
@@ -311,4 +289,4 @@ Routine implementation details can evolve within these boundaries, but do not si
 - `AGENTS.md` tells AI coding agents how to work safely and consistently.
 - `README.md` explains setup, environment configuration, commands, and how to navigate project documentation.
 
-When a conflict appears, identify it and ask for review instead of guessing. This architecture is a working proposal for review; placing it in the repository does not itself approve unresolved product or source-provider decisions.
+When a conflict appears, identify it and ask for review instead of guessing. The feature-based folder structure and incremental Jobs migration approach are confirmed architecture decisions. Placing a target path in the map does not mean code has already moved there or that unresolved product/source-provider decisions are approved.
