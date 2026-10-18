@@ -8,6 +8,7 @@ import { SignOutControl } from "@/components/auth/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
 import { Search, PanelsTopLeft, ClipboardCheck, Bookmark, BriefcaseBusiness, UserRound, Settings } from "lucide-react";
+import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 
 type Destination = { href: string; label: string; icon: typeof Search };
 const workspace: Destination[] = [
@@ -33,6 +34,7 @@ export function WorkspaceShell({
 }) {
   return (
     <div className="th-workspace-shell">
+      <MobileWorkspaceNav configured={configured} />
       <aside className="th-workspace-sidebar" aria-label="Main navigation">
         <div className="th-workspace-brand"><BrandMark /></div>
         <nav className="th-workspace-nav" aria-label="Workspace">
