@@ -582,3 +582,54 @@ body:has(.th-discovery-shell) {
   .th-desktop-nav { gap: 2px; }
   .th-desktop-nav a { padding-inline: 6px; font-size: 11px; }
 }
+
+
+/* Explicit final header overrides: win over the older legacy rules above. */
+.th-discovery-header .th-discovery-brand {
+  flex: 0 0 220px !important;
+  min-width: 220px !important;
+}
+.th-discovery-header .th-discovery-brand .th-full-logo {
+  display: block !important;
+  width: 220px !important;
+  height: 52px !important;
+  max-width: none !important;
+  object-fit: contain;
+  object-position: left center;
+}
+.th-discovery-header .th-desktop-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+.th-discovery-header .th-desktop-nav a:hover {
+  color: var(--th-accent-text, var(--d-cyan)) !important;
+  background-color: color-mix(in srgb, var(--th-accent, var(--d-cyan)) 14%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--th-accent, var(--d-cyan)) 45%, transparent);
+}
+.th-discovery-header .th-desktop-nav a:focus-visible {
+  outline: 2px solid var(--th-accent, var(--d-cyan)) !important;
+  outline-offset: -3px;
+}
+@media (max-width: 1000px) {
+  .th-discovery-header .th-discovery-brand {
+    flex-basis: 180px !important;
+    min-width: 180px !important;
+  }
+  .th-discovery-header .th-discovery-brand .th-full-logo {
+    width: 180px !important;
+    height: 44px !important;
+  }
+}
+@media (max-width: 760px) {
+  .th-discovery-header .th-discovery-brand {
+    flex-basis: 145px !important;
+    min-width: 145px !important;
+  }
+  .th-discovery-header .th-discovery-brand .th-full-logo {
+    width: 145px !important;
+    height: 36px !important;
+  }
+}
