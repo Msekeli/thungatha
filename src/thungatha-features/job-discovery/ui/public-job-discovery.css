@@ -1,12 +1,13 @@
 .th-discovery-shell {
-  --d-bg: #070d17;
-  --d-panel: #0b1422;
-  --d-panel2: #111e30;
-  --d-line: #1d2b3d;
-  --d-muted: #a6b5c8;
-  --d-text: #f5f8ff;
-  --d-blue: #1688f8;
-  --d-cyan: #32d3f4;
+  /* Keep the legacy component aliases connected to the shared theme tokens. */
+  --d-bg: var(--th-page);
+  --d-panel: var(--th-panel);
+  --d-panel2: var(--th-panel-2);
+  --d-line: var(--th-line);
+  --d-muted: var(--th-fg-muted);
+  --d-text: var(--th-fg);
+  --d-blue: var(--th-accent);
+  --d-cyan: var(--th-accent-text);
   min-height: 100vh;
   background: var(--d-bg);
   color: var(--d-text);
@@ -2176,16 +2177,8 @@ body:has(.th-discovery-shell) {
   }
 }
 
-/* Public discovery must follow the shared Thungatha runtime theme tokens. */
+/* Public discovery follows the shared Thungatha runtime theme tokens. */
 .th-discovery-shell {
-  --d-bg: var(--th-page);
-  --d-panel: var(--th-panel);
-  --d-panel2: var(--th-panel-2);
-  --d-line: var(--th-line);
-  --d-muted: var(--th-fg-muted);
-  --d-text: var(--th-fg);
-  --d-blue: var(--th-accent);
-  --d-cyan: var(--th-accent-text);
   min-height: 100vh;
   background: var(--th-page);
   color: var(--th-fg);
