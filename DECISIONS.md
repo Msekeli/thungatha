@@ -191,3 +191,16 @@ When a decision is approved or changed:
 3. Keep the documents consistent without erasing meaningful history.
 4. Preserve the distinction between agreed direction, candidate options, validated evidence, and implemented behaviour.
 5. Do not claim that a provider, feature, or checkpoint is approved or complete without supporting evidence.
+
+
+### D-035 — Feature-based organization and incremental Jobs refactor
+
+- **Date:** 2026-10-18
+- **Status:** Confirmed
+- **Context:** The current public discovery and authenticated discovery experiences are separate large components. The project needs clearer feature ownership without destabilizing working routes, API contracts, or business behavior.
+- **Options considered:** Reorganize the whole repository at once; merge public and authenticated discovery into one component; retain all feature code under generic components/lib folders; introduce feature-based organization incrementally.
+- **Decision:** Use `src/features/<feature>/` as the target home for feature-owned code. Keep Next.js routes and Route Handlers in `src/app/`, generic shared UI in `src/components/`, and existing cross-cutting helpers/infrastructure in `src/lib/` unless a specific need justifies a move. Start with Jobs. Keep public discovery and authenticated discovery as separate experiences, extracting only proven shared types, pure utilities, API callers, or UI components. Job Tracking remains authenticated; CV Studio may expose public introduction/preview while authoring remains authenticated.
+- **Rationale:** This reduces feature coupling while avoiding speculative layers and a high-risk rewrite. The same job catalogue and API contracts can support both discovery experiences while user-specific actions remain protected.
+- **Consequences:** Documentation records the target structure before source changes. The current implementation paths remain valid until a dedicated migration step moves them. Structural changes must preserve URLs, API response shapes, authentication/authorization, filters, state transitions, and UI behavior.
+- **Verification:** Documentation and current paths were reviewed against the `dev` branch. No application source files are changed by this decision.
+- **Review trigger:** Reconsider only if implementation evidence shows the feature boundary creates unnecessary duplication or conflicts with Next.js conventions.
