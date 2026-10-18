@@ -1,5 +1,5 @@
 .th-workspace-shell { display:flex; width:100%; min-height:100dvh; background:var(--th-page); color:var(--th-fg); }
-.th-workspace-sidebar { display:flex; flex:0 0 244px; flex-direction:column; min-width:0; padding:24px 14px 18px; border-right:1px solid var(--th-line); background:var(--th-surface, var(--th-page)); }
+.th-workspace-sidebar { display:flex; flex:0 0 218px; flex-direction:column; min-width:0; padding:24px 14px 18px; border-right:1px solid var(--th-line); background:var(--th-surface, var(--th-page)); }
 .th-workspace-brand { padding:0 8px 30px; }
 .th-workspace-brand .th-wordmark { font-size:18px; }
 .th-workspace-nav { display:flex; flex-direction:column; gap:6px; }
