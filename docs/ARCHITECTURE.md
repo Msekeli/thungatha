@@ -79,9 +79,9 @@ Dependency rules:
 
 ## 5. Agreed repository structure
 
-The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/features/<feature>/`; keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` or `src/server/` according to the existing convention. Do not create both shared infrastructure locations for the same responsibility.
+The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/thungatha-features/<feature>/`. The directory name is intentionally explicit so Thungatha-owned feature code is easy to find in the project tree. Keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` or `src/server/` according to the existing convention. Do not create both shared infrastructure locations for the same responsibility.
 
-This is the **target structure**, not a claim that all target paths exist today. The first Jobs UI migration is complete: the public and authenticated discovery components, their CSS, and the authenticated discovery component test are now under `src/features/jobs/ui/`. Job server logic remains under `src/lib/jobs/` and `src/app/api/jobs/` for now. Continue the migration incrementally, preserving routes/API contracts and behavior, and verify each coherent move.
+This is the **target structure**, not a claim that all target paths exist today. The first Jobs UI migration is complete: the public and authenticated discovery components, their CSS, and the authenticated discovery component test are now under `src/thungatha-features/jobs/ui/`. Job server logic remains under `src/lib/jobs/` and `src/app/api/jobs/` for now. Continue the migration incrementally, preserving routes/API contracts and behavior, and verify each coherent move.
 
 ```text
 thungatha/
@@ -165,7 +165,7 @@ thungatha/
 - Keep test files alongside existing implementations unless a specific test organization need is demonstrated.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
-- `src/features/jobs/` should initially contain only the two discovery experiences and genuinely shared code. Do not force public and authenticated pages into one large component.
+- `src/thungatha-features/jobs/` should initially contain only the two discovery experiences and genuinely shared code. Do not force public and authenticated pages into one large component.
 - Public discovery can browse/search/inspect jobs. User-owned saved/dismissed state, activity, and job tracking remain authenticated and server-authorized.
 - Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
 - The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.
@@ -175,13 +175,13 @@ thungatha/
 | Path | Responsibility |
 |---|---|
 | `src/app/` | Next.js routes, page/layout composition and API Route Handlers |
-| `src/features/jobs/ui/` | Public and authenticated discovery experiences plus shared job UI only where useful |
-| `src/features/jobs/client/` | Browser-side API callers/hooks shared by both discovery experiences where behavior matches |
-| `src/features/jobs/types/` | Shared job and feed response types |
-| `src/features/jobs/utils/` | Shared pure helpers such as safe URL and display formatting |
-| `src/features/jobs/server/` | Future home for extracted job use cases/data access when a tested refactor warrants it; do not create empty layers |
-| `src/features/cv-studio/` | CV Studio feature code when M4 requires it |
-| `src/features/job-tracking/` | Authenticated application lifecycle code when M5 requires it |
+| `src/thungatha-features/jobs/ui/` | Public and authenticated discovery experiences plus shared job UI only where useful |
+| `src/thungatha-features/jobs/client/` | Browser-side API callers/hooks shared by both discovery experiences where behavior matches |
+| `src/thungatha-features/jobs/types/` | Shared job and feed response types |
+| `src/thungatha-features/jobs/utils/` | Shared pure helpers such as safe URL and display formatting |
+| `src/thungatha-features/jobs/server/` | Future home for extracted job use cases/data access when a tested refactor warrants it; do not create empty layers |
+| `src/thungatha-features/cv-studio/` | CV Studio feature code when M4 requires it |
+| `src/thungatha-features/job-tracking/` | Authenticated application lifecycle code when M5 requires it |
 | `src/components/ui/` | Generic buttons, modals, skeletons, toasts and other cross-feature primitives |
 | `src/components/layout/` | Shared application shells and navigation |
 | `src/lib/auth/`, `src/lib/http/`, `src/lib/supabase/` | Existing cross-cutting helpers; retain until a concrete reason to relocate them is agreed |
