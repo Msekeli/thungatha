@@ -1,7 +1,7 @@
 # Public Job Discovery Landing Page — Implementation Plan
 
 **Target branch:** `dev`  
-**Status:** In progress  
+**Status:** Implementation in review; CI and local verification outstanding  
 **Product decision:** Replace the public root landing page with public Job Discovery. Preserve the existing authenticated workspace and preserve the existing landing page's background, palette, gradients, theme tokens, and brand identity.
 
 ## Non-negotiable boundaries
@@ -21,39 +21,56 @@
 ### Stage 1 — Repository baseline and plan
 - [x] Confirm repository and target branch.
 - [x] Inspect the current root landing page, Job Discovery route, feed/detail/state/activity APIs, auth identity helper, theme setup and package scripts.
-- [ ] Read remaining project instructions, product specification, architecture, decision log, and relevant milestone acceptance criteria.
-- [ ] Commit this plan and checklist to `dev`.
+- [x] Add this implementation plan and checklist to `dev`.
+- [ ] Read remaining project instructions, architecture decision log, and relevant milestone acceptance criteria.
+
+**Status:** In review — plan committed at `b8bf065c19e2da036e4441759d0817720cf7e80e`; baseline review also used product specification, architecture, decision log and M1 milestone documentation.
 
 ### Stage 2 — Public landing and visual design
-- [ ] Replace the root landing experience with the approved Job Discovery design.
-- [ ] Preserve the existing hero background, colour palette, gradients, theme tokens, typography and brand assets.
-- [ ] Add prominent job search, location/search filters, job results, selected-job details and responsive layouts.
-- [ ] Keep CV Studio, Job Tracking and Saved Jobs visible as feature navigation/calls to action.
-- [ ] Use small, focused components and existing design-system primitives.
-- [ ] Preserve current theme-toggle behaviour and accessible contrast.
+- [x] Replace the root landing experience with the approved Job Discovery design.
+- [x] Reuse existing theme tokens, brand mark and `.th-hero-bg` landing background treatment.
+- [x] Add job search, location search, work-arrangement filter, job results and selected-job details.
+- [x] Add feature cards for CV Studio, Job Tracking and Saved Jobs.
+- [x] Add responsive layouts and a dismissible, session-persisted account promotion.
+- [ ] Verify desktop/mobile layouts, theme contrast, keyboard access and scrolling in a running browser.
+
+**Files:** `src/app/page.tsx`, `src/components/jobs/public-job-discovery.tsx`, `src/components/jobs/public-job-discovery.css`  
+**Status:** In review — implementation committed; visual/browser verification pending.
 
 ### Stage 3 — Anonymous job discovery
-- [ ] Permit unauthenticated GET access to the public jobs feed and job details.
-- [ ] Reuse existing filtering, validation, provenance and active-listing logic.
-- [ ] Ensure anonymous responses contain only public job/listing fields; never user state or activity.
-- [ ] Keep save/dismiss, activity, profile and all personal-data endpoints authenticated.
-- [ ] Verify Supabase grants and RLS policies support public reads safely; make no unsafe policy changes.
-- [ ] Update API tests for anonymous, authenticated, invalid and failure cases.
+- [x] Allow unauthenticated GET access to the public jobs feed and job details at the API layer.
+- [x] Use a Supabase publishable-key client for anonymous reads; no service-role key is used.
+- [x] Keep user-specific state reads conditional on a verified Clerk identity.
+- [x] Add a migration granting anonymous SELECT only for jobs with active sources and active source rows.
+- [x] Leave save/dismiss and activity mutations protected by existing authenticated handlers.
+- [x] Update feed and detail API tests to cover anonymous reads.
+- [ ] Run API tests and verify the migration against the target Supabase environment.
+- [ ] Confirm production RLS behaviour and public response fields with live integration checks.
+
+**Files:** `src/lib/supabase/server.ts`, `src/app/api/jobs/route.ts`, `src/app/api/jobs/[id]/route.ts`, `supabase/migrations/20261018000100_public_job_discovery_reads.sql`, related API tests.  
+**Status:** In review — code and migration committed; tests and database migration have not yet been confirmed successful/applied.
 
 ### Stage 4 — Feature promotion and authentication
-- [ ] Add a non-blocking, dismissible promotion for account features.
-- [ ] Prompt sign-in/sign-up when a logged-out visitor chooses a restricted action.
-- [ ] Preserve the intended feature/job destination through authentication.
-- [ ] Ensure authentication prompts are not shown for public browsing or employer application links.
-- [ ] Do not present not-yet-implemented features as operational; label unavailable capabilities accurately.
+- [x] Keep CV Studio, Job Tracking and Saved Jobs visible to visitors.
+- [x] Add a dismissible, non-blocking promotion; dismissal persists for the current browser session.
+- [x] Add a sign-in path for saving a job and feature links that route into protected areas.
+- [ ] Verify intended destination is preserved consistently through sign-in/sign-up and after Clerk redirects.
+- [ ] Ensure not-yet-implemented capabilities are not presented as operational.
+- [ ] Test configured and unconfigured Clerk states.
+
+**Status:** In progress — basic UI and access paths exist; full redirect behaviour needs verification.
 
 ### Stage 5 — Preserve the authenticated workspace
-- [ ] Verify the authenticated Job Discovery screen retains its current layout and behaviour.
-- [ ] Verify authenticated navigation and return destinations.
-- [ ] Verify Apply remains usable for logged-out visitors and does not falsely mark a user as having applied.
-- [ ] Check public and authenticated routes do not create duplicate job systems.
+- [x] Keep the existing `/jobs` authenticated workspace route and its component intact.
+- [x] Keep the current route protection for `/jobs`, CV Studio, Job Tracking, Profile and Account.
+- [ ] Verify authenticated Job Discovery retains its existing layout and behaviour in a running app.
+- [ ] Verify Apply remains usable to logged-out visitors and does not falsely mark a user as having applied.
+- [ ] Verify public and authenticated routes do not create duplicate job systems.
+
+**Status:** In review — no workspace component redesign was made; runtime regression checks remain.
 
 ### Stage 6 — Verification and final review
+- [x] Add end-to-end assertions for the new public landing page.
 - [ ] Run lint.
 - [ ] Run unit tests.
 - [ ] Run production build.
@@ -62,16 +79,33 @@
 - [ ] Test desktop/mobile layouts, dark/light themes, keyboard access, loading/empty/error states and scroll behaviour.
 - [ ] Record final commits, test evidence, remaining issues and deployment notes.
 
+**Status:** In progress — GitHub Actions was observed running after the API-test commit; final result has not yet been confirmed.
+
 ## Execution log
 
 | Stage | Status | Evidence / notes |
 |---|---|---|
-| 1. Repository baseline and plan | In progress | Confirmed public repository and `dev` branch. Inspected root page, jobs page, feed/detail/state/activity API routes, Clerk identity helper, theme setup and package scripts. |
-| 2. Public landing and visual design | Not started | |
-| 3. Anonymous job discovery | Not started | |
-| 4. Feature promotion and authentication | Not started | |
-| 5. Preserve authenticated workspace | Not started | |
-| 6. Verification and final review | Not started | |
+| 1. Repository baseline and plan | In review | Plan committed; inspected routes, APIs, auth helper, theme tokens, product spec, architecture and M1 milestone. |
+| 2. Public landing and visual design | In review | Root page now renders a separate public discovery UI using existing theme/background; responsive CSS added. |
+| 3. Anonymous job discovery | In review | Feed/detail endpoints support anonymous reads via publishable key; RLS migration and tests added. Database migration and test outcomes are not yet confirmed. |
+| 4. Feature promotion and authentication | In progress | Feature links, save-job sign-in path and dismissible promotion implemented; redirect behaviour still needs verification. |
+| 5. Preserve authenticated workspace | In review | Existing `/jobs` route and workspace component were not redesigned; runtime verification outstanding. |
+| 6. Verification and final review | In progress | E2E assertions added; CI result and test suite still need checking. |
+
+## Commits created on `dev`
+
+- `b8bf065c19e2da036e4441759d0817720cf7e80e` — implementation plan.
+- `6307b239570d07a0e7b6bd2673bdb0f6e8caf193` — public Supabase read client.
+- `54f5e6c8c7c38f5d0816ed40148c488065081070` — anonymous job feed reads.
+- `c2b3fb6da0de4cf20d711c606c3b465122e30446` — anonymous job detail reads.
+- `a2cc20a914b2801b9487a6756da602fc45e98047` — public read RLS migration.
+- `6c2df2f9a3332a8f396b08a4e18feb1f8ce0200c` — public Job Discovery component.
+- `27957f6c067dee4388c39be6999613434738783a` — public Job Discovery styling.
+- `0d13b018ecd51e374ba56287b899319522298382` — root landing page replacement.
+- `3a3a98fc9b0f2f357b353fa021b085a6678dea2d` — anonymous feed API tests.
+- `b5462768069d2ac6c0fada0fe41a15b095d970e3` — anonymous detail API tests.
+- `d409a3913261854bc748c749597eee9699f98922` — qualify public RLS policy correlation.
+- `553d24aa537d48caa910ec0ced63e1d765ca8546` — public landing E2E assertions.
 
 ## Completion policy
 
