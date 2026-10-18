@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   PanelsTopLeft,
@@ -38,11 +38,15 @@ const secondary: Destination[] = [
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (item: Destination) => {
-    if (item.href === "/jobs") return pathname === "/jobs" && !item.href.includes("status=");
-    return pathname === item.href.split("?")[0];
+    const [href, query] = item.href.split("?");
+    if (pathname !== href) return false;
+    if (!query) return pathname !== "/jobs" || !searchParams.has("status");
+    const status = new URLSearchParams(query).get("status");
+    return status !== null && searchParams.get("status") === status;
   };
 
   return (
