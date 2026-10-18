@@ -94,6 +94,8 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const [retry, setRetry] = useState(0);
   const selected = useMemo(() => jobs.find((job) => job.id === selectedId) ?? detail ?? jobs[0] ?? null, [jobs, selectedId, detail]);
 
+  // Session storage is read after hydration so server and client start with identical markup.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     try { setPromoVisible(sessionStorage.getItem("th-public-promo-dismissed") !== "1"); }
     catch { setPromoVisible(true); }
