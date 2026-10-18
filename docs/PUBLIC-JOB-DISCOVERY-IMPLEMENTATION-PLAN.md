@@ -29,6 +29,7 @@
 ### Stage 2 — Public landing and visual design
 - [x] Replace the root landing experience with the approved Job Discovery design.
 - [x] Reuse existing theme tokens, brand mark and `.th-hero-bg` landing background treatment.
+- [x] Align discovery page spacing, header sizing, left-aligned hero and panel treatment with the original landing page's design language.
 - [x] Add job search, location search, work-arrangement filter, job results and selected-job details.
 - [x] Add feature cards for CV Studio, Job Tracking and Saved Jobs.
 - [x] Add responsive layouts and a dismissible, session-persisted account promotion.
@@ -86,7 +87,7 @@
 | Stage | Status | Evidence / notes |
 |---|---|---|
 | 1. Repository baseline and plan | In review | Plan committed; inspected routes, APIs, auth helper, theme tokens, product spec, architecture and M1 milestone. |
-| 2. Public landing and visual design | In review | Root page now renders a separate public discovery UI using existing theme/background; responsive CSS added. |
+| 2. Public landing and visual design | In review | Root page renders public discovery using existing tokens/background. Follow-up CSS commit `bd9529bbbfbacd33655645877169664a24d0c75e` restores the original landing page's left-aligned hero, content width, header spacing and restrained panel styling; browser verification remains outstanding. |
 | 3. Anonymous job discovery | In review | Feed/detail endpoints support anonymous reads via publishable key; RLS migration and tests added. Database migration and test outcomes are not yet confirmed. |
 | 4. Feature promotion and authentication | In progress | Feature links, save-job sign-in path and dismissible promotion implemented; redirect behaviour still needs verification. |
 | 5. Preserve authenticated workspace | In review | Existing `/jobs` route and workspace component were not redesigned; runtime verification outstanding. |
@@ -106,6 +107,7 @@
 - `b5462768069d2ac6c0fada0fe41a15b095d970e3` — anonymous detail API tests.
 - `d409a3913261854bc748c749597eee9699f98922` — qualify public RLS policy correlation.
 - `553d24aa537d48caa910ec0ced63e1d765ca8546` — public landing E2E assertions.
+- `bd9529bbbfbacd33655645877169664a24d0c75e` — align public discovery styling with the original landing page design language.
 
 ## Completion policy
 
