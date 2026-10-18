@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -122,6 +123,9 @@ async function getApiError(response: Response): Promise<string> {
 }
 
 export default function JobsDiscovery({ configured }: { configured: boolean }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [profileSetupPrompt, setProfileSetupPrompt] = useState(false);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -157,6 +161,12 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const [matchOpen, setMatchOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("newest");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (searchParams.get("welcome") !== "1") return;
+    setProfileSetupPrompt(true);
+    router.replace("/jobs", { scroll: false });
+  }, [router, searchParams]);
 
   const params = useMemo(() => {
     const search = new URLSearchParams({
@@ -619,7 +629,8 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
           </section>
         </div>
         {filtersOpen&&<div className="th-jobs-popover th-jobs-filter-popover" role="dialog" aria-label="Filter opportunities"><header><strong>Filter opportunities</strong><button type="button" aria-label="Close filters" onClick={()=>setFiltersOpen(false)}><X size={16} /></button></header><form onSubmit={e=>{submitFilters(e);setFiltersOpen(false);}}><label>Search keywords<input className="th-input" value={draft.query} onChange={e=>changeDraft("query",e.target.value)} placeholder="e.g. Software Engineer, React, Azure…"/></label><label>Location<select className="th-input" value={draft.location} onChange={e=>changeDraft("location",e.target.value)}><option value="">Cape Town + 50 km</option><option value="Cape Town">Cape Town</option><option value="Stellenbosch">Stellenbosch</option><option value="Western Cape">Western Cape</option></select></label><fieldset><legend>Work mode</legend>{["onsite","hybrid","remote"].map(v=><label key={v}><input type="checkbox" checked={draft.workMode===v} onChange={e=>changeDraft("workMode",e.target.checked?v:"")}/>{v==="onsite"?"On-site":v[0].toUpperCase()+v.slice(1)}</label>)}</fieldset><fieldset><legend>Employment type</legend>{["Full-time","Part-time","Contract","Internship","Learnership","Graduate programme"].map(v=><label key={v}><input type="checkbox" checked={draft.employmentType===v} onChange={e=>changeDraft("employmentType",e.target.checked?v:"")}/>{v}</label>)}</fieldset><label>Posted within<select className="th-input" value={draft.publishedWithin} onChange={e=>changeDraft("publishedWithin",e.target.value)}><option value="24h">Last 24 hours</option><option value="7d">Last 7 days</option><option value="14d">Last 14 days</option><option value="30d">Last 30 days</option></select></label><footer><Button type="button" variant="secondary" onClick={clearFilters}>Reset</Button><Button type="submit" variant="primary">Apply filters</Button></footer></form></div>}
-        {matchOpen&&<div className="th-jobs-popover th-jobs-match-popover" role="dialog" aria-label="Profile match breakdown"><header><strong>Profile match breakdown</strong><button type="button" aria-label="Close match breakdown" onClick={()=>setMatchOpen(false)}><X size={16} /></button></header><div className="th-jobs-match-placeholder"><h3>Match analysis is not available yet</h3><p>When profile matching is implemented, this panel will compare the role requirements with your confirmed profile. No score is calculated at this checkpoint.</p><ul><li>Confirmed — evidence from your profile</li><li>Inferred — possible match based on related experience</li><li>Missing — not found in your profile</li><li>Can’t verify — not enough information</li></ul></div></div>}
+        {profileSetupPrompt&&<div className="th-jobs-popover th-jobs-match-popover" role="dialog" aria-modal="true" aria-label="Set up your job profile"><header><strong>Get better job matches</strong><button type="button" aria-label="Dismiss profile setup" onClick={()=>setProfileSetupPrompt(false)}><X size={16}/></button></header><div className="th-jobs-match-placeholder"><h3>Set up your profile</h3><p>Add your experience, skills and career preferences so Thungatha can help you find relevant opportunities and prepare your CV for each role.</p><div className="th-jobs-prompt-actions"><Button variant="secondary" onClick={()=>setProfileSetupPrompt(false)}>Do this later</Button><Button variant="primary" onClick={()=>router.push("/profile")}>Create my profile</Button></div></div></div>}
+                {matchOpen&&<div className="th-jobs-popover th-jobs-match-popover" role="dialog" aria-label="Profile match breakdown"><header><strong>Profile match breakdown</strong><button type="button" aria-label="Close match breakdown" onClick={()=>setMatchOpen(false)}><X size={16} /></button></header><div className="th-jobs-match-placeholder"><h3>Match analysis is not available yet</h3><p>When profile matching is implemented, this panel will compare the role requirements with your confirmed profile. No score is calculated at this checkpoint.</p><ul><li>Confirmed — evidence from your profile</li><li>Inferred — possible match based on related experience</li><li>Missing — not found in your profile</li><li>Can’t verify — not enough information</li></ul></div></div>}
         {(forceAppliedPrompt || (Boolean(selectedActivity?.application_link_opened_at)&&!selectedActivity?.applied_at&&dismissedPromptForJobId!==selectedId))&&selectedDetail&&<div className="th-jobs-popover th-jobs-apply-popover" role="dialog" aria-label="Application confirmation"><header><span className="th-jobs-popover-icon"><BriefcaseBusiness size={19} /></span><button type="button" aria-label="Close application confirmation" onClick={()=>{setForceAppliedPrompt(false);setDismissedPromptForJobId(selectedDetail.id);}}>×</button></header><div className="th-jobs-apply-confirm"><h3>Did you apply?</h3><p>You have opened the application page for <strong>{selectedDetail.title}</strong> at <strong>{shown(selectedDetail.employer_name)}</strong>.</p><div><Button variant="secondary" disabled={stateBusy} onClick={()=>{setForceAppliedPrompt(false);setDismissedPromptForJobId(selectedDetail.id);}}>Not yet</Button><Button variant="primary" disabled={stateBusy} onClick={()=>void confirmApplied()}>{stateBusy?"Saving…":"Yes, I applied"}</Button></div><aside><Info size={15} /> This will be recorded in your <Link href="/tracking">Job Tracking</Link> so you can keep track of your applications.</aside></div></div>}
       </main>
     </WorkspaceShell>
