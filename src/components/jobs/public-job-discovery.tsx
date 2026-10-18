@@ -126,7 +126,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
       }
     }, 250);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [query, location, workMode, page, retry]
+  }, [query, location, workMode, page, retry]);
 
   useEffect(() => {
     if (!selectedId) return;
