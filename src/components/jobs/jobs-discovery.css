@@ -623,3 +623,26 @@
 .th-jobs-redesign .th-jobs-undo-snackbar .th-jobs-notice-close{background:transparent;color:var(--th-fg-muted);border:0;cursor:pointer}
 @media(max-width:1100px){.th-jobs-redesign .th-jobs-redesign-header{grid-template-columns:1fr;gap:12px}.th-jobs-redesign-workspace{grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:12px}.th-jobs-match-scorebox{min-width:125px}.th-jobs-match-scorebox>button{font-size:9px}}
 @media(max-width:760px){.th-jobs-page.th-jobs-redesign{height:auto;min-height:calc(100dvh - var(--th-app-header-height, 0px));overflow:visible;padding:12px}.th-jobs-redesign .th-jobs-redesign-header{grid-template-columns:1fr}.th-jobs-toolbar{grid-template-columns:1fr auto}.th-jobs-quick-search{grid-column:1/-1}.th-jobs-category-strip{margin-bottom:10px}.th-jobs-redesign-workspace{display:block;overflow:visible}.th-jobs-redesign-results{max-height:none}.th-jobs-redesign-detail{display:none;min-height:75dvh;margin-top:10px}.th-jobs-redesign-detail.th-jobs-mobile-visible{display:flex}.th-jobs-redesign-results.th-jobs-mobile-hidden{display:none}.th-jobs-redesign-job-head{flex-wrap:wrap}.th-jobs-match-scorebox{margin-left:auto}.th-jobs-redesign-actions{gap:6px}.th-jobs-redesign-actions .th-btn,.th-jobs-redesign-actions .th-jobs-tailor-link{flex:1}.th-jobs-detail-meta{gap:7px 10px}.th-jobs-description-tabs{overflow-x:auto}.th-jobs-filter-popover{top:150px;right:12px}.th-jobs-match-popover,.th-jobs-apply-popover{right:12px;bottom:12px}}
+
+
+/* Compact icon alignment and four-card first viewport, matching the reference. */
+.th-jobs-redesign .th-jobs-quick-search>svg,
+.th-jobs-redesign .th-jobs-location-select>svg,
+.th-jobs-redesign .th-jobs-sort>svg{flex:0 0 auto;color:var(--th-fg-muted)}
+.th-jobs-redesign .th-jobs-redesign-header .th-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.th-jobs-redesign-card{min-height:80px;padding:8px 9px!important;margin-bottom:7px!important;gap:10px}
+.th-jobs-redesign-card>.th-jobs-employer-mark{width:42px;height:42px;flex-basis:42px}
+.th-jobs-card-main{gap:3px}
+.th-jobs-card-main>small{display:flex;align-items:center;gap:4px}
+.th-jobs-redesign-tags i{display:inline-flex;align-items:center;gap:4px;padding:3px 6px}
+.th-jobs-card-chevron{flex:0 0 auto;align-self:center;color:var(--th-fg-muted)}
+.th-jobs-detail-meta span{display:inline-flex;align-items:center;gap:5px}
+.th-jobs-detail-meta span svg{flex:0 0 auto;color:var(--th-fg-muted)}
+.th-jobs-redesign-actions .th-btn,.th-jobs-redesign-actions .th-jobs-tailor-link{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.th-jobs-redesign-actions svg{flex:0 0 auto}
+.th-jobs-popover>header button{display:grid;place-items:center}
+.th-jobs-popover-icon{display:grid;place-items:center}
+.th-jobs-apply-confirm aside{display:flex;align-items:flex-start;gap:8px}
+.th-jobs-apply-confirm aside svg{flex:0 0 auto;color:var(--th-accent-text)}
+.th-jobs-redesign-description .th-jobs-description-body{overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:760px){.th-jobs-redesign-card{min-height:80px}}
