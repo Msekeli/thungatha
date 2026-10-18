@@ -480,3 +480,48 @@
     left:24px;
   }
 }
+
+
+/* Role description gets the available detail-panel height; no duplicate facts column. */
+.th-jobs-description-panel{display:flex;flex-direction:column;min-height:260px;margin:0 0 18px;overflow:hidden;border:1px solid var(--th-line);border-radius:var(--th-radius-panel,12px);background:var(--th-panel,var(--th-page))}
+.th-jobs-description-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border-bottom:1px solid var(--th-line);background:var(--th-panel-2,var(--th-tag-bg))}
+.th-jobs-description-heading .th-jobs-label{margin-bottom:5px}
+.th-jobs-description-heading h4{margin:0;color:var(--th-fg);font-size:15px;font-weight:600}
+.th-jobs-description-source{color:var(--th-fg-muted);font-size:11px}
+.th-jobs-description-body{flex:1 1 auto;min-height:180px;max-height:min(42vh,460px);overflow-y:auto;padding:18px;color:var(--th-fg);font-size:13px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-color:var(--th-line) transparent}
+.th-jobs-description-empty{padding:22px 18px;color:var(--th-fg-muted)}
+.th-jobs-description-empty strong{color:var(--th-fg);font-size:13px}
+.th-jobs-description-empty p,.th-jobs-requirements-placeholder p{margin:7px 0 0;font-size:12px;line-height:1.6}
+.th-jobs-requirements-placeholder{padding:14px 18px 16px;border-top:1px solid var(--th-line);color:var(--th-fg-muted)}
+.th-jobs-requirements-placeholder strong{color:var(--th-fg);font-size:12px}
+.th-jobs-detail-content{min-height:0}
+.th-jobs-detail-panel{min-height:0}
+.th-jobs-page .th-jobs-workspace{min-height:0}
+.th-jobs-page .th-jobs-detail-panel{overflow-y:auto;scrollbar-color:var(--th-line) transparent}
+.th-jobs-page .th-jobs-feed-column{min-height:0}
+
+/* Reusable accessible modal. */
+.th-modal-backdrop{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;padding:24px;background:rgb(0 0 0 / 58%);backdrop-filter:blur(3px)}
+.th-modal{width:min(100%,520px);max-height:min(84dvh,760px);overflow:auto;border:1px solid var(--th-line);border-radius:var(--th-radius-panel,12px);background:var(--th-panel,var(--th-page));color:var(--th-fg);box-shadow:0 24px 80px rgb(0 0 0 / 32%)}
+.th-modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:22px 24px 16px;border-bottom:1px solid var(--th-line)}
+.th-modal-header h2{margin:0;font-size:19px;font-weight:500;line-height:1.35}
+.th-modal-description{margin:8px 0 0;color:var(--th-fg-muted);font-size:13px;line-height:1.6}
+.th-modal-close{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border:1px solid var(--th-line);border-radius:var(--th-radius-control,8px);background:transparent;color:var(--th-fg-muted);font-size:20px;cursor:pointer}
+.th-modal-close:hover{background:var(--th-tag-bg);color:var(--th-fg)}
+.th-modal-body{padding:20px 24px 24px}
+.th-modal-job-summary{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--th-line);border-radius:var(--th-radius-control,8px);background:var(--th-panel-2,var(--th-page))}
+.th-modal-job-summary strong{display:block;color:var(--th-fg);font-size:13px}
+.th-modal-job-summary p{margin:4px 0 0;color:var(--th-fg-muted);font-size:12px}
+.th-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.th-modal-actions .th-btn{min-width:120px}
+.th-modal-close:focus-visible,.th-modal-actions button:focus-visible{outline:2px solid var(--th-accent-text);outline-offset:3px}
+
+/* Short-lived toast notifications use only the existing theme tokens. */
+.th-toast{position:fixed;z-index:1400;right:24px;bottom:24px;display:flex;align-items:center;gap:12px;width:min(440px,calc(100vw - 32px));padding:13px 15px;border:1px solid var(--th-line);border-radius:var(--th-radius-control,8px);background:var(--th-panel,var(--th-page));color:var(--th-fg);box-shadow:0 12px 36px rgb(0 0 0 / 22%);font-size:13px}
+.th-toast[data-tone="success"]{border-color:var(--th-success)}
+.th-toast-message{flex:1;line-height:1.5}
+.th-toast-icon{color:var(--th-accent-text);font-weight:700}
+.th-toast[data-tone="success"] .th-toast-icon{color:var(--th-success)}
+.th-toast-close{width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--th-fg-muted);cursor:pointer;font-size:18px}
+.th-toast-close:hover{background:var(--th-tag-bg);color:var(--th-fg)}
+@media(max-width:700px){.th-jobs-description-heading{align-items:flex-start;flex-direction:column;gap:6px}.th-jobs-description-body{max-height:36vh;padding:14px}.th-modal-backdrop{padding:14px}.th-modal-header{padding:18px 18px 14px}.th-modal-body{padding:16px 18px 20px}.th-modal-actions{flex-direction:column-reverse}.th-modal-actions .th-btn{width:100%}.th-toast{right:16px;bottom:16px}}
