@@ -92,6 +92,10 @@ export async function GET(request: Request) {
       states = userStates ?? [];
     }
     const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
+    if (params.get("statesOnly") === "1") {
+      if (!identity) return apiError("Authentication required", 401);
+      return NextResponse.json({ states });
+    }
 
     let query = db
       .from("jobs")
