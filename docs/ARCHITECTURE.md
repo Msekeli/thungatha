@@ -29,7 +29,8 @@ The architecture must deliver the approved product specification and milestones 
 - **Database:** PostgreSQL through Supabase, with version-controlled SQL migrations.
 - **Database access:** Supabase JavaScript client and SQL/migrations following the existing repository pattern. Do not introduce Prisma or Drizzle by default.
 - **Validation:** Zod for untrusted requests and structured external/AI output, consistent with existing code.
-- **UI:** Material UI plus Tailwind CSS v4, following the existing theme and CSS-layer conventions.
+- **UI:** Material UI (MUI) first, with Tailwind CSS v4 utilities where appropriate. Create standalone CSS/custom rules only when MUI and Tailwind cannot reasonably satisfy the requirement or scoped styling is needed for a complex component. Follow the existing theme and CSS-layer conventions.
+- **Source-file size:** Keep handwritten source files at 100 physical lines or fewer; warn at 80. Count blank/comment lines. Generated files, dependency lockfiles, and vendored code are excluded. Refactor by cohesive responsibility, never by compressing code.
 - **Testing:** existing Vitest/React Testing Library and Playwright conventions, where present.
 - **File storage:** Supabase Storage or another approved object-storage service when CV uploads/generated files are implemented. Do not depend on Vercel function local disk for durable files.
 - **Local development:** Docker is optional, not a prerequisite.
@@ -271,6 +272,8 @@ For each checkpoint, select tests that prove the changed behaviour:
 - API/integration tests for validation, persistence, provider failures, and ownership;
 - component tests for loading/empty/error/validation and accessible interactions;
 - Playwright for critical end-to-end user journeys and responsive behaviour.
+
+Before and after each meaningful coding change, check line counts for changed handwritten source files: warn at 80 lines and keep each at or below 100. Report exceptions and oversized legacy files; do not claim automated enforcement until a local/CI check is implemented and verified.
 
 At release, run the available formatting, lint, type-check, test, build, browser, accessibility, privacy/security, and performance checks. Record actual results; never fabricate a passing check. Avoid adding telemetry that records raw CV content or unnecessary personal information.
 
