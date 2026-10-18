@@ -83,7 +83,10 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
                 key={item.href}
                 href={item.href}
                 data-active={isActive(item)}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  setJobStatus(new URLSearchParams(item.href.split("?")[1] ?? "").get("status"));
+                  setMenuOpen(false);
+                }}
               >
                 <item.icon size={17} aria-hidden="true" />{item.label}
               </Link>
@@ -103,6 +106,7 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
             href={item.href}
             data-active={isActive(item)}
             aria-current={isActive(item) ? "page" : undefined}
+            onClick={() => setJobStatus(new URLSearchParams(item.href.split("?")[1] ?? "").get("status"))}
           >
             <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
             <span>{item.label}</span>
