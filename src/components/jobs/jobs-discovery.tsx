@@ -5,6 +5,8 @@ import Link from "next/link";
 import "./jobs-discovery.css";
 import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
+import { Modal } from "@/components/ui/modal";
+import { Toast } from "@/components/ui/toast";
 
 type JobSource = {
   id: string;
@@ -551,7 +553,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   // Some providers only expose the job listing URL. Keep Apply usable by
   // falling back to that listing when no dedicated application URL is supplied.
-  const applyUrl = applicationUrl ?? sourceUrl;
+  const applyUrl = applicationUrl;
   const range =
     !feed || feed.total === 0
       ? "0 jobs"
@@ -618,16 +620,8 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
             </button>
           </div>
         )}
-        {stateMessage && !undoAction && (
-          <p className="th-jobs-state-message" role="status">
-            {stateMessage}
-          </p>
-        )}
-        {stateError && (
-          <p className="th-jobs-state-error" role="alert">
-            {stateError}
-          </p>
-        )}
+        {stateMessage && !undoAction && <Toast message={stateMessage} tone="success" onDismiss={() => setStateMessage(null)} />}
+        {stateError && <Toast message={stateError} tone="error" onDismiss={() => setStateError(null)} />}
 
         <div className="th-jobs-workspace">
           <div className="th-jobs-feed-column">
@@ -1063,18 +1057,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                       ? "✓ Saved · Remove save"
                       : "♧ Save"}
                   </Button>
-                  <div
-                    className="th-jobs-apply-wrap"
-                    onBlur={(event) => {
-                      if (
-                        !event.currentTarget.contains(
-                          event.relatedTarget as Node | null,
-                        )
-                      ) {
-                        setForceAppliedPrompt(false);
-                      }
-                    }}
-                  >
+                  <div className="th-jobs-apply-wrap">
                     <Button
                       variant="primary"
                       title={
@@ -1086,48 +1069,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                         applyUrl &&
                         openApplicationLink(selectedDetail, applyUrl)
                       }
+                      aria-label={applicationUrl ? "↗ Apply" : "Application link unavailable"}
                       disabled={!applyUrl || stateBusy || detailLoading}
                     >
-                      ↗ Apply
+                      {applicationUrl ? "↗ Apply on company site" : "Application link unavailable"}
                     </Button>
-                    {(forceAppliedPrompt ||
-                      (Boolean(selectedActivity?.application_link_opened_at) &&
-                        !selectedActivity?.applied_at &&
-                        dismissedPromptForJobId !== selectedId)) && (
-                      <section
-                        className="th-jobs-applied-popover"
-                        aria-labelledby="th-jobs-applied-prompt-title"
-                        aria-describedby="th-jobs-applied-prompt-description"
-                      >
-                        <p className="th-jobs-label">APPLICATION CHECK-IN</p>
-                        <h4 id="th-jobs-applied-prompt-title">
-                          Did you apply for this role?
-                        </h4>
-                        <p id="th-jobs-applied-prompt-description">
-                          {selectedDetail.title} at{" "}
-                          {shown(selectedDetail.employer_name)}. Did you submit
-                          an application?
-                        </p>
-                        <div className="th-jobs-applied-prompt-actions">
-                          <Button
-                            disabled={stateBusy}
-                            onClick={() => void confirmApplied()}
-                          >
-                            Yes, I applied
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            disabled={stateBusy}
-                            onClick={() => {
-                              setForceAppliedPrompt(false);
-                              setDismissedPromptForJobId(selectedDetail.id);
-                            }}
-                          >
-                            No, not yet
-                          </Button>
-                        </div>
-                      </section>
-                    )}
                   </div>
                   <Button
                     variant="secondary"
@@ -1148,20 +1094,11 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                   </p>
                 )}
                 <div className="th-jobs-source-status">
-                  <span data-available={Boolean(sourceUrl)}>
-                    ✓{" "}
-                    {sourceUrl
-                      ? "Official site found"
-                      : "Source link unavailable"}
+                  <span data-available={Boolean(applicationUrl)}>
+                    {applicationUrl ? "✓" : "!"}{" "}
+                    {applicationUrl ? "Application destination available" : "Employer application link not verified"}
                   </span>
-                  <p>
-                    Found via {sourceLabel(selectedSource)}
-                    {applicationUrl
-                      ? " · Application page available"
-                      : sourceUrl
-                        ? " · Apply opens the job listing"
-                        : " · Application link not supplied"}
-                  </p>
+                  <p>{applicationUrl ? "A direct application destination is available." : "This listing is a placeholder until a legitimate employer application link is verified."}</p>
                 </div>
                 <section
                   className="th-jobs-match-placeholder"
@@ -1195,70 +1132,17 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
                     calculated in this checkpoint.
                   </p>
                 </section>
-                <section className="th-jobs-detail-card">
-                  <header>
-                    <h4>Job details</h4>
-                  </header>
-                  <dl className="th-jobs-facts">
-                    <div>
-                      <dt>Employer</dt>
-                      <dd>{shown(selectedDetail.employer_name)}</dd>
-                    </div>
-                    <div>
-                      <dt>Location</dt>
-                      <dd>
-                        {shown(selectedDetail.location_text)}
-                        {selectedDetail.work_mode &&
-                        selectedDetail.work_mode !== "unknown"
-                          ? ` (${selectedDetail.work_mode === "onsite" ? "On-site" : selectedDetail.work_mode === "hybrid" ? "Hybrid" : "Remote"})`
-                          : ""}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Job type</dt>
-                      <dd>{shown(selectedDetail.employment_type)}</dd>
-                    </div>
-                    <div>
-                      <dt>Salary</dt>
-                      <dd>
-                        {formatSalary(selectedDetail) ??
-                          "Not stated in the listing"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Posted</dt>
-                      <dd>
-                        {formatDate(selectedSource?.published_at) ??
-                          "Date not provided"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Source</dt>
-                      <dd>
-                        {sourceUrl ? (
-                          <a
-                            href={sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {sourceLabel(selectedSource)}
-                          </a>
-                        ) : (
-                          sourceLabel(selectedSource)
-                        )}
-                      </dd>
-                    </div>
-                  </dl>
-                  <div className="th-jobs-description">
-                    <h4>Job description</h4>
-                    {selectedDetail.description?.trim() ? (
-                      <p>{selectedDetail.description}</p>
-                    ) : (
-                      <p className="th-jobs-muted">
-                        The source did not provide a job description.
-                      </p>
-                    )}
+                <section className="th-jobs-description-panel" aria-labelledby="th-job-description-heading">
+                  <div className="th-jobs-description-heading">
+                    <div><p className="th-jobs-label">ROLE DETAILS</p><h4 id="th-job-description-heading">Job description &amp; requirements</h4></div>
+                    <span className="th-jobs-description-source">From the available listing</span>
                   </div>
+                  {selectedDetail.description?.trim() ? (
+                    <div className="th-jobs-description-body">{selectedDetail.description}</div>
+                  ) : (
+                    <div className="th-jobs-description-empty"><strong>Description not available</strong><p>The source did not provide a full job description. Open the employer's application page to review the role requirements before applying.</p></div>
+                  )}
+                  <div className="th-jobs-requirements-placeholder"><strong>Skills and requirements</strong><p>Technology, experience and qualification requirements will appear here when the source provides them. Thungatha will not infer missing requirements.</p></div>
                 </section>
                 <p className="th-jobs-integrity-note">
                   Opening an application link records a visit only. Your
@@ -1285,6 +1169,12 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
             ) : null}
           </section>
         </div>
+        {(forceAppliedPrompt || (Boolean(selectedActivity?.application_link_opened_at) && !selectedActivity?.applied_at && dismissedPromptForJobId !== selectedId)) && selectedDetail && (
+          <Modal title="Did you apply for this role?" description={selectedDetail.title + " at " + shown(selectedDetail.employer_name) + ". Opening the employer website does not mark this role as applied."} onClose={() => { setForceAppliedPrompt(false); setDismissedPromptForJobId(selectedDetail.id); }} labelledBy="th-applied-modal-title">
+            <div className="th-modal-job-summary"><span className="th-jobs-employer-mark" aria-hidden="true">{(selectedDetail.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</span><div><strong>{selectedDetail.title}</strong><p>{shown(selectedDetail.employer_name)} · {shown(selectedDetail.location_text)}</p></div></div>
+            <div className="th-modal-actions"><Button variant="secondary" disabled={stateBusy} onClick={() => { setForceAppliedPrompt(false); setDismissedPromptForJobId(selectedDetail.id); }}>No, not yet</Button><Button disabled={stateBusy} onClick={() => void confirmApplied()}>{stateBusy ? "Saving…" : "Yes, I applied"}</Button></div>
+          </Modal>
+        )}
       </main>
     </WorkspaceShell>
   );
