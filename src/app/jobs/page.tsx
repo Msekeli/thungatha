@@ -1,5 +1,5 @@
 import { hasClerkConfiguration } from "@/lib/auth/identity";
-import JobsDiscovery from "@/components/jobs/jobs-discovery";
+import JobsDiscovery from "@/features/jobs/ui/jobs-discovery";
 
 type PageProps = { searchParams: Promise<{ welcome?: string | string[] }> };
 

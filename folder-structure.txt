@@ -5,7 +5,7 @@ Branch: dev
 
 IMPORTANT
 - This file describes the target structure, not a claim that every path already exists.
-- Current source paths remain unchanged until a separate, reviewed migration.
+- Jobs UI migration (first pass): public and authenticated discovery screens, their CSS, and the authenticated discovery component test now live under `src/features/jobs/ui/`. Routes stay under `src/app/`; shared UI stays under `src/components/`. Provider adapters, API handlers, and persistence remain under their existing paths.
 - Keep Next.js routes and HTTP Route Handlers in src/app/.
 - Put feature-owned code in src/features/<feature>/.
 - Keep generic shared UI in src/components/.
@@ -45,6 +45,13 @@ thungatha/
 │   │   ├── layout.tsx
 │   │   └── globals.css
 │   ├── features/
+│   │   ├── jobs/
+│   │   │   └── ui/
+│   │   │       ├── jobs-discovery.tsx
+│   │   │       ├── jobs-discovery.css
+│   │   │       ├── jobs-discovery.test.tsx
+│   │   │       ├── public-job-discovery.tsx
+│   │   │       └── public-job-discovery.css
 │   │   ├── jobs/
 │   │   │   ├── ui/
 │   │   │   │   ├── public-job-discovery.tsx
@@ -90,6 +97,6 @@ Jobs feature boundaries
 - Public experience: browse/search/filter/inspect listings and open a valid application destination without signing in.
 - Authenticated experience: existing personal state and activity features, with server-side authorization.
 - Shared candidates: job/feed types, safe URL and display formatters, API request helpers, and UI pieces only where markup/behavior truly match.
-- Keep public and authenticated page controllers separate initially. Do not merge them into one large component.
+- Keep public and authenticated page controllers separate initially. Do not merge them into one large component. Their UI implementations currently live under `src/features/jobs/ui/`.
 - API Route Handlers remain under src/app/api/jobs/. Extract backend services/repositories only when a focused, tested change justifies it.
 - Job Tracking is private and authenticated. CV Studio may have public explanatory/preview content, while authoring requires authentication.
