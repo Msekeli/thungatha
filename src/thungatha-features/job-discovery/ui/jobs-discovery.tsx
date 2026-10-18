@@ -83,7 +83,7 @@ const EMPTY_FILTERS: Filters = {
   employmentType: "",
   publishedWithin: "30d",
 };
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 30;
 
 function sourceFor(job: Job | null): JobSource | null {
   if (!job?.job_sources) return null;
