@@ -4,7 +4,6 @@ import {
   ChevronRight,
   MapPin,
 } from "lucide-react";
-
 export type JobCardData = {
   id: string;
   title: string;
@@ -13,7 +12,6 @@ export type JobCardData = {
   work_mode: string | null;
   employment_type: string | null;
 };
-
 type JobCardProps = {
   job: JobCardData;
   variant: "public" | "authenticated";
@@ -21,7 +19,6 @@ type JobCardProps = {
   postedLabel: string;
   onSelect: () => void;
 };
-
 export function JobCard({
   job,
   variant,
@@ -65,7 +62,6 @@ export function JobCard({
       </button>
     );
   }
-
   const workMode =
     job.work_mode === "onsite"
       ? "On-site"
@@ -74,7 +70,6 @@ export function JobCard({
         : job.work_mode === "remote"
           ? "Remote"
           : null;
-
   return (
     <button
       type="button"
