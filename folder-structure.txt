@@ -45,7 +45,7 @@ TARGET FOLDER STRUCTURE
 thungatha/
 ├── .github/
 │   └── workflows/                       # Automated repository checks and CI workflows.
-├── Project Documentation/                # Product specifications, architecture decisions, route maps, and implementation plans; currently stored under docs/.
+├── Project Documentation/                # Product specifications, architecture decisions, route maps, and implementation plans; 
 ├── e2e/                                 # CURRENT location of Playwright tests; migrate to tests/end-to-end-tests/ with a matching config update.
 ├── milestones/                          # Scope, acceptance criteria, and implementation notes for each product milestone.
 ├── public/
@@ -148,7 +148,7 @@ The target is to separate test files from production source. The existing reposi
 
 CURRENT IMPLEMENTATION NOTES
 
-- The actual dev branch still has a `docs/` directory. The user-approved target name is exactly `Project Documentation/`; this directory rename has not been implemented. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
+- The actual `dev` branch uses the user-approved directory name `Project Documentation/`. The actual dev branch also still has src/app/account/page.tsx, src/app/applications/page.tsx, src/app/jobs/page.tsx, src/app/profile/page.tsx, and the sign-in/sign-up pages in their original physical folders. The route-group structure shown above is proposed, not implemented.
 - The current discovery UI is in src/thungatha-features/jobs/ui/. The target is src/thungatha-features/job-discovery/ui/.
 - Current API tests are named route.test.ts beside their Route Handlers. Current module tests are colocated under src/lib/jobs/, src/lib/profile/, and src/components/profile/. They have not been moved into tests/ yet.
 - The current Playwright test is under e2e/. The proposed destination is tests/end-to-end-tests/ and requires updating playwright.config.ts.
