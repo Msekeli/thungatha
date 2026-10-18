@@ -22,8 +22,7 @@
     background: var(--th-nav);
   }
   .th-mobile-workspace-brand { display: flex; align-items: center; min-width: 0; text-decoration: none; }
-  .th-mobile-workspace-brand .th-wordmark { font-size: 16px; }
-  .th-mobile-workspace-brand img { width: 30px; height: 30px; }
+  .th-mobile-workspace-brand img { display: block; width: 142px; height: 40px; object-fit: contain; object-position: left center; }
   .th-mobile-workspace-header-actions { display: flex; align-items: center; gap: 10px; }
   .th-mobile-workspace-header-actions .th-theme-toggle { display: flex; }
   .th-mobile-menu-trigger {
