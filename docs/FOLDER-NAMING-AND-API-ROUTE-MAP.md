@@ -81,3 +81,74 @@ Before any route or feature folder is moved:
 6. Move one coherent feature boundary at a time; update imports and both architecture maps in the same change.
 7. Run the actual package scripts available in `package.json`: at minimum relevant Vitest tests, ESLint, and a production build when the local environment supports them. Record what was and was not run.
 8. Do not mark a migration verified based only on a successful text edit or GitHub commit.
+
+
+## 6. File naming conventions
+
+Use a filename that identifies the responsibility, not merely the framework role or a broad technical category.
+
+### General rules
+
+- Use lowercase kebab-case for new TypeScript, TSX, CSS, and documentation filenames: `job-listing-card.tsx`, `job-search-filters.tsx`, `job-listings.css`, `user-profile-schema.ts`.
+- Name components after the UI responsibility they render; name utilities after the operation they perform; name schemas after the data they validate; name API service functions after the operation and resource.
+- Keep implementation and test names paired and searchable. For example, `job-listing-query.ts` and `job-listing-query.test.ts`; `job-listing-card.tsx` and `job-listing-card.test.tsx`.
+- Avoid ambiguous names such as `helpers.ts`, `utils.ts`, `common.ts`, `data.ts`, `manager.ts`, `service.ts`, or `index.ts` unless the folder context makes the responsibility genuinely obvious and the file is only a small barrel.
+- Do not rename a file solely because its name is repeated elsewhere. A repeated basename can be correct when a framework requires it or when files are scoped to clearly named directories.
+- Avoid overly broad files that combine unrelated responsibilities. Split by cohesive behaviour, not by arbitrary line counts. Do not create one-file-per-function fragmentation.
+- Prefer descriptive exported names as well as descriptive filenames. File and symbol names should reinforce each other.
+- Keep file naming consistent within a feature. Do not introduce a new convention in one folder while leaving the rest unexplained.
+
+### Next.js reserved/conventional filenames
+
+These filenames are intentionally repeated and should remain where Next.js expects them:
+
+- `page.tsx`: route page entry point.
+- `route.ts`: HTTP Route Handler entry point.
+- `layout.tsx`, `loading.tsx`, `error.tsx`, `global-error.tsx`, `not-found.tsx`: framework route/layout/error conventions.
+
+Make these files thin. Put substantial UI in a descriptively named page component and put API operations in descriptively named modules. Example:
+
+```text
+src/app/api/(job-listings)/jobs/route.ts
+src/thungatha-features/job-discovery/server/get-job-listings.ts
+src/thungatha-features/job-discovery/server/get-job-listing-by-id.ts
+src/thungatha-features/job-discovery/server/update-job-listing-state.ts
+src/thungatha-features/job-discovery/server/get-job-listing-activity.ts
+src/thungatha-features/job-discovery/server/record-job-listing-activity.ts
+```
+
+These are naming examples, not claims that these modules exist today. Do not move business logic merely to match the diagram. Extract it only after auditing imports, auth, data ownership, response shapes, and tests.
+
+### Current filename and file-size findings
+
+The scan of the current `dev` tree found 81 files under `src/`. Repeated basenames include:
+
+- `page.tsx` (8), `route.ts` (6), `route.test.ts` (6): mostly legitimate Next.js conventions, but they require descriptively named parent directories and thin entry-point files.
+- `loading.tsx` (2): legitimate Next.js convention.
+- `index.ts` (2): inspect whether each is a useful public export barrel or an unnecessary indirection.
+- `schema.ts` (2): technically valid but less discoverable across feature boundaries; consider names such as `job-listing-schema.ts` and `user-profile-schema.ts` when those files are migrated.
+- `theme.ts` (2): inspect and resolve overlapping responsibilities before renaming or consolidating; do not merge them based on filename alone.
+
+Largest source files identified by the scan:
+
+| Current file | Approximate size | Initial recommendation |
+|---|---:|---|
+| `src/thungatha-features/jobs/ui/jobs-discovery.tsx` | 1,378 lines | Split page orchestration, job results/list, job details, filter controls, and API/state operations into cohesive modules after dependency review |
+| `src/thungatha-features/jobs/ui/jobs-discovery.css` | 3,445 lines | Split styles by stable UI section/component, keeping feature scoping and responsive behaviour intact |
+| `src/thungatha-features/jobs/ui/public-job-discovery.css` | 3,216 lines | Split by public discovery sections, preserving selector scope and media-query behaviour |
+| `src/thungatha-features/jobs/ui/public-job-discovery.tsx` | 56 physical lines, about 23 KB | Reformat first; many statements are compressed onto single lines. Then assess component boundaries |
+| `src/styles/components.css` | 487 lines, about 12 KB | Inspect ownership and group shared styles by component only where it improves discovery |
+
+Sizes are a prioritisation signal, not a mandate to split every large file. CSS splitting can change cascade order, and React splitting can change state/effect behaviour; both require targeted tests and visual verification.
+
+### Migration order
+
+1. Establish the naming rules before renaming source files.
+2. Fix the physical feature boundaries and route groups while preserving public URLs.
+3. For each API Route Handler, document methods, request/response shapes, authentication/ownership rules, and persistence effects. Keep `route.ts` as the entry point; extract well-named operations only when justified.
+4. Decompose the large Job Discovery components into named, cohesive UI and behaviour modules. Preserve public and authenticated discovery as distinct experiences.
+5. Reorganise CSS in small sections and verify responsive layouts after each change.
+6. Review duplicate `index.ts`, `schema.ts`, and `theme.ts` names in context; do not perform blind global renames.
+7. Update imports, paired tests, architecture docs, and `folder-structure.txt` in the same coherent change.
+8. Run the relevant tests, lint, and production build where available. Record exactly what ran; do not call a text-only rename verified.
+
