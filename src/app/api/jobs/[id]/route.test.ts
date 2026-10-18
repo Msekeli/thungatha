@@ -8,7 +8,8 @@ vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.
 
 const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
-const client = vi.mocked(createAuthenticatedSupabaseClient);\nconst publicClient = vi.mocked(createPublicSupabaseClient);
+const client = vi.mocked(createAuthenticatedSupabaseClient);
+const publicClient = vi.mocked(createPublicSupabaseClient);
 const id = "123e4567-e89b-42d3-a456-426614174000";
 
 function query(result: unknown) {
