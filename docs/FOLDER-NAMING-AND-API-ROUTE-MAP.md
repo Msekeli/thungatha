@@ -141,6 +141,16 @@ Largest source files identified by the scan:
 
 Sizes are a prioritisation signal, not a mandate to split every large file. CSS splitting can change cascade order, and React splitting can change state/effect behaviour; both require targeted tests and visual verification.
 
+### Additional code-level findings from the route/file inspection
+
+- `src/app/api/jobs/route.ts` is about 193 lines and includes a filter-sanitising helper alongside the GET handler. Review whether query parsing/filter validation and listing retrieval can be moved into named Job Discovery modules without changing the endpoint contract.
+- `src/app/api/jobs/[id]/state/route.ts` (about 102 lines) and `src/app/api/jobs/[id]/activity/route.ts` (about 146 lines) each resolve identity and handle user-owned state/activity. Review a shared identity helper only if the existing authentication contract and error handling can remain identical.
+- `src/app/api/profile/route.ts` (about 107 lines) resolves identity and handles GET/PATCH validation and persistence. It should delegate to named profile operations where this improves clarity, without pretending the current display-name API is a full professional-profile API.
+- `src/app/api/jobs/[id]/route.ts` (about 63 lines) and `src/app/api/internal/jobs/ingest/route.ts` (about 60 lines) are smaller; keep them focused rather than splitting them automatically.
+- `src/lib/jobs/providers/aggregators/index.ts` and `src/lib/jobs/providers/ats/index.ts` are tiny files with no exports in the inspected source. Verify whether they are needed; if not imported, remove them as part of a reference-checked cleanup rather than keeping meaningless files.
+- `src/lib/theme.ts` and `src/theme/theme.ts` are not duplicates: the first defines the app's theme preference/bootstrap script, while the second creates a Material UI theme from tokens. Keep them separate or rename them to distinguish those responsibilities; do not merge based on the basename.
+- The current public discovery TSX file is compressed into only 56 physical lines despite being about 23 KB. Reformat it before evaluating its true complexity; formatting should be a behaviour-neutral change.
+
 ### Migration order
 
 1. Establish the naming rules before renaming source files.
