@@ -1,0 +1,95 @@
+Thungatha — Agreed Target Folder Structure
+Status: Confirmed target; adoption is incremental
+Last updated: 18 October 2026
+Branch: dev
+
+IMPORTANT
+- This file describes the target structure, not a claim that every path already exists.
+- Current source paths remain unchanged until a separate, reviewed migration.
+- Keep Next.js routes and HTTP Route Handlers in src/app/.
+- Put feature-owned code in src/features/<feature>/.
+- Keep generic shared UI in src/components/.
+- Keep existing shared helpers/infrastructure in src/lib/ unless a concrete reason to move them is approved.
+- Do not create empty folders or files just to match this tree.
+- Jobs starts with two separate discovery experiences. Share only proven common code.
+- Preserve routes, API contracts, authentication/authorization, and business behavior during structural changes.
+
+thungatha/
+├── README.md
+├── AGENTS.md
+├── IMPLEMENTATION-PLAN.md
+├── DECISIONS.md
+├── folder-structure.txt
+├── docs/
+│   ├── PRODUCT-SPECIFICATION.md
+│   ├── ARCHITECTURE.md
+│   └── PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md
+├── milestones/
+├── public/
+│   └── brand/
+├── scripts/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── jobs/
+│   │   │   ├── profile/
+│   │   │   └── internal/
+│   │   ├── page.tsx
+│   │   ├── jobs/page.tsx
+│   │   ├── cv-studio/page.tsx
+│   │   ├── applications/page.tsx
+│   │   ├── profile/page.tsx
+│   │   ├── account/page.tsx
+│   │   ├── sign-in/
+│   │   ├── sign-up/
+│   │   ├── layout.tsx
+│   │   └── globals.css
+│   ├── features/
+│   │   ├── jobs/
+│   │   │   ├── ui/
+│   │   │   │   ├── public-job-discovery.tsx
+│   │   │   │   └── authenticated-job-discovery.tsx
+│   │   │   ├── client/
+│   │   │   │   └── jobs-api.ts
+│   │   │   ├── types/
+│   │   │   │   └── job.ts
+│   │   │   └── utils/
+│   │   │       └── job-utils.ts
+│   │   ├── cv-studio/
+│   │   ├── job-tracking/
+│   │   └── profile/
+│   ├── server/                 # Only if a shared server home is needed
+│   │   ├── auth/
+│   │   ├── database/
+│   │   └── http/
+│   ├── components/
+│   │   ├── auth/
+│   │   ├── layout/
+│   │   ├── brand/
+│   │   ├── theme/
+│   │   └── ui/
+│   ├── lib/
+│   │   ├── auth/
+│   │   ├── http/
+│   │   ├── jobs/               # Existing provider/search/ingestion code initially stays here
+│   │   ├── profile/
+│   │   └── supabase/
+│   ├── styles/
+│   ├── test/
+│   ├── theme/
+│   └── proxy.ts
+├── supabase/
+│   └── migrations/
+├── e2e/
+├── vitest.config.mts
+├── playwright.config.ts
+├── package.json
+└── tsconfig.json
+
+Jobs feature boundaries
+- Public experience: browse/search/filter/inspect listings and open a valid application destination without signing in.
+- Authenticated experience: existing personal state and activity features, with server-side authorization.
+- Shared candidates: job/feed types, safe URL and display formatters, API request helpers, and UI pieces only where markup/behavior truly match.
+- Keep public and authenticated page controllers separate initially. Do not merge them into one large component.
+- API Route Handlers remain under src/app/api/jobs/. Extract backend services/repositories only when a focused, tested change justifies it.
+- Job Tracking is private and authenticated. CV Studio may have public explanatory/preview content, while authoring requires authentication.
