@@ -446,3 +446,24 @@ body:has(.th-discovery-shell) {
   .th-feature-sidebar article small { font-size: 9px !important; padding: 3px 6px !important; }
   .th-feature-sidebar .th-feature-signin { font-size: 9px !important; padding: 4px 6px !important; }
 }
+
+
+/* Strongly prioritize the job results and details over the feature rail. */
+@media (min-width: 1001px) {
+  .th-discovery-workspace {
+    grid-template-columns: minmax(125px, 0.28fr) minmax(420px, 1.45fr) minmax(420px, 1.45fr) !important;
+  }
+  .th-feature-sidebar {
+    padding: 12px 8px !important;
+  }
+  .th-feature-sidebar-heading strong { font-size: 12px !important; }
+  .th-feature-sidebar-heading p { font-size: 9px !important; }
+  .th-feature-sidebar article { gap: 6px !important; padding: 8px 0 !important; }
+  .th-feature-sidebar article .th-feature-icon {
+    width: 24px !important; height: 24px !important; flex-basis: 24px !important;
+  }
+  .th-feature-sidebar article strong { font-size: 10px !important; }
+  .th-feature-sidebar article p { font-size: 8.5px !important; }
+  .th-feature-sidebar article small,
+  .th-feature-sidebar .th-feature-signin { font-size: 8px !important; }
+}
