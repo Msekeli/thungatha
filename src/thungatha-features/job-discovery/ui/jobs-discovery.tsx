@@ -811,7 +811,7 @@ export default function JobsDiscovery({
                       job={job}
                       variant="authenticated"
                       selected={job.id === selectedId}
-                      postedLabel={source?.published_at ? formatDate(source.published_at) : "Date unknown"}
+                      postedLabel={source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown"}
                       onSelect={() => {
                         setSelectedId(job.id);
                         setForceAppliedPrompt(false);
