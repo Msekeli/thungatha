@@ -91,7 +91,7 @@ thungatha/
 ├── IMPLEMENTATION-PLAN.md
 ├── DECISIONS.md
 ├── folder-structure.txt                # Agreed target map and migration notes
-├── docs/
+├── Project Documentation/
 │   ├── PRODUCT-SPECIFICATION.md
 │   ├── ARCHITECTURE.md
 │   └── PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md
@@ -164,7 +164,7 @@ thungatha/
 
 ### Structure interpretation and migration constraints
 
-- The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `folder-structure.txt`; update that document when the actual tree changes. See `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the naming standard, verified endpoint inventory, URL-preserving route-group examples, and unresolved route discrepancy.
+- The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `../folder-structure.txt`; update that document when the actual tree changes. See `FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the naming standard, verified endpoint inventory, URL-preserving route-group examples, and unresolved route discrepancy.
 - Keep all existing routes, API paths, request/response shapes, authentication boundaries, and business behavior unchanged during structural-only changes. Because App Router folder names normally define URLs, use route groups such as `(user-profile)` around an existing `profile/` route when a clearer physical grouping is needed without changing `/profile`.
 - Do not create empty feature folders or placeholder implementation files just to match the diagram. Add a folder when real code is ready to move into it.
 - Keep test files alongside existing implementations unless a specific test organization need is demonstrated.
@@ -292,7 +292,7 @@ Routine implementation details can evolve within these boundaries, but do not si
 
 ## 15. Relationship to other documents
 
-- `docs/PRODUCT-SPECIFICATION.md` defines what the product must do and the user-facing rules.
+- `PRODUCT-SPECIFICATION.md` defines what the product must do and the user-facing rules.
 - `IMPLEMENTATION-PLAN.md` defines the cross-milestone sequence, dependencies, progress, and overall acceptance.
 - `milestones/<folder>/<file>.md` defines detailed work, checkpoints, tests, evidence, and milestone acceptance.
 - `DECISIONS.md` records rationale, status, and open decisions.
