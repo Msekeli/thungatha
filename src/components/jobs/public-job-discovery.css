@@ -88,3 +88,10 @@ html:has(.th-discovery-shell),body:has(.th-discovery-shell){background:#edf1f6}
 .th-wide-promo-actions button+button{background:#fff;color:#087df4}
 @media(max-width:1050px){.th-discovery-workspace{grid-template-columns:185px minmax(340px,1.15fr) minmax(300px,1fr);min-height:calc(100vh - 375px)}.th-discovery-detail{max-height:calc(100vh - 365px)}.th-discovery-brand{flex-basis:145px;min-width:145px}.th-full-logo{width:140px;height:32px}}
 @media(max-width:760px){.th-discovery-hero{min-height:240px;padding-top:24px;padding-bottom:44px}.th-feature-strip{margin-top:-25px;margin-bottom:9px}.th-discovery-workspace{grid-template-columns:minmax(0,1fr);min-height:0}.th-discovery-detail{max-height:none}.th-discovery-brand{flex-basis:auto;min-width:0}.th-full-logo{width:132px;height:30px}}
+
+/* Compact employment-type quick filters: same visual scale as the previous chips */
+.th-search-chips{gap:8px;margin-top:10px}
+.th-search-chips button{display:inline-flex;align-items:center;gap:8px;min-height:29px;padding:5px 12px;border:1px solid #213a55;border-radius:24px;background:#10233a;color:#d4e5f7;font-size:10px;line-height:1;white-space:nowrap}
+.th-search-chips button[data-active=true]{border-color:#32c9ee;background:#12344b;color:#55d8f5}
+.th-search-chips .th-quick-count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:12px;background:#087bf2;color:white;font-size:10px}
+@media(max-width:760px){.th-search-chips{gap:5px}.th-search-chips button{min-height:26px;padding:5px 9px;font-size:9px}}
