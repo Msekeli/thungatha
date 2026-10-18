@@ -193,14 +193,25 @@ When a decision is approved or changed:
 5. Do not claim that a provider, feature, or checkpoint is approved or complete without supporting evidence.
 
 
-### D-035 — Feature-based organization and incremental Jobs refactor
+### D-035 — Feature-based organization and incremental Job Discovery refactor
 
 - **Date:** 2026-10-18
 - **Status:** Confirmed
-- **Context:** The current public discovery and authenticated discovery experiences are separate large components. The project needs clearer feature ownership without destabilizing working routes, API contracts, or business behavior.
-- **Options considered:** Reorganize the whole repository at once; merge public and authenticated discovery into one component; retain all feature code under generic components/lib folders; introduce feature-based organization incrementally.
-- **Decision:** Use `src/features/<feature>/` as the target home for feature-owned code. Keep Next.js routes and Route Handlers in `src/app/`, generic shared UI in `src/components/`, and existing cross-cutting helpers/infrastructure in `src/lib/` unless a specific need justifies a move. Start with Jobs. Keep public discovery and authenticated discovery as separate experiences, extracting only proven shared types, pure utilities, API callers, or UI components. Job Tracking remains authenticated; CV Studio may expose public introduction/preview while authoring remains authenticated.
+- **Context:** The public and authenticated Job Discovery experiences are separate large components. The project needs clearer feature ownership without destabilizing working routes, API contracts, or business behavior.
+- **Options considered:** Reorganize the whole repository at once; merge public and authenticated discovery into one component; retain feature code under generic components/lib folders; introduce feature-based organization incrementally.
+- **Decision:** Use `src/thungatha-features/<descriptive-feature-name>/` as the target home for feature-owned code. Keep Next.js routes and Route Handlers in `src/app/`, cross-feature UI in `src/components/`, and existing cross-cutting helpers/infrastructure in `src/lib/` unless a specific need justifies a move. Start with Job Discovery. Keep public and authenticated discovery as separate experiences, extracting only proven shared types, pure utilities, API callers, or UI components. Job Tracking remains authenticated; CV Studio may expose public introduction/preview while authoring remains authenticated.
 - **Rationale:** This reduces feature coupling while avoiding speculative layers and a high-risk rewrite. The same job catalogue and API contracts can support both discovery experiences while user-specific actions remain protected.
-- **Consequences:** Documentation records the target structure before source changes. The current implementation paths remain valid until a dedicated migration step moves them. Structural changes must preserve URLs, API response shapes, authentication/authorization, filters, state transitions, and UI behavior.
+- **Consequences:** Documentation records the target structure before source changes. Current implementation paths remain valid until a dedicated migration step moves them. Structural changes must preserve URLs, API response shapes, authentication/authorization, filters, state transitions, and UI behavior.
 - **Verification:** Documentation and current paths were reviewed against the `dev` branch. No application source files are changed by this decision.
 - **Review trigger:** Reconsider only if implementation evidence shows the feature boundary creates unnecessary duplication or conflicts with Next.js conventions.
+
+### D-036 — Explicit feature folder names and URL-preserving route groups
+
+- **Date:** 2026-10-18
+- **Status:** Confirmed naming principle; route-group migration is pending
+- **Context:** Generic feature folders such as `jobs`, `profile`, and `account` make code ownership harder to identify. Next.js App Router folder names also define URL segments unless a route group is used.
+- **Decision:** Use explicit kebab-case names for feature-owned folders: `job-discovery`, `authentication`, `user-profile`, `user-account`, `cv-studio`, and `job-tracking`. Job listings are the catalogue/domain owned by Job Discovery, not a second top-level feature by default. Use descriptive Next.js route groups, for example `(job-discovery)`, `(user-profile)`, `(user-account)`, `(authentication)`, and `(job-listings)`, where useful to clarify the physical tree while preserving established URL paths. Keep API endpoint names stable unless an API migration is separately approved.
+- **Rationale:** The filesystem should explain feature responsibility without forcing contributors to infer meaning from vague folder names or accidentally breaking URLs.
+- **Consequences:** This is a naming and documentation decision, not a claim that all folders have already moved. Existing paths remain until each migration is inspected, implemented, and tested. Route groups must not create duplicate routes or alter public URLs.
+- **Known discrepancy:** Product architecture specifies `/job-tracking`, while the current placeholder page is at `/applications`. Resolve that product/URL discrepancy separately; do not silently change it during folder migration.
+- **Review trigger:** Reconsider a name only when a demonstrated product boundary or framework constraint requires it.

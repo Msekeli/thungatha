@@ -14,6 +14,7 @@
 
 - `docs/PRODUCT-SPECIFICATION.md` defines product purpose, scope, principles, user journeys, and business rules.
 - `docs/ARCHITECTURE.md` defines the technical design, repository map, file responsibilities, boundaries, and implementation conventions.
+- `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` records the explicit folder naming standard, current API inventory, route-group strategy, and known route discrepancies.
 - `PROJECT-CONTEXT.md` is the short operational summary. It does not override the product specification or approved decisions. If it conflicts with authoritative documents, report the discrepancy rather than guessing.
 - `DECISIONS.md` records approved decisions, provisional directions, and unresolved questions.
 - `IMPLEMENTATION-PLAN.md` is the cumulative cross-milestone and checkpoint tracker. Preserve checkpoint history; do not replace it with only the latest status.
@@ -35,8 +36,10 @@
 - Do not create empty implementation folders under `src/` merely to match the planned structure.
 - Treat the architecture tree and `folder-structure.txt` as the agreed target map, not proof that every target path or feature has been implemented. The actual repository may lag the target during an incremental migration.
 - Inspect references before renaming, moving, merging, or deleting existing files. In particular, review existing `/dashboard` code and duplicate-looking components before changing them.
-- The agreed target uses `src/features/<feature>/` for feature-owned code. Start with Jobs and migrate incrementally; do not move the whole repository at once.
-- For Jobs, preserve separate public and authenticated discovery experiences. Extract only demonstrably shared code and preserve route paths, API contracts, authentication boundaries, and business logic. Job Tracking remains authenticated; public CV Studio access is limited to an introduction/preview until authenticated authoring is available.
+- The agreed target uses `src/thungatha-features/<descriptive-feature-name>/` for feature-owned code. Use explicit names such as `job-discovery`, `authentication`, `user-profile`, `user-account`, `cv-studio`, and `job-tracking`; do not use ambiguous feature containers such as `jobs`, `profile`, or `account` in the target architecture.
+- Next.js route folders also define URLs. Preserve established URL paths during structural-only changes; use descriptive route groups such as `(job-discovery)`, `(user-profile)`, and `(user-account)` when a clearer filesystem boundary is needed without changing the URL. API route groups must preserve the existing HTTP path and contract.
+- Start with Job Discovery and migrate incrementally; do not move the whole repository at once. Preserve separate public and authenticated discovery experiences, API request/response shapes, authentication boundaries, and business behavior. Job Tracking remains authenticated; public CV Studio access is limited to an introduction/preview until authenticated authoring is available.
+- Before moving or renaming an API route, inventory its HTTP methods, callers, request/response shapes, authentication, ownership checks, tests, and database effects. Keep the current API URL stable unless a separately approved API change includes a migration plan.
 - Do not create a second source of truth for a document or feature. Update references when an authoritative document is intentionally replaced, and report any stale references found.
 
 ## Product and Architecture Rules
