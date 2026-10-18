@@ -24,7 +24,7 @@ These capabilities are delivered incrementally through the project's milestone p
 
 ## Architecture Overview
 
-Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/features/`; generic shared UI stays under `src/components/`; and existing shared helpers/infrastructure remain under `src/lib/` unless a concrete, reviewed refactor warrants moving them. The agreed target is documented in [`folder-structure.txt`](folder-structure.txt) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). This target is being adopted incrementally; it does not imply all files have already moved.
+Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/features/`; generic shared UI stays under `src/components/`; and existing shared helpers/infrastructure remain under `src/lib/` unless a concrete, reviewed refactor warrants moving them. The agreed target is documented in [`folder-structure.txt`](folder-structure.txt) and [`Project Documentation/ARCHITECTURE.md`](<Project Documentation/ARCHITECTURE.md>). This target is being adopted incrementally; it does not imply all files have already moved.
 
 For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. We will extract only code that is genuinely shared and preserve existing behavior and API contracts. Job Tracking is authenticated; CV Studio can expose public introductory content while authoring remains authenticated. Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
 
@@ -102,9 +102,9 @@ Development follows six planned milestones, from job discovery through profile a
 ## Documentation
 
 - **[Folder Structure](folder-structure.txt):** Agreed target structure and incremental migration boundaries.
-- **[Product Specification](docs/PRODUCT-SPECIFICATION.md):** Authoritative product requirements, workflows, and rules.
-- **[Architecture](docs/ARCHITECTURE.md):** Application structure, module boundaries, request flows, authentication, and data access.
-- **[Public Job Discovery Plan](docs/PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md):** Existing public discovery implementation scope and verification record.
+- **[Product Specification](<Project Documentation/PRODUCT-SPECIFICATION.md>):** Authoritative product requirements, workflows, and rules.
+- **[Architecture](<Project Documentation/ARCHITECTURE.md>):** Application structure, module boundaries, request flows, authentication, and data access.
+- **[Public Job Discovery Plan](<Project Documentation/PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md>):** Existing public discovery implementation scope and verification record.
 - **[Technical Decisions](DECISIONS.md):** Confirmed decisions, provisional choices, and unresolved questions.
 - **[Implementation Plan](IMPLEMENTATION-PLAN.md):** Milestones, checkpoints, acceptance criteria, and progress.
 - **[Agent Instructions](AGENTS.md):** Development rules and guidance for AI coding assistants.
