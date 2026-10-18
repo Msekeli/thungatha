@@ -123,12 +123,15 @@ thungatha/
 │   │   │   ├── ui/
 │   │   │   │   ├── jobs-discovery.tsx
 │   │   │   │   ├── jobs-discovery.css
-│   │   │   │   ├── jobs-discovery.test.tsx
 │   │   │   │   ├── public-job-discovery.tsx
 │   │   │   │   └── public-job-discovery.css
 │   │   │   └── server/                  # Existing ingestion, providers, search, and schema modules
 │   │   ├── authentication/
+│   │   │   ├── ui/                      # Authentication pages, providers, and sign-out controls
+│   │   │   └── server/                  # Server-side identity resolution
 │   │   ├── user-profile/
+│   │   │   ├── ui/                      # Profile form
+│   │   │   └── server/                  # Profile persistence and validation
 │   │   ├── user-account/
 │   │   ├── cv-studio/
 │   │   └── job-tracking/

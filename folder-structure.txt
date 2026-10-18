@@ -85,7 +85,8 @@ thungatha/
 │   │   └── not-found.tsx                # Not-found UI.
 │   ├── thungatha-features/              # Product feature implementations grouped by explicit domain responsibility.
 │   │   ├── job-discovery/               # Job search, filtering, listing display, source provenance, and per-user discovery state.
-│   │   │   └── ui/                      # Job Discovery components and their feature-specific styles.
+│   │   │   ├── ui/                      # Public and authenticated discovery experiences and feature-specific styles.
+│   │   │   └── server/                  # Job ingestion, providers, search, and listing schemas.
 │   │   ├── authentication/              # Authentication UI and integration owned by Thungatha; identity must be resolved securely.
 │   │   │   ├── ui/                      # Sign-in, sign-up, provider, and sign-out components.
 │   │   │   └── server/                  # Server-side identity resolution and auth configuration.

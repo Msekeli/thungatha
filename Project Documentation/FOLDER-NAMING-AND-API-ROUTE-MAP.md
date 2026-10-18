@@ -2,7 +2,7 @@
 
 **Branch audited:** `dev`  
 **Audit base:** `94ec359b3b1681f1db563694b69dc464cb06ec82`  
-**Status:** Naming principle confirmed; proposed route-group layout is not yet implemented  
+**Status:** Feature-owned UI/server modules migrated on `dev`; proposed App Router route-group layout is not yet implemented  
 **Purpose:** Make code discoverable while preserving established URLs and API contracts.
 
 ## 1. Folder naming standard
