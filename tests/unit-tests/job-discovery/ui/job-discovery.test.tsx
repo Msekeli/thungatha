@@ -128,9 +128,9 @@ function setupFetch(
           options.feedBody ?? {
             jobs: visibleJobs,
             page: Number(requestUrl.searchParams.get("page") ?? "1"),
-            pageSize: 10,
+            pageSize: 30,
             total: options.total ?? visibleJobs.length,
-            totalPages: Math.ceil((options.total ?? visibleJobs.length) / 25),
+            totalPages: Math.ceil((options.total ?? visibleJobs.length) / 30),
           },
         );
       }
@@ -375,7 +375,7 @@ describe("Job Discovery", () => {
       feedBody: {
         jobs: [firstJob],
         page: 1,
-        pageSize: 10,
+        pageSize: 30,
         total: 30,
         totalPages: 1,
       },
@@ -407,7 +407,7 @@ describe("Job Discovery", () => {
         ? response({
             jobs: [firstJob],
             page: 1,
-            pageSize: 10,
+            pageSize: 30,
             total: 1,
             totalPages: 1,
           })
@@ -507,7 +507,7 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Apply on company site" }));
     expect(
       await screen.findByRole("heading", {
-        name: "Did you apply for this role?",
+        name: "Did you apply?",
       }),
     ).toBeTruthy();
     expect(
@@ -536,7 +536,7 @@ describe("Job Discovery", () => {
       await screen.findByRole("button", { name: "✓ Applied" }),
     ).toBeTruthy();
     expect(
-      screen.queryByRole("heading", { name: "Did you apply for this role?" }),
+      screen.queryByRole("heading", { name: "Did you apply?" }),
     ).toBeNull();
   });
 
@@ -549,7 +549,7 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Apply on company site" }));
     expect(
       await screen.findByRole("heading", {
-        name: "Did you apply for this role?",
+        name: "Did you apply?",
       }),
     ).toBeTruthy();
     expect(screen.getByRole("button", { name: "Dismiss job" })).toBeTruthy();
@@ -568,7 +568,7 @@ describe("Job Discovery", () => {
       await screen.findByRole("button", { name: /Frontend Developer/ }),
     );
     expect(
-      screen.queryByRole("heading", { name: "Did you apply for this role?" }),
+      screen.queryByRole("heading", { name: "Did you apply?" }),
     ).toBeNull();
     fireEvent.click(
       await screen.findByRole("button", {
@@ -577,14 +577,14 @@ describe("Job Discovery", () => {
     );
     expect(
       await screen.findByRole("heading", {
-        name: "Did you apply for this role?",
+        name: "Did you apply?",
       }),
     ).toBeTruthy();
 
     // "No, not yet" only dismisses the current display. It does not erase the pending reminder.
     fireEvent.click(screen.getByRole("button", { name: "No, not yet" }));
     expect(
-      screen.queryByRole("heading", { name: "Did you apply for this role?" }),
+      screen.queryByRole("heading", { name: "Did you apply?" }),
     ).toBeNull();
     expect(screen.queryByRole("button", { name: "✓ Applied" })).toBeNull();
 
@@ -592,7 +592,7 @@ describe("Job Discovery", () => {
     fireEvent(window, new Event("focus"));
     expect(
       await screen.findByRole("heading", {
-        name: "Did you apply for this role?",
+        name: "Did you apply?",
       }),
     ).toBeTruthy();
     await waitFor(() =>
@@ -607,7 +607,7 @@ describe("Job Discovery", () => {
       await screen.findByRole("button", { name: /Frontend Developer/ }),
     );
     expect(
-      screen.queryByRole("heading", { name: "Did you apply for this role?" }),
+      screen.queryByRole("heading", { name: "Did you apply?" }),
     ).toBeNull();
     expect(
       screen.getByRole("button", { name: /Saved/ }),
