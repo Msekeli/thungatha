@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AdzunaProvider } from "./adzuna";
+import { AdzunaProvider } from "@/lib/jobs/providers/aggregators/adzuna";
 
 describe("AdzunaProvider", () => {
   afterEach(() => {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { GET, PATCH } from "./route";
+import { GET, PATCH } from "@/app/api/profile/route";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,

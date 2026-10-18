@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { ProfileForm } from "./profile-form";
+import { ProfileForm } from "@/components/profile/profile-form";
 
 afterEach(() => {
   cleanup();

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PUT, DELETE } from "./route";
+import { PUT, DELETE } from "@/app/api/jobs/[id]/state/route";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,

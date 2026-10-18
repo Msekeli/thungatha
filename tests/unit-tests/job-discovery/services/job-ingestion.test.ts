@@ -5,10 +5,10 @@ const { createClientMock, getJobProvidersMock } = vi.hoisted(() => ({
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("@supabase/supabase-js", () => ({ createClient: createClientMock }));
-vi.mock("./providers/config", () => ({ getJobProviders: getJobProvidersMock }));
-import { ingestJobs } from "./ingestion";
-import type { JobProvider } from "./provider";
-import type { NormalizedJob } from "./schema";
+vi.mock("@/lib/jobs/providers/config", () => ({ getJobProviders: getJobProvidersMock }));
+import { ingestJobs } from "@/lib/jobs/ingestion";
+import type { JobProvider } from "@/lib/jobs/provider";
+import type { NormalizedJob } from "@/lib/jobs/schema";
 function job(overrides: Partial<NormalizedJob> = {}): NormalizedJob {
   return {
     providerKey: "test-provider",

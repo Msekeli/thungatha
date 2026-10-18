@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { jobSearchQuerySchema, normalizedJobSchema } from "./schema";
+import { jobSearchQuerySchema, normalizedJobSchema } from "@/lib/jobs/schema";
 
 const validJob = {
   providerKey: "example-ats",

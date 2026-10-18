@@ -268,7 +268,7 @@ When CV upload and export are implemented, use durable object storage approved f
 
 ## 13. Testing and operational visibility
 
-For each checkpoint, select tests that prove the changed behaviour:
+For each checkpoint, select tests under `tests/` that prove the changed behaviour:
 - unit tests for deterministic rules and state transitions;
 - API/integration tests for validation, persistence, provider failures, and ownership;
 - component tests for loading/empty/error/validation and accessible interactions;

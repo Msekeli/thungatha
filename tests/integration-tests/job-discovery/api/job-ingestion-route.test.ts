@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { POST } from "./route";
+import { POST } from "@/app/api/internal/jobs/ingest/route";
 import { ingestJobs } from "@/lib/jobs/ingestion";
 
 vi.mock("@/lib/jobs/ingestion", () => ({ ingestJobs: vi.fn() }));

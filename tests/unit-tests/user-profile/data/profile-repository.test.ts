@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { readProfile, saveProfile } from "./repository";
+import { readProfile, saveProfile } from "@/lib/profile/repository";
 
 vi.mock("@/lib/supabase/server", () => ({
   createAuthenticatedSupabaseClient: vi.fn(),

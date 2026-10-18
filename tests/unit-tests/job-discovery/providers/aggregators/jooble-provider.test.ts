@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { JoobleProvider } from "./jooble";
+import { JoobleProvider } from "@/lib/jobs/providers/aggregators/jooble";
 
 describe("JoobleProvider", () => {
   afterEach(() => {

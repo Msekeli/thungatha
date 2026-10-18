@@ -5,15 +5,15 @@ const { getJobProvidersMock, consoleWarnMock } = vi.hoisted(() => ({
   consoleWarnMock: vi.fn(),
 }));
 
-vi.mock("./providers/config", () => ({
+vi.mock("@/lib/jobs/providers/config", () => ({
   getJobProviders: getJobProvidersMock,
 }));
 
 vi.mock("server-only", () => ({}));
 
-import { searchJobs } from "./search";
-import type { JobProvider } from "./provider";
-import type { NormalizedJob } from "./schema";
+import { searchJobs } from "@/lib/jobs/search";
+import type { JobProvider } from "@/lib/jobs/provider";
+import type { NormalizedJob } from "@/lib/jobs/schema";
 
 function createJob(overrides: Partial<NormalizedJob> = {}): NormalizedJob {
   return {

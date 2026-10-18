@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GreenhouseProvider } from "./greenhouse";
+import { GreenhouseProvider } from "@/lib/jobs/providers/ats/greenhouse";
 
 describe("GreenhouseProvider", () => {
   afterEach(() => {

@@ -6,15 +6,15 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.test.{ts,tsx}"],
+    setupFiles: ["./tests/test-support/vitest-setup.ts"],
+    include: ["tests/unit-tests/**/*.test.{ts,tsx}", "tests/integration-tests/**/*.test.{ts,tsx}"],
   },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
       "server-only": path.resolve(
         import.meta.dirname,
-        "./src/test/server-only-mock.ts",
+        "./tests/test-support/server-only-mock.ts",
       ),
     },
   },

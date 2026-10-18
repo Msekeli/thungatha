@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GET, POST } from "./route";
+import { GET, POST } from "@/app/api/jobs/[id]/activity/route";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,

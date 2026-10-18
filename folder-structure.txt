@@ -130,7 +130,7 @@ thungatha/
 │   └── migrations/                      # Versioned database schema and policy migrations.
 ├── package.json                         # Dependencies and documented developer commands.
 ├── next.config.ts                       # Next.js configuration.
-├── playwright.config.ts                 # Playwright browser-test configuration; update testDir when end-to-end tests move.
+├── playwright.config.ts                 # Playwright browser-test configuration; testDir points to tests/end-to-end-tests/.
 └── tsconfig.json                        # TypeScript compiler and import-alias configuration.
 
 TEST ORGANISATION AND FILE NAMES
@@ -142,7 +142,7 @@ The target is to separate test files from production source. The existing reposi
 - End-to-end test filenames should describe a complete user journey, for example search-job-listings.spec.ts or sign-in.spec.ts. Playwright's .spec.ts convention is retained.
 - Do not name all API tests route.test.ts after moving them. The framework requires route.ts for the handler; it does not require that generic name for test files.
 - Keep test configuration and setup in src/test/ only when it is configuration/support code. Actual tests belong under tests/.
-- Before moving tests, inspect vitest and Playwright configuration, import aliases, mocks, setup files, test discovery patterns, and CI commands. Update configuration in the same change as the move.
+- The move checked Vitest and Playwright configuration, import aliases, mocks, setup files, test discovery patterns, and CI commands. Keep these in sync with future test moves.
 - Classify tests by what they actually verify, not only by the source folder they currently occupy. A Route Handler test that verifies request validation, identity, access control, and persistence together belongs in integration-tests; an isolated schema or pure function test belongs in unit-tests.
 - Do not claim the target tests structure exists until the files and configuration have been migrated and the test commands pass.
 
