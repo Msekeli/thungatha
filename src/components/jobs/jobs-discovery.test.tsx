@@ -57,7 +57,7 @@ function setupFetch(jobs: unknown[] = [firstJob], options: { total?: number; det
       return response(options.feedBody ?? {
         jobs: visibleJobs,
         page: Number(requestUrl.searchParams.get("page") ?? "1"),
-        pageSize: 25,
+        pageSize: 10,
         total: options.total ?? visibleJobs.length,
         totalPages: Math.ceil((options.total ?? visibleJobs.length) / 25),
       });
@@ -141,7 +141,7 @@ describe("Job Discovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
     await waitFor(() => expect(requests.some((url) => {
       const p = new URL(url, "http://local").searchParams;
-      return !p.get("query") && p.get("publishedWithin") === "30d" && p.get("page") === "1" && p.get("pageSize") === "25";
+      return !p.get("query") && p.get("publishedWithin") === "30d" && p.get("page") === "1" && p.get("pageSize") === "10";
     })).toBe(true));
     expect((screen.getByLabelText("Keyword or employer") as HTMLInputElement).value).toBe("");
   });
@@ -197,7 +197,7 @@ describe("Job Discovery", () => {
   });
 
   it("rejects malformed feed metadata instead of rendering inconsistent results", async () => {
-    setupFetch([firstJob], { feedBody: { jobs: [firstJob], page: 1, pageSize: 25, total: 30, totalPages: 1 } });
+    setupFetch([firstJob], { feedBody: { jobs: [firstJob], page: 1, pageSize: 10, total: 30, totalPages: 1 } });
     render(<JobsDiscovery configured={false} />);
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.getByText(/unexpected response/)).toBeTruthy();
@@ -217,7 +217,7 @@ describe("Job Discovery", () => {
     expect(await screen.findByRole("alert")).toBeTruthy();
     fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
-      return url.startsWith("/api/jobs?") ? response({ jobs: [firstJob], page: 1, pageSize: 25, total: 1, totalPages: 1 }) : response({ job: firstJob });
+      return url.startsWith("/api/jobs?") ? response({ jobs: [firstJob], page: 1, pageSize: 10, total: 1, totalPages: 1 }) : response({ job: firstJob });
     });
     fireEvent.click(screen.getByRole("button", { name: "Retry feed" }));
     expect((await screen.findAllByRole("heading", { name: "Software Engineer" })).length).toBeGreaterThan(0);
