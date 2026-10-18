@@ -94,9 +94,17 @@ Use a filename that identifies the responsibility, not merely the framework role
 - Keep implementation and test names paired and searchable. For example, `job-listing-query.ts` and `job-listing-query.test.ts`; `job-listing-card.tsx` and `job-listing-card.test.tsx`.
 - Avoid ambiguous names such as `helpers.ts`, `utils.ts`, `common.ts`, `data.ts`, `manager.ts`, `service.ts`, or `index.ts` unless the folder context makes the responsibility genuinely obvious and the file is only a small barrel.
 - Do not rename a file solely because its name is repeated elsewhere. A repeated basename can be correct when a framework requires it or when files are scoped to clearly named directories.
-- Avoid overly broad files that combine unrelated responsibilities. Split by cohesive behaviour, not by arbitrary line counts. Do not create one-file-per-function fragmentation.
+- Avoid overly broad files that combine unrelated responsibilities. Split by cohesive behaviour. The project line limit is 100 physical lines per handwritten source file, with a warning at 80; this applies to components, CSS, tests, configuration, and other maintained code. Generated files, dependency lockfiles, and vendored code are excluded. Do not compress code to game the limit or create meaningless one-file-per-function fragmentation.
+- Before and after meaningful implementation work, count changed source-file lines. Warn at 80 lines, split cohesive responsibilities before 100 where practical, and report any file over the limit. Until automated local/CI enforcement is implemented and verified, this check is manual.
 - Prefer descriptive exported names as well as descriptive filenames. File and symbol names should reinforce each other.
 - Keep file naming consistent within a feature. Do not introduce a new convention in one folder while leaving the rest unexplained.
+
+### UI styling priority
+
+- Material UI (MUI) components and built-in styling are the first choice for interface work.
+- Use Tailwind CSS v4 utilities for layout and straightforward styling where appropriate.
+- Add standalone CSS files or custom CSS only when MUI and Tailwind cannot reasonably meet the requirement or when a component needs scoped styles for a complex visual treatment.
+- Keep custom CSS small and scoped to the owning component/feature; do not create CSS files by default.
 
 ### Next.js reserved/conventional filenames
 
