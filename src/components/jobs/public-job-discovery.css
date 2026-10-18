@@ -515,3 +515,24 @@ body:has(.th-discovery-shell) {
     min-width: 0;
   }
 }
+
+
+/* Remove the bright divider lines around the three bottom workspace columns. */
+.th-discovery-workspace > .th-feature-sidebar,
+.th-discovery-workspace > .th-discovery-results,
+.th-discovery-workspace > .th-discovery-detail {
+  border-bottom: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.th-discovery-workspace > .th-feature-sidebar {
+  border-right: 0 !important;
+}
+.th-discovery-workspace > .th-discovery-results {
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+.th-discovery-workspace > .th-discovery-detail {
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
