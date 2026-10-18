@@ -25,6 +25,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 ## Checkpoints and acceptance criteria
 
 ### Stage 1 — Repository baseline and plan
+
 - [x] Confirm repository and target branch.
 - [x] Inspect the current root landing page, Job Discovery route, feed/detail/state/activity APIs, auth identity helper, theme setup and package scripts.
 - [x] Add this implementation plan and checklist to `dev`.
@@ -33,6 +34,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 **Status:** In review — plan committed at `b8bf065c19e2da036e4441759d0817720cf7e80e`; baseline review also used product specification, architecture, decision log and M1 milestone documentation.
 
 ### Stage 2 — Public landing and visual design
+
 - [x] Replace the root landing experience with the approved Job Discovery design.
 - [x] Reuse existing theme tokens, brand mark and `.th-hero-bg` landing background treatment.
 - [x] Align discovery page spacing, header sizing, left-aligned hero and panel treatment with the original landing page's design language.
@@ -45,6 +47,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 **Status:** In review — implementation committed; visual/browser verification pending.
 
 ### Stage 3 — Anonymous job discovery
+
 - [x] Allow unauthenticated GET access to the public jobs feed and job details at the API layer.
 - [x] Use a Supabase publishable-key client for anonymous reads; no service-role key is used.
 - [x] Keep user-specific state reads conditional on a verified Clerk identity.
@@ -58,6 +61,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 **Status:** In review — code and migration committed; tests and database migration have not yet been confirmed successful/applied.
 
 ### Stage 4 — Feature promotion and authentication
+
 - [x] Keep CV Studio, Job Tracking and Saved Jobs visible to visitors.
 - [x] Add a dismissible, non-blocking promotion; dismissal persists for the current browser session.
 - [x] Add a sign-in path for saving a job and feature links that route into protected areas.
@@ -68,6 +72,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 **Status:** In progress — basic UI and access paths exist; full redirect behaviour needs verification.
 
 ### Stage 5 — Preserve the authenticated workspace
+
 - [x] Keep the existing `/jobs` authenticated workspace route and its component intact.
 - [x] Keep the current route protection for `/jobs`, CV Studio, Job Tracking, Profile and Account.
 - [ ] Verify authenticated Job Discovery retains its existing layout and behaviour in a running app.
@@ -77,6 +82,7 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 **Status:** In review — no workspace component redesign was made; runtime regression checks remain.
 
 ### Stage 6 — Verification and final review
+
 - [x] Add end-to-end assertions for the new public landing page.
 - [ ] Run lint.
 - [ ] Run unit tests.
@@ -90,14 +96,14 @@ The public page at `/` and authenticated page at `/jobs` remain distinct experie
 
 ## Execution log
 
-| Stage | Status | Evidence / notes |
-|---|---|---|
-| 1. Repository baseline and plan | In review | Plan committed; inspected routes, APIs, auth helper, theme tokens, product spec, architecture and M1 milestone. |
-| 2. Public landing and visual design | In review | Root page renders public discovery using existing tokens/background. Follow-up CSS commit `bd9529bbbfbacd33655645877169664a24d0c75e` restores the original landing page's left-aligned hero, content width, header spacing and restrained panel styling; browser verification remains outstanding. |
-| 3. Anonymous job discovery | In review | Feed/detail endpoints support anonymous reads via publishable key; RLS migration and tests added. Database migration and test outcomes are not yet confirmed. |
-| 4. Feature promotion and authentication | In progress | Feature links, save-job sign-in path and dismissible promotion implemented; redirect behaviour still needs verification. |
-| 5. Preserve authenticated workspace | In review | Existing `/jobs` route and workspace component were not redesigned; runtime verification outstanding. |
-| 6. Verification and final review | In progress | E2E assertions added; CI result and test suite still need checking. |
+| Stage                                   | Status      | Evidence / notes                                                                                                                                                                                                                                                                                   |
+| --------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Repository baseline and plan         | In review   | Plan committed; inspected routes, APIs, auth helper, theme tokens, product spec, architecture and M1 milestone.                                                                                                                                                                                    |
+| 2. Public landing and visual design     | In review   | Root page renders public discovery using existing tokens/background. Follow-up CSS commit `bd9529bbbfbacd33655645877169664a24d0c75e` restores the original landing page's left-aligned hero, content width, header spacing and restrained panel styling; browser verification remains outstanding. |
+| 3. Anonymous job discovery              | In review   | Feed/detail endpoints support anonymous reads via publishable key; RLS migration and tests added. Database migration and test outcomes are not yet confirmed.                                                                                                                                      |
+| 4. Feature promotion and authentication | In progress | Feature links, save-job sign-in path and dismissible promotion implemented; redirect behaviour still needs verification.                                                                                                                                                                           |
+| 5. Preserve authenticated workspace     | In review   | Existing `/jobs` route and workspace component were not redesigned; runtime verification outstanding.                                                                                                                                                                                              |
+| 6. Verification and final review        | In progress | E2E assertions added; CI result and test suite still need checking.                                                                                                                                                                                                                                |
 
 ## Commits created on `dev`
 

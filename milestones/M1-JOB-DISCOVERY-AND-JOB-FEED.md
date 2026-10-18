@@ -115,7 +115,6 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - **Tests actually run:** none from the remote GitHub connector. Local unit tests, typecheck, lint, build, and migration execution remain pending.
 - **User review:** pending local pull and verification.
 
-
 **Work**
 
 - Normalize fields without inventing unknown values.
@@ -169,16 +168,17 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - There is no Discovery “Add job” path.
 - External navigation alone never creates or confirms an application.
 
-
 **Implementation status: In progress (backend/API only).** Feed, detail, and user-state API handlers are implemented on `dev`. The authenticated routes call Next.js `connection()` so Clerk/request-header access occurs at request time under Cache Components. Route unit tests mock `connection()` because they invoke handlers outside Next's request context. C06 is not accepted until authenticated cloud behaviour and the remaining data-access checks are verified.
 
 Initial API contract:
+
 - `GET /api/jobs`: persisted catalogue feed with validated query, location, country, work-mode and employment-type filters; page/pageSize pagination; active source records; optional `state=all|saved|dismissed`. The default feed excludes dismissed jobs.
 - `GET /api/jobs/{id}`: retrieve an active persisted listing and the signed-in user's state.
 - `PUT /api/jobs/{id}/state`: set only `saved` or `dismissed`, using server-resolved identity. Updates are limited to active listings.
 - `DELETE /api/jobs/{id}/state`: clear only the signed-in user's state for that job.
 
 Security and lifecycle boundaries:
+
 - Handlers require configured Clerk authentication and use the authenticated Supabase client. User-state queries/writes are scoped by the server-derived user ID and subject to database RLS.
 - The state API rejects `applied`; opening an external application URL is not an application submission. Creating an M5 application record is not included because the M5 application-tracking contract is not yet available.
 - Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion.
@@ -249,7 +249,6 @@ Security and lifecycle boundaries:
 - No critical security, data-loss or core-journey defect remains.
 - Evidence is recorded and the user explicitly accepts M1.
 
-
 ---
 
 ## M1-C04 completion record — 2026-10-16
@@ -266,13 +265,11 @@ This is evidence for the tested RPC/database path, not a claim that every live p
 
 **Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.
 
-
 ## C05 investigation and sequencing decision — 2026-10-16
 
 C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
 
 Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.
-
 
 ---
 
@@ -287,7 +284,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - **Filter follow-up (2026-10-16):** Investigated the reported filter failure after live jobs loaded. The API used `.or()` for keyword matching and could call `.or()` again for employment-type aliases; PostgREST query builders can overwrite the same `or` parameter, causing combined filters to interfere. Employment-type filtering now normalizes human-readable separators such as `Full-time` to provider values such as `full_time`, without a second `.or()` call. The API test assertion was updated. This is a targeted fix, not yet locally executed or verified against the hosted database.
 - **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
 - **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
-
 
 ## C07 implementation follow-up — filter audit (2026-10-16)
 
@@ -319,13 +315,11 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 5. Resolve the local CSS build error by comparing the local file with the committed file and locating the exact PostCSS parse failure; do not edit shared styles without a proven defect.
 6. Keep C07 In review until the evidence is recorded and user review is complete.
 
-
 ### Follow-up hardening
 
 - The feed client now validates page, page size, total, total-pages consistency, and minimum job identity fields before rendering an API response. Malformed responses produce the existing retryable service error rather than being trusted as valid feed data.
 - Added component coverage for inconsistent feed pagination metadata.
 - The API sanitization test and component test mock fix are committed. These changes have not yet been run in a local checkout during this session. GitHub returned no status checks for the latest commit, so there is no CI result to treat as a pass.
-
 
 ### C07 external destination hardening — 2026-10-16
 
@@ -333,7 +327,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Added a component regression test for `javascript:` and `data:` destinations.
 - This is client-side presentation hardening, not a replacement for validating URLs at ingestion and does not change RLS or API access controls.
 - Verification remains pending: the remote GitHub editing tools do not execute the repository's test/build workflow, and no workflow run was reported for the follow-up commit. Keep C07 in review until the local quality suite and browser acceptance checks pass.
-
 
 ### C07 publication recency filter — 2026-10-16
 
@@ -343,7 +336,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Save/dismiss/undo remain out of C07 and are not being added to this screen; those actions stay in C08.
 - **Verification remains pending.** The changes were committed to `dev` through the remote repository workflow; automated tests, type-check, lint, build, and browser checks have not been run in this session. Confirm the Supabase relation filter/order behaviour with the repository's installed Supabase client and a controlled authenticated data set before accepting C07.
 
-
 ### C07 final implementation review — 2026-10-16
 
 - Added a validated `publishedWithin` API parameter (`24h`, `7d`, `14d`, `30d`; default `30d`) and a matching UI selector. The 30-day default is also used when clearing filters.
@@ -352,7 +344,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Clarified the employment type placeholder so it no longer implies comma-separated multi-value search.
 - C08 save/dismiss/undo is intentionally excluded.
 - **C07 remains In review.** Remote file edits are not a substitute for running the repository. No tests, type-check, lint, production build, or browser tests were run in this session. Before user testing, run the full quality suite locally and verify the nested relation filter against an authenticated Supabase dataset; investigate any remaining local CSS parse error without changing shared CSS speculatively.
-
 
 ### C07 local verification update — 2026-10-16
 
@@ -377,7 +368,6 @@ The earlier unit-test failure was caused by `getByText("Greenhouse")` matching b
 5. Record user review and explicit acceptance before changing C07 to **Accepted**.
 
 C07 remains **In review**. These local results are meaningful quality evidence, but they do not complete the cloud, browser, security, or user-acceptance gates. C08 save/dismiss/undo remains separate and out of C07 scope.
-
 
 ---
 
@@ -408,7 +398,6 @@ GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9
 - Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation. Apply the migration through the project's normal migration workflow and test with isolated users/data.
 - C08 remains **In review**, not Accepted, until migration, automated/local verification, authenticated RLS checks, and user review are complete.
 
-
 ---
 
 ## M1-C08 execution record — 2026-10-17
@@ -426,6 +415,7 @@ GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9
 ### Automated verification actually observed
 
 GitHub Actions Quality run [38994227871](https://github.com/Msekeli/thungatha/actions/runs/38994227871) passed on commit `1687578a69734aaa85ed626ed5077cb7fef2fbfe`:
+
 - `npx tsc --noEmit`: passed.
 - `npm run lint`: passed.
 - `npm test`: passed — 15 test files, 105 tests.

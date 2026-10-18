@@ -31,7 +31,11 @@ const primary: Destination[] = [
 ];
 
 const secondary: Destination[] = [
-  { href: "/jobs?status=dismissed", label: "Dismissed jobs", icon: BriefcaseBusiness },
+  {
+    href: "/jobs?status=dismissed",
+    label: "Dismissed jobs",
+    icon: BriefcaseBusiness,
+  },
   { href: "/profile", label: "Profile", icon: UserRound },
   { href: "/account", label: "Settings", icon: Settings },
 ];
@@ -53,15 +57,27 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   return (
     <>
       <header className="th-mobile-workspace-header">
-        <Link href="/" className="th-mobile-workspace-brand" aria-label="Thungatha home">
-          <Image src="/brand/thungatha-logo.svg" alt="Thungatha" width={150} height={42} priority />
+        <Link
+          href="/"
+          className="th-mobile-workspace-brand"
+          aria-label="Thungatha home"
+        >
+          <Image
+            src="/brand/thungatha-logo.svg"
+            alt="Thungatha"
+            width={150}
+            height={42}
+            priority
+          />
         </Link>
         <div className="th-mobile-workspace-header-actions">
           <ThemeToggle />
           <button
             type="button"
             className="th-mobile-menu-trigger"
-            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              menuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
             aria-expanded={menuOpen}
             aria-controls="th-mobile-workspace-menu"
             onClick={() => setMenuOpen((open) => !open)}
@@ -74,7 +90,10 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
       {menuOpen && (
         <div className="th-mobile-workspace-menu" id="th-mobile-workspace-menu">
           <nav aria-label="More navigation">
-            <Link href="/" onClick={() => setMenuOpen(false)}><House size={17} />Home</Link>
+            <Link href="/" onClick={() => setMenuOpen(false)}>
+              <House size={17} />
+              Home
+            </Link>
             {secondary.map((item) => (
               <Link
                 key={item.href}
@@ -82,13 +101,22 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
                 data-active={isActive(item)}
                 onClick={() => setMenuOpen(false)}
               >
-                <item.icon size={17} aria-hidden="true" />{item.label}
+                <item.icon size={17} aria-hidden="true" />
+                {item.label}
               </Link>
             ))}
           </nav>
           <div className="th-mobile-workspace-account">
-            <span className="th-mobile-workspace-account-name">Msekeli Mkwibiso</span>
-            {configured ? <SignOutControl /> : <ButtonLink href="/sign-in" variant="secondary" size="md">Sign in</ButtonLink>}
+            <span className="th-mobile-workspace-account-name">
+              Msekeli Mkwibiso
+            </span>
+            {configured ? (
+              <SignOutControl />
+            ) : (
+              <ButtonLink href="/sign-in" variant="secondary" size="md">
+                Sign in
+              </ButtonLink>
+            )}
           </div>
         </div>
       )}

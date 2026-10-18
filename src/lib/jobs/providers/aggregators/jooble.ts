@@ -7,7 +7,9 @@ import {
 } from "../../schema";
 import type { JobProvider } from "../../provider";
 
-const JOOBLE_API_BASE = (process.env.JOOBLE_API_BASE_URL?.trim() || "https://jooble.org/api").replace(/\/$/, "");
+const JOOBLE_API_BASE = (
+  process.env.JOOBLE_API_BASE_URL?.trim() || "https://jooble.org/api"
+).replace(/\/$/, "");
 
 type JoobleJob = {
   title?: string | null;

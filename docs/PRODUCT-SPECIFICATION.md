@@ -32,13 +32,13 @@ Supporting areas are Profile and Account. Matching is a shared capability used b
 
 The three primary experiences must each be reachable directly by URL and must handle missing context gracefully. A user should not have to enter through another experience first.
 
-| Experience | Route | Owns |
-|---|---|---|
-| Job Discovery | `/jobs` | Job catalogue, source information, search/filter, saved/dismissed state |
-| CV Studio | `/cv-studio` | Master CV, tailored CV versions, review, preview, comparison, export |
-| Job Tracking | `/job-tracking` | Application records, statuses, submitted materials, contacts, interviews, notes, follow-ups |
-| Profile | `/profile` | Confirmed professional facts and profile history |
-| Account | `/account` | Account-level settings and preferences, as defined in M6 |
+| Experience    | Route           | Owns                                                                                        |
+| ------------- | --------------- | ------------------------------------------------------------------------------------------- |
+| Job Discovery | `/jobs`         | Job catalogue, source information, search/filter, saved/dismissed state                     |
+| CV Studio     | `/cv-studio`    | Master CV, tailored CV versions, review, preview, comparison, export                        |
+| Job Tracking  | `/job-tracking` | Application records, statuses, submitted materials, contacts, interviews, notes, follow-ups |
+| Profile       | `/profile`      | Confirmed professional facts and profile history                                            |
+| Account       | `/account`      | Account-level settings and preferences, as defined in M6                                    |
 
 Authentication pages remain `/sign-in` and `/sign-up`. The public landing page is `/`. Private data and user-specific actions require authentication.
 
@@ -109,6 +109,7 @@ Final weights and thresholds must be specified and tested in M3 before being tre
 ### Inputs
 
 Users can start from:
+
 - a job selected from Job Discovery;
 - a job URL; or
 - pasted job-description text.
@@ -120,6 +121,7 @@ If a URL cannot be read safely or the page content is unavailable, ask the user 
 When a confirmed Profile/master CV exists, show it as the starting point. If no usable master CV exists, offer CV upload/import or guide the user to complete Profile.
 
 AI may recommend one of three paths:
+
 1. use the master CV as-is;
 2. reuse an existing tailored CV version; or
 3. create a new tailored CV version.
@@ -144,6 +146,7 @@ A record is created when the user confirms they submitted an application or expl
 ### Required record and workflow
 
 An application should capture, where available:
+
 - company and role;
 - original job/source URL and discovery source;
 - application/submission date;
@@ -160,6 +163,7 @@ Support recording external applications manually within Job Tracking. This is di
 ### Quick recall
 
 A user should be able to quickly answer:
+
 - Where did this opportunity come from?
 - What did I submit?
 - What happened after I applied?
@@ -181,6 +185,7 @@ Account settings and preferences are delivered in M6. Do not invent account feat
 AI is an assistive capability, not the authority for identity, access, persistence, or deterministic business rules.
 
 Initial provider options recorded in project research:
+
 - **Gemini API:** primary option for supported structured interpretation/extraction tasks.
 - **Groq:** alternative provider for supported models/tasks and fallback experiments.
 - **Camber:** optional experimentation; do not assume it is a drop-in inference API.
@@ -205,6 +210,7 @@ Do not send CVs or other personal data to an AI provider unless the task, data s
 ## 12. Quality and acceptance
 
 Every milestone should include tests and verification appropriate to its changes. The final integrated product must pass, where available:
+
 - formatting and linting;
 - TypeScript checking;
 - unit and component tests;
