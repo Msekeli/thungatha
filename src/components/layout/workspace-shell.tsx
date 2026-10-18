@@ -16,7 +16,7 @@ const workspace: Destination[] = [
 ];
 const personal: Destination[] = [
   { href: "/profile", label: "Profile", icon: "♙" },
-  { href: "/account", label: "Account", icon: "⚙" },
+  { href: "/account", label: "Settings", icon: "⚙" },
 ];
 
 export function WorkspaceShell({
@@ -49,7 +49,10 @@ export function WorkspaceShell({
         <div className="th-workspace-sidebar-footer">
           <Link href="/" className="th-workspace-home-link">← Home</Link>
           <ThemeToggle />
-          {configured ? <SignOutControl /> : <ButtonLink href="/sign-in" variant="secondary" size="md">Sign in</ButtonLink>}
+          <div className="th-workspace-user-card">
+            <span className="th-workspace-avatar" aria-hidden="true">M</span>
+            <div className="th-workspace-user-copy"><span className="th-workspace-user-name">Msekeli Mkwibiso</span><span className="th-workspace-user-action">{configured ? <SignOutControl /> : <ButtonLink href="/sign-in" variant="secondary" size="md">Sign in</ButtonLink>}</span></div>
+          </div>
         </div>
       </aside>
       <div className="th-workspace-content">{children}</div>
