@@ -2483,12 +2483,8 @@
   margin: 0;
 }
 .th-jobs-redesign-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
   position: relative;
   margin: 0 0 8px !important;
-  width: 100% !important;
   min-height: 88px;
   padding: 10px !important;
   border: 1px solid var(--th-line) !important;
@@ -2510,11 +2506,7 @@
   font-weight: 600;
 }
 .th-jobs-card-main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
   gap: 4px;
-  min-width: 0;
 }
 .th-jobs-card-main > strong {
   font-size: 12px;
@@ -2534,9 +2526,6 @@
   white-space: nowrap;
 }
 .th-jobs-redesign-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
   margin-top: 2px;
 }
 .th-jobs-redesign-tags i {
@@ -2550,7 +2539,6 @@
   white-space: nowrap;
 }
 .th-jobs-card-chevron {
-  align-self: center;
   color: var(--th-fg-muted);
   font-size: 22px;
 }
@@ -3048,7 +3036,6 @@
   min-height: 80px;
   padding: 8px 9px !important;
   margin-bottom: 7px !important;
-  gap: 10px;
 }
 .th-jobs-redesign-card > .th-jobs-employer-mark {
   width: 42px;
@@ -3059,9 +3046,6 @@
   gap: 3px;
 }
 .th-jobs-card-main > small {
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 .th-jobs-redesign-tags i {
   display: inline-flex;
@@ -3070,8 +3054,6 @@
   padding: 3px 6px;
 }
 .th-jobs-card-chevron {
-  flex: 0 0 auto;
-  align-self: center;
   color: var(--th-fg-muted);
 }
 .th-jobs-detail-meta span {
@@ -3200,7 +3182,6 @@
     font-size: 13px;
   }
   .th-jobs-redesign-tags {
-    gap: 5px;
   }
   .th-jobs-redesign-tags i {
     max-width: 100%;
