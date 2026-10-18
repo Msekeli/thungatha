@@ -6,7 +6,7 @@
 
 ## Follow-up architecture note — Jobs feature organization
 
-The current file paths listed in this document describe the implementation at the time it was written. The agreed target is now feature-based: `src/features/jobs/` will own the public and authenticated discovery experiences and genuinely shared client/types/utils code, while Next.js routes and API Route Handlers remain under `src/app/`. The existing source paths must not be moved until a separate, incremental refactor is started.
+The file paths in the original implementation stages below are historical snapshots from when those stages were recorded. The discovery UI migration has since moved the public and authenticated discovery components, their CSS, and the authenticated component test into `src/thungatha-features/jobs/ui/`. The explicit `thungatha-features` directory name is used to make feature-owned code easier to find. Next.js routes and API Route Handlers remain under `src/app/`; provider adapters, ingestion and persistence remain in their existing locations until separately reviewed.
 
 The public page at `/` and authenticated page at `/jobs` remain distinct experiences. Share only proven common behavior; preserve user-specific state and activity behind server-side authentication and authorization. This note does not change the plan's acceptance criteria or imply that pending verification has passed.
 
