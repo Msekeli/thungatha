@@ -12,6 +12,7 @@
 
 ## Document Authority and Scope
 
+- The product documents currently live under `docs/`; the planned destination folder is exactly `Project Documentation/`. Until that folder migration is implemented, read the files from their current `docs/` paths.
 - `docs/PRODUCT-SPECIFICATION.md` defines product purpose, scope, principles, user journeys, and business rules.
 - `docs/ARCHITECTURE.md` defines the technical design, repository map, file responsibilities, boundaries, and implementation conventions.
 - `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` records the explicit folder naming standard, current API inventory, route-group strategy, and known route discrepancies.
@@ -30,7 +31,7 @@
 ## Repository Structure Rules
 
 - Keep `IMPLEMENTATION-PLAN.md` at the repository root.
-- Keep `PRODUCT-SPECIFICATION.md` and `ARCHITECTURE.md` in `docs/`.
+- The intended documentation folder name is exactly `Project Documentation/`. The physical folder is still `docs/`; do not move or rename it until the documentation migration is explicitly started. When that migration begins, update every link, path reference, agent instruction, and project script that points to `docs/`.
 - Keep detailed milestone documents in their agreed folders under `milestones/`.
 - Empty milestone folders are intentional and must be tracked with a `.gitkeep` file until their milestone document is added.
 - Do not create empty implementation folders under `src/` merely to match the planned structure.
@@ -43,7 +44,25 @@
 - New source filenames should use descriptive lowercase kebab-case names that communicate the component, operation, or data being handled. Keep Next.js-required entry filenames such as `page.tsx` and `route.ts`, but keep them thin and extract substantial work into meaningfully named modules when a clear boundary exists.
 - Do not blindly rename every repeated basename. Inspect repeated `index.ts`, `schema.ts`, and `theme.ts` files in context; preserve framework conventions and avoid changes that add indirection without improving discoverability.
 - Audit oversized components and stylesheets by responsibility. Split cohesive UI, state/API behaviour, and CSS sections in small verified steps; preserve state/effect behaviour, CSS cascade, responsive rules, and existing route/API contracts. See `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the current filename and large-file audit.
+- UI priority: use Material UI (MUI) components first. Use Tailwind CSS utilities for layout and styling where appropriate. Add standalone CSS files or custom CSS rules only when necessary because MUI and Tailwind cannot reasonably meet the requirement or a component needs carefully scoped styles. Do not create CSS files by default.
 - Do not create a second source of truth for a document or feature. Update references when an authoritative document is intentionally replaced, and report any stale references found.
+
+## Source File Size and Refactoring Rules
+
+- Keep every handwritten source file at 100 physical lines or fewer. This applies to components, CSS, tests, configuration, and other maintained code; count blank and comment lines too. Generated files, dependency lockfiles, and vendored code are excluded.
+- At 80 lines, warn the user/developer that the file is approaching the limit and plan a small refactor before it exceeds 100. Do not wait until a file becomes oversized to report it.
+- Before implementation, inspect relevant files for line counts and existing oversized files. After implementation, recount every changed source file and report files at or above 80 lines and any file over 100 lines.
+- If a change would push a file over 100 lines, split it by cohesive responsibility in the same change where practical. Do not shrink line counts by compressing statements, removing useful formatting, or creating one-file-per-function fragmentation.
+- Preserve behaviour while splitting: check React state/effect boundaries, imports, CSS cascade and responsive rules, framework conventions, and test coverage. Keep Next.js-required entry filenames such as `page.tsx` and `route.ts`, but move substantial logic into clearly named modules.
+- Existing files over 100 lines are known technical debt, not automatically fixed by a documentation change. Record them and refactor incrementally with targeted tests and visual verification.
+- Add an automated line-count check with an 80-line warning and a 100-line failure to local/CI checks in a separate implementation step. Until that checker exists and is verified, agents must perform and report manual counts.
+
+## UI Styling Rules
+
+- Material UI (MUI) is the first choice for interface components and their built-in styling capabilities.
+- Use Tailwind CSS v4 utilities for layout and straightforward utility styling where they fit the existing design system.
+- Create a standalone CSS file or write custom CSS only when the requirement cannot be handled cleanly with MUI and Tailwind, or when scoped styles are needed for a complex component.
+- Keep custom CSS small, scoped, and owned by the relevant component/feature. Avoid duplicate styling systems and unnecessary CSS files.
 
 ## Product and Architecture Rules
 
@@ -96,6 +115,7 @@ A checkpoint should be independently verifiable. Do not create a checkpoint for 
 - Inspect `package.json` and use the scripts actually available in the repository. Do not assume script names.
 - Report checks that could not be run and explain why.
 - For visual work, use supplied design references when relevant. Verify responsive behaviour, keyboard navigation, focus states, accessible names, and loading, empty, and error states.
+- Include the 80/100-line review in the pre-change and post-change checks for every meaningful coding task. Report the count and proposed split for any file approaching or exceeding the limit.
 - Never claim that a provider, source, account, migration, deployment, or live user journey works based only on mocks or type-checking.
 - Preserve unrelated user changes and existing history.
 
