@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BrandMark } from "@/components/brand-mark";
-import { HeroPreview } from "@/components/landing/previews";
 
 // Shared frame for /sign-in and /sign-up. Clerk's own card goes in `children`.
 export function AuthPageShell({ children }: { children: ReactNode }) {
@@ -22,7 +21,12 @@ export function AuthPageShell({ children }: { children: ReactNode }) {
               your CV and what happens next.
             </p>
           </div>
-          <HeroPreview showCvCard={false} />
+          <div className="rounded-panel border border-line bg-panel p-5">
+            <p className="text-control font-medium">Evidence-led job matching</p>
+            <p className="mt-2 text-detail leading-6 text-fg-muted">
+              Review the requirements, see what your experience supports, and decide what to do next.
+            </p>
+          </div>
         </div>
         <p className="text-detail text-nav-text">Illustration with sample data</p>
       </aside>
