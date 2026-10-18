@@ -1,11 +1,11 @@
 .th-workspace-shell { display:flex; width:100%; min-height:100dvh; background:var(--th-page); color:var(--th-fg); }
-.th-workspace-sidebar { display:flex; flex:0 0 268px; flex-direction:column; min-width:0; padding:24px 14px 18px; border-right:1px solid var(--th-line); background:var(--th-surface, var(--th-page)); }
-.th-workspace-brand { padding:0 8px 34px; }
+.th-workspace-sidebar { display:flex; flex:0 0 244px; flex-direction:column; min-width:0; padding:24px 14px 18px; border-right:1px solid var(--th-line); background:var(--th-surface, var(--th-page)); }
+.th-workspace-brand { padding:0 8px 30px; }
 .th-workspace-brand .th-wordmark { font-size:18px; }
 .th-workspace-nav { display:flex; flex-direction:column; gap:6px; }
 .th-workspace-nav-label { margin:0 12px 6px; color:var(--th-fg-muted); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
 .th-workspace-you-label { margin-top:22px; }
-.th-workspace-nav-link { display:flex; align-items:center; gap:12px; min-height:46px; padding:10px 12px; border-radius:10px; color:var(--th-fg-muted); font-size:14px; text-decoration:none; transition:background .15s ease,color .15s ease; }
+.th-workspace-nav-link { display:flex; align-items:center; gap:12px; min-height:44px; padding:10px 12px; border-radius:10px; color:var(--th-fg-muted); font-size:14px; text-decoration:none; transition:background .15s ease,color .15s ease; }
 .th-workspace-nav-link:hover { background:var(--th-tag-bg); color:var(--th-fg); }
 .th-workspace-nav-link[data-active="true"] { background:var(--th-accent-bg); color:var(--th-accent-text); font-weight:600; }
 .th-workspace-nav-icon { display:inline-grid; width:20px; flex:0 0 20px; place-items:center; font-size:19px; }
@@ -32,3 +32,9 @@
  .th-workspace-home-link { min-height:34px; padding:6px 8px; }
  .th-workspace-content { min-height:0; }
 }
+
+/* Align the workspace rail with Thungatha's established theme tokens. */
+.th-workspace-sidebar{background:var(--th-nav,var(--th-page))}
+.th-workspace-sidebar .th-workspace-nav-link{color:var(--th-nav-text,var(--th-fg-muted))}
+.th-workspace-sidebar .th-workspace-nav-link[data-active="true"]{background:var(--th-nav-active-bg,var(--th-accent-bg));color:var(--th-nav-active-fg,var(--th-accent-text))}
+.th-workspace-sidebar .th-workspace-nav-label{letter-spacing:.1em}
