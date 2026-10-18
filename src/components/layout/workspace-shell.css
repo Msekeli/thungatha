@@ -106,3 +106,22 @@
  .th-workspace-user-card{min-width:0}
  .th-workspace-user-name{font-size:11px}
 }
+
+
+/* Mobile app body should scroll as one surface beneath the fixed app chrome. */
+@media (max-width:700px) {
+  .th-workspace-shell {
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    height: auto;
+    overflow: visible;
+  }
+  .th-workspace-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+  }
+}
