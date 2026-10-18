@@ -2,7 +2,7 @@ import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
+import { createAuthenticatedSupabaseClient, createPublicSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
 
 function sanitizeFilterTerm(value: string): string {
   // Treat search input as plain text, never as PostgREST filter syntax.
@@ -23,15 +23,15 @@ const querySchema = z.object({
 
 export async function GET(request: Request) {
   await connection();
-  if (!hasClerkConfiguration()) return apiError("Authentication is not configured", 503);
-  let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>>;
-  try {
-    identity = await getAuthenticatedIdentity();
-  } catch (error) {
-    console.error("[jobs feed API] Clerk authentication failed:", error);
-    return apiError("Authentication could not be verified", 503);
+  let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>> = null;
+  if (hasClerkConfiguration()) {
+    try {
+      identity = await getAuthenticatedIdentity();
+    } catch (error) {
+      console.error("[jobs feed API] Clerk authentication failed:", error);
+      return apiError("Authentication could not be verified", 503);
+    }
   }
-  if (!identity) return apiError("Authentication required", 401);
 
   const params = new URL(request.url).searchParams;
   const raw: Record<string, string> = {};
@@ -44,12 +44,20 @@ export async function GET(request: Request) {
   const input = parsed.data;
 
   try {
-    const db = await createAuthenticatedSupabaseClient(identity.getToken);
-    let stateQuery = db.from("user_job_states").select("job_id,state").eq("user_id", identity.userId);
-    if (input.state !== "all") stateQuery = stateQuery.eq("state", input.state);
-    const { data: userStates, error: stateError } = await stateQuery;
-    if (stateError) throw stateError;
-    const states = userStates ?? [];
+    if (!identity && input.state !== "all") {
+      return NextResponse.json({ jobs: [], page: input.page, pageSize: input.pageSize, total: 0, totalPages: 0 });
+    }
+    const db = identity
+      ? await createAuthenticatedSupabaseClient(identity.getToken)
+      : await createPublicSupabaseClient();
+    let states: { job_id: string; state: "saved" | "dismissed" }[] = [];
+    if (identity) {
+      let stateQuery = db.from("user_job_states").select("job_id,state").eq("user_id", identity.userId);
+      if (input.state !== "all") stateQuery = stateQuery.eq("state", input.state);
+      const { data: userStates, error: stateError } = await stateQuery;
+      if (stateError) throw stateError;
+      states = userStates ?? [];
+    }
     const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
 
     let query = db.from("jobs").select("id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)", { count: "exact" })
