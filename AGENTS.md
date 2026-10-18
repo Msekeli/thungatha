@@ -2,21 +2,21 @@
 
 ## Before Starting
 
-1. Read `AGENTS.md` and `PROJECT-CONTEXT.md`.
+1. Read `AGENTS.md` and, if present, `PROJECT-CONTEXT.md`.
 2. Read the relevant checkpoint and acceptance criteria in `IMPLEMENTATION-PLAN.md` and the detailed milestone document under `milestones/`.
-3. Read `docs/PRODUCT-SPECIFICATION.md` for product requirements and `docs/ARCHITECTURE.md` for technical boundaries, repository structure, and file responsibilities when relevant to the task.
+3. Read `Project Documentation/PRODUCT-SPECIFICATION.md` for product requirements and `Project Documentation/ARCHITECTURE.md` for technical boundaries, repository structure, and file responsibilities when relevant to the task.
 4. Inspect the actual repository, relevant source files, tests, package scripts, environment examples, and current Git status before proposing or changing code.
 5. Consult `DECISIONS.md` when a task depends on a decision marked **Open** or **Provisional**. Surface important unresolved decisions before implementing a hard-to-reverse choice.
-6. Consult `Thungatha – Final Product.html` only when the relevant screen's visual reference is needed. It contains mock UI and data, not proof that integrations or business behaviour are implemented. Inspect only the relevant screen.
+6. If `Thungatha – Final Product.html` exists, consult it only when the relevant screen's visual reference is needed. It contains mock UI and data, not proof that integrations or business behaviour are implemented. Inspect only the relevant screen.
 7. Do not assume a document, route, folder, integration, or feature exists simply because it appears in a planned structure. Verify the actual repository first.
 
 ## Document Authority and Scope
 
-- The product documents currently live under `docs/`; the planned destination folder is exactly `Project Documentation/`. Until that folder migration is implemented, read the files from their current `docs/` paths.
-- `docs/PRODUCT-SPECIFICATION.md` defines product purpose, scope, principles, user journeys, and business rules.
-- `docs/ARCHITECTURE.md` defines the technical design, repository map, file responsibilities, boundaries, and implementation conventions.
-- `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` records the explicit folder naming standard, current API inventory, route-group strategy, and known route discrepancies.
-- `PROJECT-CONTEXT.md` is the short operational summary. It does not override the product specification or approved decisions. If it conflicts with authoritative documents, report the discrepancy rather than guessing.
+- The product documents live under `Project Documentation/`.
+- `Project Documentation/PRODUCT-SPECIFICATION.md` defines product purpose, scope, principles, user journeys, and business rules.
+- `Project Documentation/ARCHITECTURE.md` defines the technical design, repository map, file responsibilities, boundaries, and implementation conventions.
+- `Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md` records the explicit folder naming standard, current API inventory, route-group strategy, and known route discrepancies.
+- If present, `PROJECT-CONTEXT.md` is a short operational summary. It does not override the product specification or approved decisions. If it conflicts with authoritative documents, report the discrepancy rather than guessing.
 - `DECISIONS.md` records approved decisions, provisional directions, and unresolved questions.
 - `IMPLEMENTATION-PLAN.md` is the cumulative cross-milestone and checkpoint tracker. Preserve checkpoint history; do not replace it with only the latest status.
 - Each detailed milestone document under `milestones/` defines its scope, checkpoints, verification, evidence, and acceptance criteria.
@@ -31,7 +31,7 @@
 ## Repository Structure Rules
 
 - Keep `IMPLEMENTATION-PLAN.md` at the repository root.
-- The intended documentation folder name is exactly `Project Documentation/`. The physical folder is still `docs/`; do not move or rename it until the documentation migration is explicitly started. When that migration begins, update every link, path reference, agent instruction, and project script that points to `docs/`.
+- The documentation folder is named exactly `Project Documentation/`. Keep links and path references aligned with this directory.
 - Keep detailed milestone documents in their agreed folders under `milestones/`.
 - Empty milestone folders are intentional and must be tracked with a `.gitkeep` file until their milestone document is added.
 - Do not create empty implementation folders under `src/` merely to match the planned structure.
@@ -43,7 +43,7 @@
 - Before moving or renaming an API route, inventory its HTTP methods, callers, request/response shapes, authentication, ownership checks, tests, and database effects. Keep the current API URL stable unless a separately approved API change includes a migration plan.
 - New source filenames should use descriptive lowercase kebab-case names that communicate the component, operation, or data being handled. Keep Next.js-required entry filenames such as `page.tsx` and `route.ts`, but keep them thin and extract substantial work into meaningfully named modules when a clear boundary exists.
 - Do not blindly rename every repeated basename. Inspect repeated `index.ts`, `schema.ts`, and `theme.ts` files in context; preserve framework conventions and avoid changes that add indirection without improving discoverability.
-- Audit oversized components and stylesheets by responsibility. Split cohesive UI, state/API behaviour, and CSS sections in small verified steps; preserve state/effect behaviour, CSS cascade, responsive rules, and existing route/API contracts. See `docs/FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the current filename and large-file audit.
+- Audit oversized components and stylesheets by responsibility. Split cohesive UI, state/API behaviour, and CSS sections in small verified steps; preserve state/effect behaviour, CSS cascade, responsive rules, and existing route/API contracts. See `Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the current filename and large-file audit.
 - UI priority: use Material UI (MUI) components first. Use Tailwind CSS utilities for layout and styling where appropriate. Add standalone CSS files or custom CSS rules only when necessary because MUI and Tailwind cannot reasonably meet the requirement or a component needs carefully scoped styles. Do not create CSS files by default.
 - Do not create a second source of truth for a document or feature. Update references when an authoritative document is intentionally replaced, and report any stale references found.
 
