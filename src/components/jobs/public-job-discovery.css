@@ -207,3 +207,33 @@ html:has(.th-discovery-shell),body:has(.th-discovery-shell){background:#edf1f6}
 .th-clear-active-filters{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;padding:5px 8px;border:1px solid var(--th-line);border-radius:var(--th-radius-control);background:var(--th-panel-2);color:var(--th-accent-text);font-size:11px;white-space:nowrap}
 .th-clear-active-filters:hover{background:var(--th-selected);border-color:var(--th-accent)}
 @media(max-width:680px){.th-discovery-hero h1{font-size:29px;line-height:1.14}.th-discovery-hero>p{font-size:12px}.th-mobile-filter-backdrop{align-items:flex-end;padding:0}.th-mobile-filter-sheet{width:100%;max-height:88dvh;border-radius:18px 18px 0 0;padding:18px 20px max(24px,env(safe-area-inset-bottom));border-bottom:0}.th-results-toolbar{flex-wrap:wrap}.th-clear-active-filters{font-size:10px;padding:4px 6px}}
+
+/* Feature panel readability and full-viewport fit */
+.th-discovery-workspace{grid-template-columns:minmax(225px,1.12fr) minmax(300px,1fr) minmax(320px,1.08fr)}
+.th-feature-sidebar{padding:18px 20px}
+.th-feature-sidebar-heading{max-width:100%;padding:0 0 14px;margin:0 0 4px;border-bottom:1px solid var(--d-line)}
+.th-feature-sidebar-heading strong{font-size:19px;line-height:1.35;color:var(--d-text)}
+.th-feature-sidebar-heading p{font-size:13px;line-height:1.6;color:var(--d-muted);margin:9px 0 0}
+.th-feature-sidebar article{display:flex;align-items:flex-start;gap:12px;padding:15px 2px;border-bottom:1px solid var(--d-line);min-width:0}
+.th-feature-sidebar article:last-child{border-bottom:0}
+.th-feature-sidebar article>div{min-width:0;display:flex;align-items:flex-start;flex-direction:column;gap:6px}
+.th-feature-sidebar article strong{font-size:16px;line-height:1.35;color:var(--d-text)}
+.th-feature-sidebar article p{font-size:13px;line-height:1.55;color:var(--d-muted);margin:0}
+.th-feature-sidebar article small{display:inline-block;margin-top:2px;padding:5px 10px;border-radius:999px;background:var(--d-panel2);color:var(--d-cyan);font-size:11px;line-height:1.35}
+.th-feature-sidebar .th-feature-signin{margin-top:4px;padding:8px 12px;border:1px solid var(--d-line);border-radius:8px;background:var(--d-panel2);color:var(--d-text);font-size:11px;font-weight:600;cursor:pointer}
+.th-feature-sidebar .th-feature-signin:hover{border-color:var(--d-cyan);color:var(--d-cyan)}
+/* The public discovery page should not expose a light body gutter around its shell. */
+html:has(.th-discovery-shell),body:has(.th-discovery-shell){background:var(--d-bg);margin:0;min-height:100%;overflow-x:hidden}
+.th-discovery-shell{box-sizing:border-box}
+@media(min-width:1001px){.th-discovery-workspace{grid-template-columns:minmax(225px,1.12fr) minmax(300px,1fr) minmax(320px,1.08fr)}}
+@media(max-width:1000px){.th-discovery-workspace{grid-template-columns:minmax(220px,1.12fr) minmax(0,1fr)}.th-feature-sidebar{padding:18px}}
+@media(max-width:760px){
+ html:has(.th-discovery-shell),body:has(.th-discovery-shell){background:var(--d-bg);width:100%;max-width:100%;margin:0;padding:0}
+ .th-discovery-shell{width:100%;max-width:100%;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;overflow-x:clip}
+ .th-feature-sidebar{margin:12px 10px;padding:16px 18px;border:1px solid var(--d-line);border-radius:14px;background:var(--d-panel)}
+ .th-feature-sidebar-heading strong{font-size:20px}
+ .th-feature-sidebar article{padding:16px 2px;gap:14px}
+ .th-feature-sidebar article strong{font-size:16px}
+ .th-feature-sidebar article p{font-size:13px}
+ .th-feature-sidebar .th-feature-signin{min-height:36px;padding:8px 12px}
+}
