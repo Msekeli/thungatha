@@ -72,6 +72,19 @@ Source approval remains unresolved. The decision log says Adzuna is excluded unl
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
 
+## Architecture and Jobs refactor (separate from milestone acceptance)
+
+The feature-based target structure is recorded in `docs/ARCHITECTURE.md` and `folder-structure.txt`, with the decision in `DECISIONS.md` (D-035). This documentation update does not change M1 scope, checkpoint status, or acceptance criteria and does not move application code.
+
+The first structural work should focus on the Jobs feature only:
+1. audit the public `/` and authenticated `/jobs` experiences, current API contracts, and tests;
+2. identify shared types and pure utilities before extracting components;
+3. preserve two separate discovery experiences and their different authentication capabilities;
+4. migrate in small steps, preserving existing routes, response shapes, filtering, saved/dismissed state and activity behavior;
+5. run the available quality gates and record actual evidence before proceeding.
+
+This refactor is an implementation/maintainability task, not evidence that M1 is accepted. Do not mark any milestone checkpoint complete solely because files were reorganized.
+
 ## 4. Milestone Roadmap
 
 ### M0 — Foundation and Authentication
