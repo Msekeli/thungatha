@@ -248,7 +248,7 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
 
   useEffect(() => {
     const target = loadMoreRef.current;
-    if (!target || loading || !feed || page >= feed.totalPages) return;
+    if (!target || loading || !feed || page >= feed.totalPages || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
