@@ -186,7 +186,7 @@ describe("Job Discovery", () => {
     expect(await screen.findByText(/Employer application link not verified/)).toBeTruthy();
     expect(screen.getByText(/placeholder until a legitimate employer application link is verified/)).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
-    expect(screen.getByRole("button", { name: "↗ Apply" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Application link unavailable" })).toBeDisabled();
   });
 
   it("explains expired sessions and links back to sign-in", async () => {
