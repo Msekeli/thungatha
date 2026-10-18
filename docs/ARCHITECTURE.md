@@ -99,36 +99,40 @@ thungatha/
 │   └── brand/
 ├── scripts/
 ├── src/
-│   ├── app/                            # URL routing and HTTP endpoints
+│   ├── app/                            # Next.js routes and HTTP endpoints
+│   │   ├── (authentication)/
+│   │   │   ├── sign-in/[[...sign-in]]/page.tsx  # URL remains /sign-in
+│   │   │   └── sign-up/[[...sign-up]]/page.tsx  # URL remains /sign-up
+│   │   ├── (job-discovery)/
+│   │   │   ├── page.tsx                 # URL remains /
+│   │   │   └── jobs/page.tsx            # URL remains /jobs
+│   │   ├── (user-profile)/profile/page.tsx      # URL remains /profile
+│   │   ├── (user-account)/account/page.tsx      # URL remains /account
+│   │   ├── cv-studio/page.tsx           # URL remains /cv-studio
+│   │   ├── (job-tracking)/applications/page.tsx # Current URL /applications; discrepancy remains open
 │   │   ├── api/
-│   │   │   ├── jobs/
-│   │   │   ├── profile/
-│   │   │   └── internal/
-│   │   ├── page.tsx                    # Public Job Discovery at /
-│   │   ├── jobs/page.tsx               # Authenticated Job Discovery at /jobs
-│   │   ├── cv-studio/page.tsx
-│   │   ├── applications/page.tsx        # Current route; product route decision remains in spec
-│   │   ├── profile/page.tsx
-│   │   ├── account/page.tsx
-│   │   ├── sign-in/
-│   │   ├── sign-up/
+│   │   │   ├── (job-listings)/jobs/     # Existing API URL remains /api/jobs
+│   │   │   ├── (user-profile)/profile/  # Existing API URL remains /api/profile
+│   │   │   └── (job-ingestion)/internal/jobs/ingest/
 │   │   ├── layout.tsx
 │   │   └── globals.css
-│   ├── features/                       # Feature-owned implementation
-│   │   ├── jobs/
+│   ├── thungatha-features/              # Feature-owned implementation
+│   │   ├── job-discovery/               # Target name; current files remain under jobs/ until migrated
 │   │   │   ├── ui/
 │   │   │   │   ├── jobs-discovery.tsx
 │   │   │   │   ├── jobs-discovery.css
 │   │   │   │   ├── jobs-discovery.test.tsx
 │   │   │   │   ├── public-job-discovery.tsx
 │   │   │   │   └── public-job-discovery.css
-│   │   │   ├── client/                 # Target location; not created until code is moved
+│   │   │   ├── client/                  # Add only when real code is moved
 │   │   │   │   └── jobs-api.ts
-│   │   │   ├── types/job.ts            # Target location; not created until code is moved
-│   │   │   └── utils/job-utils.ts      # Target location; not created until code is moved
+│   │   │   ├── types/job.ts             # Add only when real code is moved
+│   │   │   └── utils/job-utils.ts       # Add only when real code is moved
+│   │   ├── authentication/
+│   │   ├── user-profile/
+│   │   ├── user-account/
 │   │   ├── cv-studio/
-│   │   ├── job-tracking/
-│   │   └── profile/
+│   │   └── job-tracking/
 │   ├── server/                         # Only if shared server infrastructure needs a clear home
 │   │   ├── auth/
 │   │   ├── database/
