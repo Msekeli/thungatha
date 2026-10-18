@@ -193,11 +193,6 @@
   gap: 7px;
 }
 .th-job-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  width: 100%;
-  min-width: 0;
   padding: 14px 11px;
   border: 1px solid transparent;
   border-radius: 10px;
@@ -240,10 +235,6 @@
   color: #1b5278;
 }
 .th-job-row-main {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
   gap: 5px;
 }
 .th-job-employer {
@@ -257,21 +248,13 @@
   overflow-wrap: anywhere;
 }
 .th-job-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   gap: 5px;
   color: var(--d-muted);
   font-size: 10px;
   line-height: 1.5;
 }
 .th-job-row-aside {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
   gap: 18px;
-  flex: 0 0 auto;
   color: var(--d-muted);
   font-size: 10px;
 }
@@ -614,7 +597,6 @@
   }
   .th-job-row {
     padding: 12px 10px;
-    gap: 9px;
   }
   .th-employer-logo {
     width: 36px;
@@ -1687,7 +1669,6 @@ body:has(.th-discovery-shell) {
     display: none;
   }
   .th-job-row {
-    gap: 8px;
     padding: 10px 8px;
   }
   .th-job-row-aside {
