@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "./route";
 import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/lib/auth/identity";
-import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
+import { createAuthenticatedSupabaseClient, createPublicSupabaseClient } from "@/lib/supabase/server";
 
 vi.mock("@/lib/auth/identity", () => ({ getAuthenticatedIdentity: vi.fn(), hasClerkConfiguration: vi.fn() }));
-vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.fn(), SupabaseConfigurationError: class SupabaseConfigurationError extends Error {} }));
+vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.fn(), createPublicSupabaseClient: vi.fn(), SupabaseConfigurationError: class SupabaseConfigurationError extends Error {} }));
 
 const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
-const client = vi.mocked(createAuthenticatedSupabaseClient);
+const client = vi.mocked(createAuthenticatedSupabaseClient);\nconst publicClient = vi.mocked(createPublicSupabaseClient);
 
 function query(result: unknown) {
   // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
@@ -30,10 +30,14 @@ describe("GET /api/jobs", () => {
     identity.mockResolvedValue({ userId: "user_alice", getToken: vi.fn() });
   });
 
-  it("returns 503 when authentication is not configured", async () => {
+  it("returns public active jobs when Clerk is not configured", async () => {
     configured.mockReturnValue(false);
+    const jobs = query({ data: [{ id: "job-public", title: "Software Engineer" }], error: null, count: 1 });
+    publicClient.mockResolvedValue({ from: vi.fn().mockReturnValue(jobs) } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
-    expect(response.status).toBe(503);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ jobs: [{ id: "job-public", state: null }], total: 1 });
+    expect(publicClient).toHaveBeenCalled();
     expect(client).not.toHaveBeenCalled();
   });
 
@@ -44,10 +48,13 @@ describe("GET /api/jobs", () => {
     expect(client).not.toHaveBeenCalled();
   });
 
-  it("requires an authenticated identity", async () => {
+  it("allows anonymous reads when Clerk is configured but the visitor is signed out", async () => {
     identity.mockResolvedValue(null);
+    const jobs = query({ data: [], error: null, count: 0 });
+    publicClient.mockResolvedValue({ from: vi.fn().mockReturnValue(jobs) } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
+    expect(publicClient).toHaveBeenCalled();
     expect(client).not.toHaveBeenCalled();
   });
 
