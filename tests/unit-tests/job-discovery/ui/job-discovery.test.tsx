@@ -10,7 +10,9 @@ import {
 import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+  usePathname: () => "/jobs",
+  useSearchParams: () => new URLSearchParams(""),
 }));
 
 vi.mock("@/components/ui/button", () => ({
