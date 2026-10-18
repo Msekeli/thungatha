@@ -4,6 +4,12 @@
 **Status:** Implementation in review; CI and local verification outstanding  
 **Product decision:** Replace the public root landing page with public Job Discovery. Preserve the existing authenticated workspace and preserve the existing landing page's background, palette, gradients, theme tokens, and brand identity.
 
+## Follow-up architecture note — Jobs feature organization
+
+The current file paths listed in this document describe the implementation at the time it was written. The agreed target is now feature-based: `src/features/jobs/` will own the public and authenticated discovery experiences and genuinely shared client/types/utils code, while Next.js routes and API Route Handlers remain under `src/app/`. The existing source paths must not be moved until a separate, incremental refactor is started.
+
+The public page at `/` and authenticated page at `/jobs` remain distinct experiences. Share only proven common behavior; preserve user-specific state and activity behind server-side authentication and authorization. This note does not change the plan's acceptance criteria or imply that pending verification has passed.
+
 ## Non-negotiable boundaries
 
 - The root route becomes the public Job Discovery experience; do not maintain two competing landing pages.
