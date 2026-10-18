@@ -91,6 +91,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const [error, setError] = useState<string | null>(null);
   const [promoVisible, setPromoVisible] = useState(false);
   const [page, setPage] = useState(1);
+  const [retry, setRetry] = useState(0);
   const selected = useMemo(() => jobs.find((job) => job.id === selectedId) ?? detail ?? jobs[0] ?? null, [jobs, selectedId, detail]);
 
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
       }
     }, 250);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [query, location, workMode, page]);
+  }, [query, location, workMode, page, retry]
 
   useEffect(() => {
     if (!selectedId) { setDetail(null); return; }
@@ -188,7 +189,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
           <div className="th-public-job-layout">
             <section className="th-public-results th-panel" aria-label="Job results">
               <div className="th-public-results-heading"><span>{loading ? "Finding opportunities…" : `${total.toLocaleString()} opportunities`}</span><span>Recently listed</span></div>
-              {error ? <div className="th-public-empty"><p>{error}</p><button type="button" onClick={() => setPage((value) => value)}>Try again</button></div> : null}
+              {error ? <div className="th-public-empty"><p>{error}</p><button type="button" onClick={() => setRetry((value) => value + 1)}>Try again</button></div> : null}
               {!error && !loading && jobs.length === 0 ? <div className="th-public-empty"><BriefcaseBusiness size={25} /><strong>No matching jobs yet</strong><p>Try a different job title, location or work arrangement.</p></div> : null}
               {jobs.map((job) => {
                 const jobSource = sourceFor(job);
