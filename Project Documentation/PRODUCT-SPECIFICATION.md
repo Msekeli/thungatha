@@ -219,7 +219,7 @@ Every milestone should include tests and verification appropriate to its changes
 - Playwright end-to-end journeys;
 - accessibility, responsive, security, and performance checks.
 
-Record only commands actually run and results actually observed. A checkpoint is not accepted merely because code exists. Acceptance requires evidence, criteria review, and user approval under `IMPLEMENTATION-PLAN.md` and the relevant milestone specification.
+Record only commands actually run and results actually observed. A checkpoint is not accepted merely because code exists. Acceptance requires evidence, criteria review, and user approval under `../IMPLEMENTATION-PLAN.md` and the relevant milestone specification.
 
 ## 13. Delivery sequence
 
@@ -233,16 +233,16 @@ The approved milestone order is fixed:
 - **M5 — Job Tracking.**
 - **M6 — Account, Integration and Release Readiness.**
 
-The detailed checkpoints and their acceptance criteria live in the corresponding files under `milestones/`. This document defines product behaviour; `IMPLEMENTATION-PLAN.md` tracks cross-milestone sequence and status. Do not silently change the milestone sequence or scope.
+The detailed checkpoints and their acceptance criteria live in the corresponding files under `../milestones/`. This document defines product behaviour; `../IMPLEMENTATION-PLAN.md` tracks cross-milestone sequence and status. Do not silently change the milestone sequence or scope.
 
 ## 14. Document authority
 
-- `docs/PRODUCT-SPECIFICATION.md` — user-facing capabilities, product rules, and intended behaviour.
-- `docs/ARCHITECTURE.md` — technical boundaries, runtime, integrations, repository map, and implementation conventions.
-- `IMPLEMENTATION-PLAN.md` — cross-milestone plan, dependencies, status, and release-level progress.
-- `milestones/<milestone-folder>/<milestone-file>.md` — detailed checkpoint execution and acceptance evidence.
-- `DECISIONS.md` — rationale and recorded decisions, including decisions that remain open.
-- `AGENTS.md` — instructions for AI coding agents working in the repository.
-- `README.md` — setup, environment, commands, and quick-start information.
+- `PRODUCT-SPECIFICATION.md` — user-facing capabilities, product rules, and intended behaviour.
+- `ARCHITECTURE.md` — technical boundaries, runtime, integrations, repository map, and implementation conventions.
+- `../IMPLEMENTATION-PLAN.md` — cross-milestone plan, dependencies, status, and release-level progress.
+- `../milestones/<milestone-folder>/<milestone-file>.md` — detailed checkpoint execution and acceptance evidence.
+- `../DECISIONS.md` — rationale and recorded decisions, including decisions that remain open.
+- `../AGENTS.md` — instructions for AI coding agents working in the repository.
+- `../README.md` — setup, environment, commands, and quick-start information.
 
 If a conflict is found, do not silently resolve it by guessing. Record the conflict and request review before changing an approved scope or decision.
