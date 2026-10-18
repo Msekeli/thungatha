@@ -18,7 +18,8 @@ export function SignOutControl() {
     setIsSigningOut(true);
 
     try {
-      await signOut({ redirectUrl: "/" });
+      await signOut({ redirectUrl: `${window.location.origin}/` });
+      window.location.replace("/");
     } catch (error) {
       console.error("Failed to sign out:", error);
       setIsSigningOut(false);
