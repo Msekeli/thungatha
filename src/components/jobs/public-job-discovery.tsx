@@ -127,7 +127,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   }, [query, location, workMode, page, retry]
 
   useEffect(() => {
-    if (!selectedId) { setDetail(null); return; }
+    if (!selectedId) return;
     const controller = new AbortController();
     fetch(`/api/jobs/${encodeURIComponent(selectedId)}`, { signal: controller.signal, cache: "no-store", headers: { Accept: "application/json" } })
       .then(async (response) => {
@@ -177,7 +177,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
             <label className="th-public-search-field"><MapPin size={18} /><span className="sr-only">Location</span><input value={location} onChange={(event) => { setLocation(event.target.value); setPage(1); }} placeholder="City or remote" /></label>
             <button className="th-public-search-button" type="submit"><Search size={17} /> Find jobs</button>
           </form>
-          <div className="th-public-hero-note"><CheckCircle2 size={15} /> Browse freely. No account needed to apply on the employer's site.</div>
+          <div className="th-public-hero-note"><CheckCircle2 size={15} /> Browse freely. No account needed to apply on the employer’s site.</div>
         </section>
 
         <section id="jobs" className="th-public-jobs-section">
@@ -219,7 +219,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
         </section>
 
         <section id="features" className="th-public-features">
-          <div className="th-public-feature-intro"><span className="th-tag" data-tone="accent">MORE THAN A JOB BOARD</span><h2>Everything around the application, too.</h2><p>Explore jobs freely. Sign in when you're ready to organise your search and make the most of your next move.</p></div>
+          <div className="th-public-feature-intro"><span className="th-tag" data-tone="accent">MORE THAN A JOB BOARD</span><h2>Everything around the application, too.</h2><p>Explore jobs freely. Sign in when you’re ready to organise your search and make the most of your next move.</p></div>
           <div className="th-public-feature-grid">{featureLinks.map((feature) => { const Icon = feature.icon; return <Link href={feature.href} key={feature.title} className="th-public-feature-card"><span className="th-public-feature-icon"><Icon size={21} /></span><h3>{feature.title}</h3><p>{feature.description}</p><span className="th-public-feature-link">Explore feature <ArrowRight size={15} /></span></Link>; })}</div>
         </section>
 
