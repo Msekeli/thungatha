@@ -110,16 +110,6 @@ function formatDate(value: string | null | undefined): string | null {
       }).format(date);
 }
 
-function formatSalary(job: Job): string | null {
-  if (job.salary_min == null && job.salary_max == null) return null;
-  const money = (amount: number) =>
-    `${job.salary_currency ? `${job.salary_currency} ` : ""}${new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(amount)}`;
-  if (job.salary_min != null && job.salary_max != null)
-    return `${money(job.salary_min)} – ${money(job.salary_max)}`;
-  return job.salary_min != null
-    ? `From ${money(job.salary_min)}`
-    : `Up to ${money(job.salary_max!)}`;
-}
 
 async function getApiError(response: Response): Promise<string> {
   let payload: ApiError = {};
@@ -549,7 +539,6 @@ export default function JobsDiscovery({ configured }: { configured: boolean }) {
   const selectedSource = sourceFor(selectedDetail);
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
-  const sourceUrl = safeExternalUrl(selectedSource?.source_url);
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   // Some providers only expose the job listing URL. Keep Apply usable by
   // falling back to that listing when no dedicated application URL is supplied.
