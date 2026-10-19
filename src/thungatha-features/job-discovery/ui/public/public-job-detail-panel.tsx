@@ -2,7 +2,7 @@
 
 import { Bookmark, BriefcaseBusiness, ExternalLink, EyeOff, PanelsTopLeft } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { JobDetailPresentation, JobDetailEmptyState } from "../shared/job-detail-presentation";
 
 export type PublicJobSource = {
@@ -47,7 +47,7 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack }: {
       actions={<div className="th-jobs-detail-actions th-jobs-redesign-actions">
         {applyUrl ? <a className="th-apply-button" href={applyUrl} target="_blank" rel="noopener noreferrer">Apply on company site <ExternalLink size={14}/></a> : <p className="th-no-apply">An application link is not available for this listing yet.</p>}
         {configured ? <>
-          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><ButtonLink variant="secondary" href="/cv-studio"><PanelsTopLeft size={14}/> Tailor my CV</ButtonLink></SignInButton>
+          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><PanelsTopLeft size={14}/> Tailor my CV</Button></SignInButton>
           <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><Bookmark size={14}/> Save</Button></SignInButton>
           <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="warning"><EyeOff size={14}/> Dismiss</Button></SignInButton>
         </> : <>
