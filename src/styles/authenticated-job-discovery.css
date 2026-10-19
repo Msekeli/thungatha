@@ -23,6 +23,8 @@
   }
   .th-jobs-redesign-results { scrollbar-gutter: stable; }
   @media (max-width: 760px) {
+    .th-workspace-sidebar { display: none; }
+    .th-workspace-content { min-height: 0; height: 100dvh; overflow: hidden; }
     .th-jobs-page.th-jobs-redesign {
       height: calc(100dvh - 58px);
       padding-bottom: 8px;
