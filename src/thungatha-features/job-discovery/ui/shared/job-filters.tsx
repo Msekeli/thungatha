@@ -1,3 +1,5 @@
+import { ChevronDown, MapPin, Search } from "lucide-react";
+
 type FilterOption = {
   label: string;
   value: string;
@@ -50,6 +52,7 @@ export function JobFilters({
 
       <label className="th-filter-label" htmlFor="th-job-search">Search</label>
       <div className="th-filter-search">
+        <Search size={15} aria-hidden="true" />
         <input
           id="th-job-search"
           value={query}
@@ -60,6 +63,7 @@ export function JobFilters({
 
       <label className="th-filter-label" htmlFor="th-location">Location</label>
       <div className="th-filter-select">
+        <MapPin size={14} aria-hidden="true" />
         <select
           id="th-location"
           value={location}
@@ -72,6 +76,7 @@ export function JobFilters({
           <option>Remote</option>
           <option value="">Anywhere</option>
         </select>
+        <ChevronDown size={14} aria-hidden="true" />
       </div>
 
       <div className="th-filter-group">
