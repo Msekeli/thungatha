@@ -30,11 +30,11 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
       </Link>
       <Stack component="nav" direction="row" spacing={2.5} alignItems="center"
         aria-label="Main navigation" sx={{ display: { xs: "none", md: "flex" } }}>
-        <Link href="#jobs" style={{ ...navSx, color: "var(--mui-palette-primary-main)" }}>Find Jobs</Link>
+        <Box component={Link} href="#jobs" sx={{ ...navSx, color: "primary.main" }}>Find Jobs</Box>
         {configured && <Show when="signed-in">
-          <Link href="/cv-studio" style={navSx}>Tailor Your CV</Link>
-          <Link href="/applications" style={navSx}>Track Applications</Link>
-          <Link href="/jobs?status=saved" style={navSx}>Saved Jobs</Link>
+          <Box component={Link} href="/cv-studio" sx={navSx}>Tailor Your CV</Box>
+          <Box component={Link} href="/applications" sx={navSx}>Track Applications</Box>
+          <Box component={Link} href="/jobs?status=saved" sx={navSx}>Saved Jobs</Box>
         </Show>}
         {configured && <Show when="signed-out">
           {["Tailor Your CV", "Track Applications", "Saved Jobs"].map((label) => (
