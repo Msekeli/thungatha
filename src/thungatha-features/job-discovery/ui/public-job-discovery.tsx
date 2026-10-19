@@ -2,12 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Bookmark, BriefcaseBusiness, ChevronDown, FileUser, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import "./public-job-discovery.css";
 import { JobCard } from "./shared/job-card";
 import { JobSearchBar } from "./shared/job-search-bar";
