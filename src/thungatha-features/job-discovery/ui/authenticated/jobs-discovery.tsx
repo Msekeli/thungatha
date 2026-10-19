@@ -737,6 +737,7 @@ export default function JobsDiscovery({
               <option value="oldest">Sort: Oldest</option>
             </select>
           </label>
+        </JobTypeChips>
         {undoAction && (
           <div className="th-jobs-undo-snackbar" role="status">
             <span>
