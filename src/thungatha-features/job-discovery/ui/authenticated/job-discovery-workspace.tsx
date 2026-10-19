@@ -3,7 +3,7 @@
 import type { RefObject } from "react";
 import { AuthenticatedJobResultsPanel } from "./job-results-panel";
 import { AuthenticatedJobDetailPanel } from "./job-detail-panel";
-import type { Feed, Job } from "../job-discovery-utils";
+import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
 
 type Props = {
   jobs: Job[];
@@ -15,7 +15,7 @@ type Props = {
   selectedId: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
   selectedDetail: Job | null;
-  selectedSource: string;
+  selectedSource: ReturnType<typeof sourceFor>;
   applicationDestination: string | null;
   applicationUrl: string | null;
   jobSourceUrl: string | null;
