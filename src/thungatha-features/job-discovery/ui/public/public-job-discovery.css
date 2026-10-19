@@ -5,20 +5,20 @@
   }
   .th-discovery-shell>header,.th-discovery-shell>.th-discovery-hero { flex:0 0 auto; }
   .th-discovery-shell>.th-mobile-bottom-nav { display:none; }
-  .th-discovery-shell>.th-discovery-hero { padding:14px 16px 16px; text-align:center; }
+  .th-discovery-shell>.th-discovery-hero { padding:8px 16px 10px; text-align:center; }
   .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
-  .th-discovery-shell .th-discovery-hero p { max-width:none; margin:6px auto 20px; }
+  .th-discovery-shell .th-discovery-hero p { max-width:none; margin:4px auto 12px; }
     .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { width:min(100%,1010px); margin-inline:auto; }
   .th-discovery-workspace {
     flex:1 1 auto; min-height:0; overflow:hidden; align-items:stretch!important;
-    padding:0 16px 16px; gap:12px;
+    padding:0 16px 12px; gap:10px;
     grid-template-columns:250px minmax(0,.95fr) minmax(0,1.12fr)!important;
   }
   .th-discovery-workspace>* { min-width:0; min-height:0; }
     .th-discovery-results {
     position:relative; display:flex; flex-direction:column; height:100%;
     min-height:0; overflow:hidden; border:1px solid var(--th-line);
-    border-radius:12px; padding:0 12px 10px;
+    border-radius:12px; padding:0 10px 8px;
   }
     .th-discovery-results .th-results-toolbar {
     position:absolute; z-index:2; top:6px; right:12px; margin:0;
@@ -29,7 +29,7 @@
   .th-discovery-job-list {
     flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   }
-  .th-discovery-job-list> .MuiStack-root { gap:6px; }
+  .th-discovery-job-list> .MuiStack-root { gap:4px; }
   .th-discovery-job-list .th-job-card-actions button,
   .th-discovery-job-list .th-job-card-actions a {
     display:grid; place-items:center; width:28px; height:28px;
@@ -74,11 +74,11 @@
     .th-discovery-shell { height:100dvh; min-height:0; }
     .th-discovery-shell>header { min-height:58px; padding:6px 10px; gap:6px; }
     .th-discovery-shell>header img { width:148px; height:auto; }
-    .th-discovery-shell>.th-discovery-hero { padding:8px 12px 10px; }
+    .th-discovery-shell>.th-discovery-hero { padding:6px 12px 8px; }
     .th-discovery-shell .th-discovery-hero h1,
     .th-discovery-shell>.th-discovery-hero>p { display:none; }
     .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { flex-direction:column; gap:8px; }
-    .th-discovery-shell .th-discovery-hero .MuiOutlinedInput-root { min-height:48px!important; }
+    .th-discovery-shell .th-discovery-hero .MuiOutlinedInput-root { min-height:44px!important; }
     .th-discovery-shell .th-discovery-hero .MuiChip-root { height:34px; flex:0 0 auto; }
     .th-discovery-shell>.th-discovery-hero>.MuiStack-root:last-child { display:none; }
     .th-discovery-workspace { display:block!important; position:relative; flex:1 1 auto; min-height:0; padding:0 12px 0; }
