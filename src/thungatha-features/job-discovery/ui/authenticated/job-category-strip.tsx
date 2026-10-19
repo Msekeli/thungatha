@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Chip, FormControl, MenuItem, Select, Stack } from "@mui/material";
+import { Chip, FormControl, MenuItem, Select, Stack } from "@mui/material";
 import { ArrowDownUp } from "lucide-react";
 
 type Category = { key: string; label: string; count: number | null };
