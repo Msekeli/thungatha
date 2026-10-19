@@ -22,7 +22,7 @@ function DismissAction({ configured, signInUrl, dismissed, onDismiss, onRestore 
     <Show when="signed-out"><SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="outlined" color="warning"><EyeOff size={14} /> Dismiss</Button></SignInButton></Show></>;
 }
 export function PublicJobDetailActions(props: Props) {
-  const { configured, applyUrl, signInUrl, dismissed, onDismiss, onRestore, placement = "primary" } = props;
+  const { configured, applyUrl, signInUrl, placement = "primary" } = props;
   if (placement === "header") return <Stack direction="row" spacing={1} className="th-jobs-detail-header-actions">
     <RestrictedAction configured={configured} href={signInUrl}><Bookmark size={15} /> Save</RestrictedAction>
     <DismissAction {...props} />
