@@ -27,7 +27,7 @@ export function JobDetailActions({ job, applicationDestination, applicationUrl, 
       : "No job or application link is available";
 
   return (
-    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} useFlexGap flexWrap="wrap">
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
       <Button variant="contained" disabled={!applicationDestination || disabled} title={applyTitle}
         onClick={onApply} startIcon={<ExternalLink size={14} />}>
         {applicationUrl ? "Apply on company site" : "Open job listing"}
