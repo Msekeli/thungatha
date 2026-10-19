@@ -2,58 +2,42 @@
 
 import type { ReactNode } from "react";
 import "./workspace-shell.css";
-import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { ButtonLink } from "@/components/ui/button";
-import { UserRound } from "lucide-react";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
-
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
 
-export function WorkspaceShell({
-  active,
-  configured,
-  children,
-}: {
-  active: string;
-  configured: boolean;
-  children: ReactNode;
-}) {
+const pages: Record<string, { title: string; subtitle: string }> = {
+  "/jobs": { title: "Job Discovery", subtitle: "Explore real opportunities. Choose your next step." },
+  "/cv-studio": { title: "CV Studio", subtitle: "Build and tailor your CV with confidence." },
+  "/applications": { title: "Job Tracking", subtitle: "Keep your applications organised and moving forward." },
+  "/profile": { title: "Profile", subtitle: "Manage the professional information used across Thungatha." },
+  "/account": { title: "Account settings", subtitle: "Manage your preferences and account settings." },
+};
+
+export function WorkspaceShell({ active, configured, children }: { active: string; configured: boolean; children: ReactNode }) {
+  const page = pages[active] ?? pages["/jobs"];
   return (
     <div className="th-workspace-shell">
       <MobileWorkspaceNav configured={configured} />
       <aside className="th-workspace-sidebar" aria-label="Main navigation">
-        <div className="th-workspace-brand">
-          <BrandMark />
-        </div>
+        <div className="th-workspace-brand"><BrandMark /></div>
         <WorkspaceSidebarNav active={active} />
         <div className="th-workspace-sidebar-footer">
-          <Link href="/" className="th-workspace-home-link">
-            ← Home
-          </Link>
-          <ThemeToggle />
-          <div className="th-workspace-user-card">
-            <span className="th-workspace-avatar" aria-hidden="true">
-              <UserRound size={17} strokeWidth={1.7} />
-            </span>
-            <div className="th-workspace-user-copy">
-              <span className="th-workspace-user-name">Msekeli Mkwibiso</span>
-              <span className="th-workspace-user-action">
-                {configured ? (
-                  <SignOutControl />
-                ) : (
-                  <ButtonLink href="/sign-in" variant="secondary" size="md">
-                    Sign in
-                  </ButtonLink>
-                )}
-              </span>
-            </div>
-          </div>
+          {configured ? <SignOutControl /> : <a className="th-workspace-sign-in" href="/sign-in">Sign in</a>}
         </div>
       </aside>
-      <div className="th-workspace-content">{children}</div>
+      <div className="th-workspace-content">
+        <header className="th-workspace-header">
+          <div className="th-workspace-heading">
+            <h1>{page.title}</h1>
+            <p>{page.subtitle}</p>
+          </div>
+          <ThemeToggle className="th-workspace-theme-toggle" />
+        </header>
+        <main className="th-workspace-page-content">{children}</main>
+      </div>
     </div>
   );
 }
