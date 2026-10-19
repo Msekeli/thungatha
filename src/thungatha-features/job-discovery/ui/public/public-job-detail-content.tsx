@@ -40,7 +40,7 @@ export function PublicJobDetailContent({
     <JobDetailPresentation job={job} postedAt={source?.published_at || job.updated_at}
       formatDate={dateLabel} headingAction={matchAction}
       actions={<PublicJobDetailActions configured={configured} applyUrl={applyUrl} signInUrl={signInUrl}
-        dismissed={dismissed} onDismiss={onDismiss} onRestore={onRestore} />}
+        dismissed={dismissed} onDismiss={onDismiss} onRestore={onRestore} placement="primary" />}
       afterDescription={sourceUrl ? <Button component="a" href={sourceUrl} target="_blank"
         rel="noopener noreferrer" variant="text" size="small">View original listing <ExternalLink size={13} /></Button> : null} />
     <MatchBreakdownDialog open={matchOpen} onClose={() => setMatchOpen(false)} />
