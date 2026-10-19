@@ -19,8 +19,8 @@ export function HomeAuthActions({
 
   if (!configured) {
     return (
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap gap-2">
+      <div className={variant === "nav" ? "flex items-center gap-1" : "flex flex-col gap-3"}>
+        <div className={variant === "nav" ? "flex flex-nowrap items-center gap-1" : "flex flex-wrap gap-2"}>
           <ButtonLink href="/sign-up" variant="primary" size={size}>
             {signUpLabel}
           </ButtonLink>
