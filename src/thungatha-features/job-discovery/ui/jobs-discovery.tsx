@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { AuthenticatedJobResultsPanel } from "./authenticated/job-results-panel";
+import { AuthenticatedJobSearchToolbar } from "./authenticated/job-search-toolbar";
 import { Button } from "@/components/ui/button";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
@@ -701,39 +702,15 @@ export default function JobsDiscovery({
               Official employer opportunities in Cape Town and surrounding areas
             </p>
           </div>
-          <form className="th-jobs-toolbar" onSubmit={submitFilters}>
-            <label className="th-jobs-quick-search">
-              <Search aria-hidden="true" size={17} strokeWidth={1.7} />
-              <input
-                aria-label="Search roles, skills, or companies"
-                name="query"
-                placeholder="Search roles, skills, or companies..."
-                value={draft.query}
-                onChange={(e) => changeDraft("query", e.target.value)}
-              />
-            </label>
-            <label className="th-jobs-location-select">
-              <MapPin aria-hidden="true" size={17} strokeWidth={1.7} />
-              <select
-                aria-label="Location"
-                value={draft.location}
-                onChange={(e) => changeDraft("location", e.target.value)}
-              >
-                <option value="">Cape Town + 50 km</option>
-                <option value="Cape Town">Cape Town</option>
-                <option value="Stellenbosch">Stellenbosch</option>
-                <option value="Western Cape">Western Cape</option>
-              </select>
-            </label>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setFiltersOpen((v) => !v)}
-              aria-expanded={filtersOpen}
-            >
-              <SlidersHorizontal size={15} /> Filters
-            </Button>
-          </form>
+          <AuthenticatedJobSearchToolbar
+            query={draft.query}
+            location={draft.location}
+            filtersOpen={filtersOpen}
+            onQueryChange={(value) => changeDraft("query", value)}
+            onLocationChange={(value) => changeDraft("location", value)}
+            onSubmit={submitFilters}
+            onToggleFilters={() => setFiltersOpen((value) => !value)}
+          />
         </header>
         <JobCategoryStrip
           categories={categories}
