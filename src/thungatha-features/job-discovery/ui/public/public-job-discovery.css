@@ -7,8 +7,7 @@
   .th-discovery-shell>.th-discovery-hero { padding:14px 16px 16px; text-align:center; }
   .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
   .th-discovery-shell .th-discovery-hero p { max-width:none; margin:6px auto 20px; }
-  .th-discovery-shell>.th-discovery-hero>.MuiStack-root { margin-inline:auto; justify-content:center; }
-  .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { width:min(100%,1010px); }
+    .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { width:min(100%,1010px); }
   .th-discovery-workspace {
     flex:1 1 auto; min-height:0; overflow:hidden; align-items:stretch!important;
     padding:0 16px 16px; gap:12px;
