@@ -23,8 +23,8 @@ type Props = {
   detailLoading: boolean;
   activityError: string | null;
   detailError: string | null;
-  sourceFor: (job: Job) => string;
-  formatDate: (value: string | null | undefined) => string;
+  sourceFor: typeof sourceFor;
+  formatDate: (value: string | null | undefined) => string | null;
   onRetryFeed: () => void;
   onSelect: (job: Job) => void;
   onBack: () => void;
