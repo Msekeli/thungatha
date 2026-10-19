@@ -772,14 +772,16 @@ export default function JobsDiscovery({
             >
               Undo
             </Button>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               type="button"
               className="th-jobs-notice-close"
               aria-label="Dismiss notice"
               onClick={() => setUndoAction(null)}
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
         )}
         {stateMessage && !undoAction && (
@@ -878,13 +880,15 @@ export default function JobsDiscovery({
               </div>
             ) : (
               <div className="th-jobs-detail-content" key={selectedDetail.id}>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   type="button"
                   className="th-jobs-mobile-back"
                   onClick={() => setMobileDetail(false)}
                 >
                   <ArrowLeft size={17} aria-hidden="true" /> Back to results
-                </button>
+                </Button>
                 <JobDetailHeading
                   title={selectedDetail.title}
                   employer={selectedDetail.employer_name}
@@ -916,12 +920,14 @@ export default function JobsDiscovery({
                 {detailError && (
                   <p className="th-jobs-state-error" role="status">
                     {detailError}{" "}
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       type="button"
                       onClick={() => setRetryDetail((v) => v + 1)}
                     >
                       Retry
-                    </button>
+                    </Button>
                   </p>
                 )}
                 <div className="th-jobs-source-status">
