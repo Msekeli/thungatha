@@ -55,7 +55,7 @@ export function JobDetailPresentation({
 }
 
 export function JobDetailEmptyState({ children }: { children?: ReactNode }) {
-  return <Stack className="th-jobs-detail-placeholder" spacing={1.5} sx={{ alignItems: "center" }}>
+  return <Stack spacing={1.5} sx={{ alignItems: "center", gap: 1.25, p: "30px 4px", color: "text.secondary", fontSize: 12, "& > svg": { color: "primary.main", fontSize: 24 }, "& strong": { color: "text.primary", fontSize: 13, fontWeight: 600 }, "& p": { m: 0, lineHeight: 1.6 } }}>
     <BriefcaseBusiness size={24} aria-hidden="true" />
     <Typography variant="h6" component="strong">Select an opportunity</Typography>
     <Typography color="text.secondary" variant="body2">Choose a listing to view its description and application destination.</Typography>
