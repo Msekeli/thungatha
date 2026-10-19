@@ -41,8 +41,8 @@ export function JobDetailMeta({
   return (
     <Stack
       direction="row"
-      spacing={1}
-      sx={{ py: 1, display: "flex", flexWrap: "wrap", gap: 1 }}
+      spacing={0.75}
+      sx={{ py: 0.5, display: "flex", flexWrap: "wrap", gap: 0.75 }}
     >
       {items.map((item) => (
         <Chip
@@ -54,7 +54,7 @@ export function JobDetailMeta({
           sx={{
             maxWidth: "100%",
             height: "auto",
-            py: 0.4,
+            py: 0.15,
             "& .MuiChip-label": {
               whiteSpace: "normal",
               overflowWrap: "anywhere",
