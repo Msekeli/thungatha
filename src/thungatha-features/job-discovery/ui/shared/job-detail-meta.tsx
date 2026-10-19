@@ -23,7 +23,7 @@ export function JobDetailMeta({ location, employmentType, workMode, postedAt, fo
   ];
 
   return (
-    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ py: 1 }}>
+    <Stack direction="row" spacing={1} sx={{ py: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
       {items.map((item) => (
         <Chip key={item.label} icon={item.icon} label={item.label} size="small" variant="outlined"
           sx={{ maxWidth: "100%", height: "auto", py: 0.4, "& .MuiChip-label": { whiteSpace: "normal", overflowWrap: "anywhere" } }} />
