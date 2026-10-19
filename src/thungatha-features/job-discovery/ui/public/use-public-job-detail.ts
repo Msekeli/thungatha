@@ -1,23 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-type JobDetail = {
-  id: string;
-  title: string;
-  employer_name: string | null;
-  description: string | null;
-  location_text: string | null;
-  country_code: string | null;
-  work_mode: string | null;
-  employment_type: string | null;
-  salary_min: number | null;
-  salary_max: number | null;
-  salary_currency: string | null;
-  updated_at: string | null;
-  job_sources: { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string }[] | { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string } | null;
-  state: "saved" | "dismissed" | null;
-};
+import type { PublicJob as JobDetail } from "./public-job-types";
 
 export function usePublicJobDetail(selectedId: string | null) {
   const [detail, setDetail] = useState<JobDetail | null>(null);
