@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
-import { JobCard } from "./shared/job-card";
+import { JobList } from "./shared/job-list";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -856,25 +856,24 @@ export default function JobsDiscovery({
               </div>
             ) : (
               <>
-                {visibleJobs.map((job) => {
-                  const source = sourceFor(job);
-                  return (
-                    <JobCard
-                      key={job.id}
-                      job={job}
-                      variant="authenticated"
-                      selected={job.id === selectedId}
-                      postedLabel={source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown"}
-                      onSelect={() => {
-                        setSelectedId(job.id);
-                        setForceAppliedPrompt(false);
-                        setDismissedPromptForJobId(null);
-                        setActivityError(null);
-                        setMobileDetail(true);
-                      }}
-                    />
-                  );
-                })}
+                <JobList
+                  jobs={visibleJobs}
+                  variant="authenticated"
+                  selectedId={selectedId}
+                  getPostedLabel={(job) => {
+                    const source = sourceFor(job);
+                    return source?.published_at
+                      ? formatDate(source.published_at) || "Date unknown"
+                      : "Date unknown";
+                  }}
+                  onSelect={(job) => {
+                    setSelectedId(job.id);
+                    setForceAppliedPrompt(false);
+                    setDismissedPromptForJobId(null);
+                    setActivityError(null);
+                    setMobileDetail(true);
+                  }}
+                />
                 {feed && feed.page < feed.totalPages && (
                   <div
                     ref={loadMoreRef}
