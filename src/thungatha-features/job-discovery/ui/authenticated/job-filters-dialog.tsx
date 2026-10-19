@@ -33,8 +33,9 @@ export function JobFiltersDialog({ open, draft, onClose, onChange, onReset, onAp
         </label>
         <label>Location
           <select className="th-input" value={draft.location} onChange={(e) => onChange("location", e.target.value)}>
-            <option value="">Cape Town + 50 km</option><option value="Cape Town">Cape Town</option>
-            <option value="Stellenbosch">Stellenbosch</option><option value="Western Cape">Western Cape</option>
+            <option value="Cape Town + 50 km">Cape Town + 50 km</option><option value="Cape Town">Cape Town</option>
+            <option value="Johannesburg">Johannesburg</option><option value="Durban">Durban</option>
+            <option value="Remote">Remote</option><option value="">Anywhere</option>
           </select>
         </label>
         <fieldset><legend>Work mode</legend>
