@@ -68,7 +68,9 @@ export function SignOutControl() {
             aria-labelledby="th-signout-title"
             aria-describedby="th-signout-description"
           >
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               className="th-signout-close"
               type="button"
               aria-label="Close sign-out confirmation"
@@ -79,7 +81,7 @@ export function SignOutControl() {
               }}
             >
               <X size={18} />
-            </button>
+            </Button>
 
             <span className="th-signout-icon" aria-hidden="true">
               <LogOut size={22} />
