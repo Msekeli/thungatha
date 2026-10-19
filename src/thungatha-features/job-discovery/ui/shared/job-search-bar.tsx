@@ -42,15 +42,16 @@ export function JobSearchBar({
             size="medium"
             placeholder={placeholder}
             slotProps={{
-              htmlInput: { ...params.inputProps, "aria-label": "Search jobs" },
+              ...params.slotProps,
+              htmlInput: { ...params.slotProps.htmlInput, "aria-label": "Search jobs" },
               input: {
-                ...params.InputProps,
+                ...params.slotProps.input,
                 startAdornment: (
                   <>
                     <InputAdornment position="start">
                       <Search size={18} aria-hidden="true" />
                     </InputAdornment>
-                    {params.InputProps?.startAdornment}
+                    {params.slotProps.input.startAdornment}
                   </>
                 ),
               },
