@@ -6,24 +6,13 @@ import { useSelectedJobDetail } from "./use-selected-job-detail";
 import { useUndoJobState } from "./use-undo-job-state";
 import { useJobFeed } from "./use-job-feed";
 import type { Feed, Job } from "../job-discovery-utils";
+import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type UndoAction = { jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null;
 
-export function useJobDiscoveryData(state: {
-  page: number; category: string; filters: { query: string; location: string; employmentType: string; workplaceType: string; experienceLevel: string };
-  retryFeed: number; setFeed: (value: Feed | null) => void; setLoading: (value: boolean) => void;
-  setError: (value: string | null) => void; setIsAuthenticated: (value: boolean) => void;
-  setSelectedId: (value: string | null) => void; loadMoreRef: React.RefObject<HTMLDivElement | null>;
-  loading: boolean; feed: Feed | null; setPage: (value: number) => void;
-  selectedId: string | null; retryDetail: number; setDetail: (value: Job | null) => void;
-  setDetailLoading: (value: boolean) => void; setDetailError: (value: string | null) => void;
-  setJobActivity: (value: { jobId: string; activity: import("../job-discovery-utils").JobActivity } | null) => void;
-  setActivityError: (value: string | null) => void; setForceAppliedPrompt: (value: boolean) => void;
-  setDismissedPromptForJobId: (value: string | null) => void; stateBusy: boolean;
-  setStateBusy: (value: boolean) => void; setStateError: (value: string | null) => void;
-  setStateMessage: (value: string | null) => void; setUndoAction: (value: UndoAction) => void;
-  undoAction: UndoAction; detail: Job | null;
-}) {
+type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
+
+export function useJobDiscoveryData(state: DiscoveryState) {
   const s = state;
   useJobFeed(s.page, s.category, s.filters, s.retryFeed, s.setFeed, s.setLoading, s.setError, s.setIsAuthenticated, s.setSelectedId);
   useInfiniteJobPagination(s.loadMoreRef, s.loading, s.feed, s.page, s.setPage);
