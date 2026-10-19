@@ -7,7 +7,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
+import JobsDiscovery from "@/thungatha-features/job-discovery/ui/authenticated/jobs-discovery";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
