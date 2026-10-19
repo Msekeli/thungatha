@@ -16,9 +16,9 @@ export function AuthenticatedJobSearchToolbar({
   onSubmit, onToggleFilters,
 }: Props) {
   return (
-    <form className="th-jobs-toolbar" onSubmit={(event) => { event.preventDefault(); onSubmit(); }}>
+    <div className="th-jobs-toolbar">
       <JobSearchBar value={query} onChange={onQueryChange}
-        placeholder="Search roles, skills, or companies..." />
+        placeholder="Search roles, skills, or companies..." onSubmit={onSubmit} />
       <label className="th-jobs-location-select">
         <MapPin aria-hidden="true" size={17} strokeWidth={1.7} />
         <select aria-label="Location" value={location} onChange={(event) => onLocationChange(event.target.value)}>
@@ -31,6 +31,6 @@ export function AuthenticatedJobSearchToolbar({
       <Button type="button" variant="secondary" onClick={onToggleFilters} aria-expanded={filtersOpen}>
         <SlidersHorizontal size={15} /> Filters
       </Button>
-    </form>
+    </div>
   );
 }
