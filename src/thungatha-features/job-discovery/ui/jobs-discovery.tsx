@@ -20,6 +20,7 @@ import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
+import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -226,46 +227,13 @@ export default function JobsDiscovery({
 
   useInfiniteJobPagination(loadMoreRef, loading, feed, page, setPage);
 
-  const refreshDetail = useCallback(async (id: string, signal: AbortSignal) => {
-    setDetailLoading(true);
-    setDetailError(null);
-    setDetail(null);
-    try {
-      const response = await fetch(`/api/jobs/${encodeURIComponent(id)}`, {
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-        signal,
-      });
-      if (!response.ok) {
-        setDetailError(await getApiError(response));
-        return;
-      }
-      const data = (await response.json()) as { job: Job };
-      if (!data.job?.id) {
-        setDetailError(
-          "The job details service returned an unexpected response. Please retry.",
-        );
-        return;
-      }
-      setDetail(data.job);
-    } catch (reason) {
-      if (reason instanceof Error && reason.name === "AbortError") return;
-      setDetailError(
-        "Could not load this job's details. Check your connection and retry.",
-      );
-    } finally {
-      if (!signal.aborted) setDetailLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!selectedId) return;
-    const controller = new AbortController();
-    void Promise.resolve().then(() =>
-      refreshDetail(selectedId, controller.signal),
-    );
-    return () => controller.abort();
-  }, [selectedId, refreshDetail, retryDetail]);
+  useSelectedJobDetail(
+    selectedId,
+    retryDetail,
+    setDetail,
+    setDetailLoading,
+    setDetailError,
+  );
 
   useJobActivitySync(
     selectedId,
