@@ -29,7 +29,7 @@ export function JobSearchBar({ value, onChange, onSubmit, placeholder = "Job tit
           <TextField {...params} fullWidth size="medium" placeholder={placeholder}
             slotProps={{
               ...params.slotProps,
-              htmlInput: { ...params.slotProps.htmlInput, "aria-label": "Search jobs" },
+              htmlInput: { ...params.slotProps.htmlInput, "aria-label": "Search roles, skills, or companies" },
               input: { ...params.slotProps.input, startAdornment: (
                 <>
                   <InputAdornment position="start"><Search size={18} aria-hidden="true" /></InputAdornment>
