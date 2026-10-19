@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronDown, MapPin, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Box, Button, Chip, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { MapPin, SlidersHorizontal } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
 
 type JobSuggestion = { title: string; employer_name: string | null };
@@ -34,45 +34,42 @@ export function PublicJobDiscoveryHero(props: Props) {
   const suggestions = jobs.flatMap((job) => [job.title, job.employer_name ?? ""]);
 
   return (
-    <section className="th-discovery-hero">
-      <div className="th-hero-glow" />
-      <h1>Find your next <span>opportunity</span></h1>
-      <p>Explore thousands of jobs in South Africa and beyond. Create an account to tailor
-        <br className="th-hero-break" /> your CV, save jobs and track your applications.</p>
-      <div className="th-hero-search">
-        <div className="th-hero-query">
-          <JobSearchBar value={query} onChange={onQueryChange}
-            onSubmit={() => document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" })}
-            placeholder="Job title, skills or company..." suggestions={suggestions} />
-        </div>
-        <div className="th-hero-location">
-          <MapPin size={16} />
-          <select aria-label="Search location" value={location}
-            onChange={(event) => onLocationChange(event.target.value)}>
-            <option>Cape Town + 50 km</option><option>Cape Town</option>
-            <option>Johannesburg</option><option>Durban</option><option>Remote</option>
-            <option value="">Anywhere</option>
-          </select>
-          <ChevronDown size={15} />
-        </div>
-        <Button variant="primary" className="th-hero-filter-button" type="button" onClick={onOpenFilters}>
-          <SlidersHorizontal size={15} /> Filters
-        </Button>
-      </div>
-      <div className="th-search-chips">
+    <Box component="section" className="th-discovery-hero" sx={{ px: { xs: 2, md: 4 }, py: { xs: 4, md: 6 } }}>
+      <Typography variant="h2" component="h1" sx={{ fontWeight: 800, fontSize: { xs: "2.2rem", md: "3.5rem" } }}>
+        Find your next <Box component="span" sx={{ color: "primary.main" }}>opportunity</Box>
+      </Typography>
+      <Typography color="text.secondary" sx={{ mt: 1, mb: 3, maxWidth: 680 }}>
+        Explore thousands of jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track your applications.
+      </Typography>
+      <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} sx={{ maxWidth: 1050 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}><JobSearchBar value={query} onChange={onQueryChange}
+          onSubmit={() => document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" })}
+          placeholder="Job title, skills or company..." suggestions={suggestions} /></Box>
+        <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 210 } }}>
+          <Select displayEmpty value={location} onChange={(event) => onLocationChange(event.target.value)}
+            startAdornment={<MapPin size={15} style={{ marginRight: 8 }} />} inputProps={{ "aria-label": "Search location" }}>
+            <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
+            <MenuItem value="Cape Town">Cape Town</MenuItem>
+            <MenuItem value="Johannesburg">Johannesburg</MenuItem>
+            <MenuItem value="Durban">Durban</MenuItem>
+            <MenuItem value="Remote">Remote</MenuItem>
+            <MenuItem value="">Anywhere</MenuItem>
+          </Select>
+        </FormControl>
+        <Button variant="outlined" onClick={onOpenFilters} startIcon={<SlidersHorizontal size={16} />}>Filters</Button>
+      </Stack>
+      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 2 }}>
         {jobTypes.map((item) => (
-          <Button key={item.value} variant="ghost" size="sm" type="button"
-            data-active={quickType === item.value}
+          <Chip key={item.value} clickable label={item.value === "all" ? `${item.label} · ${total}` : item.label}
+            color={quickType === item.value ? "primary" : "default"}
+            variant={quickType === item.value ? "filled" : "outlined"}
             onClick={() => {
               onQuickTypeChange(item.value);
               onClearTypes();
               document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}>
-            {item.label}
-            {item.value === "all" && <span className="th-quick-count">{total}</span>}
-          </Button>
+            }} />
         ))}
-      </div>
-    </section>
+      </Stack>
+    </Box>
   );
 }
