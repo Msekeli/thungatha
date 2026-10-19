@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, Chip, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
-import { MapPin, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
 
 type JobSuggestion = { title: string; employer_name: string | null };
