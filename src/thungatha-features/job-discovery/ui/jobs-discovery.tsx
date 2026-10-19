@@ -22,10 +22,11 @@ import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 import { useUndoJobState } from "./hooks/use-undo-job-state";
+import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
 import { canReusePublicJobFeed, getReusablePublicFeed } from "./job-feed-cache";
 
 import {
-  EMPTY_FILTERS, formatDate, getApiError, safeExternalUrl, shown, sourceFor,\n  buildJobFeedParams, isValidFeed,
+  EMPTY_FILTERS, formatDate, getApiError, shown, sourceFor,\n  buildJobFeedParams, isValidFeed,
   type Feed, type Filters, type Job, type JobActivity,
 } from "./job-discovery-utils";
 
@@ -207,10 +208,13 @@ export default function JobsDiscovery({
     return () => window.clearTimeout(timeoutId);
   }, [undoAction]);
 
-  const selectedDetail =
-    detail?.id === selectedId
-      ? detail
-      : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
+  const view = buildJobDiscoveryViewModel({
+    detail, selectedId, feed, jobActivity, filters, sortOrder,
+  });
+  const {
+    selectedDetail, selectedSource, selectedActivity, applicationUrl,
+    jobSourceUrl, applicationDestination, hasFilters, visibleJobs, categories,
+  } = view;
 
   const { openApplicationLink, confirmApplied } = useJobApplicationActions(
     selectedDetail,
@@ -240,36 +244,6 @@ export default function JobsDiscovery({
 
   const changeDraft = (key: keyof Filters, value: string) =>
     setDraft((current) => ({ ...current, [key]: value }));
-  const selectedSource = sourceFor(selectedDetail);
-  const selectedActivity =
-    jobActivity?.jobId === selectedId ? jobActivity.activity : null;
-  const applicationUrl = safeExternalUrl(selectedSource?.application_url);
-  const jobSourceUrl = safeExternalUrl(selectedSource?.source_url);
-  const applicationDestination = applicationUrl ?? jobSourceUrl;
-  const range =
-    !feed || feed.total === 0
-      ? "0 jobs"
-      : `1–${Math.min(feed.jobs.length, feed.total)} of ${feed.total}`;
-  const hasFilters = Object.entries(filters).some(([key, value]) =>
-    key === "publishedWithin" ? value !== "30d" : Boolean(value),
-  );
-
-  const visibleJobs = [...(feed?.jobs ?? [])].sort((a, b) => {
-    const da =
-      new Date(sourceFor(a)?.published_at ?? a.updated_at ?? 0).getTime() || 0;
-    const db =
-      new Date(sourceFor(b)?.published_at ?? b.updated_at ?? 0).getTime() || 0;
-    return sortOrder === "oldest" ? da - db : db - da;
-  });
-  const categories = [
-    { key: "all", label: "All opportunities", count: feed?.total ?? 0 },
-    { key: "full-time", label: "Full-time", count: null },
-    { key: "part-time", label: "Part-time", count: null },
-    { key: "contract", label: "Contract", count: null },
-    { key: "internship", label: "Internships", count: null },
-    { key: "learnership", label: "Learnerships", count: null },
-    { key: "graduate", label: "Graduate programmes", count: null },
-  ];
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <main className="th-jobs-page th-jobs-redesign">
