@@ -313,3 +313,17 @@
   gap: 8px;
   width: 100%;
 }
+
+.th-job-card-save-link {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--th-fg-muted, #8fa9be);
+}
+.th-job-card-save-link:hover,
+.th-job-card-save-link:focus-visible {
+  color: var(--th-accent, #38bdf8);
+}
