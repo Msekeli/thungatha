@@ -15,6 +15,8 @@ export type JobCardData = {
 
 type Props = {
   job: JobCardData;
+  /** Accepted for backwards compatibility; both routes render identically. */
+  variant?: "public" | "authenticated";
   selected: boolean;
   postedLabel: string;
   onSelect: () => void;
