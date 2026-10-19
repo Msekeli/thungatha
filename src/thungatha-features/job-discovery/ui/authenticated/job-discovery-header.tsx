@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { AuthenticatedJobSearchToolbar } from "./job-search-toolbar";
 import { JobCategoryStrip } from "./job-category-strip";
-import { JobDiscoveryHeroShell } from "../shared/job-discovery-hero-shell";
 import type { Filters } from "../job-discovery-utils";
 
 type Category = { key: string; label: string; count: number | null };
@@ -24,22 +24,20 @@ export function JobDiscoveryHeader({
   onCategoryChange: (key: string, label: string) => void;
 }) {
   return (
-    <Box component="header">
-      <JobDiscoveryHeroShell
-        title={<>Find your next <Box component="span" sx={{ color: "primary.main" }}>opportunity</Box></>}
-        description="Explore job opportunities matched to your search. Save roles and manage your applications from one place."
-      >
-        <AuthenticatedJobSearchToolbar
-          query={draft.query}
-          location={draft.location}
-          filtersOpen={filtersOpen}
-          onQueryChange={onQueryChange}
-          onLocationChange={onLocationChange}
-          onSubmit={onSubmit}
-          onToggleFilters={onToggleFilters}
-        />
-      </JobDiscoveryHeroShell>
-      <Box sx={{ px: { xs: 2, md: 4 }, pb: 2 }}>
+    <Box component="header" sx={{ px: { xs: 2, md: 4 }, pt: { xs: 2, md: 3 } }}>
+      <Typography component="h1" variant="h5" sx={{ fontWeight: 750, mb: 2 }}>
+        Job discovery
+      </Typography>
+      <AuthenticatedJobSearchToolbar
+        query={draft.query}
+        location={draft.location}
+        filtersOpen={filtersOpen}
+        onQueryChange={onQueryChange}
+        onLocationChange={onLocationChange}
+        onSubmit={onSubmit}
+        onToggleFilters={onToggleFilters}
+      />
+      <Box sx={{ pt: 2, pb: 1 }}>
         <JobCategoryStrip
           categories={categories}
           category={category}
