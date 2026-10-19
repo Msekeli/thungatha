@@ -1,5 +1,6 @@
 import Dialog from "@mui/material/Dialog";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -10,9 +11,9 @@ export function MatchBreakdownDialog({ open, onClose }: Props) {
       slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}>
       <header>
         <strong>Profile match breakdown</strong>
-        <button type="button" aria-label="Close match breakdown" onClick={onClose}>
+        <Button variant="ghost" size="sm" aria-label="Close match breakdown" onClick={onClose}>
           <X size={16} />
-        </button>
+        </Button>
       </header>
       <div className="th-jobs-match-placeholder">
         <h3>Match analysis is not available yet</h3>
