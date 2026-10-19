@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, ExternalLink, UserRoundSearch } from "lucide-react";
+import { ExternalLink, UserRoundSearch } from "lucide-react";
 import { Show, SignInButton } from "@clerk/nextjs";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -40,9 +40,6 @@ export function PublicJobDetailContent({
           </Button>
         </SignInButton>
       </Show>
-      <Button variant="text" aria-label="Sign in to save this job" onClick={() => setMatchOpen(true)}>
-        <Bookmark size={18} />
-      </Button>
     </Stack>
   ) : (
     <Button component="a" href={signInUrl} aria-label="Sign in to check profile match" variant="outlined" size="small">
