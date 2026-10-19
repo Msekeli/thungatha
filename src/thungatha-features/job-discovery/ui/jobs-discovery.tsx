@@ -18,6 +18,7 @@ import { Toast } from "@/components/ui/toast";
 import { Check } from "lucide-react";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
+import { useUpdateJobState } from "./hooks/use-update-job-state";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -273,70 +274,15 @@ export default function JobsDiscovery({
     setDismissedPromptForJobId,
   );
 
-  const updateJobState = useCallback(
-    async (
-      job: Job,
-      nextState: "saved" | "dismissed" | null,
-      recordUndo = true,
-    ): Promise<boolean> => {
-      if (stateBusy) return false;
-      const previousState = job.state ?? null;
-      setStateBusy(true);
-      setStateError(null);
-      setStateMessage(null);
-      try {
-        const response = await fetch(
-          "/api/jobs/" + encodeURIComponent(job.id) + "/state",
-          {
-            method: nextState ? "PUT" : "DELETE",
-            headers: {
-              Accept: "application/json",
-              ...(nextState ? { "Content-Type": "application/json" } : {}),
-            },
-            ...(nextState
-              ? { body: JSON.stringify({ state: nextState }) }
-              : {}),
-            cache: "no-store",
-          },
-        );
-        if (!response.ok) {
-          setStateError(await getApiError(response));
-          return false;
-        }
-
-        setFeed((current) =>
-          current
-            ? {
-                ...current,
-                jobs: current.jobs.map((item) =>
-                  item.id === job.id ? { ...item, state: nextState } : item,
-                ),
-              }
-            : current,
-        );
-        setDetail((current) =>
-          current?.id === job.id ? { ...current, state: nextState } : current,
-        );
-        if (recordUndo) {
-          setUndoAction({
-            jobId: job.id,
-            title: job.title,
-            previousState,
-            nextState,
-          });
-        }
-        setRetryFeed((value) => value + 1);
-        return true;
-      } catch {
-        setStateError(
-          "Could not update this job decision. Check your connection and try again.",
-        );
-        return false;
-      } finally {
-        setStateBusy(false);
-      }
-    },
-    [stateBusy],
+  const updateJobState = useUpdateJobState(
+    stateBusy,
+    setStateBusy,
+    setStateError,
+    setStateMessage,
+    setFeed,
+    setDetail,
+    setUndoAction,
+    setRetryFeed,
   );
 
   const undoLastStateChange = async () => {
