@@ -9,8 +9,7 @@ const types: FilterOption[] = [
   { label: "Learnerships", value: "learnership" }, { label: "Graduate programmes", value: "graduate" },
 ];
 const modes: FilterOption[] = [
-  { label: "Remote", value: "remote" }, { label: "Hybrid", value: "hybrid" },
-  { label: "On-site", value: "onsite" },
+  { label: "Remote", value: "remote" }, { label: "Hybrid", value: "hybrid" }, { label: "On-site", value: "onsite" },
 ];
 const locations = ["Cape Town + 50 km", "Cape Town", "Johannesburg", "Durban", "Remote", ""];
 
@@ -24,8 +23,8 @@ export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, 
   const toggle = (values: string[], value: string, setter: (next: string[]) => void) =>
     setter(values.includes(value) ? values.filter(item => item !== value) : [...values, value]);
   return <Stack spacing={2} className="th-filter-content">
-    <Stack direction="row" alignItems="center" justifyContent="space-between" className="th-filter-title">
-      <Typography variant="subtitle1" fontWeight={700}>Filters</Typography>
+    <Stack direction="row" className="th-filter-title" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Filters</Typography>
       <Button variant="text" size="small" onClick={onClear}>Clear all</Button>
     </Stack>
     <TextField label="Search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Job title, skills or company..." fullWidth size="small" />
@@ -36,11 +35,11 @@ export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, 
       </Select>
     </FormControl>
     <Stack spacing={0.25} className="th-filter-group">
-      <Typography variant="subtitle2" fontWeight={700}>Job type</Typography>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Job type</Typography>
       {types.map(item => <FormControlLabel key={item.value} control={<Checkbox size="small" checked={typesSelected.includes(item.value)} onChange={() => toggle(typesSelected, item.value, setTypesSelected)} />} label={item.label} />)}
     </Stack>
     <Stack spacing={0.25} className="th-filter-group">
-      <Typography variant="subtitle2" fontWeight={700}>Remote options</Typography>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Remote options</Typography>
       {modes.map(item => <FormControlLabel key={item.value} control={<Checkbox size="small" checked={modesSelected.includes(item.value)} onChange={() => toggle(modesSelected, item.value, setModesSelected)} />} label={item.label} />)}
     </Stack>
     <FormControl fullWidth size="small">
