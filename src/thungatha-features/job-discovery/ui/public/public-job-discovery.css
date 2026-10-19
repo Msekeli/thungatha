@@ -39,6 +39,7 @@
     overscroll-behavior: contain;
   }
   .th-discovery-shell > .th-wide-promo { display: none; }
+  .th-discovery-shell > .th-mobile-bottom-nav { display: none !important; }
   @media (max-width: 1199px) {
     .th-discovery-workspace {
       grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr) !important;
@@ -46,6 +47,7 @@
     .th-discovery-workspace > aside[aria-label="Thungatha features"] { display: none; }
   }
   @media (max-width: 760px) {
+    .th-discovery-shell > .th-mobile-bottom-nav { display: grid !important; }
     .th-discovery-shell > header { padding: 6px 10px; gap: 6px; }
     .th-discovery-shell > header img { width: 132px; height: auto; }
     .th-discovery-shell > .th-discovery-hero { padding: 6px 12px; }
