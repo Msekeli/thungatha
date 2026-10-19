@@ -1252,13 +1252,14 @@ export default function JobsDiscovery({
               </footer>
             </form>
         </Dialog>
-        {profileSetupPrompt && (
-          <div
-            className="th-jobs-popover th-jobs-match-popover"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Set up your job profile"
-          >
+        <Dialog
+          open={profileSetupPrompt}
+          onClose={() => setProfileSetupPrompt(false)}
+          fullWidth
+          maxWidth="sm"
+          aria-label="Set up your job profile"
+          slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}
+        >
             <header>
               <strong>Get better job matches</strong>
               <button
@@ -1291,8 +1292,7 @@ export default function JobsDiscovery({
                 </Button>
               </div>
             </div>
-          </div>
-        )}
+        </Dialog>
         {matchOpen && (
           <div
             className="th-jobs-popover th-jobs-match-popover"
