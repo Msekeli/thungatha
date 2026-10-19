@@ -33,7 +33,7 @@ export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSele
           </Button>
         </SignInButton>
       ) : (
-        <Link className="th-job-card-save-link" href="/sign-in" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
+        <Link href="/sign-in" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
           <Bookmark size={16} />
         </Link>
       )}
