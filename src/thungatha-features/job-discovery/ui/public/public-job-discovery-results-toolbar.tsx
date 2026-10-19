@@ -24,7 +24,7 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
     onSortChange, query, onQueryChange, jobs, onOpenFilters } = props;
   const resultLabel = loading ? "Loading opportunities…" : resultCount === 0
     ? "0 opportunities"
-    : "1–" + Math.min(resultCount, 10) + " of " + total.toLocaleString() + " opportunities";
+    : "1–" + Math.min(resultCount, total) + " of " + total.toLocaleString() + " opportunities";
   const suggestions = jobs.flatMap((job) => [job.title, job.employer_name ?? ""]);
 
   return (
