@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { JobCard } from "./shared/job-card";
 import { Button } from "@/components/ui/button";
+import Dialog from "@mui/material/Dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
@@ -1135,12 +1136,16 @@ export default function JobsDiscovery({
             )}
           </section>
         </div>
-        {filtersOpen && (
-          <div
-            className="th-jobs-popover th-jobs-filter-popover"
-            role="dialog"
-            aria-label="Filter opportunities"
-          >
+        <Dialog
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          fullWidth
+          maxWidth="sm"
+          aria-label="Filter opportunities"
+          slotProps={{
+            paper: { className: "th-jobs-popover th-jobs-filter-popover" },
+          }}
+        >
             <header>
               <strong>Filter opportunities</strong>
               <button
@@ -1246,8 +1251,7 @@ export default function JobsDiscovery({
                 </Button>
               </footer>
             </form>
-          </div>
-        )}
+        </Dialog>
         {profileSetupPrompt && (
           <div
             className="th-jobs-popover th-jobs-match-popover"
