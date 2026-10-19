@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { JobCard } from "./shared/job-card";
 import { Button } from "@/components/ui/button";
-import Dialog from "@mui/material/Dialog";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
 import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
+import { JobDetailDescription } from "./authenticated/job-detail-description";
+import { JobDetailHeading } from "./authenticated/job-detail-heading";
+import { JobDetailMeta } from "./authenticated/job-detail-meta";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
@@ -19,14 +21,12 @@ import {
   SlidersHorizontal,
   ArrowDownUp,
   CalendarDays,
-  ChevronRight,
   ExternalLink,
   PanelsTopLeft,
   Bookmark,
   EyeOff,
   BriefcaseBusiness,
   Clock3,
-  Info,
   X,
   Check,
   ArrowLeft,
@@ -915,58 +915,18 @@ export default function JobsDiscovery({
                 >
                   <ArrowLeft size={17} aria-hidden="true" /> Back to results
                 </button>
-                <div className="th-jobs-redesign-job-head">
-                  <span className="th-jobs-employer-mark th-jobs-detail-logo">
-                    {(selectedDetail.employer_name?.trim() || "?")
-                      .slice(0, 1)
-                      .toUpperCase()}
-                  </span>
-                  <div className="th-jobs-redesign-title">
-                    <h2>{selectedDetail.title}</h2>
-                    <p>
-                      {shown(selectedDetail.employer_name)}{" "}
-                      <ExternalLink
-                        className="th-jobs-external-mark"
-                        size={13}
-                        aria-label="External employer link"
-                      />{" "}
-                      <span className="th-jobs-verified">
-                        ✓ Verified company
-                      </span>
-                    </p>
-                  </div>
-                  <div className="th-jobs-match-scorebox">
-                    <span>Match</span>
-                    <strong>—</strong>
-                    <button type="button" onClick={() => setMatchOpen(true)}>
-                      View breakdown
-                    </button>
-                  </div>
-                </div>
-                <div className="th-jobs-detail-meta">
-                  <span>
-                    <MapPin size={13} /> {shown(selectedDetail.location_text)}
-                  </span>
-                  <span>
-                    <BriefcaseBusiness size={13} />{" "}
-                    {shown(selectedDetail.employment_type)}
-                  </span>
-                  <span>
-                    <Clock3 size={13} />{" "}
-                    {selectedDetail.work_mode &&
-                    selectedDetail.work_mode !== "unknown"
-                      ? selectedDetail.work_mode === "onsite"
-                        ? "On-site"
-                        : selectedDetail.work_mode === "hybrid"
-                          ? "Hybrid"
-                          : "Remote"
-                      : "Work mode not stated"}
-                  </span>
-                  <span>
-                    <CalendarDays size={13} /> Posted{" "}
-                    {formatDate(selectedSource?.published_at) || "date unknown"}
-                  </span>
-                </div>
+                <JobDetailHeading
+                  title={selectedDetail.title}
+                  employer={selectedDetail.employer_name}
+                  onViewMatch={() => setMatchOpen(true)}
+                />
+                <JobDetailMeta
+                  location={selectedDetail.location_text}
+                  employmentType={selectedDetail.employment_type}
+                  workMode={selectedDetail.work_mode}
+                  postedAt={selectedSource?.published_at}
+                  formatDate={formatDate}
+                />
                 <div className="th-jobs-detail-actions th-jobs-redesign-actions">
                   <Button
                     variant="primary"
@@ -1063,79 +1023,7 @@ export default function JobsDiscovery({
                       : "! Employer application link not verified"}
                   </span>
                 </div>
-                <section className="th-jobs-description-panel th-jobs-redesign-description">
-                  <div
-                    className="th-jobs-description-tabs"
-                    role="tablist"
-                    aria-label="Job information"
-                  >
-                    <button type="button" role="tab" aria-selected="true">
-                      Job description
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-requirements")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      Requirements
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-benefits")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      Benefits
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-about")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      About the company
-                    </button>
-                  </div>
-                  <div className="th-jobs-description-body">
-                    {selectedDetail.description?.trim() ||
-                      "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
-                    <section id="th-job-requirements">
-                      <h3>Requirements</h3>
-                      <p>
-                        Requirements will appear here when provided by the
-                        employer. Thungatha will not invent missing
-                        requirements.
-                      </p>
-                    </section>
-                    <section id="th-job-benefits">
-                      <h3>Benefits</h3>
-                      <p>
-                        Benefits have not been supplied in the available
-                        listing.
-                      </p>
-                    </section>
-                    <section id="th-job-about">
-                      <h3>About the company</h3>
-                      <p>
-                        Company information will appear here when an official
-                        employer source is available.
-                      </p>
-                    </section>
-                  </div>
-                </section>
+                <JobDetailDescription description={selectedDetail.description} />
               </div>
             )}
           </section>
