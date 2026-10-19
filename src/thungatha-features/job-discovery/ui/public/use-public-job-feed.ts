@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 export type PublicJobFeedItem = {
   id: string;
@@ -20,7 +20,7 @@ export type PublicJobFeedItem = {
 };
 type Feed = { jobs: PublicJobFeedItem[]; page: number; pageSize: number; total: number; totalPages: number };
 
-export function usePublicJobFeed(query: string, location: string, retry: number) {
+export function usePublicJobFeed(query: string, location: string, retry: number, setSelectedId: Dispatch<SetStateAction<string | null>>) {
   const [jobs, setJobs] = useState<PublicJobFeedItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -49,6 +49,7 @@ export function usePublicJobFeed(query: string, location: string, retry: number)
         if (!Array.isArray(data.jobs)) throw new Error("The jobs service returned an unexpected response.");
         setJobs(data.jobs);
         setTotal(data.total);
+        setSelectedId((current) => current && data.jobs.some((job) => job.id === current) ? current : data.jobs[0]?.id ?? null);
         if (!query.trim() && location === "Cape Town + 50 km") {
           try {
             sessionStorage.setItem("thungatha-public-job-feed-v1", JSON.stringify({ savedAt: Date.now(), feed: data }));
@@ -67,7 +68,7 @@ export function usePublicJobFeed(query: string, location: string, retry: number)
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [query, location, retry]);
+  }, [query, location, retry, setSelectedId]);
 
   return { jobs, setJobs, total, loading, setLoading, error, setError };
 }
