@@ -3,8 +3,8 @@
 import { Bookmark, BriefcaseBusiness, ExternalLink } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { JobDetailMeta } from "../authenticated/job-detail-meta";
-import { JobDetailDescription } from "../authenticated/job-detail-description";
+import { JobDetailMeta } from "../shared/job-detail-meta";
+import { JobDetailDescription } from "../shared/job-detail-description";
 
 export type PublicJobSource = {
   source_url: string | null;
