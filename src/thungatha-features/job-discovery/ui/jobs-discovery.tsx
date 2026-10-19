@@ -16,6 +16,7 @@ import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import { Check } from "lucide-react";
+import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -285,58 +286,13 @@ export default function JobsDiscovery({
     return () => controller.abort();
   }, [selectedId, refreshDetail, retryDetail]);
 
-  useEffect(() => {
-    if (!selectedId) return;
-    const jobId = selectedId;
-    let controller: AbortController | null = null;
-
-    const loadActivity = () => {
-      controller?.abort();
-      controller = new AbortController();
-      const requestController = controller;
-      void fetch(`/api/jobs/${encodeURIComponent(jobId)}/activity`, {
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-        signal: requestController.signal,
-      })
-        .then(async (response) => {
-          if (!response.ok) throw new Error(await getApiError(response));
-          const payload = (await response.json()) as { activity?: JobActivity };
-          if (!payload.activity)
-            throw new Error("Unexpected activity response");
-          setActivityError(null);
-          setJobActivity({ jobId, activity: payload.activity });
-        })
-        .catch((reason) => {
-          if (reason instanceof Error && reason.name === "AbortError") return;
-          setActivityError("Application activity could not be loaded.");
-        });
-    };
-
-    // Refresh persisted activity on return, but do not reopen a prompt the
-    // user has already dismissed. Confirmation is shown only after an action.
-    const handleReturnToPage = () => {
-      // A pending reminder is durable: returning from the employer tab should
-      // surface it again unless the application was confirmed.
-      setForceAppliedPrompt(false);
-      setDismissedPromptForJobId(null);
-      loadActivity();
-    };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") handleReturnToPage();
-    };
-
-    loadActivity();
-    window.addEventListener("focus", handleReturnToPage);
-    window.addEventListener("pageshow", handleReturnToPage);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      controller?.abort();
-      window.removeEventListener("focus", handleReturnToPage);
-      window.removeEventListener("pageshow", handleReturnToPage);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [selectedId]);
+  useJobActivitySync(
+    selectedId,
+    setJobActivity,
+    setActivityError,
+    setForceAppliedPrompt,
+    setDismissedPromptForJobId,
+  );
 
   const updateJobState = useCallback(
     async (
