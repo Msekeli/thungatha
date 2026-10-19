@@ -12,6 +12,7 @@ import { JobList } from "./shared/job-list";
 import { JobDetailTabs } from "./shared/job-detail-tabs";
 import { JobSearchBar } from "./shared/job-search-bar";
 import { JobTypeChips } from "./shared/job-type-chips";
+import { JobResultsToolbar } from "./shared/job-results-toolbar";
 import { formatPublicDate, formatSalary, getJobSource, safeExternalUrl } from "./shared/job-formatters";
 
 type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
