@@ -1143,7 +1143,7 @@ export default function JobsDiscovery({
           maxWidth="sm"
           aria-label="Filter opportunities"
           slotProps={{
-            paper: { className: "th-jobs-popover th-jobs-filter-popover" },
+            paper: { className: "th-jobs-popover th-jobs-filter-popover th-jobs-filter-dialog" },
           }}
         >
             <header>
