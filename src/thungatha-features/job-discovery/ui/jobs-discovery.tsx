@@ -12,6 +12,7 @@ import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
 import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
 import { AuthenticatedJobDetailPanel } from "./authenticated/job-detail-panel";
+import { JobUndoNotice } from "./authenticated/job-undo-notice";
 import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
@@ -718,34 +719,12 @@ export default function JobsDiscovery({
           }}
         />
         {undoAction && (
-          <div className="th-jobs-undo-snackbar" role="status">
-            <span>
-              {undoAction.title}{" "}
-              {undoAction.nextState === "saved"
-                ? "saved"
-                : undoAction.nextState === "dismissed"
-                  ? "dismissed"
-                  : "updated"}
-              .
-            </span>
-            <Button
-              variant="secondary"
-              disabled={stateBusy}
-              onClick={() => void undoLastStateChange()}
-            >
-              Undo
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              className="th-jobs-notice-close"
-              aria-label="Dismiss notice"
-              onClick={() => setUndoAction(null)}
-            >
-              <X size={16} />
-            </Button>
-          </div>
+          <JobUndoNotice
+            action={undoAction}
+            busy={stateBusy}
+            onUndo={() => void undoLastStateChange()}
+            onDismiss={() => setUndoAction(null)}
+          />
         )}
         {stateMessage && !undoAction && (
           <Toast
