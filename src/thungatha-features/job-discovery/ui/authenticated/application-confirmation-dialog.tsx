@@ -21,7 +21,7 @@ export function ApplicationConfirmationDialog({
       slotProps={{ paper: { className: "th-jobs-popover th-jobs-apply-popover th-jobs-mui-dialog" } }}>
       <header>
         <span className="th-jobs-popover-icon"><BriefcaseBusiness size={19} /></span>
-        <button type="button" aria-label="Close application confirmation" onClick={onClose}>×</button>
+        <Button variant="ghost" size="sm" aria-label="Close application confirmation" onClick={onClose}>×</Button>
       </header>
       <div className="th-jobs-apply-confirm">
         <h3>Did you apply?</h3>
