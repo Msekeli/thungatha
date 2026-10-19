@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import "../shared/job-discovery-components.css";
+import "./job-discovery-components.css";
 
 type Props = { description?: string | null };
 
