@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
-import { PublicJobMobileNav } from "./public-job-mobile-nav";
+import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-menu";
 import { PublicJobMobileFilters } from "./public-job-mobile-filters";
 import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
@@ -253,7 +253,7 @@ export default function PublicJobDiscovery({
           onDismiss={dismissPromo}
         />
       )}
-      <PublicJobMobileNav configured={configured} />
+      <MobileWorkspaceBottomNav configured={configured} publicMode isActive={(href) => href === "/" || href === "/jobs"} />
       {mobileFiltersOpen && (
         <PublicJobMobileFilters onClose={() => setMobileFiltersOpen(false)}>
           {filterPanel}
