@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark } from "lucide-react";
+import { Bookmark, EyeOff, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,12 @@ type Props = {
   selectedId: string | null;
   configured: boolean;
   onSelect: (jobId: string) => void;
+  dismissed?: boolean;
+  onDismiss?: (jobId: string) => void;
+  onRestore?: (jobId: string) => void;
 };
 
-export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSelect }: Props) {
+export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSelect, dismissed = false, onDismiss, onRestore }: Props) {
   const jobData = jobs.map(({ job }) => job);
   const postedById = new Map(jobs.map(({ job, postedLabel }) => [job.id, postedLabel]));
   return <div className="th-job-list">
@@ -32,6 +35,11 @@ export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSele
         <Link className="th-job-card-save-link" href="/sign-in" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
           <Bookmark size={16} />
         </Link>
+      )}
+      secondaryAction={(job) => dismissed ? (
+        <Button variant="ghost" size="sm" type="button" aria-label={`Restore ${job.title}`} title="Restore job" onClick={() => onRestore?.(job.id)}><RotateCcw size={15} /></Button>
+      ) : (
+        <Button variant="ghost" size="sm" type="button" aria-label={`Dismiss ${job.title}`} title="Dismiss job" onClick={() => onDismiss?.(job.id)}><EyeOff size={15} /></Button>
       )} />
   </div>;
 }
