@@ -18,7 +18,7 @@ const jobTypes = [
   { label: "Graduate programmes", value: "graduate" },
 ];
 const pillSx = (active: boolean) => ({
-  height: 34, borderRadius: "999px", px: 1.1, fontWeight: 600,
+  height: 30, borderRadius: "999px", px: 1.1, fontWeight: 600,
   borderColor: active ? "primary.main" : "divider", color: active ? "primary.main" : "text.primary",
   backgroundColor: active ? "rgba(0,188,242,.12)" : "transparent",
   "& .MuiChip-label": { px: 1.1 },
@@ -39,7 +39,7 @@ export function PublicJobDiscoveryHero(props: Props) {
       <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 290 }, flex: { md: "0 0 290px" } }}>
         <Select value={location} onChange={(event) => onLocationChange(event.target.value)}
           inputProps={{ "aria-label": "Search location" }}
-          sx={{ height: 52, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15,
+          sx={{ height: 44, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15,
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" } }}>
           <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
           <MenuItem value="Cape Town">Cape Town</MenuItem><MenuItem value="Johannesburg">Johannesburg</MenuItem>
@@ -48,9 +48,9 @@ export function PublicJobDiscoveryHero(props: Props) {
         </Select>
       </FormControl>
       <Button variant="contained" onClick={onOpenFilters} startIcon={<SlidersHorizontal size={18} />}
-        sx={{ minWidth: 132, height: 52, borderRadius: "12px", fontWeight: 700, boxShadow: "none" }}>Filters</Button>
+        sx={{ minWidth: 116, height: 44, borderRadius: "12px", fontWeight: 700, boxShadow: "none" }}>Filters</Button>
     </Stack>
-    <Stack direction="row" spacing={1} sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
+    <Stack direction="row" spacing={1} sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
       {jobTypes.map((item) => <Chip key={item.value} clickable
         label={item.value === "all" ? `${item.label} · ${total}` : item.label}
         color={quickType === item.value ? "primary" : "default"}
