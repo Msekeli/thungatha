@@ -3423,3 +3423,23 @@
     padding-bottom: 12px;
   }
 }
+
+
+/* MUI owns filter-dialog placement and focus handling; keep our established surface styling. */
+.th-jobs-filter-dialog {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 100%;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+.th-jobs-filter-dialog > header {
+  margin: 0;
+}
+.th-jobs-filter-dialog form {
+  padding: 0;
+}
