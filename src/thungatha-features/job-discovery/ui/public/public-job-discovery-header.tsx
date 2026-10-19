@@ -22,7 +22,7 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
     <Box
       component="header"
       sx={{
-        display: "flex",
+        display: { xs: "none", md: "flex" },
         alignItems: "center",
         justifyContent: "space-between",
         gap: { xs: 0.75, md: 2 },
