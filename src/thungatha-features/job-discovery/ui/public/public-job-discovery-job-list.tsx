@@ -21,7 +21,6 @@ export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSele
         <JobCard
           key={job.id}
           job={job}
-          variant="public"
           selected={selectedId === job.id}
           postedLabel={postedLabel}
           onSelect={() => onSelect(job.id)}
