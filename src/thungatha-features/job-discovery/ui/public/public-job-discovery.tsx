@@ -16,6 +16,7 @@ import { PublicJobDiscoveryJobList } from "./public-job-discovery-job-list";
 import { PublicJobDiscoveryResultState } from "./public-job-discovery-result-state";
 import { usePublicDismissedJobs } from "./use-public-dismissed-jobs";
 import { usePublicJobFeed } from "./use-public-job-feed";
+import { usePublicJobDetail } from "./use-public-job-detail";
 
 type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
 type Job = { id: string; title: string; employer_name: string | null; description: string | null; location_text: string | null; country_code: string | null; work_mode: string | null; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; updated_at: string | null; job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null };
@@ -26,11 +27,12 @@ function dateLabel(value: string | null | undefined): string { if (!value) retur
 
 export default function PublicJobDiscovery({ configured }: { configured: boolean }) {
   const [query,setQuery]=useState(""); const [location,setLocation]=useState("Cape Town + 50 km");
-  const [selectedId,setSelectedId]=useState<string|null>(null); const [detail,setDetail]=useState<Job|null>(null);
+  const [selectedId,setSelectedId]=useState<string|null>(null);
   const [typesSelected,setTypesSelected]=useState<string[]>([]); const [quickType,setQuickType]=useState("all"); const [modesSelected,setModesSelected]=useState<string[]>([]); const [sort,setSort]=useState("relevant"); const [salary,setSalary]=useState("any"); const [experience,setExperience]=useState("any");
   const [promoVisible,setPromoVisible]=useState(false); const [retry,setRetry]=useState(0); const [mobileFiltersOpen,setMobileFiltersOpen]=useState(false); const [mobileDetailOpen,setMobileDetailOpen]=useState(false); const { dismissedJobs, setDismissedJobs } = usePublicDismissedJobs(); const [showDismissed,setShowDismissed]=useState(false);
   const feed = usePublicJobFeed(query, location, retry, setSelectedId);
   const { jobs, total, loading, error } = feed;
+  const { detail, setDetail } = usePublicJobDetail(selectedId);
 
   function dismissJob(jobId:string){const job=jobs.find(item=>item.id===jobId) ?? (detail?.id===jobId ? detail : null);if(!job)return;setDismissedJobs(current=>[job,...current.filter(item=>item.id!==jobId)]);setSelectedId(current=>current===jobId?null:current);}
   function restoreJob(jobId:string){setDismissedJobs(current=>current.filter(item=>item.id!==jobId));setSelectedId(current=>current===jobId?null:current);}
@@ -38,7 +40,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const selected=useMemo(()=>{const source=showDismissed?dismissedJobs:filteredJobs;const selectedJob=selectedId?source.find(j=>j.id===selectedId):null;if(selectedJob)return selectedJob;if(selectedId&&detail?.id===selectedId&&!showDismissed)return detail;return source[0]??null;},[showDismissed,dismissedJobs,filteredJobs,selectedId,detail]);
   useEffect(()=>{const timer=window.setTimeout(()=>{try{setPromoVisible(sessionStorage.getItem("th-public-promo-dismissed")!=="1");}catch{setPromoVisible(true);}},0);return()=>window.clearTimeout(timer);},[]);
 
-  useEffect(()=>{if(!selectedId)return;const controller=new AbortController();fetch("/api/jobs/"+encodeURIComponent(selectedId),{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}}).then(async response=>{if(!response.ok)throw new Error("Listing unavailable");const payload=await response.json() as {job:Job};setDetail(payload.job);}).catch((reason:unknown)=>{if(reason instanceof Error&&reason.name!=="AbortError")setDetail(null);});return()=>controller.abort();},[selectedId]);
+
   function dismissPromo(){setPromoVisible(false);try{sessionStorage.setItem("th-public-promo-dismissed","1");}catch{/* optional */}}
   const visibleJobs=showDismissed?dismissedJobs:filteredJobs.filter(job=>!dismissedJobs.some(item=>item.id===job.id));
   const hasActiveFilters=Boolean(query.trim()||location!=="Cape Town + 50 km"||typesSelected.length||quickType!=="all"||modesSelected.length||salary!=="any"||experience!=="any");
