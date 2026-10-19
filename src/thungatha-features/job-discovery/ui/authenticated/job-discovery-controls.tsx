@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { FormEvent } from "react";
 import { JobDiscoveryHeader } from "./job-discovery-header";
 import { JobUndoNotice } from "./job-undo-notice";
 import { Toast } from "@/components/ui/toast";
@@ -22,7 +23,7 @@ type Props = {
   sortOrder: string;
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleFilters: () => void;
   onSortChange: (value: string) => void;
   onCategoryChange: (key: string, label: string) => void;
