@@ -24,7 +24,7 @@ import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 import { useUndoJobState } from "./hooks/use-undo-job-state";
 
 import {
-  EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
+  EMPTY_FILTERS, formatDate, getApiError, safeExternalUrl, shown, sourceFor,\n  buildJobFeedParams, isValidFeed,
   type Feed, type Filters, type Job, type JobActivity,
 } from "./job-discovery-utils";
 
@@ -83,17 +83,10 @@ export default function JobsDiscovery({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const params = useMemo(() => {
-    const search = new URLSearchParams({
-      page: String(page),
-      pageSize: String(PAGE_SIZE),
-      state:
-        category === "saved" || category === "dismissed" ? category : "all",
-    });
-    for (const [key, value] of Object.entries(filters))
-      if (value.trim()) search.set(key, value.trim());
-    return search.toString();
-  }, [filters, page, category]);
+  const params = useMemo(
+    () => buildJobFeedParams(page, category, filters),
+    [page, category, filters],
+  );
 
   const refreshFeed = useCallback(
     async (signal: AbortSignal) => {
@@ -165,28 +158,9 @@ export default function JobsDiscovery({
         }
         setIsAuthenticated(true);
         const data = (await response.json()) as Feed;
-        if (
-          !Array.isArray(data.jobs) ||
-          !Number.isInteger(data.page) ||
-          data.page < 1 ||
-          !Number.isInteger(data.pageSize) ||
-          data.pageSize < 1 ||
-          !Number.isInteger(data.total) ||
-          data.total < 0 ||
-          !Number.isInteger(data.totalPages) ||
-          data.totalPages < 0 ||
-          data.totalPages !== Math.ceil(data.total / data.pageSize) ||
-          data.jobs.some(
-            (job) =>
-              !job ||
-              typeof job.id !== "string" ||
-              typeof job.title !== "string",
-          )
-        ) {
+        if (!isValidFeed(data)) {
           setFeed(null);
-          setError(
-            "The jobs service returned an unexpected response. Please retry.",
-          );
+          setError("The jobs service returned an unexpected response. Please retry.");
           return;
         }
         setFeed((current) => {
