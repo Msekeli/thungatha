@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
+import { UserRound } from "lucide-react";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
