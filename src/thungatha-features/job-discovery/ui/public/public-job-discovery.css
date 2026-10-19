@@ -70,7 +70,25 @@
     .th-discovery-workspace>aside[aria-label="Thungatha features"] { display:none; }
   }
   @media (max-width:760px) {
-    .th-discovery-shell>.th-mobile-bottom-nav { display:grid!important; }
+    .th-discovery-shell>.th-mobile-bottom-nav {
+      position:fixed; inset:auto 0 0; z-index:120;
+      display:grid!important; grid-template-columns:repeat(4,minmax(0,1fr));
+      width:100%; min-height:calc(56px + env(safe-area-inset-bottom));
+      padding:6px 8px max(6px,env(safe-area-inset-bottom));
+      border-top:1px solid var(--th-line);
+      background:var(--th-panel); box-sizing:border-box;
+    }
+    .th-discovery-shell>.th-mobile-bottom-nav>a {
+      display:flex; min-width:0; flex-direction:column; align-items:center;
+      justify-content:center; gap:3px; padding:4px 2px;
+      border-radius:8px; color:var(--th-fg-muted); text-decoration:none;
+      font-size:11px; line-height:1.2; white-space:nowrap;
+    }
+    .th-discovery-shell>.th-mobile-bottom-nav>a[data-active="true"] {
+      color:var(--th-accent-text); background:var(--th-accent-bg);
+    }
+    .th-discovery-shell>.th-mobile-bottom-nav>a svg { flex:0 0 auto; }
+    .th-discovery-shell { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
     .th-discovery-shell { height:100dvh; min-height:0; }
     .th-discovery-shell>header { min-height:58px; padding:6px 10px; gap:6px; }
     .th-discovery-shell>header img { width:148px; height:auto; }
