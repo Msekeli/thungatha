@@ -108,9 +108,11 @@ function setupFetch(
       const url = String(input);
       requests.push(url);
       if (url.startsWith("/api/jobs?")) {
+        const requestUrl = new URL(url, "http://local");
+        if (requestUrl.searchParams.get("statesOnly") === "1")
+          return response({ states: [...states.entries()].map(([job_id, state]) => ({ job_id, state })) });
         if (options.feedStatus && options.feedStatus !== 200)
           return response({ error: "Service unavailable" }, options.feedStatus);
-        const requestUrl = new URL(url, "http://local");
         const currentJobs = jobs.map((job) => {
           const item = job as {
             id: string;
