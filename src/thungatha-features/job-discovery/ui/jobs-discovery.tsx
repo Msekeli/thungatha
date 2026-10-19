@@ -22,6 +22,7 @@ import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 import { useUndoJobState } from "./hooks/use-undo-job-state";
+import { useJobFilterActions } from "./hooks/use-job-filter-actions";
 import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
 import { canReusePublicJobFeed, getReusablePublicFeed } from "./job-feed-cache";
 
@@ -228,22 +229,9 @@ export default function JobsDiscovery({
     setRetryFeed,
   );
 
-  const submitFilters = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setFilters({ ...draft });
-    setPage(1);
-    setMobileDetail(false);
-  };
-
-  const clearFilters = () => {
-    setDraft(EMPTY_FILTERS);
-    setFilters(EMPTY_FILTERS);
-    setPage(1);
-    setMobileDetail(false);
-  };
-
-  const changeDraft = (key: keyof Filters, value: string) =>
-    setDraft((current) => ({ ...current, [key]: value }));
+  const { changeDraft, submitFilters, clearFilters } = useJobFilterActions(
+    draft, setDraft, setFilters, setPage, setMobileDetail,
+  );
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <main className="th-jobs-page th-jobs-redesign">
