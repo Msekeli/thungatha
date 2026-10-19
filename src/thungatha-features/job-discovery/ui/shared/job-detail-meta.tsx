@@ -1,4 +1,4 @@
-import { Box, Chip, Stack } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { BriefcaseBusiness, CalendarDays, Clock3, MapPin } from "lucide-react";
 
 type Props = {
