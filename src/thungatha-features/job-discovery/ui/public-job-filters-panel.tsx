@@ -15,18 +15,17 @@ const modes = [
   { label: "Hybrid", value: "hybrid", count: 146 },
   { label: "On-site", value: "onsite", count: 221 },
 ];
-export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, typesSelected, setTypesSelected, modesSelected, setModesSelected, salary, setSalary, experience, setExperience, onClose }: {
+export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, typesSelected, setTypesSelected, modesSelected, setModesSelected, salary, setSalary, experience, setExperience, onClose, onClear }: {
   query: string; setQuery: (value: string) => void; location: string; setLocation: (value: string) => void;
   typesSelected: string[]; setTypesSelected: (value: string[]) => void;
   modesSelected: string[]; setModesSelected: (value: string[]) => void;
   salary: string; setSalary: (value: string) => void; experience: string; setExperience: (value: string) => void;
-  onClose: () => void;
+  onClose: () => void; onClear: () => void;
 }) {
   const toggle = (values: string[], value: string, setter: (next: string[]) => void) =>
     setter(values.includes(value) ? values.filter(item => item !== value) : [...values, value]);
-  const clear = () => { setQuery(""); setTypesSelected([]); setModesSelected([]); setSalary("any"); setExperience("any"); setLocation("Cape Town + 50 km"); };
   return <div className="th-filter-content">
-    <div className="th-filter-title"><strong>Filters</strong><button type="button" onClick={clear}>Clear all</button></div>
+    <div className="th-filter-title"><strong>Filters</strong><button type="button" onClick={onClear}>Clear all</button></div>
     <label className="th-filter-label" htmlFor="th-job-search">Search</label>
     <div className="th-filter-search"><Search size={15}/><input id="th-job-search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Job title, skills or company..."/></div>
     <label className="th-filter-label" htmlFor="th-location">Location</label>
