@@ -11,7 +11,7 @@ type Props = {
 function RestrictedAction({ configured, href, children }: {
   configured: boolean; href: string; children: React.ReactNode;
 }) {
-  const button = <Button variant="outlined" fullWidth>{children}</Button>;
+  const button = <Button variant="outlined" className="th-restricted-action">{children}</Button>;
   return configured ? <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">{button}</SignInButton>
     : <Button component="a" href={href} variant="outlined" fullWidth>{children}</Button>;
 }
@@ -28,7 +28,7 @@ export function PublicJobDetailActions(props: Props) {
     <DismissAction {...props} />
   </Stack>;
   return <Stack spacing={1} className="th-jobs-detail-actions th-jobs-redesign-actions">
-    {applyUrl ? <Button component="a" href={applyUrl} target="_blank" rel="noopener noreferrer" variant="contained">Apply on company site <ExternalLink size={14} /></Button>
+    {applyUrl ? <Button component="a" href={applyUrl} target="_blank" rel="noopener noreferrer" variant="contained">Apply Now <ExternalLink size={14} /></Button>
       : <Typography className="th-no-apply" variant="body2">An application link is not available for this listing yet.</Typography>}
     <RestrictedAction configured={configured} href={signInUrl}><PanelsTopLeft size={14} /> Tailor my CV</RestrictedAction>
   </Stack>;
