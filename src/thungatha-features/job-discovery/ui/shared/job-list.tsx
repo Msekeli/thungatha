@@ -35,7 +35,7 @@ export function JobList({
           selected={job.id === selectedId}
           postedLabel={postedLabel?.(job) ?? "Date unknown"}
           onSelect={() => onSelect(job)}
-          saveAction={<>{saveAction?.(job)}{secondaryAction?.(job)}</>}
+          saveAction={saveAction || secondaryAction ? <>{saveAction?.(job)}{secondaryAction?.(job)}</> : undefined}
         />
       ))}
     </Stack>
