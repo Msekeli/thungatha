@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+
 import { Bookmark, Check, EyeOff, ExternalLink, PanelsTopLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 
 type JobState = "saved" | "dismissed" | null;
 type Job = { id: string; title: string; state: JobState };
@@ -15,7 +15,7 @@ export function JobDetailActions({ job, applicationDestination, applicationUrl, 
     <Button variant="primary" disabled={!applicationDestination || busy || detailLoading}
       title={applicationUrl ? "Opens the supplied application destination" : jobSourceUrl ? "Opens the available source listing; it may not be the employer application page" : "No job or application link is available"}
       onClick={onApply}><ExternalLink size={14}/>{applicationUrl ? "Apply on company site" : "Open job listing"}</Button>
-    <Link className="th-jobs-tailor-link" href={`/cv-studio?jobId=${encodeURIComponent(job.id)}`}><PanelsTopLeft size={14}/> Tailor my CV</Link>
+    <ButtonLink className="th-jobs-tailor-link" variant="secondary" href={`/cv-studio?jobId=${encodeURIComponent(job.id)}`}><PanelsTopLeft size={14}/> Tailor my CV</ButtonLink>
     <Button variant="secondary" disabled={busy || detailLoading} onClick={onSave}>
       {job.state === "saved" ? <><Check size={14}/> Saved</> : <><Bookmark size={14}/> Save</>}
     </Button>
