@@ -33,8 +33,8 @@ function dateLabel(value: string | null | undefined): string | null {
   return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat("en-ZA", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
 
-export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack }: {
-  job: PublicJob | null; configured: boolean; mobileOpen: boolean; onBack: () => void;
+export function PublicJobDetailPanel({ job, configured, mobileOpen, dismissed = false, onDismiss, onRestore, onBack }: {
+  job: PublicJob | null; configured: boolean; mobileOpen: boolean; dismissed?: boolean; onDismiss?: () => void; onRestore?: () => void; onBack: () => void;
 }) {
   const source = job ? sourceFor(job) : null;
   const applicationUrl = safeUrl(source?.application_url);
@@ -49,11 +49,11 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack }: {
         {configured ? <>
           <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><PanelsTopLeft size={14}/> Tailor my CV</Button></SignInButton>
           <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><Bookmark size={14}/> Save</Button></SignInButton>
-          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="warning"><EyeOff size={14}/> Dismiss</Button></SignInButton>
+          {dismissed ? <Button variant="secondary" onClick={onRestore}><EyeOff size={14}/> Restore job</Button> : <Button variant="warning" onClick={onDismiss}><EyeOff size={14}/> Dismiss</Button>}
         </> : <>
           <a className="th-job-card-save-link" href="/sign-in"><PanelsTopLeft size={14}/> Tailor my CV</a>
           <a className="th-job-card-save-link" href="/sign-in"><Bookmark size={14}/> Save</a>
-          <a className="th-job-card-save-link" href="/sign-in"><EyeOff size={14}/> Dismiss</a>
+          {dismissed ? <Button variant="secondary" onClick={onRestore}><EyeOff size={14}/> Restore job</Button> : <Button variant="warning" onClick={onDismiss}><EyeOff size={14}/> Dismiss</Button>}
         </>}
       </div>}
       afterDescription={sourceUrl ? <a className="th-source-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a> : null}
