@@ -2,6 +2,7 @@
 
 import type { RefObject } from "react";
 import { Button } from "@/components/ui/button";
+import { Bookmark } from "lucide-react";
 import { JobCard } from "../shared/job-card";
 
 type JobSource = {
@@ -24,12 +25,12 @@ type Props = {
   loadMoreRef: RefObject<HTMLDivElement | null>;
   sourceFor: (job: Job | null) => JobSource | null;
   formatDate: (value: string | null | undefined) => string | null;
-  onRetry: () => void; onSelect: (job: Job) => void;
+  onRetry: () => void; onSelect: (job: Job) => void; onSave: (job: Job) => void;
 };
 
 export function AuthenticatedJobResultsPanel({
   jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
-  loadMoreRef, sourceFor, formatDate, onRetry, onSelect,
+  loadMoreRef, sourceFor, formatDate, onRetry, onSelect, onSave,
 }: Props) {
   return (
     <section
@@ -61,7 +62,8 @@ export function AuthenticatedJobResultsPanel({
             const source = sourceFor(job);
             const posted = source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown";
             return <JobCard key={job.id} job={job} variant="authenticated"
-              selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)} />;
+              selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)}
+              saveAction={<Button variant="ghost" size="sm" type="button" aria-label={job.state === "saved" ? `Unsave ${job.title}` : `Save ${job.title}`} title={job.state === "saved" ? "Remove from saved jobs" : "Save job"} onClick={() => onSave(job)}><Bookmark size={16} fill={job.state === "saved" ? "currentColor" : "none"} /></Button>} />;
           })}
           {feed && feed.page < feed.totalPages && (
             <div ref={loadMoreRef} className="th-jobs-load-more" aria-live="polite">
