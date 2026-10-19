@@ -48,13 +48,25 @@ export function PublicJobDiscoveryHero(props: Props) {
             <MenuItem value="">Anywhere</MenuItem>
           </Select>
         </FormControl>
-        <Button variant="contained" aria-label="Open filters" onClick={onOpenFilters}
+        <Button
+          variant="contained"
+          aria-label="Open filters"
+          onClick={onOpenFilters}
           startIcon={<SlidersHorizontal size={18} />}
-          sx={{ minWidth: { xs: 44, md: 116 }, width: { xs: 44, md: "auto" }, px: { xs: 0, md: 2 },
-            height: 44, borderRadius: "12px", fontWeight: 700, boxShadow: "none",
+          sx={{
+            minWidth: { xs: 44, md: 116 },
+            width: { xs: 44, md: "auto" },
+            px: { xs: 0, md: 2 },
+            height: 44,
+            borderRadius: "12px",
+            fontWeight: 700,
+            boxShadow: "none",
             "& .MuiButton-startIcon": { mx: { xs: 0, md: -0.5 } },
-            "& .th-filter-label": { display: { xs: "none", md: "inline" } }}>
-          <Box component="span" className="th-filter-label">Filters</Box>
+          }}
+        >
+          <Box component="span" sx={{ display: { xs: "none", md: "inline" } }}>
+            Filters
+          </Box>
         </Button>
       </Stack>
     </Stack>
