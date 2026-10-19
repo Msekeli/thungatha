@@ -1,3 +1,4 @@
+import { Box, Chip, Stack } from "@mui/material";
 import { BriefcaseBusiness, CalendarDays, Clock3, MapPin } from "lucide-react";
 
 type Props = {
@@ -8,16 +9,25 @@ type Props = {
   formatDate: (value: string | null | undefined) => string | null;
 };
 
-function shown(value?: string | null) { return value?.trim() || "Not provided"; }
+function shown(value?: string | null) {
+  return value?.trim() || "Not provided";
+}
 
 export function JobDetailMeta({ location, employmentType, workMode, postedAt, formatDate }: Props) {
   const mode = workMode === "onsite" ? "On-site" : workMode === "hybrid" ? "Hybrid" : workMode === "remote" ? "Remote" : "Work mode not stated";
+  const items = [
+    { icon: <MapPin size={14} />, label: shown(location) },
+    { icon: <BriefcaseBusiness size={14} />, label: shown(employmentType) },
+    { icon: <Clock3 size={14} />, label: mode },
+    { icon: <CalendarDays size={14} />, label: `Posted ${formatDate(postedAt) || "date unknown"}` },
+  ];
+
   return (
-    <div className="th-jobs-detail-meta">
-      <span><MapPin size={13} /> {shown(location)}</span>
-      <span><BriefcaseBusiness size={13} /> {shown(employmentType)}</span>
-      <span><Clock3 size={13} /> {mode}</span>
-      <span><CalendarDays size={13} /> Posted {formatDate(postedAt) || "date unknown"}</span>
-    </div>
+    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ py: 1 }}>
+      {items.map((item) => (
+        <Chip key={item.label} icon={item.icon} label={item.label} size="small" variant="outlined"
+          sx={{ maxWidth: "100%", height: "auto", py: 0.4, "& .MuiChip-label": { whiteSpace: "normal", overflowWrap: "anywhere" } }} />
+      ))}
+    </Stack>
   );
 }
