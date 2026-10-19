@@ -200,3 +200,116 @@
   color: var(--th-accent, #38bdf8);
 }
 .th-job-card-chevron { flex: 0 0 auto; align-self: center; }
+
+
+/* The public detail pane uses the same detail content and description as the workspace. */
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-detail-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-redesign-job-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--th-line, #1b2740);
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-detail-logo {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--th-panel-2, #0f1a2e);
+  color: var(--th-accent, #38bdf8);
+  font-size: 22px;
+  font-weight: 700;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-redesign-title { flex: 1; min-width: 0; }
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-redesign-title h1 {
+  margin: 4px 0 0;
+  color: var(--th-fg, #e9f6ff);
+  font-size: 21px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-redesign-title p {
+  margin: 0;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 12px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 12px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-detail-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-detail-salary {
+  margin: 0;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 12px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-panel {
+  min-width: 0;
+  border: 1px solid var(--th-line, #1b2740);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--th-line, #1b2740);
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-tabs button {
+  position: relative;
+  min-height: 39px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 11px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-tabs button[aria-selected="true"] {
+  color: var(--th-accent, #38bdf8);
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-redesign-description .th-jobs-description-body {
+  max-height: none;
+  padding: 14px;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-body section {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--th-line, #1b2740);
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-body section h3 {
+  margin: 0 0 7px;
+  color: var(--th-fg, #e9f6ff);
+  font-size: 13px;
+}
+.th-discovery-detail.th-jobs-redesign-detail .th-jobs-description-body section p { margin: 0; }
+.th-discovery-detail.th-jobs-redesign-detail .th-apply-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
