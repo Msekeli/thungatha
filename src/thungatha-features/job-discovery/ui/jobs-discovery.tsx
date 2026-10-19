@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
-import { JobDiscoveryHeader } from "./authenticated/job-discovery-header";
 import { JobDiscoveryDialogs } from "./authenticated/job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./authenticated/job-discovery-workspace";
-import { JobUndoNotice } from "./authenticated/job-undo-notice";
+import { JobDiscoveryControls } from "./authenticated/job-discovery-controls";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
-import { Toast } from "@/components/ui/toast";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 import { useUpdateJobState } from "./hooks/use-update-job-state";
@@ -162,15 +159,8 @@ export default function JobsDiscovery({
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <main className="th-jobs-page th-jobs-redesign">
-        {!isAuthenticated && (
-          <div className="th-jobs-auth-notice" role="status">
-            <p>
-              Your session has expired. Sign in again to browse job listings.
-            </p>
-            <Link href="/sign-in">Go to sign in</Link>
-          </div>
-        )}
-        <JobDiscoveryHeader
+        <JobDiscoveryControls
+          isAuthenticated={isAuthenticated}
           draft={draft}
           filtersOpen={filtersOpen}
           categories={categories}
@@ -191,29 +181,15 @@ export default function JobsDiscovery({
             setFilters((current) => ({ ...current, employmentType: label }));
             setPage(1);
           }}
+          undoAction={undoAction}
+          stateBusy={stateBusy}
+          onUndo={() => void undoLastStateChange()}
+          onDismissUndo={() => setUndoAction(null)}
+          stateMessage={stateMessage}
+          onDismissMessage={() => setStateMessage(null)}
+          stateError={stateError}
+          onDismissError={() => setStateError(null)}
         />
-        {undoAction && (
-          <JobUndoNotice
-            action={undoAction}
-            busy={stateBusy}
-            onUndo={() => void undoLastStateChange()}
-            onDismiss={() => setUndoAction(null)}
-          />
-        )}
-        {stateMessage && !undoAction && (
-          <Toast
-            message={stateMessage}
-            tone="success"
-            onDismiss={() => setStateMessage(null)}
-          />
-        )}
-        {stateError && (
-          <Toast
-            message={stateError}
-            tone="error"
-            onDismiss={() => setStateError(null)}
-          />
-        )}
         <AuthenticatedJobWorkspace
           jobs={visibleJobs}
           feed={feed}
