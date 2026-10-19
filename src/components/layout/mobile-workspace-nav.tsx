@@ -3,18 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import {
-  Compass,
-  Menu,
-  X,
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { MobileWorkspaceMenu, MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-menu";
 import "./mobile-workspace-nav.css";
-
-type Destination = { href: string; label: string; icon: typeof Compass };
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
