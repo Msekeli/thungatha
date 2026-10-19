@@ -52,6 +52,7 @@ export function JobSearchBar({
             fullWidth
             size="medium"
             placeholder={placeholder}
+            sx={{ "& .MuiOutlinedInput-root": { minHeight: 60, borderRadius: "14px", backgroundColor: "background.paper", fontSize: 15 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" }, "& .MuiInputAdornment-root": { color: "text.secondary" }, "& input": { py: 1.8 } }}
             slotProps={{
               ...params.slotProps,
               htmlInput: {
