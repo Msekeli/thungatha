@@ -1,0 +1,57 @@
+@layer components {
+  .th-discovery-shell {
+    height: 100dvh;
+    min-height: 0 !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .th-discovery-shell > header { flex: 0 0 auto; padding-block: 8px; }
+  .th-discovery-shell .th-discovery-hero { flex: 0 0 auto; }
+  .th-discovery-workspace {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px 16px 16px;
+    gap: 12px;
+  }
+  .th-discovery-workspace > * { min-height: 0; }
+  .th-discovery-results {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .th-discovery-results > * { min-height: 0; }
+  .th-discovery-results [class*="feed"],
+  .th-discovery-results .th-job-list { min-height: 0; overflow-y: auto; }
+  .th-discovery-detail {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  @media (min-width: 1200px) {
+    .th-discovery-shell .th-discovery-hero { padding-block: 12px; }
+    .th-discovery-shell .th-discovery-hero h1 { font-size: clamp(28px, 2.7vw, 42px); }
+  }
+  @media (max-width: 1199px) {
+    .th-discovery-workspace { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) !important; }
+    .th-discovery-workspace > aside[aria-label="Thungatha features"] { display: none; }
+  }
+  @media (max-width: 760px) {
+    .th-discovery-shell { height: 100dvh; }
+    .th-discovery-shell > header { padding: 6px 10px; gap: 6px; }
+    .th-discovery-shell > header img { width: 132px; height: auto; }
+    .th-discovery-shell .th-discovery-hero { padding: 8px 12px; }
+    .th-discovery-shell .th-discovery-hero h1 { font-size: 25px; line-height: 1.15; }
+    .th-discovery-shell .th-discovery-hero p { margin-bottom: 8px; font-size: 12px; }
+    .th-discovery-shell .th-discovery-hero .MuiChip-root { height: 30px; }
+    .th-discovery-workspace { display: block !important; position: relative; padding: 8px; }
+    .th-discovery-results { height: 100%; overflow-y: auto; }
+    .th-discovery-detail { display: none; position: absolute; inset: 8px; z-index: 4; background: var(--th-page); }
+    .th-discovery-detail.th-detail-mobile-open { display: block; }
+    .th-discovery-detail .th-mobile-detail-heading { display: flex; }
+  }
+}
