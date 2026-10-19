@@ -24,7 +24,7 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
 
   return (
     <>
-      <JobDiscoveryResultsSummary label={resultLabel} />
+      <JobDiscoveryResultsSummary label={resultLabel} secondary="Official-source listings" />
       <Stack className="th-results-toolbar" direction="row" spacing={1}
         sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}>
         {onToggleDismissed && <Button variant={showingDismissed ? "contained" : "text"} size="small" onClick={onToggleDismissed}>{showingDismissed ? "Back to opportunities" : `Dismissed (${dismissedCount})`}</Button>}
