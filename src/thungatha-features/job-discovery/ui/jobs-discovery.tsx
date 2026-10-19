@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
@@ -23,11 +23,11 @@ import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 import { useUndoJobState } from "./hooks/use-undo-job-state";
 import { useJobFilterActions } from "./hooks/use-job-filter-actions";
+import { useJobFeed } from "./hooks/use-job-feed";
 import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
-import { canReusePublicJobFeed, getReusablePublicFeed } from "./job-feed-cache";
 
 import {
-  EMPTY_FILTERS, formatDate, getApiError, shown, sourceFor,\n  buildJobFeedParams, isValidFeed,
+  EMPTY_FILTERS, formatDate, shown, sourceFor,
   type Feed, type Filters, type Job, type JobActivity,
 } from "./job-discovery-utils";
 
@@ -86,83 +86,10 @@ export default function JobsDiscovery({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const params = useMemo(
-    () => buildJobFeedParams(page, category, filters),
-    [page, category, filters],
+  useJobFeed(
+    page, category, filters, retryFeed, setFeed, setLoading, setError,
+    setIsAuthenticated, setSelectedId,
   );
-
-  const refreshFeed = useCallback(
-    async (signal: AbortSignal) => {
-      setLoading(true);
-      setError(null);
-      try {
-        if (canReusePublicJobFeed(page, category, filters)) {
-          const reusedFeed = await getReusablePublicFeed(signal);
-          if (reusedFeed) {
-            setIsAuthenticated(true);
-            setFeed(reusedFeed);
-            setSelectedId((current) =>
-              current && reusedFeed.jobs.some((job) => job.id === current)
-                ? current
-                : reusedFeed.jobs[0]?.id ?? null,
-            );
-            return;
-          }
-        }
-        const response = await fetch(`/api/jobs?${params}`, {
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-          signal,
-        });
-        if (!response.ok) {
-          setFeed(null);
-          setError(await getApiError(response));
-          setIsAuthenticated(response.status !== 401);
-          return;
-        }
-        setIsAuthenticated(true);
-        const data = (await response.json()) as Feed;
-        if (!isValidFeed(data)) {
-          setFeed(null);
-          setError("The jobs service returned an unexpected response. Please retry.");
-          return;
-        }
-        setFeed((current) => {
-          if (page > 1 && current) {
-            const knownIds = new Set(current.jobs.map((job) => job.id));
-            return {
-              ...data,
-              jobs: [
-                ...current.jobs,
-                ...data.jobs.filter((job) => !knownIds.has(job.id)),
-              ],
-            };
-          }
-          return data;
-        });
-        setSelectedId((current) =>
-          current && (page > 1 || data.jobs.some((job) => job.id === current))
-            ? current
-            : (data.jobs[0]?.id ?? null),
-        );
-      } catch (reason) {
-        if (reason instanceof Error && reason.name === "AbortError") return;
-        setFeed(null);
-        setError(
-          "Could not reach Job Discovery. Check your connection and retry.",
-        );
-      } finally {
-        if (!signal.aborted) setLoading(false);
-      }
-    },
-    [params, page, category, filters],
-  );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    void Promise.resolve().then(() => refreshFeed(controller.signal));
-    return () => controller.abort();
-  }, [refreshFeed, retryFeed]);
 
   useInfiniteJobPagination(loadMoreRef, loading, feed, page, setPage);
 
