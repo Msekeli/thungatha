@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Show, SignInButton } from "@clerk/nextjs";
-import { Bookmark, BriefcaseBusiness, FileUser, Search, X } from "lucide-react";
+import { Show } from "@clerk/nextjs";
+import { FileUser, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
+import { PublicJobMobileNav } from "./public-job-mobile-nav";
 import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
 import { PublicJobDiscoverySidebar } from "./public-job-discovery-sidebar";
@@ -53,6 +54,6 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   <PublicJobDiscoveryJobList jobs={visibleJobs.map((job) => ({ job, postedLabel: dateLabel(sourceFor(job)?.published_at) }))} selectedId={selectedId} configured={configured} dismissed={showDismissed} onDismiss={dismissJob} onRestore={restoreJob} onSelect={(jobId) => { setSelectedId(jobId); setMobileDetailOpen(true); }} /><PublicJobDiscoveryResultState loading={loading&&!showDismissed} resultCount={visibleJobs.length} showLoading />
   {promoVisible&&<PublicJobPromo configured={configured} variant="inline" onDismiss={dismissPromo} />}</section>
   <PublicJobDetailPanel job={selected} configured={configured} mobileOpen={mobileDetailOpen} dismissed={Boolean(selected&&dismissedJobs.some(item=>item.id===selected.id))} onDismiss={()=>selected&&dismissJob(selected.id)} onRestore={()=>selected&&restoreJob(selected.id)} onBack={() => setMobileDetailOpen(false)}/></main>{promoVisible&&<PublicJobPromo configured={configured} variant="wide" onDismiss={dismissPromo} /> }
-  <nav className="th-mobile-bottom-nav" aria-label="Workspace navigation"><Link href="/" className="active"><Search size={18}/><span>Discover</span></Link>{configured && <Show when="signed-in"><Link href="/cv-studio"><FileUser size={18}/><span>CV Studio</span></Link><Link href="/applications"><BriefcaseBusiness size={18}/><span>Tracking</span></Link><Link href="/jobs?status=saved"><Bookmark size={18}/><span>Saved</span></Link></Show>}{configured && <Show when="signed-out">{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" aria-label="Sign in to use CV Studio"><FileUser size={18}/><span>CV Studio</span></Button></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" aria-label="Sign in to track applications"><BriefcaseBusiness size={18}/><span>Tracking</span></Button></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" aria-label="Sign in to view saved jobs"><Bookmark size={18}/><span>Saved</span></Button></SignInButton>}</Show>}</nav>
+  <PublicJobMobileNav configured={configured} />
   {mobileFiltersOpen&&<div className="th-mobile-filter-backdrop" role="presentation" onClick={()=>setMobileFiltersOpen(false)}><section className="th-mobile-filter-sheet" role="dialog" aria-modal="true" aria-label="Job filters" onClick={e=>e.stopPropagation()}><div className="th-mobile-filter-sheet-head"><strong>Filters</strong><Button variant="ghost" size="sm" type="button" aria-label="Close filters" onClick={()=>setMobileFiltersOpen(false)}><X size={18}/></Button></div>{filterPanel}</section></div>}</div>;
 }
