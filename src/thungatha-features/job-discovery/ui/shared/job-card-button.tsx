@@ -1,5 +1,4 @@
-import { Avatar, Box, ButtonBase, Stack, Typography } from "@mui/material";
-import { ChevronRight } from "lucide-react";
+import { Avatar, ButtonBase, Stack, Typography } from "@mui/material";
 import { JobMetadata } from "./job-metadata";
 import type { JobCardData } from "./job-card";
 
@@ -31,7 +30,7 @@ export function JobCardButton({
         justifyContent: "flex-start",
         gap: 0.9,
         p: 0.85,
-        pr: 4.5,
+        pr: 1,
         border: selected ? 1.5 : 1,
         borderColor: selected ? "primary.main" : "divider",
         borderRadius: 2,
@@ -79,9 +78,6 @@ export function JobCardButton({
           presentation="card"
         />
       </Stack>
-      <Box sx={{ color: "text.secondary", pt: 0.5, display: "flex" }}>
-        <ChevronRight size={18} aria-hidden="true" />
-      </Box>
     </ButtonBase>
   );
 }
