@@ -1,20 +1,27 @@
+import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import { ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type Props = { title: string; employer?: string | null; onViewMatch: () => void };
 
 export function JobDetailHeading({ title, employer, onViewMatch }: Props) {
   return (
-    <div className="th-jobs-redesign-job-head">
-      <span className="th-jobs-employer-mark th-jobs-detail-logo">{(employer?.trim() || "?").slice(0, 1).toUpperCase()}</span>
-      <div className="th-jobs-redesign-title">
-        <h2>{title}</h2>
-        <p>{employer?.trim() || "Not provided"} <ExternalLink className="th-jobs-external-mark" size={13} aria-label="External employer link" /> <span className="th-jobs-verified">✓ Verified company</span></p>
-      </div>
-      <div className="th-jobs-match-scorebox">
-        <span>Match</span><strong>—</strong>
-        <Button variant="ghost" size="sm" onClick={onViewMatch}>View breakdown</Button>
-      </div>
-    </div>
+    <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ minWidth: 0 }}>
+      <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: "primary.main", fontWeight: 700 }}>
+        {(employer?.trim() || "?").slice(0, 1).toUpperCase()}
+      </Avatar>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="h5" component="h2" fontWeight={750} sx={{ overflowWrap: "anywhere" }}>{title}</Typography>
+        <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap">
+          <Typography variant="body2" color="text.secondary">{employer?.trim() || "Not provided"}</Typography>
+          <ExternalLink size={13} aria-label="External employer link" />
+          <Typography variant="caption" color="success.main">✓ Verified company</Typography>
+        </Stack>
+      </Box>
+      <Stack alignItems="flex-end" spacing={0.5} sx={{ flexShrink: 0 }}>
+        <Typography variant="caption" color="text.secondary">Match</Typography>
+        <Typography variant="h6">—</Typography>
+        <Button size="small" variant="text" onClick={onViewMatch}>View breakdown</Button>
+      </Stack>
+    </Stack>
   );
 }
