@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Show } from "@clerk/nextjs";
-import { Bookmark, BriefcaseBusiness, FileUser, Search } from "lucide-react";
+import { Show, SignInButton } from "@clerk/nextjs";
+import { Bookmark, BriefcaseBusiness, FileUser, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
