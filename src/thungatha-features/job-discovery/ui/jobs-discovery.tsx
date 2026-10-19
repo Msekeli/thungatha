@@ -7,6 +7,7 @@ import "./jobs-discovery.css";
 import { JobList } from "./shared/job-list";
 import { JobDetailTabs } from "./shared/job-detail-tabs";
 import { JobSearchBar } from "./shared/job-search-bar";
+import { JobTypeChips } from "./shared/job-type-chips";
 import { displayValue, formatDate, getJobSource, safeExternalUrl } from "./shared/job-formatters";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
@@ -699,41 +700,30 @@ export default function JobsDiscovery({
             </Button>
           </form>
         </header>
-        <div
+        <JobTypeChips
           className="th-jobs-category-strip"
-          role="group"
-          aria-label="Opportunity categories"
+          ariaLabel="Opportunity categories"
+          items={categories}
+          activeKey={category === "new" ? "all" : category}
+          onSelect={(key, item) => {
+            if (key === "all") {
+              setCategory("new");
+              setPage(1);
+              return;
+            }
+            if (["saved", "dismissed"].includes(key)) {
+              setCategory(key);
+              setPage(1);
+              return;
+            }
+            changeDraft("employmentType", item.label);
+            setFilters((current) => ({
+              ...current,
+              employmentType: item.label,
+            }));
+            setPage(1);
+          }}
         >
-          {categories.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              data-active={
-                item.key === "all" ? category === "new" : category === item.key
-              }
-              onClick={() => {
-                if (item.key === "all") {
-                  setCategory("new");
-                  setPage(1);
-                  return;
-                }
-                if (["saved", "dismissed"].includes(item.key)) {
-                  setCategory(item.key);
-                  setPage(1);
-                  return;
-                }
-                changeDraft("employmentType", item.label);
-                setFilters((current) => ({
-                  ...current,
-                  employmentType: item.label,
-                }));
-                setPage(1);
-              }}
-            >
-              {item.label}
-              {item.count !== null && <span>{item.count}</span>}
-            </button>
-          ))}
           <label className="th-jobs-sort">
             <ArrowDownUp size={15} />
             <select
@@ -745,7 +735,6 @@ export default function JobsDiscovery({
               <option value="oldest">Sort: Oldest</option>
             </select>
           </label>
-        </div>
         {undoAction && (
           <div className="th-jobs-undo-snackbar" role="status">
             <span>
