@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Box from "@mui/material/Box";
 import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
@@ -43,7 +44,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const hasActiveFilters=Boolean(query.trim()||location!=="Cape Town + 50 km"||typesSelected.length||quickType!=="all"||modesSelected.length||salary!=="any"||experience!=="any");
   function clearFilters(){setQuery("");setTypesSelected([]);setQuickType("all");setModesSelected([]);setSalary("any");setExperience("any");setLocation("Cape Town + 50 km");}
   const filterPanel=<PublicJobFiltersPanel query={query} setQuery={setQuery} location={location} setLocation={setLocation} typesSelected={typesSelected} setTypesSelected={setTypesSelected} modesSelected={modesSelected} setModesSelected={setModesSelected} salary={salary} setSalary={setSalary} experience={experience} setExperience={setExperience} onClose={() => setMobileFiltersOpen(false)} onClear={clearFilters}/>;
-  return <div className="th-discovery-shell">
+  return <Box className="th-discovery-shell" sx={{ minHeight: "100dvh", width: "100%", maxWidth: "100%", m: 0, bgcolor: "background.default", color: "text.primary", boxSizing: "border-box", "& *": { boxSizing: "border-box" } }}>
   <PublicJobDiscoveryHeader configured={configured} onOpenFilters={() => setMobileFiltersOpen(true)} />
   <PublicJobDiscoveryHero query={query} onQueryChange={setQuery} location={location} onLocationChange={setLocation} jobs={jobs} quickType={quickType} onQuickTypeChange={setQuickType} onClearTypes={() => setTypesSelected([])} total={total} onOpenFilters={() => setMobileFiltersOpen(true)} /><main className="th-discovery-workspace"><PublicJobDiscoverySidebar configured={configured} />
   <section className="th-discovery-results" id="jobs" aria-label="Job results"><PublicJobDiscoveryResultsToolbar loading={loading&&!showDismissed} resultCount={visibleJobs.length} total={showDismissed?dismissedJobs.length:total} hasActiveFilters={hasActiveFilters} dismissedCount={dismissedJobs.length} showingDismissed={showDismissed} onToggleDismissed={()=>{setShowDismissed(value=>!value);setSelectedId(null);}} onClearFilters={clearFilters} sort={sort} onSortChange={setSort} query={query} onQueryChange={setQuery} jobs={jobs} onOpenFilters={() => setMobileFiltersOpen(true)} />
@@ -52,5 +53,5 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   {promoVisible&&<PublicJobPromo configured={configured} variant="inline" onDismiss={dismissPromo} />}</section>
   <PublicJobDetailPanel job={selected} configured={configured} mobileOpen={mobileDetailOpen} dismissed={Boolean(selected&&dismissedJobs.some(item=>item.id===selected.id))} onDismiss={()=>selected&&dismissJob(selected.id)} onRestore={()=>selected&&restoreJob(selected.id)} onBack={() => setMobileDetailOpen(false)}/></main>{promoVisible&&<PublicJobPromo configured={configured} variant="wide" onDismiss={dismissPromo} /> }
   <PublicJobMobileNav configured={configured} />
-  {mobileFiltersOpen&&<PublicJobMobileFilters onClose={() => setMobileFiltersOpen(false)}>{filterPanel}</PublicJobMobileFilters>}</div>;
+  {mobileFiltersOpen&&<PublicJobMobileFilters onClose={() => setMobileFiltersOpen(false)}>{filterPanel}</PublicJobMobileFilters>}</Box>;
 }
