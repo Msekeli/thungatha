@@ -44,8 +44,6 @@
 .th-discovery-workspace {
   display: grid;
 }
-.th-discovery-sidebar {
-}
 .th-filter-content {
   display: flex;
   flex-direction: column;
@@ -54,8 +52,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.th-filter-title strong {
 }
 .th-filter-title button {
   font-size: 11px;
@@ -112,8 +108,6 @@
   border: 1px solid #506176;
   border-radius: 4px;
 }
-.th-check-row input:checked {
-}
 .th-check-row small {
   font-size: 11px;
 }
@@ -137,8 +131,6 @@
   gap: 10px;
   height: 26px;
   font-size: 11px;
-}
-.th-results-toolbar > span {
 }
 .th-results-toolbar label {
   display: flex;
@@ -166,8 +158,6 @@
     background 0.15s;
 }
 .th-job-row:hover,
-.th-job-row[data-selected="true"] {
-}
 .th-employer-logo {
   display: flex;
   flex: 0 0 40px;
@@ -210,8 +200,6 @@
 .th-job-row-aside {
   gap: 18px;
   font-size: 10px;
-}
-.th-job-row-aside svg {
 }
 .th-loading-rows {
   display: flex;
@@ -317,8 +305,6 @@
 .th-detail-tabs button {
   padding: 12px 2px 10px;
   border-bottom: 2px solid transparent;
-}
-.th-detail-tabs button[data-active="true"] {
 }
 .th-detail-description {
   padding: 17px 0;
@@ -706,14 +692,6 @@ body:has(.th-discovery-shell) {
   min-height: calc(100vh - 20px);
   overflow: hidden;
 }
-.th-discovery-header {
-}
-.th-discovery-workspace {
-}
-.th-discovery-sidebar {
-}
-.th-filter-content {
-}
 .th-filter-search {
   height: 36px;
   display: flex;
@@ -734,12 +712,6 @@ body:has(.th-discovery-shell) {
   font-size: 11px;
   outline: 0;
 }
-.th-filter-search input::placeholder {
-}
-.th-discovery-results {
-}
-.th-job-row {
-}
 .th-job-row-aside svg {
   display: none;
 }
@@ -749,15 +721,11 @@ body:has(.th-discovery-shell) {
 .th-detail-description .th-detail-subheading {
   margin-top: 20px;
 }
-.th-discovery-detail {
-}
 .th-mobile-search {
   display: none;
 }
 .th-filter-title {
   margin-bottom: 2px;
-}
-.th-mobile-apply-filters {
 }
 @media (min-width: 1500px) {
   .th-discovery-workspace {
@@ -839,8 +807,6 @@ body:has(.th-discovery-shell) {
   gap: 20px;
   border-bottom: 1px solid #1c2b3d;
 }
-.th-discovery-brand {
-}
 .th-desktop-nav {
   display: flex;
   align-self: stretch;
@@ -853,8 +819,6 @@ body:has(.th-discovery-shell) {
   align-items: center;
   text-decoration: none;
   border-bottom: 2px solid transparent;
-}
-.th-desktop-nav a.active {
 }
 .th-discovery-header-actions {
   gap: 9px;
@@ -895,8 +859,6 @@ body:has(.th-discovery-shell) {
   background: linear-gradient(90deg, #37a9ff, #70d9ff);
   background-clip: text;
 }
-.th-discovery-hero > p {
-}
 .th-hero-search {
   display: grid;
   gap: 6px;
@@ -925,8 +887,6 @@ body:has(.th-discovery-shell) {
   background: transparent;
   font-size: 12px;
 }
-.th-hero-query input::placeholder {
-}
 .th-hero-location {
   border-left: 1px solid #e2e7ef;
 }
@@ -952,8 +912,6 @@ body:has(.th-discovery-shell) {
   justify-content: center;
   flex-wrap: wrap;
   margin: 10px auto 0;
-}
-.th-search-chips button {
 }
 .th-search-chips button:hover {
   border-color: #24c9ef;
@@ -1040,8 +998,6 @@ body:has(.th-discovery-shell) {
 .th-filter-title strong {
   font-size: 13px;
 }
-.th-filter-title button {
-}
 .th-filter-label,
 .th-filter-group > strong {
   font-size: 11px;
@@ -1049,19 +1005,9 @@ body:has(.th-discovery-shell) {
 }
 .th-filter-search,
 .th-filter-select,
-.th-filter-native-select {
-}
 .th-filter-select select,
 .th-filter-native-select {
   color: #273952;
-}
-.th-check-row {
-}
-.th-check-row small {
-}
-.th-check-row input {
-}
-.th-check-row input:checked {
 }
 .th-discovery-results {
   background: #fff;
@@ -1074,16 +1020,10 @@ body:has(.th-discovery-shell) {
 .th-results-toolbar > span {
   color: #1b2a41;
 }
-.th-results-toolbar select {
-}
-.th-job-list {
-}
 .th-job-row {
   border-radius: 9px;
 }
 .th-job-row:hover,
-.th-job-row[data-selected="true"] {
-}
 .th-job-employer {
   color: #5d6f88;
 }
@@ -1127,16 +1067,12 @@ body:has(.th-discovery-shell) {
 .th-detail-facts svg {
   color: #253e5e;
 }
-.th-apply-button {
-}
 .th-detail-tabs {
   border-color: #e5eaf1;
   gap: 18px;
 }
 .th-detail-tabs button {
   font-size: 11px;
-}
-.th-detail-tabs button[data-active="true"] {
 }
 .th-detail-description {
   border-color: #e5eaf1;
@@ -1516,8 +1452,6 @@ body:has(.th-discovery-shell) {
   min-height: 205px;
   padding-top: 13px;
 }
-.th-discovery-hero h1 {
-}
 .th-discovery-hero > p {
   margin: 5px 0 12px;
 }
@@ -1530,8 +1464,6 @@ body:has(.th-discovery-shell) {
 .th-search-chips {
   margin-top: 8px;
   gap: 6px;
-}
-.th-search-chips button {
 }
 .th-feature-strip {
   margin-top: -25px;
@@ -1694,8 +1626,6 @@ body:has(.th-discovery-shell) {
   line-height: 1;
   white-space: nowrap;
 }
-.th-search-chips button[data-active="true"] {
-}
 .th-search-chips .th-quick-count {
   display: inline-grid;
   place-items: center;
@@ -1733,13 +1663,9 @@ body:has(.th-discovery-shell) {
   flex: 0 0 auto;
   padding-bottom: 25px;
 }
-.th-hero-search {
-}
 .th-hero-filter-button {
   font-size: 12px;
   font-weight: 650;
-}
-.th-hero-filter-button:hover {
 }
 .th-discovery-workspace {
   flex: 1 1 auto;
@@ -1758,14 +1684,8 @@ body:has(.th-discovery-shell) {
   display: flex;
   flex-direction: column;
 }
-.th-feature-sidebar-heading {
-}
 .th-feature-sidebar-heading strong {
   display: block;
-}
-.th-feature-sidebar-heading p {
-}
-.th-feature-sidebar article {
 }
 .th-feature-sidebar article:last-child {
   padding-bottom: 0;
@@ -1776,14 +1696,8 @@ body:has(.th-discovery-shell) {
   flex: 0 0 32px;
   border-radius: 9px;
 }
-.th-feature-sidebar article > div {
-}
 .th-feature-sidebar article strong {
   display: block;
-}
-.th-feature-sidebar article p {
-}
-.th-feature-sidebar article small {
 }
 .th-discovery-results {
   display: flex;
@@ -1962,8 +1876,6 @@ body:has(.th-discovery-shell) {
   white-space: nowrap;
   cursor: pointer;
 }
-.th-hero-filter-button:hover {
-}
 .th-search-chips button {
   background: var(--th-panel-2);
   border-color: var(--th-line);
@@ -1992,8 +1904,6 @@ body:has(.th-discovery-shell) {
 }
 .th-feature-sidebar article {
   border-color: var(--th-line);
-}
-.th-feature-sidebar article small {
 }
 .th-feature-sidebar .th-feature-icon {
   background: var(--th-accent-bg);
@@ -2260,8 +2170,6 @@ body:has(.th-discovery-shell) {
       320px,
       1.08fr
     );
-}
-.th-feature-sidebar {
 }
 .th-feature-sidebar-heading {
   max-width: 100%;
