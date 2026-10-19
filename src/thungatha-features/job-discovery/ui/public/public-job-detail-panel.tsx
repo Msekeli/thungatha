@@ -1,8 +1,6 @@
 "use client";
 
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
 import { PublicJobDetailContent } from "./public-job-detail-content";
 import { JobDetailEmptyState } from "../shared/job-detail-presentation";
 import type {
@@ -32,7 +30,6 @@ export function PublicJobDetailPanel({
   dismissed = false,
   onDismiss,
   onRestore,
-  onBack,
 }: PublicJobDetailPanelProps) {
   const source = job ? sourceFor(job) : null;
   const applicationUrl = safeUrl(source?.application_url);
