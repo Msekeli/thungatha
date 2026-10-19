@@ -1,14 +1,17 @@
 "use client";
 
+import { Box, Button, FormControl, MenuItem, Select, Stack } from "@mui/material";
 import { MapPin, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { JobSearchBar } from "../shared/job-search-bar";
 
 type Props = {
-  query: string; location: string; filtersOpen: boolean;
+  query: string;
+  location: string;
+  filtersOpen: boolean;
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
-  onSubmit: () => void; onToggleFilters: () => void;
+  onSubmit: () => void;
+  onToggleFilters: () => void;
 };
 
 export function AuthenticatedJobSearchToolbar({
@@ -16,23 +19,27 @@ export function AuthenticatedJobSearchToolbar({
   onSubmit, onToggleFilters,
 }: Props) {
   return (
-    <div className="th-jobs-toolbar">
-      <JobSearchBar value={query} onChange={onQueryChange}
-        placeholder="Search roles, skills, or companies..." onSubmit={onSubmit} />
-      <label className="th-jobs-location-select">
-        <MapPin aria-hidden="true" size={17} strokeWidth={1.7} />
-        <select aria-label="Location" value={location} onChange={(event) => onLocationChange(event.target.value)}>
-          <option value="">Cape Town + 50 km</option>
-          <option value="Cape Town">Cape Town</option>
-          <option value="Johannesburg">Johannesburg</option>
-          <option value="Durban">Durban</option>
-          <option value="Remote">Remote</option>
-          <option value="Anywhere">Anywhere</option>
-        </select>
-      </label>
-      <Button type="button" variant="secondary" onClick={onToggleFilters} aria-expanded={filtersOpen}>
-        <SlidersHorizontal size={15} /> Filters
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: "100%" }}>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <JobSearchBar value={query} onChange={onQueryChange}
+          placeholder="Search roles, skills, or companies..." onSubmit={onSubmit} />
+      </Box>
+      <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 185 } }}>
+        <Select displayEmpty value={location} onChange={(event) => onLocationChange(event.target.value)}
+          inputProps={{ "aria-label": "Location" }}
+          startAdornment={<MapPin size={16} style={{ marginRight: 8 }} />}>
+          <MenuItem value="">Cape Town + 50 km</MenuItem>
+          <MenuItem value="Cape Town">Cape Town</MenuItem>
+          <MenuItem value="Johannesburg">Johannesburg</MenuItem>
+          <MenuItem value="Durban">Durban</MenuItem>
+          <MenuItem value="Remote">Remote</MenuItem>
+          <MenuItem value="Anywhere">Anywhere</MenuItem>
+        </Select>
+      </FormControl>
+      <Button type="button" variant="outlined" onClick={onToggleFilters}
+        aria-expanded={filtersOpen} startIcon={<SlidersHorizontal size={15} />}>
+        Filters
       </Button>
-    </div>
+    </Stack>
   );
 }
