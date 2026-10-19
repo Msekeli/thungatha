@@ -4,17 +4,17 @@ import { ChevronDown, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const types = [
-  { label: "Full-time", value: "full_time", count: 245 },
-  { label: "Part-time", value: "part_time", count: 32 },
-  { label: "Contract", value: "contract", count: 78 },
-  { label: "Internships", value: "internship", count: 18 },
-  { label: "Learnerships", value: "learnership", count: 0 },
-  { label: "Graduate programmes", value: "graduate", count: 0 },
+  { label: "Full-time", value: "full_time" },
+  { label: "Part-time", value: "part_time" },
+  { label: "Contract", value: "contract" },
+  { label: "Internships", value: "internship" },
+  { label: "Learnerships", value: "learnership" },
+  { label: "Graduate programmes", value: "graduate" },
 ];
 const modes = [
-  { label: "Remote", value: "remote", count: 112 },
-  { label: "Hybrid", value: "hybrid", count: 146 },
-  { label: "On-site", value: "onsite", count: 221 },
+  { label: "Remote", value: "remote" },
+  { label: "Hybrid", value: "hybrid" },
+  { label: "On-site", value: "onsite" },
 ];
 export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, typesSelected, setTypesSelected, modesSelected, setModesSelected, salary, setSalary, experience, setExperience, onClose, onClear }: {
   query: string; setQuery: (value: string) => void; location: string; setLocation: (value: string) => void;
@@ -31,7 +31,7 @@ export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, 
     <div className="th-filter-search"><Search size={15}/><input id="th-job-search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Job title, skills or company..."/></div>
     <label className="th-filter-label" htmlFor="th-location">Location</label>
     <div className="th-filter-select"><MapPin size={14}/><select id="th-location" value={location} onChange={event => setLocation(event.target.value)}><option>Cape Town + 50 km</option><option>Cape Town</option><option>Johannesburg</option><option>Durban</option><option>Remote</option><option value="">Anywhere</option></select><ChevronDown size={14}/></div>
-    <div className="th-filter-group"><strong>Job type</strong>{types.map(item => <label className="th-check-row" key={item.value}><input type="checkbox" checked={typesSelected.includes(item.value)} onChange={() => toggle(typesSelected, item.value, setTypesSelected)}/><span>{item.label}</span><small>{item.count}</small></label>)}</div>
+    <div className="th-filter-group"><strong>Job type</strong>{types.map(item => <label className="th-check-row" key={item.value}><input type="checkbox" checked={typesSelected.includes(item.value)} onChange={() => toggle(typesSelected, item.value, setTypesSelected)}/><span>{item.label}</span>{item.count != null && <small>{item.count}</small>}</label>)}</div>
     <div className="th-filter-group"><strong>Remote options</strong>{modes.map(item => <label className="th-check-row" key={item.value}><input type="checkbox" checked={modesSelected.includes(item.value)} onChange={() => toggle(modesSelected, item.value, setModesSelected)}/><span>{item.label}</span><small>{item.count}</small></label>)}</div>
     <label className="th-filter-label" htmlFor="th-salary">Salary range</label>
     <select id="th-salary" className="th-filter-native-select" value={salary} onChange={event => setSalary(event.target.value)}><option value="any">Any salary</option><option value="disclosed">Salary disclosed</option><option value="above50">R500,000+ per year</option></select>
