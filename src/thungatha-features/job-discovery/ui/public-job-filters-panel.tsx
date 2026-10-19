@@ -3,7 +3,8 @@
 import { ChevronDown, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const types = [
+type FilterOption = { label: string; value: string; count?: number };
+const types: FilterOption[] = [
   { label: "Full-time", value: "full_time" },
   { label: "Part-time", value: "part_time" },
   { label: "Contract", value: "contract" },
@@ -11,7 +12,7 @@ const types = [
   { label: "Learnerships", value: "learnership" },
   { label: "Graduate programmes", value: "graduate" },
 ];
-const modes = [
+const modes: FilterOption[] = [
   { label: "Remote", value: "remote" },
   { label: "Hybrid", value: "hybrid" },
   { label: "On-site", value: "onsite" },
