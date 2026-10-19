@@ -36,7 +36,7 @@ export function AuthenticatedJobDetailPanel({ job, source, applicationDestinatio
           {detailError && <Stack direction="row" spacing={1} role="status" sx={{ alignItems: "center" }}>
             <Typography color="error" variant="body2">{detailError}</Typography><Button variant="outlined" size="small" onClick={onRetry}>Retry</Button>
           </Stack>}
-          <Box className="th-jobs-source-status"><Typography component="span" variant="caption" data-available={Boolean(applicationUrl}>{applicationUrl ? "✓ Application destination available" : "! Employer application link not verified"}</Typography></Box>
+          <Box className="th-jobs-source-status"><Typography component="span" variant="caption" data-available={Boolean(applicationUrl)}>{applicationUrl ? "✓ Application destination available" : "! Employer application link not verified"}</Typography></Box>
         </Stack>}
       />}
     </Box>
