@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, Button, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { Box, Button, FormControl, MenuItem, Select, Stack } from "@mui/material";
 import { SlidersHorizontal, X } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
+import { JobDiscoveryResultsSummary } from "../shared/job-discovery-results-summary";
 
 type JobSuggestion = { title: string; employer_name: string | null };
 type Props = {
@@ -23,9 +24,9 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
 
   return (
     <>
+      <JobDiscoveryResultsSummary label={resultLabel} />
       <Stack className="th-results-toolbar" direction="row" spacing={1}
         sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mr: "auto" }}>{resultLabel}</Typography>
         {onToggleDismissed && <Button variant={showingDismissed ? "contained" : "text"} size="small" onClick={onToggleDismissed}>{showingDismissed ? "Back to opportunities" : `Dismissed (${dismissedCount})`}</Button>}
         {hasActiveFilters && <Button variant="text" size="small" onClick={onClearFilters} startIcon={<X size={14} />}>Clear filters</Button>}
         <FormControl size="small" sx={{ minWidth: 150 }}>
