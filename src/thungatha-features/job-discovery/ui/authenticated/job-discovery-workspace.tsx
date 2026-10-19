@@ -1,6 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
+import Box from "@mui/material/Box";
 import { AuthenticatedJobResultsPanel } from "./job-results-panel";
 import { AuthenticatedJobDetailPanel } from "./job-detail-panel";
 import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
@@ -38,7 +39,15 @@ type Props = {
 
 export function AuthenticatedJobWorkspace(props: Props) {
   return (
-    <div className="th-jobs-workspace th-jobs-redesign-workspace">
+    <Box className="th-jobs-workspace th-jobs-redesign-workspace" sx={{
+      display: "grid", gridTemplateColumns: "minmax(340px, 0.92fr) minmax(0, 1.08fr)",
+      gap: 2.25, alignItems: "stretch", minHeight: 0,
+      "& > *": { minWidth: 0 },
+      "@media (max-width: 1100px) and (min-width: 761px)": {
+        gridTemplateColumns: "minmax(280px, 0.9fr) minmax(0, 1.1fr)", gap: 1.5,
+      },
+      "@media (max-width: 760px)": { display: "block", overflow: "visible" },
+    }}>
       <AuthenticatedJobResultsPanel
         jobs={props.jobs}
         feed={props.feed}
@@ -73,6 +82,6 @@ export function AuthenticatedJobWorkspace(props: Props) {
         onDismiss={props.onDismiss}
         onRetry={props.onRetryDetail}
       />
-    </div>
+    </Box>
   );
 }
