@@ -27,38 +27,44 @@ export function JobMetadata({
           ? "Remote"
           : null;
   if (presentation === "card") {
-    const tags = [
-      { label: employmentType?.replace(/[_-]+/g, " ") || "Opportunity" },
-      ...(cardMode ? [{ label: cardMode }] : []),
-      { label: posted || "Date unknown", icon: CalendarDays },
-    ];
+    const employmentLabel = employmentType?.replace(/[_-]+/g, " ") || "Opportunity";
+    const modeLabel = cardMode;
     return (
-      <Stack direction="row" alignItems="center" sx={{ flexWrap: "wrap", columnGap: 0.8, rowGap: 0.4 }}>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          className="inline-flex items-center gap-1"
-          sx={{ minWidth: 0, lineHeight: 1.2 }}
-        >
-          <MapPin size={13} aria-hidden="true" />{" "}
-          {location || "Location not specified"}
-        </Typography>
-        {tags.map(({ label, icon: Icon }) => (
+      <Stack spacing={0.45} sx={{ minWidth: 0, width: "100%" }}>
+        <Stack direction="row" alignItems="flex-start" sx={{ minWidth: 0, flexWrap: "wrap", columnGap: 0.8, rowGap: 0.35 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            className="inline-flex items-center gap-1"
+            sx={{ minWidth: 0, lineHeight: 1.3, overflowWrap: "anywhere" }}
+          >
+            <MapPin size={13} aria-hidden="true" />
+            {location || "Location not specified"}
+          </Typography>
           <Chip
-            key={label}
             size="small"
-            icon={Icon ? <Icon size={12} /> : undefined}
-            label={label}
-            sx={{
-              height: 20,
-              borderRadius: 1,
-              fontSize: "0.65rem",
-              bgcolor: "action.hover",
-              color: "text.secondary",
-              "& .MuiChip-icon": { ml: 0.75 },
-            }}
+            label={employmentLabel}
+            sx={{ height: 20, borderRadius: 1, fontSize: "0.65rem", bgcolor: "action.hover", color: "text.secondary" }}
           />
-        ))}
+          {modeLabel && (
+            <Chip
+              size="small"
+              label={modeLabel}
+              sx={{ height: 20, borderRadius: 1, fontSize: "0.65rem", bgcolor: "action.hover", color: "text.secondary" }}
+            />
+          )}
+        </Stack>
+        {posted && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            className="inline-flex items-center gap-1"
+            sx={{ lineHeight: 1.3 }}
+          >
+            <CalendarDays size={13} aria-hidden="true" />
+            {posted}
+          </Typography>
+        )}
       </Stack>
     );
   }
