@@ -1,6 +1,6 @@
 "use client";
 
-import "./job-discovery-components.css";
+import { Avatar, Box, ButtonBase, Chip, Stack, Typography } from "@mui/material";
 import { CalendarDays, ChevronRight, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -24,40 +24,55 @@ type Props = {
 };
 
 export function JobCard({ job, selected, postedLabel, onSelect, saveAction }: Props) {
-  const workMode =
-    job.work_mode === "onsite" ? "On-site" :
-    job.work_mode === "hybrid" ? "Hybrid" :
-    job.work_mode === "remote" ? "Remote" : null;
+  const workMode = job.work_mode === "onsite" ? "On-site"
+    : job.work_mode === "hybrid" ? "Hybrid"
+    : job.work_mode === "remote" ? "Remote" : null;
+  const tagSx = {
+    height: 24,
+    borderRadius: 1,
+    fontSize: "0.7rem",
+    bgcolor: "action.hover",
+    color: "text.secondary",
+    "& .MuiChip-icon": { ml: 0.75 },
+  };
 
   return (
-    <article className="th-job-card-row" data-selected={selected}>
-      <button
+    <Box sx={{ display: "flex", alignItems: "stretch", gap: 1, minWidth: 0 }}>
+      <ButtonBase
+        component="button"
         type="button"
-        className="th-job-card"
-        data-selected={selected}
         onClick={onSelect}
         aria-pressed={selected}
         aria-label={`${job.title}, ${job.employer_name || "Employer not listed"}, ${job.location_text || "Location not specified"}`}
+        sx={{
+          display: "flex", flex: 1, minWidth: 0, alignItems: "flex-start",
+          justifyContent: "flex-start", gap: 1.5, p: 1.75, border: 1,
+          borderColor: selected ? "primary.main" : "divider", borderRadius: 2,
+          bgcolor: selected ? "action.selected" : "background.paper",
+          textAlign: "left", transition: "border-color 150ms, background-color 150ms",
+          "&:hover": { borderColor: "primary.main", bgcolor: "action.hover" },
+          "&:focus-visible": { outline: "2px solid", outlineColor: "primary.main", outlineOffset: 2 },
+        }}
       >
-        <span className="th-job-card-logo" aria-hidden="true">
+        <Avatar variant="rounded" sx={{ width: 42, height: 42, bgcolor: "primary.main", color: "primary.contrastText", fontWeight: 700 }}>
           {(job.employer_name?.trim() || job.title || "?").slice(0, 1).toUpperCase()}
-        </span>
-        <span className="th-job-card-content">
-          <strong className="th-job-card-title">{job.title}</strong>
-          <span className="th-job-card-employer">{job.employer_name || "Employer not listed"}</span>
-          <span className="th-job-card-location">
-            <MapPin size={12} aria-hidden="true" />
-            <span>{job.location_text || "Location not specified"}</span>
-          </span>
-          <span className="th-job-card-tags">
-            <i className="th-job-card-tag">{job.employment_type?.replace(/[_-]+/g, " ") || "Opportunity"}</i>
-            {workMode && <i className="th-job-card-tag">{workMode}</i>}
-            <i className="th-job-card-tag"><CalendarDays size={11} aria-hidden="true" /> {postedLabel || "Date unknown"}</i>
-          </span>
-        </span>
-        <ChevronRight className="th-job-card-chevron" size={18} aria-hidden="true" />
-      </button>
-      {saveAction && <div className="th-job-card-save">{saveAction}</div>}
-    </article>
+        </Avatar>
+        <Stack spacing={0.6} sx={{ minWidth: 0, flex: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.35, overflowWrap: "anywhere" }}>{job.title}</Typography>
+          <Typography variant="body2" color="text.secondary">{job.employer_name || "Employer not listed"}</Typography>
+          <Stack direction="row" spacing={0.5} alignItems="center" sx={{ color: "text.secondary", minWidth: 0 }}>
+            <MapPin size={13} aria-hidden="true" />
+            <Typography variant="caption" sx={{ overflowWrap: "anywhere" }}>{job.location_text || "Location not specified"}</Typography>
+          </Stack>
+          <Stack direction="row" spacing={0.6} useFlexGap flexWrap="wrap" sx={{ pt: 0.25 }}>
+            <Chip size="small" label={job.employment_type?.replace(/[_-]+/g, " ") || "Opportunity"} sx={tagSx} />
+            {workMode && <Chip size="small" label={workMode} sx={tagSx} />}
+            <Chip size="small" icon={<CalendarDays size={12} />} label={postedLabel || "Date unknown"} sx={tagSx} />
+          </Stack>
+        </Stack>
+        <Box sx={{ color: "text.secondary", pt: 0.5, display: "flex" }}><ChevronRight size={18} aria-hidden="true" /></Box>
+      </ButtonBase>
+      {saveAction && <Box sx={{ display: "flex", alignItems: "flex-start", pt: 0.5 }}>{saveAction}</Box>}
+    </Box>
   );
 }
