@@ -1,6 +1,8 @@
 "use client";
 import type { RefObject } from "react";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { JobList } from "../shared/job-list";
@@ -55,20 +57,21 @@ export function AuthenticatedJobResultsPanel({
         secondary="Official-source listings"
       />
       {loading && !feed ? (
-        <div className="th-jobs-state" role="status">
-          <span className="th-jobs-spinner" aria-hidden="true" />
-          <strong>Loading opportunities</strong>
-        </div>
+        <Box role="status" sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1.25, p: "28px 8px", color: "text.secondary", fontSize: 12 }}>
+          <CircularProgress size={20} aria-label="Loading opportunities" />
+          <Typography component="strong" sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}>Loading opportunities</Typography>
+        </Box>
       ) : error ? (
-        <div className="th-jobs-state" role="alert">
-          <strong>We couldn’t load opportunities</strong><p>{error}</p>
+        <Box role="alert" sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1.25, p: "28px 8px", color: "text.secondary", fontSize: 12 }}>
+          <Typography component="strong" sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}>We couldn’t load opportunities</Typography>
+          <Typography component="p" sx={{ m: 0, mb: 0.5, lineHeight: 1.6 }}>{error}</Typography>
           <Button onClick={onRetry}>Retry</Button>
-        </div>
+        </Box>
       ) : jobs.length === 0 ? (
-        <div className="th-jobs-state">
-          <strong>{hasFilters ? "No opportunities match these filters" : "No active opportunities available"}</strong>
-          <p>Try changing your search or filters.</p>
-        </div>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1.25, p: "28px 8px", color: "text.secondary", fontSize: 12 }}>
+          <Typography component="strong" sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}>{hasFilters ? "No opportunities match these filters" : "No active opportunities available"}</Typography>
+          <Typography component="p" sx={{ m: 0, mb: 0.5, lineHeight: 1.6 }}>Try changing your search or filters.</Typography>
+        </Box>
       ) : (
         <>
           <JobList jobs={jobs} variant="authenticated" selectedId={selectedId}
@@ -87,9 +90,9 @@ export function AuthenticatedJobResultsPanel({
               </Button>;
             }} />
           {feed && feed.page < feed.totalPages && (
-            <div ref={loadMoreRef} className="th-jobs-load-more" aria-live="polite">
+            <Box ref={loadMoreRef} aria-live="polite" sx={{ p: "16px 8px", textAlign: "center", color: "text.secondary", fontSize: 12 }}>
               {loading ? "Loading more opportunities…" : "Scroll to load more opportunities"}
-            </div>
+            </Box>
           )}
         </>
       )}
