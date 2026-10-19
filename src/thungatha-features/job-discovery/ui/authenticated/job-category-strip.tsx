@@ -1,21 +1,35 @@
 "use client";
 
+import { Button, Chip, FormControl, MenuItem, Select, Stack } from "@mui/material";
 import { ArrowDownUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type Category = { key: string; label: string; count: number | null };
-export function JobCategoryStrip({ categories, category, sortOrder, onCategoryChange, onSortChange }: {
-  categories: Category[]; category: string; sortOrder: string;
+type Props = {
+  categories: Category[];
+  category: string;
+  sortOrder: string;
   onCategoryChange: (key: string, label: string) => void;
   onSortChange: (value: string) => void;
-}) {
-  return <div className="th-jobs-category-strip" role="group" aria-label="Opportunity categories">
-    {categories.map(item => <Button key={item.key} variant="ghost" size="sm" className="th-jobs-category-button" data-active={item.key === "all" ? category === "new" : category === item.key}
-      onClick={() => onCategoryChange(item.key, item.label)}>
-      {item.label}{item.count !== null && <span>{item.count}</span>}
-    </Button>)}
-    <label className="th-jobs-sort"><ArrowDownUp size={15}/><select aria-label="Sort jobs" value={sortOrder} onChange={event => onSortChange(event.target.value)}>
-      <option value="newest">Sort: Newest</option><option value="oldest">Sort: Oldest</option>
-    </select></label>
-  </div>;
+};
+
+export function JobCategoryStrip({ categories, category, sortOrder, onCategoryChange, onSortChange }: Props) {
+  return (
+    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center" role="group" aria-label="Opportunity categories">
+      {categories.map((item) => {
+        const active = item.key === "all" ? category === "new" : category === item.key;
+        return <Chip key={item.key} clickable label={item.count !== null ? `${item.label} · ${item.count}` : item.label}
+          color={active ? "primary" : "default"} variant={active ? "filled" : "outlined"}
+          onClick={() => onCategoryChange(item.key, item.label)} />;
+      })}
+      <Stack direction="row" spacing={0.75} alignItems="center" sx={{ ml: "auto" }}>
+        <ArrowDownUp size={15} aria-hidden="true" />
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <Select aria-label="Sort jobs" value={sortOrder} onChange={(event) => onSortChange(event.target.value)}>
+            <MenuItem value="newest">Sort: Newest</MenuItem>
+            <MenuItem value="oldest">Sort: Oldest</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+    </Stack>
+  );
 }
