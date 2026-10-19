@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { AuthenticatedJobResultsPanel } from "./authenticated/job-results-panel";
 import { AuthenticatedJobSearchToolbar } from "./authenticated/job-search-toolbar";
-import { Button } from "@/components/ui/button";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
@@ -16,14 +15,11 @@ import { JobUndoNotice } from "./authenticated/job-undo-notice";
 import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
-import {
-  X,
-  Check,
-} from "lucide-react";
+import { Check } from "lucide-react";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
-  type Feed, type Filters, type Job, type JobActivity, type JobSource,
+  type Feed, type Filters, type Job, type JobActivity,
 } from "./job-discovery-utils";
 
 export default function JobsDiscovery({
