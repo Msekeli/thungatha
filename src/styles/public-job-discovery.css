@@ -37,7 +37,7 @@
     .th-discovery-results { height: 100%; overflow: hidden; }
     .th-discovery-results > .th-discovery-job-list { height: 100%; overflow-y: auto; }
     .th-discovery-detail { display: none; position: absolute; inset: 8px 8px 68px; z-index: 4; background: var(--th-page); }
-    .th-discovery-detail.th-detail-mobile-open { display: block; }
+    .th-discovery-detail.th-detail-mobile-open { display: block; height: auto !important; overflow-y: auto !important; }
     .th-discovery-detail .th-mobile-detail-heading { display: flex; }
   }
 }
