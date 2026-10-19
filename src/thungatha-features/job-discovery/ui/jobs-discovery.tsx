@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { JobList } from "./shared/job-list";
 import { JobDetailTabs } from "./shared/job-detail-tabs";
+import { displayValue, formatDate, getJobSource, safeExternalUrl } from "./shared/job-formatters";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -86,41 +87,6 @@ const EMPTY_FILTERS: Filters = {
   publishedWithin: "30d",
 };
 const PAGE_SIZE = 30;
-
-function sourceFor(job: Job | null): JobSource | null {
-  if (!job?.job_sources) return null;
-  return Array.isArray(job.job_sources)
-    ? (job.job_sources[0] ?? null)
-    : job.job_sources;
-}
-
-function shown(value: string | null | undefined): string {
-  return value?.trim() || "Not provided";
-}
-
-function safeExternalUrl(value: string | null | undefined): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:"
-      ? url.toString()
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-function formatDate(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? null
-    : new Intl.DateTimeFormat(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      }).format(date);
-}
 
 async function getApiError(response: Response): Promise<string> {
   let payload: ApiError = {};
@@ -652,7 +618,7 @@ export default function JobsDiscovery({
     detail?.id === selectedId
       ? detail
       : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
-  const selectedSource = sourceFor(selectedDetail);
+  const selectedSource = getJobSource(selectedDetail);
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
@@ -668,9 +634,9 @@ export default function JobsDiscovery({
 
   const visibleJobs = [...(feed?.jobs ?? [])].sort((a, b) => {
     const da =
-      new Date(sourceFor(a)?.published_at ?? a.updated_at ?? 0).getTime() || 0;
+      new Date(getJobSource(a)?.published_at ?? a.updated_at ?? 0).getTime() || 0;
     const db =
-      new Date(sourceFor(b)?.published_at ?? b.updated_at ?? 0).getTime() || 0;
+      new Date(getJobSource(b)?.published_at ?? b.updated_at ?? 0).getTime() || 0;
     return sortOrder === "oldest" ? da - db : db - da;
   });
   const categories = [
@@ -862,7 +828,7 @@ export default function JobsDiscovery({
                   variant="authenticated"
                   selectedId={selectedId}
                   getPostedLabel={(job) => {
-                    const source = sourceFor(job);
+                    const source = getJobSource(job);
                     return source?.published_at
                       ? formatDate(source.published_at) || "Date unknown"
                       : "Date unknown";
@@ -920,7 +886,7 @@ export default function JobsDiscovery({
                   <div className="th-jobs-redesign-title">
                     <h2>{selectedDetail.title}</h2>
                     <p>
-                      {shown(selectedDetail.employer_name)}{" "}
+                      {displayValue(selectedDetail.employer_name)}{" "}
                       <ExternalLink
                         className="th-jobs-external-mark"
                         size={13}
@@ -941,11 +907,11 @@ export default function JobsDiscovery({
                 </div>
                 <div className="th-jobs-detail-meta">
                   <span>
-                    <MapPin size={13} /> {shown(selectedDetail.location_text)}
+                    <MapPin size={13} /> {displayValue(selectedDetail.location_text)}
                   </span>
                   <span>
                     <BriefcaseBusiness size={13} />{" "}
-                    {shown(selectedDetail.employment_type)}
+                    {displayValue(selectedDetail.employment_type)}
                   </span>
                   <span>
                     <Clock3 size={13} />{" "}
@@ -1344,7 +1310,7 @@ export default function JobsDiscovery({
                 <p>
                   You have opened the application page for{" "}
                   <strong>{selectedDetail.title}</strong> at{" "}
-                  <strong>{shown(selectedDetail.employer_name)}</strong>.
+                  <strong>{displayValue(selectedDetail.employer_name)}</strong>.
                 </p>
                 <div>
                   <Button
