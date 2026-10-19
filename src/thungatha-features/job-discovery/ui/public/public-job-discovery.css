@@ -52,8 +52,7 @@
   .th-discovery-job-list button[aria-pressed="true"] {
     border-color:var(--th-accent)!important;
     background:var(--th-selected,var(--th-accent-bg))!important;
-  }
-  .th-discovery-detail {
+  }  .th-discovery-detail {
     display:flex; flex-direction:column; height:100%; min-height:0;
     overflow:hidden; overscroll-behavior:contain; border-radius:12px;
   }
