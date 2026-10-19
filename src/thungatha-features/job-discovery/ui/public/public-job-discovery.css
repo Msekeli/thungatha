@@ -74,8 +74,7 @@
   .th-discovery-detail .th-jobs-detail-actions .MuiButton-root { min-height:40px; height:40px; padding:6px 10px; box-sizing:border-box; }
   .th-discovery-detail .th-jobs-detail-content .th-jobs-redesign-job-head { padding-bottom:8px; }
   .th-discovery-detail .th-jobs-detail-content > .MuiStack-root { gap:8px; }
-  .th-discovery-shell>.th-wide-promo,.th-discovery-shell>.th-mobile-bottom-nav { display:none!important; }
-  @media (max-width:1199px) {
+    @media (max-width:1199px) {
     .th-discovery-workspace { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)!important; }
     .th-discovery-workspace>aside[aria-label="Thungatha features"] { display:none; }
   }
