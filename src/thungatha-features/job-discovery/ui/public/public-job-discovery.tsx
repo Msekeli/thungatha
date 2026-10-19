@@ -13,7 +13,7 @@ import { JobDetailTabs } from "../shared/job-detail-tabs";
 import { JobSearchBar } from "../shared/job-search-bar";
 import { JobTypeChips } from "../shared/job-type-chips";
 import { JobResultsToolbar } from "../shared/job-results-toolbar";
-import { JobFilters } from "../shared/job-filters";
+import { JobFilters } from "./job-filters";
 import { JobDetailPanel } from "../shared/job-detail-panel";
 import { formatPublicDate, formatSalary, getJobSource, safeExternalUrl } from "../shared/job-formatters";
 
