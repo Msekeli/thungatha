@@ -5,10 +5,7 @@ import { useUpdateJobState } from "./use-update-job-state";
 import { useSelectedJobDetail } from "./use-selected-job-detail";
 import { useUndoJobState } from "./use-undo-job-state";
 import { useJobFeed } from "./use-job-feed";
-import type { Feed, Job } from "../job-discovery-utils";
 import type { useJobDiscoveryState } from "./use-job-discovery-state";
-
-type UndoAction = { jobId: string; title: string; previousState: "saved" | "dismissed" | null; nextState: "saved" | "dismissed" | null } | null;
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
