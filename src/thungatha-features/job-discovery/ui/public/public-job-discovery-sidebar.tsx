@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { ChartNoAxesColumn, ClipboardList } from "lucide-react";
+import { Bookmark, ChartNoAxesColumn, ClipboardList } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 
 const features = [
@@ -20,6 +20,14 @@ const features = [
     icon: ClipboardList,
     color: "secondary.main",
     action: "Create your profile",
+  },
+  {
+    title: "Saved Jobs",
+    description: "Keep interesting opportunities together and return to them when you are ready.",
+    note: "Build your shortlist",
+    icon: Bookmark,
+    color: "primary.main",
+    action: "Sign in to save jobs",
   },
   {
     title: "Track Applications",
