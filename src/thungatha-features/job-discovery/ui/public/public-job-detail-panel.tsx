@@ -1,6 +1,5 @@
 "use client";
 
-import { BriefcaseBusiness } from "lucide-react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -49,8 +48,10 @@ export function PublicJobDetailPanel({
         minWidth: 0,
         minHeight: 0,
         height: "100%",
-        overflowY: "auto",
-        p: 2.5,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        p: 2,
         border: 1,
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -64,22 +65,11 @@ export function PublicJobDetailPanel({
         "@media (max-width: 760px)": {
           height: "auto",
           maxHeight: "none",
-          overflow: "visible",
-          p: 1.75,
+          overflow: "hidden",
+          p: 1.25,
         },
       }}
     >
-      <Stack
-        direction="row"
-        spacing={1}
-        className="th-mobile-detail-heading"
-        sx={{ alignItems: "center" }}
-      >
-        <Button variant="text" onClick={onBack}>
-          ← Back to results
-        </Button>
-        <BriefcaseBusiness size={17} />
-      </Stack>
       {job ? (
         <PublicJobDetailContent
           job={job}
