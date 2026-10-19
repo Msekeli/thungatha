@@ -1,6 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
+import Box from "@mui/material/Box";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { JobList } from "../shared/job-list";
@@ -34,9 +35,23 @@ export function AuthenticatedJobResultsPanel({
   loadMoreRef, sourceFor, formatDate, onRetry, onSelect, onSave,
 }: Props) {
   return (
-    <section
+    <Box component="section"
       className={`th-jobs-results-panel th-jobs-redesign-results ${mobileDetail ? "th-jobs-mobile-hidden" : ""}`}
       aria-label="Job search results" aria-busy={loading}
+      sx={{
+        minWidth: 0, minHeight: 0, maxHeight: "none", overflowY: "auto",
+        p: 1.75, border: 1, borderColor: "divider", borderRadius: 2,
+        bgcolor: "background.paper", boxShadow: 1,
+        "& .th-jobs-results-head": {
+          position: "sticky", top: 0, zIndex: 3, mx: -0.25, mt: -0.25,
+          mb: 1.5, px: 0.5, py: 1, borderBottom: 1, borderColor: "divider",
+          bgcolor: "background.paper",
+        },
+        "@media (max-width: 760px)": {
+          p: 1.25, borderRadius: 1.75, boxShadow: "none",
+          "& .th-jobs-results-head": { position: "static", mx: 0, mt: 0, mb: 1.25, px: 0.25, py: 0.75 },
+        },
+      }}
     >
       <JobDiscoveryResultsSummary
         label={loading ? "Updating opportunities…" : jobs.length === 0 ? "0 opportunities" : `1–${Math.min(jobs.length, feed?.total ?? jobs.length)} of ${(feed?.total ?? jobs.length).toLocaleString()} opportunities`}
@@ -81,6 +96,6 @@ export function AuthenticatedJobResultsPanel({
           )}
         </>
       )}
-    </section>
+    </Box>
   );
 }
