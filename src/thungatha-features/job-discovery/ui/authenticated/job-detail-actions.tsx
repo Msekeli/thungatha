@@ -19,7 +19,7 @@ export function JobDetailActions({ job, applicationDestination, applicationUrl, 
     <Button variant="secondary" disabled={busy || detailLoading} onClick={onSave}>
       {job.state === "saved" ? <><Check size={14}/> Saved</> : <><Bookmark size={14}/> Save</>}
     </Button>
-    <Button variant="secondary" disabled={busy || detailLoading} onClick={onDismiss}>
+    <Button variant="warning" disabled={busy || detailLoading} onClick={onDismiss}>
       {job.state === "dismissed" ? "Restore" : <><EyeOff size={14}/> Dismiss</>}
     </Button>
   </div>;
