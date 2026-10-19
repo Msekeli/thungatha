@@ -13,7 +13,7 @@ export function HomeAuthActions({
   configured: boolean;
   variant?: Variant;
 }) {
-  const size = variant === "nav" ? "md" : "lg";
+  const size = variant === "nav" ? "sm" : "lg";
   const signUpLabel = variant === "nav" ? "Sign up" : "Create your account";
   const signInVariant = variant === "nav" ? "ghost" : "secondary";
 
@@ -41,7 +41,7 @@ export function HomeAuthActions({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={`flex items-center ${variant === "nav" ? "flex-nowrap gap-1" : "flex-wrap gap-2"}`}>
       <Show when="signed-out">
         <SignUpButton mode="modal">
           <Button variant="primary" size={size}>
