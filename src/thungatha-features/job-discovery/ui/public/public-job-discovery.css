@@ -31,7 +31,6 @@
   .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
   .th-discovery-job-list {
     flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
-    padding-top:4px;
   }
   .th-discovery-job-list> .MuiStack-root { gap:6px; }
   .th-discovery-job-list button[aria-pressed] { padding:10px 42px 10px 10px!important; align-items:center!important; }
