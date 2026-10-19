@@ -15,7 +15,6 @@ export type JobCardData = {
 
 type Props = {
   job: JobCardData;
-  variant: "public" | "authenticated";
   selected: boolean;
   postedLabel: string;
   onSelect: () => void;
