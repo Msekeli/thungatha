@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import "@/app/globals.css";
 
 export default function GlobalError({
   error,
@@ -35,13 +37,14 @@ export default function GlobalError({
             </p>
           )}
 
-          <button
+          <Button
+            variant="primary"
             type="button"
             onClick={reset}
             className="mt-6 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
           >
             Try again
-          </button>
+          </Button>
         </main>
       </body>
     </html>
