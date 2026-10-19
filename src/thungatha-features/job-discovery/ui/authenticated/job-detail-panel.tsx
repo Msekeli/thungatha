@@ -3,9 +3,9 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobDetailActions } from "./job-detail-actions";
-import { JobDetailDescription } from "./job-detail-description";
+import { JobDetailDescription } from "../shared/job-detail-description";
 import { JobDetailHeading } from "./job-detail-heading";
-import { JobDetailMeta } from "./job-detail-meta";
+import { JobDetailMeta } from "../shared/job-detail-meta";
 
 type JobSource = {
   id: string; provider_key: string; provider_kind: string; external_job_id: string;
