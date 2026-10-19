@@ -14,13 +14,13 @@ import { JobDetailDescription } from "./authenticated/job-detail-description";
 import { JobDetailHeading } from "./authenticated/job-detail-heading";
 import { JobDetailMeta } from "./authenticated/job-detail-meta";
 import { JobDetailActions } from "./authenticated/job-detail-actions";
+import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
   Search,
   MapPin,
   SlidersHorizontal,
-  ArrowDownUp,
   CalendarDays,
   ExternalLink,
   PanelsTopLeft,
@@ -738,53 +738,22 @@ export default function JobsDiscovery({
             </Button>
           </form>
         </header>
-        <div
-          className="th-jobs-category-strip"
-          role="group"
-          aria-label="Opportunity categories"
-        >
-          {categories.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              data-active={
-                item.key === "all" ? category === "new" : category === item.key
-              }
-              onClick={() => {
-                if (item.key === "all") {
-                  setCategory("new");
-                  setPage(1);
-                  return;
-                }
-                if (["saved", "dismissed"].includes(item.key)) {
-                  setCategory(item.key);
-                  setPage(1);
-                  return;
-                }
-                changeDraft("employmentType", item.label);
-                setFilters((current) => ({
-                  ...current,
-                  employmentType: item.label,
-                }));
-                setPage(1);
-              }}
-            >
-              {item.label}
-              {item.count !== null && <span>{item.count}</span>}
-            </button>
-          ))}
-          <label className="th-jobs-sort">
-            <ArrowDownUp size={15} />
-            <select
-              aria-label="Sort jobs"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value="newest">Sort: Newest</option>
-              <option value="oldest">Sort: Oldest</option>
-            </select>
-          </label>
-        </div>
+        <JobCategoryStrip
+          categories={categories}
+          category={category}
+          sortOrder={sortOrder}
+          onSortChange={setSortOrder}
+          onCategoryChange={(key, label) => {
+            if (key === "all" || key === "saved" || key === "dismissed") {
+              setCategory(key === "all" ? "new" : key);
+              setPage(1);
+              return;
+            }
+            changeDraft("employmentType", label);
+            setFilters(current => ({ ...current, employmentType: label }));
+            setPage(1);
+          }}
+        />
         {undoAction && (
           <div className="th-jobs-undo-snackbar" role="status">
             <span>
