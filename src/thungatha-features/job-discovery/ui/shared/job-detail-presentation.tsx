@@ -19,9 +19,7 @@ export type JobDetailPresentationData = {
 function salaryLabel(job: JobDetailPresentationData): string | null {
   if (job.salary_min == null && job.salary_max == null) return null;
   const currency = job.salary_currency || "ZAR";
-  const format = (value: number) => new Intl.NumberFormat("en-ZA", {
-    style: "currency", currency, maximumFractionDigits: 0,
-  }).format(value);
+  const format = (value: number) => new Intl.NumberFormat("en-ZA", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
   if (job.salary_min != null && job.salary_max != null) return `${format(job.salary_min)} – ${format(job.salary_max)}`;
   return format((job.salary_min ?? job.salary_max)!);
 }
@@ -36,11 +34,11 @@ export function JobDetailPresentation({
   const salary = salaryLabel(job);
   return <Stack className="th-jobs-detail-content" key={job.id} spacing={2}>
     {beforeContent}
-    <Stack direction="row" alignItems="center" spacing={2} className="th-jobs-redesign-job-head">
+    <Stack direction="row" spacing={2} className="th-jobs-redesign-job-head" sx={{ alignItems: "center" }}>
       <Avatar className="th-jobs-employer-mark th-jobs-detail-logo">{(job.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</Avatar>
-      <Box className="th-jobs-redesign-title" flex={1} minWidth={0}>
+      <Box className="th-jobs-redesign-title" sx={{ flex: 1, minWidth: 0 }}>
         <Typography variant="h5" component="h2">{job.title}</Typography>
-        <Stack direction="row" alignItems="center" spacing={0.5}>
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
           <Typography color="text.secondary">{job.employer_name?.trim() || "Employer not listed"}</Typography>
           <ExternalLink className="th-jobs-external-mark" size={13} aria-label="External employer link" />
         </Stack>
@@ -57,7 +55,7 @@ export function JobDetailPresentation({
 }
 
 export function JobDetailEmptyState({ children }: { children?: ReactNode }) {
-  return <Stack className="th-jobs-detail-placeholder" alignItems="center" spacing={1.5}>
+  return <Stack className="th-jobs-detail-placeholder" spacing={1.5} sx={{ alignItems: "center" }}>
     <BriefcaseBusiness size={24} aria-hidden="true" />
     <Typography variant="h6" component="strong">Select an opportunity</Typography>
     <Typography color="text.secondary" variant="body2">Choose a listing to view its description and application destination.</Typography>
