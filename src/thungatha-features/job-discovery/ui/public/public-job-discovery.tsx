@@ -34,6 +34,41 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   useEffect(()=>{const timer=window.setTimeout(()=>{try{setPromoVisible(sessionStorage.getItem("th-public-promo-dismissed")!=="1");}catch{setPromoVisible(true);}},0);return()=>window.clearTimeout(timer);},[]);
   useEffect(()=>{const controller=new AbortController();const timer=window.setTimeout(async()=>{setLoading(true);setError(null);const params=new URLSearchParams({page:"1",pageSize:"30",publishedWithin:"30d"});if(query.trim())params.set("query",query.trim());if(location.trim()&&location!=="Cape Town + 50 km")params.set("location",location.trim());try{const response=await fetch("/api/jobs?"+params,{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}});if(!response.ok)throw new Error(response.status===503?"Job Discovery is temporarily unavailable. Please try again shortly.":"We couldn't load jobs right now. Please try again.");const data=await response.json() as Feed;if(!Array.isArray(data.jobs))throw new Error("The jobs service returned an unexpected response.");setJobs(data.jobs);setTotal(data.total);if(!query.trim()&&location==="Cape Town + 50 km"){try{sessionStorage.setItem("thungatha-public-job-feed-v1",JSON.stringify({savedAt:Date.now(),feed:data}));}catch{/* optional cache */}}setSelectedId(current=>current&&data.jobs.some(j=>j.id===current)?current:data.jobs[0]?.id??null);}catch(reason){if(reason instanceof Error&&reason.name==="AbortError")return;setError(reason instanceof Error?reason.message:"We couldn't load jobs right now.");}finally{if(!controller.signal.aborted)setLoading(false);}},250);return()=>{window.clearTimeout(timer);controller.abort();};},[query,location,retry]);
   useEffect(()=>{if(!selectedId)return;const controller=new AbortController();fetch("/api/jobs/"+encodeURIComponent(selectedId),{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}}).then(async response=>{if(!response.ok)throw new Error("Listing unavailable");const payload=await response.json() as {job:Job};setDetail(payload.job);}).catch((reason:unknown)=>{if(reason instanceof Error&&reason.name!=="AbortError")setDetail(null);});return()=>controller.abort();},[selectedId]);
+  function dismissPromo() {
+    setPromoVisible(false);
+    try {
+      sessionStorage.setItem("th-public-promo-dismissed", "1");
+    } catch {
+      // Session storage is optional.
+    }
+  }
+
+  const hasActiveFilters = Boolean(
+    query.trim() ||
+      location !== "Cape Town + 50 km" ||
+      typesSelected.length ||
+      quickType !== "all" ||
+      modesSelected.length ||
+      salary !== "any" ||
+      experience !== "any",
+  );
+
+  function clearFilters() {
+    setQuery("");
+    setTypesSelected([]);
+    setQuickType("all");
+    setModesSelected([]);
+    setSalary("any");
+    setExperience("any");
+    setLocation("Cape Town + 50 km");
+  }
+
+  const source = getJobSource(selected);
+  const applyUrl =
+    safeExternalUrl(source?.application_url) ??
+    safeExternalUrl(source?.source_url);
+  const description = selected?.description?.trim();
+
   const filterPanel = (
     <JobFilters
       query={query}
