@@ -59,24 +59,48 @@ describe("GET /api/jobs", () => {
     identity.mockResolvedValue({ userId: "user_alice", getToken: vi.fn() });
   });
 
-  it("returns public active jobs when Clerk is not configured", async () => {
+  it("returns filtered catalogue jobs through the public client when Clerk is not configured", async () => {
     configured.mockReturnValue(false);
     const jobs = query({
-      data: [{ id: "job-public", title: "Software Engineer" }],
+      data: [{ id: "job-public", title: "Software Engineer", job_sources: [] }],
       error: null,
       count: 1,
     });
+    const from = vi.fn().mockReturnValue(jobs);
     publicClient.mockResolvedValue({
-      from: vi.fn().mockReturnValue(jobs),
+      from,
     } as never);
-    const response = await GET(new Request("http://localhost/api/jobs"));
+    const response = await GET(
+      new Request(
+        "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&publishedWithin=7d&page=2&pageSize=10",
+      ),
+    );
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       jobs: [{ id: "job-public", state: null }],
+      page: 2,
+      pageSize: 10,
       total: 1,
+      totalPages: 1,
     });
     expect(publicClient).toHaveBeenCalled();
     expect(client).not.toHaveBeenCalled();
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledWith("jobs");
+    expect(jobs.eq).toHaveBeenCalledWith(
+      "job_sources.availability_status",
+      "active",
+    );
+    expect(jobs.gte).toHaveBeenCalledWith(
+      "job_sources.published_at",
+      expect.any(String),
+    );
+    expect(jobs.or).toHaveBeenCalled();
+    expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
+    expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
+    expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
+    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
+    expect(jobs.range).toHaveBeenCalledWith(10, 19);
   });
 
   it("returns 503 when Clerk identity verification throws", async () => {
@@ -84,6 +108,17 @@ describe("GET /api/jobs", () => {
     const response = await GET(new Request("http://localhost/api/jobs"));
     expect(response.status).toBe(503);
     expect(client).not.toHaveBeenCalled();
+  });
+
+  it("does not query user state for anonymous requests", async () => {
+    configured.mockReturnValue(false);
+    const jobs = query({ data: [], error: null, count: 0 });
+    const from = vi.fn().mockReturnValue(jobs);
+    publicClient.mockResolvedValue({ from } as never);
+    const response = await GET(new Request("http://localhost/api/jobs"));
+    expect(response.status).toBe(200);
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).not.toHaveBeenCalledWith("user_job_states");
   });
 
   it("allows anonymous reads when Clerk is configured but the visitor is signed out", async () => {
