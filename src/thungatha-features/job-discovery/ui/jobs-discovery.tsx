@@ -10,6 +10,7 @@ import Dialog from "@mui/material/Dialog";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
+import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
@@ -1139,122 +1140,14 @@ export default function JobsDiscovery({
             )}
           </section>
         </div>
-        <Dialog
+        <JobFiltersDialog
           open={filtersOpen}
+          draft={draft}
           onClose={() => setFiltersOpen(false)}
-          fullWidth
-          maxWidth="sm"
-          aria-label="Filter opportunities"
-          slotProps={{
-            paper: { className: "th-jobs-popover th-jobs-filter-popover th-jobs-filter-dialog" },
-          }}
-        >
-            <header>
-              <strong>Filter opportunities</strong>
-              <button
-                type="button"
-                aria-label="Close filters"
-                onClick={() => setFiltersOpen(false)}
-              >
-                <X size={16} />
-              </button>
-            </header>
-            <form
-              onSubmit={(e) => {
-                submitFilters(e);
-                setFiltersOpen(false);
-              }}
-            >
-              <label>
-                Search keywords
-                <input
-                  className="th-input"
-                  value={draft.query}
-                  onChange={(e) => changeDraft("query", e.target.value)}
-                  placeholder="e.g. Software Engineer, React, Azure…"
-                />
-              </label>
-              <label>
-                Location
-                <select
-                  className="th-input"
-                  value={draft.location}
-                  onChange={(e) => changeDraft("location", e.target.value)}
-                >
-                  <option value="">Cape Town + 50 km</option>
-                  <option value="Cape Town">Cape Town</option>
-                  <option value="Stellenbosch">Stellenbosch</option>
-                  <option value="Western Cape">Western Cape</option>
-                </select>
-              </label>
-              <fieldset>
-                <legend>Work mode</legend>
-                {["onsite", "hybrid", "remote"].map((v) => (
-                  <label key={v}>
-                    <input
-                      type="checkbox"
-                      checked={draft.workMode === v}
-                      onChange={(e) =>
-                        changeDraft("workMode", e.target.checked ? v : "")
-                      }
-                    />
-                    {v === "onsite"
-                      ? "On-site"
-                      : v[0].toUpperCase() + v.slice(1)}
-                  </label>
-                ))}
-              </fieldset>
-              <fieldset>
-                <legend>Employment type</legend>
-                {[
-                  "Full-time",
-                  "Part-time",
-                  "Contract",
-                  "Internship",
-                  "Learnership",
-                  "Graduate programme",
-                ].map((v) => (
-                  <label key={v}>
-                    <input
-                      type="checkbox"
-                      checked={draft.employmentType === v}
-                      onChange={(e) =>
-                        changeDraft("employmentType", e.target.checked ? v : "")
-                      }
-                    />
-                    {v}
-                  </label>
-                ))}
-              </fieldset>
-              <label>
-                Posted within
-                <select
-                  className="th-input"
-                  value={draft.publishedWithin}
-                  onChange={(e) =>
-                    changeDraft("publishedWithin", e.target.value)
-                  }
-                >
-                  <option value="24h">Last 24 hours</option>
-                  <option value="7d">Last 7 days</option>
-                  <option value="14d">Last 14 days</option>
-                  <option value="30d">Last 30 days</option>
-                </select>
-              </label>
-              <footer>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={clearFilters}
-                >
-                  Reset
-                </Button>
-                <Button type="submit" variant="primary">
-                  Apply filters
-                </Button>
-              </footer>
-            </form>
-        </Dialog>
+          onChange={changeDraft}
+          onReset={clearFilters}
+          onApply={() => { setFilters({ ...draft }); setPage(1); setMobileDetail(false); setFiltersOpen(false); }}
+        />
         <ProfileSetupDialog
           open={profileSetupPrompt}
           onClose={() => setProfileSetupPrompt(false)}
