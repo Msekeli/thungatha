@@ -1,4 +1,4 @@
-import { Bookmark, CalendarDays, ChevronRight, MapPin } from "lucide-react";
+import { CalendarDays, ChevronRight, MapPin } from "lucide-react";
 import type { JobCardData } from "./job-card";
 
 type Props = {
@@ -41,7 +41,6 @@ export function PublicJobCard({ job, selected, postedLabel, onSelect }: Props) {
         </span>
       </span>
       <span className="th-job-card-aside">
-        <Bookmark size={17} aria-hidden="true" />
         <ChevronRight size={18} aria-hidden="true" />
       </span>
     </button>
