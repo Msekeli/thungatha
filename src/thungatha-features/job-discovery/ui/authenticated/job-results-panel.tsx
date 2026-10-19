@@ -61,7 +61,7 @@ export function AuthenticatedJobResultsPanel({
           {jobs.map((job) => {
             const source = sourceFor(job);
             const posted = source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown";
-            return <JobCard key={job.id} job={job} variant="authenticated"
+            return <JobCard key={job.id} job={job}
               selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)}
               saveAction={<Button variant="ghost" size="sm" type="button" aria-label={job.state === "saved" ? `Unsave ${job.title}` : `Save ${job.title}`} title={job.state === "saved" ? "Remove from saved jobs" : "Save job"} onClick={() => onSave(job)}><Bookmark size={16} fill={job.state === "saved" ? "currentColor" : "none"} /></Button>} />;
           })}
