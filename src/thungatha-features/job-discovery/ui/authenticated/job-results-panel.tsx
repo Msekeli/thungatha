@@ -1,12 +1,10 @@
 "use client";
-
 import type { RefObject } from "react";
 import Box from "@mui/material/Box";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { JobList } from "../shared/job-list";
 import { JobDiscoveryResultsSummary } from "../shared/job-discovery-results-summary";
-
 type JobSource = {
   id: string; provider_key: string; provider_kind: string; external_job_id: string;
   source_url: string | null; application_url: string | null; published_at: string | null;
@@ -29,7 +27,6 @@ type Props = {
   formatDate: (value: string | null | undefined) => string | null;
   onRetry: () => void; onSelect: (job: Job) => void; onSave: (job: Job) => void;
 };
-
 export function AuthenticatedJobResultsPanel({
   jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
   loadMoreRef, sourceFor, formatDate, onRetry, onSelect, onSave,
