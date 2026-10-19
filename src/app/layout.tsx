@@ -5,6 +5,7 @@ import { AuthProviders } from "@/thungatha-features/authentication/ui/auth-provi
 import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import { themeInitScript } from "@/lib/theme";
 import { AppThemeProvider } from "@/components/theme/app-theme-provider";
+import { PublicMobileShellNav } from "@/components/layout/mobile-workspace-menu";
 import "./globals.css";
 
 // Inter powers the design system through the --font-inter variable.
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AppThemeProvider>
           <AuthProviders configured={hasClerkConfiguration()}>
             {children}
+            <PublicMobileShellNav />
           </AuthProviders>
         </AppThemeProvider>
       </body>
