@@ -14,7 +14,7 @@ export function PublicJobDiscoverySidebar({ configured }: { configured: boolean 
   return (
     <Stack component="aside" spacing={2} aria-label="Thungatha features">
       <Box>
-        <Typography variant="h6" fontWeight={700}>Make more of your job search</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>Make more of your job search</Typography>
         <Typography variant="body2" color="text.secondary">Find opportunities and use Thungatha tools to move forward with confidence.</Typography>
       </Box>
       {features.map(({ title, description, note, icon: Icon, color, action }) => (
@@ -22,7 +22,7 @@ export function PublicJobDiscoverySidebar({ configured }: { configured: boolean 
           <CardContent sx={{ display: "flex", gap: 1.5, alignItems: "flex-start", "&:last-child": { pb: 2 } }}>
             <Box sx={{ color, display: "flex", pt: 0.5 }}><Icon size={21} aria-hidden="true" /></Box>
             <Stack spacing={0.75} sx={{ minWidth: 0 }}>
-              <Typography variant="subtitle2" fontWeight={700}>{title}</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{title}</Typography>
               <Typography variant="body2" color="text.secondary">{description}</Typography>
               <Typography variant="caption" color="text.secondary">{note}</Typography>
               {configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
