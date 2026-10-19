@@ -1293,12 +1293,14 @@ export default function JobsDiscovery({
               </div>
             </div>
         </Dialog>
-        {matchOpen && (
-          <div
-            className="th-jobs-popover th-jobs-match-popover"
-            role="dialog"
-            aria-label="Profile match breakdown"
-          >
+        <Dialog
+          open={matchOpen}
+          onClose={() => setMatchOpen(false)}
+          fullWidth
+          maxWidth="sm"
+          aria-label="Profile match breakdown"
+          slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}
+        >
             <header>
               <strong>Profile match breakdown</strong>
               <button
@@ -1323,8 +1325,7 @@ export default function JobsDiscovery({
                 <li>Can’t verify — not enough information</li>
               </ul>
             </div>
-          </div>
-        )}
+        </Dialog>
         {(forceAppliedPrompt ||
           (Boolean(selectedActivity?.application_link_opened_at) &&
             !selectedActivity?.applied_at &&
