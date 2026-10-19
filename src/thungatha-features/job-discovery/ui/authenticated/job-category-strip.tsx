@@ -10,7 +10,7 @@ export function JobCategoryStrip({ categories, category, sortOrder, onCategoryCh
 }) {
   return <div className="th-jobs-category-strip" role="group" aria-label="Opportunity categories">
     {categories.map(item => <button key={item.key} type="button"
-      data-active={item.key === "all" ? category === "new" : category === category && item.key === category}
+      data-active={item.key === "all" ? category === "new" : category === item.key}
       onClick={() => onCategoryChange(item.key, item.label)}>
       {item.label}{item.count !== null && <span>{item.count}</span>}
     </button>)}
