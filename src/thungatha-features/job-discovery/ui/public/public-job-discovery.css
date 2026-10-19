@@ -34,9 +34,7 @@
   }
   .th-discovery-job-list> .MuiStack-root { gap:6px; }
   .th-discovery-job-list button[aria-pressed] { padding:10px 42px 10px 10px!important; align-items:center!important; }
-  .th-discovery-job-list button[aria-pressed]>.MuiStack-root { gap:3px!important; }
-  .th-discovery-job-list button[aria-pressed]>.MuiAvatar-root { width:42px; height:42px; }
-  .th-discovery-job-list .th-job-card-actions { z-index:2; gap:2px; }
+      .th-discovery-job-list .th-job-card-actions { z-index:2; gap:2px; }
   .th-discovery-job-list .th-job-card-actions button,
   .th-discovery-job-list .th-job-card-actions a {
     display:grid; place-items:center; width:28px; height:28px;
