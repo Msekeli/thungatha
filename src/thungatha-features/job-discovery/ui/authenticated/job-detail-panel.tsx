@@ -20,6 +20,14 @@ type Job = {
   salary_currency: string | null; updated_at: string | null;
   job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null;
 };
+function salaryLabel(job: Job): string | null {
+  if (job.salary_min == null && job.salary_max == null) return null;
+  const currency = job.salary_currency || "ZAR";
+  const format = (value: number) => new Intl.NumberFormat("en-ZA", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+  if (job.salary_min != null && job.salary_max != null) return `${format(job.salary_min)} – ${format(job.salary_max)}`;
+  return format((job.salary_min ?? job.salary_max)!);
+}
+
 type Props = {
   job: Job | null; source: JobSource | null; applicationDestination: string | null;
   applicationUrl: string | null; jobSourceUrl: string | null; busy: boolean;
@@ -50,6 +58,7 @@ export function AuthenticatedJobDetailPanel({
           <JobDetailHeading title={job.title} employer={job.employer_name} onViewMatch={onViewMatch} />
           <JobDetailMeta location={job.location_text} employmentType={job.employment_type}
             workMode={job.work_mode} postedAt={source?.published_at} formatDate={formatDate} />
+          {salaryLabel(job) && <p className="th-jobs-detail-salary"><strong>Salary:</strong> {salaryLabel(job)}</p>}
           <JobDetailActions job={job} applicationDestination={applicationDestination}
             applicationUrl={applicationUrl} jobSourceUrl={jobSourceUrl} busy={busy}
             detailLoading={detailLoading} onApply={onApply} onSave={onSave} onDismiss={onDismiss} />
