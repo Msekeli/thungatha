@@ -9,6 +9,7 @@ import { JobDetailTabs } from "./shared/job-detail-tabs";
 import { JobSearchBar } from "./shared/job-search-bar";
 import { JobTypeChips } from "./shared/job-type-chips";
 import { AuthenticatedJobFilters } from "./shared/job-filters";
+import { JobDetailPanel } from "./shared/job-detail-panel";
 import { displayValue, formatDate, getJobSource, safeExternalUrl } from "./shared/job-formatters";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
@@ -844,20 +845,17 @@ export default function JobsDiscovery({
               </>
             )}
           </section>
-          <section
+          <JobDetailPanel
+            element="section"
             className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail ? "th-jobs-mobile-visible" : ""}`}
-            aria-label="Selected job details"
-            aria-busy={detailLoading}
+            ariaLabel="Selected job details"
+            ariaBusy={detailLoading}
+            isEmpty={!selectedDetail}
+            emptyClassName="th-jobs-detail-placeholder"
+            emptyTitle="Select an opportunity"
+            emptyDescription="Choose a listing to view its description and application destination."
           >
-            {!selectedDetail ? (
-              <div className="th-jobs-detail-placeholder">
-                <strong>Select an opportunity</strong>
-                <p>
-                  Choose a listing to view its description and application
-                  destination.
-                </p>
-              </div>
-            ) : (
+            {selectedDetail && (
               <div className="th-jobs-detail-content" key={selectedDetail.id}>
                 <button
                   type="button"
@@ -1071,7 +1069,7 @@ export default function JobsDiscovery({
                 </section>
               </div>
             )}
-          </section>
+          </JobDetailPanel>
         </div>
         <AuthenticatedJobFilters
           open={filtersOpen}
@@ -1080,7 +1078,7 @@ export default function JobsDiscovery({
           onClose={() => setFiltersOpen(false)}
           onClear={clearFilters}
           onSubmit={submitFilters}
-        />>
+        />
         <Dialog
           open={profileSetupPrompt}
           onClose={() => setProfileSetupPrompt(false)}
