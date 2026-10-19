@@ -41,9 +41,6 @@
 .th-menu-button {
   display: none;
 }
-.th-discovery-workspace {
-  display: grid;
-}
 .th-filter-content {
   display: flex;
   flex-direction: column;
@@ -120,9 +117,6 @@
   background: var(--d-panel2);
   color: var(--d-text);
   font: inherit;
-}
-.th-discovery-results {
-  min-width: 0;
 }
 .th-results-toolbar {
   display: flex;
