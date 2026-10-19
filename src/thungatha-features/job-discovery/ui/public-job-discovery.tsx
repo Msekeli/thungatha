@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { Bookmark, BriefcaseBusiness, CalendarDays, ChevronDown, ExternalLink, FileUser, MapPin, Menu, Search, SlidersHorizontal, X, ClipboardList, ChartNoAxesColumn, ShieldCheck } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, ChevronDown, FileUser, MapPin, Menu, Search, SlidersHorizontal, X, ClipboardList, ChartNoAxesColumn, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import "./public-job-discovery.css";
