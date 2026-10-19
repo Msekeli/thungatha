@@ -7,6 +7,9 @@ import "./jobs-discovery.css";
 import { JobCard } from "./shared/job-card";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
+import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
+import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
+import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
@@ -1252,145 +1255,32 @@ export default function JobsDiscovery({
               </footer>
             </form>
         </Dialog>
-        <Dialog
+        <ProfileSetupDialog
           open={profileSetupPrompt}
           onClose={() => setProfileSetupPrompt(false)}
-          fullWidth
-          maxWidth="sm"
-          aria-label="Set up your job profile"
-          slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}
-        >
-            <header>
-              <strong>Get better job matches</strong>
-              <button
-                type="button"
-                aria-label="Dismiss profile setup"
-                onClick={() => setProfileSetupPrompt(false)}
-              >
-                <X size={16} />
-              </button>
-            </header>
-            <div className="th-jobs-match-placeholder">
-              <h3>Set up your profile</h3>
-              <p>
-                Add your experience, skills and career preferences so Thungatha
-                can help you find relevant opportunities and prepare your CV for
-                each role.
-              </p>
-              <div className="th-jobs-prompt-actions">
-                <Button
-                  variant="secondary"
-                  onClick={() => setProfileSetupPrompt(false)}
-                >
-                  Do this later
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => router.push("/profile")}
-                >
-                  Create my profile
-                </Button>
-              </div>
-            </div>
-        </Dialog>
-        <Dialog
+          onCreateProfile={() => router.push("/profile")}
+        />
+        <MatchBreakdownDialog
           open={matchOpen}
           onClose={() => setMatchOpen(false)}
-          fullWidth
-          maxWidth="sm"
-          aria-label="Profile match breakdown"
-          slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}
-        >
-            <header>
-              <strong>Profile match breakdown</strong>
-              <button
-                type="button"
-                aria-label="Close match breakdown"
-                onClick={() => setMatchOpen(false)}
-              >
-                <X size={16} />
-              </button>
-            </header>
-            <div className="th-jobs-match-placeholder">
-              <h3>Match analysis is not available yet</h3>
-              <p>
-                When profile matching is implemented, this panel will compare
-                the role requirements with your confirmed profile. No score is
-                calculated at this checkpoint.
-              </p>
-              <ul>
-                <li>Confirmed — evidence from your profile</li>
-                <li>Inferred — possible match based on related experience</li>
-                <li>Missing — not found in your profile</li>
-                <li>Can’t verify — not enough information</li>
-              </ul>
-            </div>
-        </Dialog>
-        {(forceAppliedPrompt ||
-          (Boolean(selectedActivity?.application_link_opened_at) &&
-            !selectedActivity?.applied_at &&
-            dismissedPromptForJobId !== selectedId)) &&
-          selectedDetail && (
-            <Dialog
-              open
-              onClose={() => {
-                setForceAppliedPrompt(false);
-                setDismissedPromptForJobId(selectedDetail.id);
-              }}
-              fullWidth
-              maxWidth="sm"
-              aria-label="Application confirmation"
-              slotProps={{ paper: { className: "th-jobs-popover th-jobs-apply-popover th-jobs-mui-dialog" } }}
-            >
-              <header>
-                <span className="th-jobs-popover-icon">
-                  <BriefcaseBusiness size={19} />
-                </span>
-                <button
-                  type="button"
-                  aria-label="Close application confirmation"
-                  onClick={() => {
-                    setForceAppliedPrompt(false);
-                    setDismissedPromptForJobId(selectedDetail.id);
-                  }}
-                >
-                  ×
-                </button>
-              </header>
-              <div className="th-jobs-apply-confirm">
-                <h3>Did you apply?</h3>
-                <p>
-                  You have opened the application page for{" "}
-                  <strong>{selectedDetail.title}</strong> at{" "}
-                  <strong>{shown(selectedDetail.employer_name)}</strong>.
-                </p>
-                <div>
-                  <Button
-                    variant="secondary"
-                    disabled={stateBusy}
-                    onClick={() => {
-                      setForceAppliedPrompt(false);
-                      setDismissedPromptForJobId(selectedDetail.id);
-                    }}
-                  >
-                    Not yet
-                  </Button>
-                  <Button
-                    variant="primary"
-                    disabled={stateBusy}
-                    onClick={() => void confirmApplied()}
-                  >
-                    {stateBusy ? "Saving…" : "Yes, I applied"}
-                  </Button>
-                </div>
-                <aside>
-                  <Info size={15} /> This will be recorded in your{" "}
-                  <Link href="/tracking">Job Tracking</Link> so you can keep
-                  track of your applications.
-                </aside>
-              </div>
-            </Dialog>
+        />
+        <ApplicationConfirmationDialog
+          open={Boolean(
+            selectedDetail &&
+            (forceAppliedPrompt ||
+              (Boolean(selectedActivity?.application_link_opened_at) &&
+                !selectedActivity?.applied_at &&
+                dismissedPromptForJobId !== selectedId)),
           )}
+          busy={stateBusy}
+          jobTitle={selectedDetail?.title ?? ""}
+          employer={shown(selectedDetail?.employer_name)}
+          onClose={() => {
+            setForceAppliedPrompt(false);
+            if (selectedDetail) setDismissedPromptForJobId(selectedDetail.id);
+          }}
+          onConfirm={() => void confirmApplied()}
+        />
       </main>
     </WorkspaceShell>
   );
