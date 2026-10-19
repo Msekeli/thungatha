@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, BriefcaseBusiness, ExternalLink, MapPin } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, ExternalLink } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { JobDetailMeta } from "../authenticated/job-detail-meta";
