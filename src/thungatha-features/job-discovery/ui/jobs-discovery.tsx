@@ -19,6 +19,7 @@ import { Check } from "lucide-react";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 import { useUpdateJobState } from "./hooks/use-update-job-state";
+import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -329,70 +330,17 @@ export default function JobsDiscovery({
     return () => window.clearTimeout(timeoutId);
   }, [undoAction]);
 
-  const openApplicationLink = (job: Job, url: string) => {
-    // Show the question immediately for this selected role, independent of
-    // whether the activity API succeeds or the user returns from the new tab.
-    setForceAppliedPrompt(true);
-    setDismissedPromptForJobId(null);
-    // Open synchronously from the click so the browser does not block the new tab.
-    window.open(url, "_blank", "noopener,noreferrer");
-    setStateError(null);
-    void fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ action: "opened_application" }),
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(await getApiError(response));
-        const payload = (await response.json()) as { activity: JobActivity };
-        setJobActivity({ jobId: job.id, activity: payload.activity });
-      })
-      .catch(() => {
-        setStateError(
-          "The application page opened, but Thungatha could not record that visit.",
-        );
-      });
-  };
-
-  const confirmApplied = async () => {
-    if (!selectedDetail || stateBusy) return;
-    setStateBusy(true);
-    setStateError(null);
-    try {
-      const response = await fetch(
-        `/api/jobs/${encodeURIComponent(selectedDetail.id)}/activity`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ action: "confirm_applied" }),
-          cache: "no-store",
-        },
-      );
-      if (!response.ok) {
-        setStateError(await getApiError(response));
-        return;
-      }
-      const payload = (await response.json()) as { activity: JobActivity };
-      setJobActivity({ jobId: selectedDetail.id, activity: payload.activity });
-      setForceAppliedPrompt(false);
-      setDismissedPromptForJobId(null);
-      setStateMessage("Application confirmation recorded.");
-      setRetryFeed((value) => value + 1);
-    } catch {
-      setStateError(
-        "Could not record your application confirmation. Please try again.",
-      );
-    } finally {
-      setStateBusy(false);
-    }
-  };
+  const { openApplicationLink, confirmApplied } = useJobApplicationActions(
+    selectedDetail,
+    stateBusy,
+    setStateBusy,
+    setStateError,
+    setStateMessage,
+    setJobActivity,
+    setForceAppliedPrompt,
+    setDismissedPromptForJobId,
+    setRetryFeed,
+  );
 
   const submitFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
