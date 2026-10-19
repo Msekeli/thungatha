@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { Bookmark, BriefcaseBusiness, FileUser, Search, SlidersHorizontal, X } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, FileUser, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "./public-job-discovery.css";
 import { JobCard } from "./shared/job-card";
-import { JobSearchBar } from "./shared/job-search-bar";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
