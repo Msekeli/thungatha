@@ -173,21 +173,6 @@
 .th-jobs-detail-panel {
   position: relative;
 }
-.th-jobs-detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--th-line);
-}
-.th-jobs-detail-header h2 {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--th-accent-text);
-}
 .th-jobs-detail-content h3 {
   margin: 0 0 7px;
   font-size: 22px;
@@ -195,30 +180,11 @@
   font-weight: 500;
   letter-spacing: -0.025em;
 }
-.th-jobs-detail-employer {
-  margin: 0 0 18px;
-  color: var(--th-fg-muted);
-  font-size: 13px;
-}
 .th-jobs-detail-meta {
   margin-bottom: 20px;
 }
 .th-jobs-detail-meta span {
   border-radius: 7px;
-}
-.th-jobs-detail-section {
-  margin-top: 20px;
-}
-.th-jobs-detail-section h4 {
-  margin: 0 0 9px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.th-jobs-description {
-  color: var(--th-fg-muted);
-  font-size: 12px;
-  line-height: 1.75;
-  overflow-wrap: anywhere;
 }
 .th-jobs-source-actions {
   display: flex;
@@ -426,16 +392,6 @@
 .th-jobs-facts dd {
   margin: 0;
   font-size: 12px;
-  overflow-wrap: anywhere;
-}
-.th-jobs-description h4 {
-  margin: 0 0 9px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.th-jobs-description p {
-  margin: 0;
-  white-space: pre-line;
   overflow-wrap: anywhere;
 }
 .th-jobs-muted {
