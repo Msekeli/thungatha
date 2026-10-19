@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { Box, Button, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
 import { SlidersHorizontal, X } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
 
@@ -54,7 +54,7 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
 }
 
 function BoxSearch({ query, onQueryChange, suggestions }: { query: string; onQueryChange: (value: string) => void; suggestions: string[] }) {
-  return <div style={{ flex: 1, minWidth: 0 }}>
+  return <Box sx={{ flex: 1, minWidth: 0 }}>
     <JobSearchBar value={query} onChange={onQueryChange}
       placeholder="Search jobs, skills or companies..." suggestions={suggestions} />
   </div>;
