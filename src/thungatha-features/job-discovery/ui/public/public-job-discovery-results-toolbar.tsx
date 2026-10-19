@@ -1,6 +1,6 @@
 "use client";
 
-import { BriefcaseBusiness, SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobSearchBar } from "../shared/job-search-bar";
 
@@ -17,11 +17,14 @@ type Props = {
   onQueryChange: (value: string) => void;
   jobs: JobSuggestion[];
   onOpenFilters: () => void;
+  dismissedCount?: number;
+  showingDismissed?: boolean;
+  onToggleDismissed?: () => void;
 };
 
 export function PublicJobDiscoveryResultsToolbar(props: Props) {
   const { loading, resultCount, total, hasActiveFilters, onClearFilters, sort,
-    onSortChange, query, onQueryChange, jobs, onOpenFilters } = props;
+    onSortChange, query, onQueryChange, jobs, onOpenFilters, dismissedCount = 0, showingDismissed = false, onToggleDismissed } = props;
   const resultLabel = loading ? "Loading opportunities…" : resultCount === 0
     ? "0 opportunities"
     : "1–" + Math.min(resultCount, total) + " of " + total.toLocaleString() + " opportunities";
@@ -31,6 +34,7 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
     <>
       <div className="th-results-toolbar">
         <span>{resultLabel}</span>
+        {onToggleDismissed && <Button variant={showingDismissed ? "secondary" : "ghost"} size="sm" type="button" onClick={onToggleDismissed}>{showingDismissed ? "Back to opportunities" : `Dismissed (${dismissedCount})`}</Button>}
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" type="button" className="th-clear-active-filters" onClick={onClearFilters}>
             <X size={13} /> Clear filters
