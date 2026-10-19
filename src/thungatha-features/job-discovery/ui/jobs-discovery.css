@@ -3443,3 +3443,18 @@
 .th-jobs-filter-dialog form {
   padding: 0;
 }
+
+.th-jobs-mui-dialog {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  max-height: min(80dvh, 680px);
+  overflow: auto;
+  margin: 0;
+}
+.th-jobs-mui-dialog > header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--th-panel);
+}
