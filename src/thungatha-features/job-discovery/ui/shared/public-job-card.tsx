@@ -1,4 +1,4 @@
-import { Bookmark, MapPin } from "lucide-react";
+import { Bookmark, CalendarDays, ChevronRight, MapPin } from "lucide-react";
 import type { JobCardData } from "./job-card";
 
 type Props = {
@@ -9,6 +9,8 @@ type Props = {
 };
 
 export function PublicJobCard({ job, selected, postedLabel, onSelect }: Props) {
+  const workMode = job.work_mode === "onsite" ? "On-site" : job.work_mode === "hybrid" ? "Hybrid" : job.work_mode === "remote" ? "Remote" : null;
+
   return (
     <button
       type="button"
@@ -26,20 +28,21 @@ export function PublicJobCard({ job, selected, postedLabel, onSelect }: Props) {
         {(job.employer_name || job.title).slice(0, 1).toUpperCase()}
       </span>
       <span className="th-job-card-content">
-        <span className="th-job-card-employer">{job.employer_name || "Employer not listed"}</span>
         <strong className="th-job-card-title">{job.title}</strong>
+        <span className="th-job-card-employer">{job.employer_name || "Employer not listed"}</span>
         <span className="th-job-card-location">
-          <MapPin size={13} aria-hidden="true" />
-          {job.location_text || (job.work_mode === "remote" ? "Remote" : "Location not specified")}
-          <span aria-hidden="true">·</span>
-          {job.employment_type?.replace(/[_-]+/g, " ") || "Full-time"}
-          <span aria-hidden="true">·</span>
-          {job.work_mode || "Hybrid"}
+          <MapPin size={12} aria-hidden="true" />
+          <span>{job.location_text || "Location not specified"}</span>
+        </span>
+        <span className="th-job-card-tags">
+          <i className="th-job-card-tag">{job.employment_type?.replace(/[_-]+/g, " ") || "Full-time"}</i>
+          {workMode && <i className="th-job-card-tag">{workMode}</i>}
+          <i className="th-job-card-tag"><CalendarDays size={11} aria-hidden="true" /> {postedLabel || "Recently listed"}</i>
         </span>
       </span>
       <span className="th-job-card-aside">
-        <span>{postedLabel}</span>
         <Bookmark size={17} aria-hidden="true" />
+        <ChevronRight size={18} aria-hidden="true" />
       </span>
     </button>
   );
