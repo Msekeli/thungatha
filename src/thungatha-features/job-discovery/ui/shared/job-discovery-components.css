@@ -157,3 +157,46 @@
 .th-jobs-redesign-description .th-job-description-content section p {
   margin-bottom: 0;
 }
+
+
+/* A shared card row keeps selection and save actions visually consistent. */
+.th-job-card-row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  border: 1px solid var(--job-card-border, var(--th-line, #1b2740));
+  border-radius: 10px;
+  background: var(--job-card-bg, var(--th-panel, #0b1220));
+  overflow: hidden;
+}
+.th-job-card-row[data-selected="true"] {
+  border-color: var(--job-card-selected-border, var(--th-accent, #38bdf8));
+  background: var(--job-card-selected-bg, var(--th-selected, rgba(56, 189, 248, 0.14)));
+}
+.th-job-card-row > .th-job-card {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.th-job-card-row > .th-job-card[data-selected="true"] {
+  box-shadow: inset 3px 0 0 var(--job-card-selected-border, var(--th-accent, #38bdf8));
+}
+.th-job-card-save {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  padding: 7px 7px 0 0;
+}
+.th-job-card-save button {
+  min-width: 32px;
+  min-height: 32px;
+  color: var(--th-fg-muted, #8fa9be);
+}
+.th-job-card-save button:hover,
+.th-job-card-save button:focus-visible {
+  color: var(--th-accent, #38bdf8);
+}
+.th-job-card-chevron { flex: 0 0 auto; align-self: center; }
