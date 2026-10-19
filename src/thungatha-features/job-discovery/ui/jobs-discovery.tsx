@@ -24,6 +24,12 @@ export default function JobsDiscovery({
 
   const controller = useJobDiscoveryController(state);
 
-
-  return <JobDiscoveryScreen configured={configured} state={state} controller={controller} routerPushProfile={() => router.push("/profile")} />;
+  return (
+    <JobDiscoveryScreen
+      configured={configured}
+      state={state}
+      controller={controller}
+      routerPushProfile={() => router.push("/profile")}
+    />
+  );
 }

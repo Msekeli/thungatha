@@ -16,9 +16,9 @@ export function SignOutControl() {
     if (!isOpen || isSigningOut) return;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-          setIsOpen(false);
-          setError(null);
-        }
+        setIsOpen(false);
+        setError(null);
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -44,11 +44,24 @@ export function SignOutControl() {
 
   return (
     <>
-      <Button variant="secondary" size="md" onClick={() => { setError(null); setIsOpen(true); }}>
+      <Button
+        variant="secondary"
+        size="md"
+        onClick={() => {
+          setError(null);
+          setIsOpen(true);
+        }}
+      >
         Sign out
       </Button>
-      {isOpen ? <SignOutConfirmationDialog isSigningOut={isSigningOut} error={error}
-        onClose={closeDialog} onConfirm={handleSignOut} /> : null}
+      {isOpen ? (
+        <SignOutConfirmationDialog
+          isSigningOut={isSigningOut}
+          error={error}
+          onClose={closeDialog}
+          onConfirm={handleSignOut}
+        />
+      ) : null}
     </>
   );
 }

@@ -39,15 +39,22 @@ type Props = {
 
 export function AuthenticatedJobWorkspace(props: Props) {
   return (
-    <Box className="th-jobs-workspace th-jobs-redesign-workspace" sx={{
-      display: "grid", gridTemplateColumns: "minmax(340px, 0.92fr) minmax(0, 1.08fr)",
-      gap: 2.25, alignItems: "stretch", minHeight: 0,
-      "& > *": { minWidth: 0 },
-      "@media (max-width: 1100px) and (min-width: 761px)": {
-        gridTemplateColumns: "minmax(280px, 0.9fr) minmax(0, 1.1fr)", gap: 1.5,
-      },
-      "@media (max-width: 760px)": { display: "block", overflow: "visible" },
-    }}>
+    <Box
+      className="th-jobs-workspace th-jobs-redesign-workspace"
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "minmax(340px, 0.92fr) minmax(0, 1.08fr)",
+        gap: 2.25,
+        alignItems: "stretch",
+        minHeight: 0,
+        "& > *": { minWidth: 0 },
+        "@media (max-width: 1100px) and (min-width: 761px)": {
+          gridTemplateColumns: "minmax(280px, 0.9fr) minmax(0, 1.1fr)",
+          gap: 1.5,
+        },
+        "@media (max-width: 760px)": { display: "block", overflow: "visible" },
+      }}
+    >
       <AuthenticatedJobResultsPanel
         jobs={props.jobs}
         feed={props.feed}

@@ -7,7 +7,10 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { MobileWorkspaceMenu, MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-menu";
+import {
+  MobileWorkspaceMenu,
+  MobileWorkspaceBottomNav,
+} from "@/components/layout/mobile-workspace-menu";
 import "./mobile-workspace-nav.css";
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
@@ -59,7 +62,12 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
         </div>
       </header>
 
-      <MobileWorkspaceMenu open={menuOpen} configured={configured} isActive={isActiveHref} onClose={() => setMenuOpen(false)} />
+      <MobileWorkspaceMenu
+        open={menuOpen}
+        configured={configured}
+        isActive={isActiveHref}
+        onClose={() => setMenuOpen(false)}
+      />
       <MobileWorkspaceBottomNav isActive={isActiveHref} />
     </>
   );

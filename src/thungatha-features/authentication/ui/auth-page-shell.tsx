@@ -22,9 +22,12 @@ export function AuthPageShell({ children }: { children: ReactNode }) {
             </p>
           </div>
           <div className="rounded-panel border border-line bg-panel p-5">
-            <p className="text-control font-medium">Evidence-led job matching</p>
+            <p className="text-control font-medium">
+              Evidence-led job matching
+            </p>
             <p className="mt-2 text-detail leading-6 text-fg-muted">
-              Review the requirements, see what your experience supports, and decide what to do next.
+              Review the requirements, see what your experience supports, and
+              decide what to do next.
             </p>
           </div>
         </div>

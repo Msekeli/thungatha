@@ -19,7 +19,9 @@ const DEFAULT_TABS: JobDetailTab[] = [
 ];
 
 export function JobDetailTabs({
-  tabs = DEFAULT_TABS, value, onChange,
+  tabs = DEFAULT_TABS,
+  value,
+  onChange,
 }: JobDetailTabsProps) {
   return (
     <Tabs

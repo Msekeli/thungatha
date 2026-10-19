@@ -18,7 +18,9 @@
   border-radius: 18px;
   background: var(--th-panel);
   color: var(--th-fg);
-  box-shadow: 0 24px 80px rgb(0 0 0 / 38%), 0 0 0 1px rgb(255 255 255 / 2%);
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 38%),
+    0 0 0 1px rgb(255 255 255 / 2%);
   animation: th-signout-rise-in 180ms ease-out;
 }
 
@@ -104,13 +106,23 @@
 }
 
 @keyframes th-signout-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes th-signout-rise-in {
-  from { opacity: 0; transform: translateY(7px) scale(0.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (max-width: 460px) {

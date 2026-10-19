@@ -13,5 +13,10 @@ export type { JobDetailTab } from "./job-detail-tabs";
 export { JobEmptyState } from "./job-empty-state";
 export { JobSalary } from "./job-salary";
 export { JobMetadata } from "./job-metadata";
-export { shown, safeExternalUrl, formatDate, titleCase } from "./job-formatters";
+export {
+  shown,
+  safeExternalUrl,
+  formatDate,
+  titleCase,
+} from "./job-formatters";
 export { JobPagination } from "./job-pagination";

@@ -19,28 +19,76 @@ type Props = {
   onRestore?: (jobId: string) => void;
 };
 
-export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSelect, dismissed = false, onDismiss, onRestore }: Props) {
+export function PublicJobDiscoveryJobList({
+  jobs,
+  selectedId,
+  configured,
+  onSelect,
+  dismissed = false,
+  onDismiss,
+  onRestore,
+}: Props) {
   const jobData = jobs.map(({ job }) => job);
-  const postedById = new Map(jobs.map(({ job, postedLabel }) => [job.id, postedLabel]));
-  return <Box sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-    <JobList jobs={jobData} variant="public" selectedId={selectedId}
-      postedLabel={(job) => postedById.get(job.id) ?? "Date unknown"}
-      onSelect={(job) => onSelect(job.id)}
-      saveAction={(job) => configured ? (
-        <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-          <Button variant="ghost" size="sm" type="button" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
-            <Bookmark size={16} />
-          </Button>
-        </SignInButton>
-      ) : (
-        <Link href="/sign-in" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
-          <Bookmark size={16} />
-        </Link>
-      )}
-      secondaryAction={(job) => dismissed ? (
-        <Button variant="ghost" size="sm" type="button" aria-label={`Restore ${job.title}`} title="Restore job" onClick={() => onRestore?.(job.id)}><RotateCcw size={15} /></Button>
-      ) : (
-        <Button variant="ghost" size="sm" type="button" aria-label={`Dismiss ${job.title}`} title="Dismiss job" onClick={() => onDismiss?.(job.id)}><EyeOff size={15} /></Button>
-      )} />
-  </Box>;
+  const postedById = new Map(
+    jobs.map(({ job, postedLabel }) => [job.id, postedLabel]),
+  );
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <JobList
+        jobs={jobData}
+        variant="public"
+        selectedId={selectedId}
+        postedLabel={(job) => postedById.get(job.id) ?? "Date unknown"}
+        onSelect={(job) => onSelect(job.id)}
+        saveAction={(job) =>
+          configured ? (
+            <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                aria-label={`Sign in to save ${job.title}`}
+                title="Sign in to save this job"
+              >
+                <Bookmark size={16} />
+              </Button>
+            </SignInButton>
+          ) : (
+            <Link
+              href="/sign-in"
+              aria-label={`Sign in to save ${job.title}`}
+              title="Sign in to save this job"
+            >
+              <Bookmark size={16} />
+            </Link>
+          )
+        }
+        secondaryAction={(job) =>
+          dismissed ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              aria-label={`Restore ${job.title}`}
+              title="Restore job"
+              onClick={() => onRestore?.(job.id)}
+            >
+              <RotateCcw size={15} />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              aria-label={`Dismiss ${job.title}`}
+              title="Dismiss job"
+              onClick={() => onDismiss?.(job.id)}
+            >
+              <EyeOff size={15} />
+            </Button>
+          )
+        }
+      />
+    </Box>
+  );
 }

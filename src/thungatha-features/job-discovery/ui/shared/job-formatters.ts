@@ -2,7 +2,9 @@ export function shown(value: string | null | undefined): string {
   return value?.trim() || "Not provided";
 }
 
-export function safeExternalUrl(value: string | null | undefined): string | null {
+export function safeExternalUrl(
+  value: string | null | undefined,
+): string | null {
   if (!value) return null;
   try {
     const url = new URL(value);

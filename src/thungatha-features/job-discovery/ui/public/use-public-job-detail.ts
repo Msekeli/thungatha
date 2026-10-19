@@ -13,13 +13,16 @@ export function usePublicJobDetail(selectedId: string | null) {
       signal: controller.signal,
       cache: "no-store",
       headers: { Accept: "application/json" },
-    }).then(async (response) => {
-      if (!response.ok) throw new Error("Listing unavailable");
-      const payload = await response.json() as { job: JobDetail };
-      setDetail(payload.job);
-    }).catch((reason: unknown) => {
-      if (reason instanceof Error && reason.name !== "AbortError") setDetail(null);
-    });
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Listing unavailable");
+        const payload = (await response.json()) as { job: JobDetail };
+        setDetail(payload.job);
+      })
+      .catch((reason: unknown) => {
+        if (reason instanceof Error && reason.name !== "AbortError")
+          setDetail(null);
+      });
     return () => controller.abort();
   }, [selectedId]);
 

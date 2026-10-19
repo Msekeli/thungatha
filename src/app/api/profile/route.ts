@@ -4,7 +4,10 @@ import {
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { readProfile, saveProfile } from "@/thungatha-features/user-profile/server/repository";
+import {
+  readProfile,
+  saveProfile,
+} from "@/thungatha-features/user-profile/server/repository";
 import { updateProfileSchema } from "@/thungatha-features/user-profile/server/schema";
 import { SupabaseConfigurationError } from "@/lib/supabase/server";
 

@@ -1,6 +1,12 @@
 "use client";
 
-import { FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+} from "@mui/material";
 
 export type JobFilterOption = { label: string; value: string };
 

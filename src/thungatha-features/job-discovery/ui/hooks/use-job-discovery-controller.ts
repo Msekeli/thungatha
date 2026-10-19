@@ -9,16 +9,38 @@ type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 export function useJobDiscoveryController(s: DiscoveryState) {
   const data = useJobDiscoveryData(s);
   const view = buildJobDiscoveryViewModel({
-    detail: s.detail, selectedId: s.selectedId, feed: s.feed,
-    jobActivity: s.jobActivity, filters: s.filters, sortOrder: s.sortOrder,
+    detail: s.detail,
+    selectedId: s.selectedId,
+    feed: s.feed,
+    jobActivity: s.jobActivity,
+    filters: s.filters,
+    sortOrder: s.sortOrder,
   });
   const application = useJobApplicationActions(
-    view.selectedDetail, s.stateBusy, s.setStateBusy, s.setStateError,
-    s.setStateMessage, s.setJobActivity, s.setForceAppliedPrompt,
-    s.setDismissedPromptForJobId, s.setRetryFeed,
+    view.selectedDetail,
+    s.stateBusy,
+    s.setStateBusy,
+    s.setStateError,
+    s.setStateMessage,
+    s.setJobActivity,
+    s.setForceAppliedPrompt,
+    s.setDismissedPromptForJobId,
+    s.setRetryFeed,
   );
   const filters = useJobFilterActions(
-    s.draft, s.setDraft, s.setFilters, s.setPage, s.setMobileDetail,
+    s.draft,
+    s.setDraft,
+    s.setFilters,
+    s.setPage,
+    s.setMobileDetail,
   );
-  return { ...data, ...view, ...application, ...filters, formatDate, shown, sourceFor };
+  return {
+    ...data,
+    ...view,
+    ...application,
+    ...filters,
+    formatDate,
+    shown,
+    sourceFor,
+  };
 }

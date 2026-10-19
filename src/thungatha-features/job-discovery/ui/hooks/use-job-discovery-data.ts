@@ -11,12 +11,51 @@ type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
 export function useJobDiscoveryData(state: DiscoveryState) {
   const s = state;
-  useJobFeed(s.page, s.category, s.filters, s.retryFeed, s.setFeed, s.setLoading, s.setError, s.setIsAuthenticated, s.setSelectedId);
+  useJobFeed(
+    s.page,
+    s.category,
+    s.filters,
+    s.retryFeed,
+    s.setFeed,
+    s.setLoading,
+    s.setError,
+    s.setIsAuthenticated,
+    s.setSelectedId,
+  );
   useInfiniteJobPagination(s.loadMoreRef, s.loading, s.feed, s.page, s.setPage);
-  useSelectedJobDetail(s.selectedId, s.retryDetail, s.setDetail, s.setDetailLoading, s.setDetailError);
-  useJobActivitySync(s.selectedId, s.setJobActivity, s.setActivityError, s.setForceAppliedPrompt, s.setDismissedPromptForJobId);
-  const updateJobState = useUpdateJobState(s.stateBusy, s.setStateBusy, s.setStateError, s.setStateMessage, s.setFeed, s.setDetail, s.setUndoAction, s.setRetryFeed);
-  const undoLastStateChange = useUndoJobState(s.undoAction, s.stateBusy, s.detail, s.feed, updateJobState, s.setUndoAction, s.setStateMessage);
+  useSelectedJobDetail(
+    s.selectedId,
+    s.retryDetail,
+    s.setDetail,
+    s.setDetailLoading,
+    s.setDetailError,
+  );
+  useJobActivitySync(
+    s.selectedId,
+    s.setJobActivity,
+    s.setActivityError,
+    s.setForceAppliedPrompt,
+    s.setDismissedPromptForJobId,
+  );
+  const updateJobState = useUpdateJobState(
+    s.stateBusy,
+    s.setStateBusy,
+    s.setStateError,
+    s.setStateMessage,
+    s.setFeed,
+    s.setDetail,
+    s.setUndoAction,
+    s.setRetryFeed,
+  );
+  const undoLastStateChange = useUndoJobState(
+    s.undoAction,
+    s.stateBusy,
+    s.detail,
+    s.feed,
+    updateJobState,
+    s.setUndoAction,
+    s.setStateMessage,
+  );
   useEffect(() => {
     if (!s.undoAction) return;
     const timeoutId = window.setTimeout(() => s.setUndoAction(null), 10_000);

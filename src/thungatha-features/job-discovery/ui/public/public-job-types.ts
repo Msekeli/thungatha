@@ -1,4 +1,10 @@
-export type PublicJobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
+export type PublicJobSource = {
+  source_url: string | null;
+  application_url: string | null;
+  published_at: string | null;
+  availability_status: string;
+  provider_kind: string;
+};
 
 export type PublicJob = {
   id: string;

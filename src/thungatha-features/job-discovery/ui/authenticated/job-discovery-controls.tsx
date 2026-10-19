@@ -60,14 +60,26 @@ export function JobDiscoveryControls(props: Props) {
         onCategoryChange={props.onCategoryChange}
       />
       {props.undoAction && (
-        <JobUndoNotice action={props.undoAction} busy={props.stateBusy}
-          onUndo={props.onUndo} onDismiss={props.onDismissUndo} />
+        <JobUndoNotice
+          action={props.undoAction}
+          busy={props.stateBusy}
+          onUndo={props.onUndo}
+          onDismiss={props.onDismissUndo}
+        />
       )}
       {props.stateMessage && !props.undoAction && (
-        <Toast message={props.stateMessage} tone="success" onDismiss={props.onDismissMessage} />
+        <Toast
+          message={props.stateMessage}
+          tone="success"
+          onDismiss={props.onDismissMessage}
+        />
       )}
       {props.stateError && (
-        <Toast message={props.stateError} tone="error" onDismiss={props.onDismissError} />
+        <Toast
+          message={props.stateError}
+          tone="error"
+          onDismiss={props.onDismissError}
+        />
       )}
     </>
   );

@@ -129,7 +129,8 @@ export async function GET(request: Request) {
         page: input.page,
         pageSize: input.pageSize,
         total: jobs.length,
-        totalPages: jobs.length === input.pageSize ? input.page + 1 : input.page,
+        totalPages:
+          jobs.length === input.pageSize ? input.page + 1 : input.page,
       });
     }
 
@@ -139,8 +140,7 @@ export async function GET(request: Request) {
       .from("user_job_states")
       .select("job_id,state")
       .eq("user_id", identity.userId);
-    if (input.state !== "all")
-      stateQuery = stateQuery.eq("state", input.state);
+    if (input.state !== "all") stateQuery = stateQuery.eq("state", input.state);
     const { data: userStates, error: stateError } = await stateQuery;
     if (stateError) throw stateError;
     states = userStates ?? [];

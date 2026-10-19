@@ -7,9 +7,17 @@ import type { Filters } from "../job-discovery-utils";
 type Category = { key: string; label: string; count: number | null };
 
 export function JobDiscoveryHeader({
-  draft, filtersOpen, categories, category, sortOrder,
-  onQueryChange, onLocationChange, onSubmit, onToggleFilters,
-  onSortChange, onCategoryChange,
+  draft,
+  filtersOpen,
+  categories,
+  category,
+  sortOrder,
+  onQueryChange,
+  onLocationChange,
+  onSubmit,
+  onToggleFilters,
+  onSortChange,
+  onCategoryChange,
 }: {
   draft: Filters;
   filtersOpen: boolean;

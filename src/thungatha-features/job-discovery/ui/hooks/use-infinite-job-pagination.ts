@@ -12,13 +12,24 @@ export function useInfiniteJobPagination(
 ) {
   useEffect(() => {
     const target = targetRef.current;
-    if (!target || loading || !feed || page >= feed.totalPages ||
-      typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        setPage((current) => current < feed.totalPages ? current + 1 : current);
-      }
-    }, { root: null, rootMargin: "500px 0px", threshold: 0 });
+    if (
+      !target ||
+      loading ||
+      !feed ||
+      page >= feed.totalPages ||
+      typeof IntersectionObserver === "undefined"
+    )
+      return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setPage((current) =>
+            current < feed.totalPages ? current + 1 : current,
+          );
+        }
+      },
+      { root: null, rootMargin: "500px 0px", threshold: 0 },
+    );
     observer.observe(target);
     return () => observer.disconnect();
   }, [targetRef, loading, feed, page, setPage]);

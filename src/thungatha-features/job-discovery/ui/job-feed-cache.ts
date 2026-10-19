@@ -13,10 +13,15 @@ export function canReusePublicJobFeed(
     publishedWithin: string;
   },
 ) {
-  return page === 1 && category === "new" &&
-    !filters.query.trim() && !filters.location.trim() &&
-    !filters.workMode.trim() && !filters.employmentType.trim() &&
-    filters.publishedWithin === "30d";
+  return (
+    page === 1 &&
+    category === "new" &&
+    !filters.query.trim() &&
+    !filters.location.trim() &&
+    !filters.workMode.trim() &&
+    !filters.employmentType.trim() &&
+    filters.publishedWithin === "30d"
+  );
 }
 
 export async function getReusablePublicFeed(
@@ -27,10 +32,12 @@ export async function getReusablePublicFeed(
       sessionStorage.getItem("thungatha-public-job-feed-v1") ?? "null",
     ) as CachedFeed | null;
     if (
-      !cached?.feed || typeof cached.savedAt !== "number" ||
+      !cached?.feed ||
+      typeof cached.savedAt !== "number" ||
       Date.now() - cached.savedAt >= 5 * 60 * 1000 ||
       !Array.isArray(cached.feed.jobs)
-    ) return null;
+    )
+      return null;
 
     const response = await fetch("/api/jobs?state=all&statesOnly=1", {
       headers: { Accept: "application/json" },
@@ -39,7 +46,7 @@ export async function getReusablePublicFeed(
     });
     if (!response.ok) return null;
 
-    const payload = await response.json() as {
+    const payload = (await response.json()) as {
       states?: { job_id: string; state: "saved" | "dismissed" }[];
     };
     const states = payload.states ?? [];
