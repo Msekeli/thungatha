@@ -9,7 +9,7 @@ import { JobDiscoveryHeader } from "./authenticated/job-discovery-header";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
-import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
+import { JobDiscoveryDialogs } from "./authenticated/job-discovery-dialogs";
 import { AuthenticatedJobDetailPanel } from "./authenticated/job-detail-panel";
 import { JobUndoNotice } from "./authenticated/job-undo-notice";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -259,39 +259,35 @@ export default function JobsDiscovery({
             onRetry={() => setRetryDetail((v) => v + 1)}
           />
         </div>
-        <JobFiltersDialog
-          open={filtersOpen}
+        <JobDiscoveryDialogs
+          filtersOpen={filtersOpen}
           draft={draft}
-          onClose={() => setFiltersOpen(false)}
-          onChange={changeDraft}
-          onReset={clearFilters}
-          onApply={() => { setFilters({ ...draft }); setPage(1); setMobileDetail(false); setFiltersOpen(false); }}
-        />
-        <ProfileSetupDialog
-          open={profileSetupPrompt}
-          onClose={() => setProfileSetupPrompt(false)}
-          onCreateProfile={() => router.push("/profile")}
-        />
-        <MatchBreakdownDialog
-          open={matchOpen}
-          onClose={() => setMatchOpen(false)}
-        />
-        <ApplicationConfirmationDialog
-          open={Boolean(
+          changeDraft={changeDraft}
+          clearFilters={clearFilters}
+          setFilters={setFilters}
+          setPage={setPage}
+          setMobileDetail={setMobileDetail}
+          setFiltersOpen={setFiltersOpen}
+          profileSetupPrompt={profileSetupPrompt}
+          setProfileSetupPrompt={setProfileSetupPrompt}
+          routerPushProfile={() => router.push("/profile")}
+          matchOpen={matchOpen}
+          setMatchOpen={setMatchOpen}
+          showApplicationPrompt={Boolean(
             selectedDetail &&
             (forceAppliedPrompt ||
               (Boolean(selectedActivity?.application_link_opened_at) &&
                 !selectedActivity?.applied_at &&
-                dismissedPromptForJobId !== selectedId)),
+                dismissedPromptForJobId !== selectedId))
           )}
-          busy={stateBusy}
+          stateBusy={stateBusy}
           jobTitle={selectedDetail?.title ?? ""}
           employer={shown(selectedDetail?.employer_name)}
-          onClose={() => {
+          onCloseApplicationPrompt={() => {
             setForceAppliedPrompt(false);
             if (selectedDetail) setDismissedPromptForJobId(selectedDetail.id);
           }}
-          onConfirm={() => void confirmApplied()}
+          onConfirmApplied={() => void confirmApplied()}
         />
       </main>
     </WorkspaceShell>
