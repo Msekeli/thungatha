@@ -26,8 +26,7 @@ export function AuthenticatedJobSearchToolbar({
       </Box>
       <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 185 } }}>
         <Select displayEmpty value={location} onChange={(event) => onLocationChange(event.target.value)}
-          inputProps={{ "aria-label": "Location" }}
-          startAdornment={<MapPin size={16} style={{ marginRight: 8 }} />}>
+          inputProps={{ "aria-label": "Location" }}>
           <MenuItem value="">Cape Town + 50 km</MenuItem>
           <MenuItem value="Cape Town">Cape Town</MenuItem>
           <MenuItem value="Johannesburg">Johannesburg</MenuItem>
