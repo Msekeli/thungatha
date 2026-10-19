@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ExternalLink } from "lucide-react";
+import { BriefcaseBusiness, ExternalLink } from "lucide-react";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -58,7 +58,7 @@ export function JobDetailPresentation({
 
 export function JobDetailEmptyState({ children }: { children?: ReactNode }) {
   return <Stack className="th-jobs-detail-placeholder" alignItems="center" spacing={1.5}>
-    <Typography component="span" color="text.secondary"><span aria-hidden="true">▣</span></Typography>
+    <BriefcaseBusiness size={24} aria-hidden="true" />
     <Typography variant="h6" component="strong">Select an opportunity</Typography>
     <Typography color="text.secondary" variant="body2">Choose a listing to view its description and application destination.</Typography>
     {children}
