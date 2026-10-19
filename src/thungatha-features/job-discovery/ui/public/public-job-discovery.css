@@ -24,9 +24,7 @@
     .th-discovery-results .th-results-toolbar {
     position:absolute; z-index:2; top:6px; right:12px; margin:0;
   }
-  .th-discovery-results .th-results-toolbar>button,
-  .th-discovery-results .th-mobile-search { display:none!important; }
-  .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
+    .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
   .th-discovery-job-list {
     flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   }
