@@ -4,6 +4,7 @@ import type { RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { JobList } from "../shared/job-list";
+import { JobDiscoveryResultsSummary } from "../shared/job-discovery-results-summary";
 
 type JobSource = {
   id: string; provider_key: string; provider_kind: string; external_job_id: string;
@@ -37,10 +38,10 @@ export function AuthenticatedJobResultsPanel({
       className={`th-jobs-results-panel th-jobs-redesign-results ${mobileDetail ? "th-jobs-mobile-hidden" : ""}`}
       aria-label="Job search results" aria-busy={loading}
     >
-      <div className="th-jobs-results-head">
-        <span>{loading ? "Updating…" : `${jobs.length ? "Showing " : ""}${jobs.length} opportunities`}</span>
-        <span className="th-jobs-label">Official-source listings</span>
-      </div>
+      <JobDiscoveryResultsSummary
+        label={loading ? "Updating opportunities…" : `${jobs.length ? "Showing " : ""}${jobs.length} opportunities`}
+        secondary="Official-source listings"
+      />
       {loading && !feed ? (
         <div className="th-jobs-state" role="status">
           <span className="th-jobs-spinner" aria-hidden="true" />
