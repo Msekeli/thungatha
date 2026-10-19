@@ -122,8 +122,14 @@ export function MobileWorkspaceBottomNav({
   );
 }
 
-export function PublicMobileShellNav() {
+export function PublicMobileShellNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
   if (pathname !== "/") return null;
-  return <MobileWorkspaceBottomNav publicMode isActive={(href) => href === "/"} configured={false} />;
+  return (
+    <MobileWorkspaceBottomNav
+      publicMode
+      configured={configured}
+      isActive={(href) => href === "/"}
+    />
+  );
 }
