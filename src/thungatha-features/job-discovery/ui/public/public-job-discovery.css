@@ -98,3 +98,13 @@
     .th-discovery-detail .th-jobs-detail-actions { grid-template-columns:1fr; }
   }
 }
+@layer components {
+  .th-mobile-filter-backdrop { position:fixed; inset:0; z-index:200; display:flex; align-items:flex-end; background:color-mix(in srgb,var(--th-nav) 64%,transparent); }
+  .th-mobile-filter-sheet { display:flex; flex-direction:column; width:100%; max-height:min(88dvh,760px); overflow:hidden; border:1px solid var(--th-line); border-radius:18px 18px 0 0; background:var(--th-panel); color:var(--th-fg); box-shadow:0 -16px 48px color-mix(in srgb,var(--th-nav) 24%,transparent); }
+  .th-mobile-filter-sheet-head { display:flex; align-items:center; justify-content:space-between; flex:0 0 auto; min-height:56px; padding:8px 16px; border-bottom:1px solid var(--th-line); }
+  .th-mobile-filter-sheet .th-filter-content { min-height:0; overflow-y:auto; padding:14px 16px max(16px,env(safe-area-inset-bottom)); }
+  .th-mobile-filter-sheet .th-filter-group { padding:10px 0; border-bottom:1px solid var(--th-line); }
+  .th-mobile-filter-sheet .th-mobile-filter-actions { position:sticky; bottom:0; flex-direction:row; justify-content:space-between; align-items:center; padding-top:12px; background:var(--th-panel); }
+  .th-mobile-filter-sheet .th-mobile-apply-filters { flex:1; }
+  @media (min-width:761px) { .th-mobile-filter-backdrop { align-items:center; justify-content:center; padding:24px; } .th-mobile-filter-sheet { width:min(100%,560px); max-height:85dvh; border-radius:var(--th-radius-panel); } }
+}
