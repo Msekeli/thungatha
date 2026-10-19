@@ -23,6 +23,7 @@ export function JobDiscoveryScreen({ configured, state: s, controller: c, router
       loadMoreRef={s.loadMoreRef} selectedDetail={c.selectedDetail} selectedSource={c.selectedSource} applicationDestination={c.applicationDestination}
       applicationUrl={c.applicationUrl} jobSourceUrl={c.jobSourceUrl} busy={s.stateBusy} detailLoading={s.detailLoading} activityError={s.activityError} detailError={s.detailError}
       sourceFor={sourceFor} formatDate={formatDate} onRetryFeed={() => s.setRetryFeed((v) => v + 1)}
+      onSaveJob={(job) => void c.updateJobState(job, job.state === "saved" ? null : "saved")}
       onSelect={(job) => { s.setSelectedId(job.id); s.setForceAppliedPrompt(false); s.setDismissedPromptForJobId(null); s.setActivityError(null); s.setMobileDetail(true); }}
       onBack={() => s.setMobileDetail(false)} onViewMatch={() => s.setMatchOpen(true)}
       onApply={() => c.applicationDestination && c.openApplicationLink(c.selectedDetail!, c.applicationDestination)}
