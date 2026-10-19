@@ -29,7 +29,7 @@ export function AuthenticatedJobDetailPanel({ job, source, applicationDestinatio
         height: "100%", maxHeight: "calc(100dvh - var(--th-app-header-height, 72px) - 42px)",
         overflowY: "auto", p: 2.5, border: 1, borderColor: "divider", borderRadius: 2,
         bgcolor: "background.paper", boxShadow: 1,
-        "& > .th-jobs-detail-content": { overflowY: "auto", p: "4px 2px 12px" },
+        "& > .th-jobs-detail-content": { display: "flex", flexDirection: "column", flex: 1, minHeight: 0, p: 0, overflow: "hidden", overflowY: "auto" },
         "@media (max-width: 1100px) and (min-width: 761px)": { maxHeight: "calc(100dvh - var(--th-app-header-height, 72px) - 42px)", p: 2 },
         "@media (max-width: 760px)": {
           position: "static", height: "auto", maxHeight: "none", p: 1.75,
