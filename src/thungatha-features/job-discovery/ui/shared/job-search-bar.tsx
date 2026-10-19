@@ -52,7 +52,7 @@ export function JobSearchBar({
             fullWidth
             size="medium"
             placeholder={placeholder}
-            sx={{ "& .MuiOutlinedInput-root": { minHeight: 52, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" }, "& .MuiInputAdornment-root": { color: "text.secondary" }, "& input": { py: 1.4 } }}
+            sx={{ "& .MuiOutlinedInput-root": { minHeight: 44, height: 44, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" }, "& .MuiInputAdornment-root": { color: "text.secondary" }, "& input": { py: 1 } }}
             slotProps={{
               ...params.slotProps,
               htmlInput: {
