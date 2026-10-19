@@ -14,7 +14,7 @@
   .th-discovery-results {
     display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden;
   }
-  .th-discovery-results > .MuiBox-root { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .th-discovery-results > .th-discovery-job-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .th-discovery-detail {
     height: 100%; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   }
@@ -34,7 +34,7 @@
     .th-discovery-shell .th-discovery-hero .MuiChip-root { height: 30px; }
     .th-discovery-workspace { display: block !important; position: relative; padding: 8px; }
     .th-discovery-results { height: 100%; overflow: hidden; }
-    .th-discovery-results > .MuiBox-root { height: 100%; overflow-y: auto; }
+    .th-discovery-results > .th-discovery-job-list { height: 100%; overflow-y: auto; }
     .th-discovery-detail { display: none; position: absolute; inset: 8px; z-index: 4; background: var(--th-page); }
     .th-discovery-detail.th-detail-mobile-open { display: block; }
     .th-discovery-detail .th-mobile-detail-heading { display: flex; }
