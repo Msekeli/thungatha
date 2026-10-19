@@ -2823,3 +2823,78 @@ body:has(.th-discovery-shell) {
     height: 36px !important;
   }
 }
+
+/* Theme-aware mobile surfaces and consistent keyboard focus. */
+@media (max-width: 680px) {
+  .th-discovery-detail {
+    background: var(--th-panel, var(--d-panel));
+    color: var(--th-fg, var(--d-text));
+  }
+
+  .th-mobile-detail-heading button,
+  .th-discovery-detail h1,
+  .th-discovery-detail .th-detail-description h2 {
+    color: var(--th-fg, var(--d-text));
+  }
+
+  .th-discovery-detail .th-detail-facts,
+  .th-discovery-detail .th-detail-tabs button,
+  .th-discovery-detail .th-detail-description p {
+    color: var(--th-fg-muted, var(--d-muted));
+    border-color: var(--th-line, var(--d-line));
+  }
+
+  .th-discovery-detail .th-detail-tabs button[data-active="true"],
+  .th-discovery-detail .th-source-link {
+    color: var(--th-accent-text, var(--d-cyan));
+  }
+
+  .th-discovery-detail .th-detail-tabs button[data-active="true"] {
+    border-color: var(--th-accent, var(--d-blue));
+  }
+
+  .th-discovery-detail .th-icon-button {
+    background: var(--th-panel-2, var(--d-panel2));
+    border-color: var(--th-line, var(--d-line));
+    color: var(--th-fg, var(--d-text));
+  }
+
+  .th-mobile-bottom-nav {
+    background: var(--th-panel, var(--d-panel));
+    border-color: var(--th-line, var(--d-line));
+  }
+
+  .th-mobile-bottom-nav a {
+    color: var(--th-fg-muted, var(--d-muted));
+  }
+
+  .th-mobile-bottom-nav a.active {
+    color: var(--th-accent-text, var(--d-cyan));
+  }
+
+  .th-mobile-filter-sheet {
+    background: var(--th-panel, var(--d-panel));
+    color: var(--th-fg, var(--d-text));
+    border: 1px solid var(--th-line, var(--d-line));
+  }
+
+  .th-mobile-filter-sheet-head button {
+    color: var(--th-fg-muted, var(--d-muted));
+  }
+}
+
+.th-discovery-shell :is(a, button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--th-accent, var(--d-blue));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .th-discovery-shell *,
+  .th-discovery-shell *::before,
+  .th-discovery-shell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
