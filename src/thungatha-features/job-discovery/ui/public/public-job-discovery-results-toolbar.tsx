@@ -1,7 +1,7 @@
 "use client";
 
+import { Button, FormControl, MenuItem, Select, Stack, Typography } from "@mui/material";
 import { SlidersHorizontal, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { JobSearchBar } from "../shared/job-search-bar";
 
 type JobSuggestion = { title: string; employer_name: string | null };
@@ -32,28 +32,30 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
 
   return (
     <>
-      <div className="th-results-toolbar">
-        <span>{resultLabel}</span>
-        {onToggleDismissed && <Button variant={showingDismissed ? "secondary" : "ghost"} size="sm" type="button" onClick={onToggleDismissed}>{showingDismissed ? "Back to opportunities" : `Dismissed (${dismissedCount})`}</Button>}
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" type="button" className="th-clear-active-filters" onClick={onClearFilters}>
-            <X size={13} /> Clear filters
-          </Button>
-        )}
-        <label>Sort by
-          <select value={sort} onChange={(event) => onSortChange(event.target.value)}>
-            <option value="relevant">Most relevant</option>
-            <option value="newest">Newest</option>
-          </select>
-        </label>
-      </div>
-      <div className="th-mobile-search">
-        <JobSearchBar value={query} onChange={onQueryChange}
-          placeholder="Search jobs, skills or companies..." suggestions={suggestions} />
-        <Button variant="ghost" size="sm" type="button" aria-label="Open filters" onClick={onOpenFilters}>
+      <Stack className="th-results-toolbar" direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+        <Typography variant="body2" color="text.secondary" sx={{ mr: "auto" }}>{resultLabel}</Typography>
+        {onToggleDismissed && <Button variant={showingDismissed ? "contained" : "text"} size="small" onClick={onToggleDismissed}>{showingDismissed ? "Back to opportunities" : `Dismissed (${dismissedCount})`}</Button>}
+        {hasActiveFilters && <Button variant="text" size="small" onClick={onClearFilters} startIcon={<X size={14} />}>Clear filters</Button>}
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <Select aria-label="Sort jobs" value={sort} onChange={(event) => onSortChange(event.target.value)}>
+            <MenuItem value="relevant">Most relevant</MenuItem>
+            <MenuItem value="newest">Newest</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+      <Stack className="th-mobile-search" direction="row" spacing={1} alignItems="center">
+        <BoxSearch query={query} onQueryChange={onQueryChange} suggestions={suggestions} />
+        <Button variant="outlined" size="small" aria-label="Open filters" onClick={onOpenFilters} sx={{ minWidth: 40, px: 1 }}>
           <SlidersHorizontal size={17} />
         </Button>
-      </div>
+      </Stack>
     </>
   );
+}
+
+function BoxSearch({ query, onQueryChange, suggestions }: { query: string; onQueryChange: (value: string) => void; suggestions: string[] }) {
+  return <div style={{ flex: 1, minWidth: 0 }}>
+    <JobSearchBar value={query} onChange={onQueryChange}
+      placeholder="Search jobs, skills or companies..." suggestions={suggestions} />
+  </div>;
 }
