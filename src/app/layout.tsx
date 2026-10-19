@@ -35,8 +35,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-full flex flex-col">
         <AppThemeProvider>
           <AuthProviders configured={hasClerkConfiguration()}>
-            {children}
             <MobileAppShell configured={hasClerkConfiguration()} />
+            {children}
           </AuthProviders>
         </AppThemeProvider>
       </body>
