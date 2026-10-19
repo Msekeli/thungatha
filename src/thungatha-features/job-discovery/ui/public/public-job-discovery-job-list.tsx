@@ -76,16 +76,23 @@ export function PublicJobDiscoveryJobList({
               <RotateCcw size={15} />
             </Button>
           ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              aria-label={`Dismiss ${job.title}`}
-              title="Dismiss job"
-              onClick={() => onDismiss?.(job.id)}
-            >
-              <EyeOff size={15} />
-            </Button>
+            configured ? (
+              <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  aria-label={`Sign in to dismiss ${job.title}`}
+                  title="Sign in to dismiss this job"
+                >
+                  <EyeOff size={15} />
+                </Button>
+              </SignInButton>
+            ) : (
+              <Link href="/sign-in" aria-label={`Sign in to dismiss ${job.title}`} title="Sign in to dismiss this job">
+                <EyeOff size={15} />
+              </Link>
+            )
           )
         }
       />
