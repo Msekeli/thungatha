@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AppThemeProvider>
           <AuthProviders configured={hasClerkConfiguration()}>
             {children}
-            <PublicMobileShellNav />
+            <PublicMobileShellNav configured={hasClerkConfiguration()} />
           </AuthProviders>
         </AppThemeProvider>
       </body>
