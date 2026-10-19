@@ -127,3 +127,33 @@
   .th-job-card-logo { width: 36px; height: 36px; flex-basis: 36px; }
   .th-job-card-title { font-size: 13px; }
 }
+/* Keep detail typography consistent despite legacy page-level CSS. */
+.th-discovery-detail .th-job-description-content {
+  font-size: 13px;
+  line-height: 1.75;
+}
+.th-discovery-detail .th-job-description-content h2,
+.th-jobs-redesign-description .th-job-description-content h3 {
+  margin: 0 0 8px;
+  color: var(--th-fg, #e9f6ff);
+  font-size: 14px;
+  font-weight: 650;
+}
+.th-discovery-detail .th-job-description-content p,
+.th-jobs-redesign-description .th-job-description-content p {
+  margin: 0 0 14px;
+  color: var(--th-fg-muted, #8fa9be);
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.th-jobs-redesign-description .th-job-description-content section {
+  padding: 12px 0 4px;
+  margin-top: 10px;
+  border-top: 1px solid var(--th-line, #1b2740);
+  white-space: normal;
+}
+.th-jobs-redesign-description .th-job-description-content section p {
+  margin-bottom: 0;
+}
