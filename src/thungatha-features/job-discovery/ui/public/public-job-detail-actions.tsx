@@ -5,84 +5,39 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 type Props = {
-  configured: boolean;
-  applyUrl: string | null;
-  signInUrl: string;
-  dismissed: boolean;
-  onDismiss?: () => void;
-  onRestore?: () => void;
+  configured: boolean; applyUrl: string | null; signInUrl: string; dismissed: boolean;
+  onDismiss?: () => void; onRestore?: () => void;
 };
 
-function AuthAction({
-  configured,
-  href,
-  children,
-}: {
-  configured: boolean;
-  href: string;
-  children: React.ReactNode;
+function AuthAction({ configured, href, children }: {
+  configured: boolean; href: string; children: React.ReactNode;
 }) {
-  const button = (
-    <Button variant="outlined" fullWidth>
-      {children}
-    </Button>
-  );
+  const button = <Button variant="outlined" fullWidth>{children}</Button>;
   return configured ? (
-    <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-      {button}
-    </SignInButton>
-  ) : (
-    <Button component="a" href={href} variant="outlined" fullWidth>
-      {children}
-    </Button>
-  );
+    <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">{button}</SignInButton>
+  ) : <Button component="a" href={href} variant="outlined" fullWidth>{children}</Button>;
 }
 
 export function PublicJobDetailActions({
-  configured,
-  applyUrl,
-  signInUrl,
-  dismissed,
-  onDismiss,
-  onRestore,
+  configured, applyUrl, signInUrl, dismissed, onDismiss, onRestore,
 }: Props) {
   return (
-    <Stack
-      spacing={1}
-      className="th-jobs-detail-actions th-jobs-redesign-actions"
-    >
+    <Stack spacing={1} className="th-jobs-detail-actions th-jobs-redesign-actions">
       {applyUrl ? (
-        <Button
-          component="a"
-          href={applyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          variant="contained"
-        >
+        <Button component="a" href={applyUrl} target="_blank" rel="noopener noreferrer" variant="contained">
           Apply on company site <ExternalLink size={14} />
         </Button>
-      ) : (
-        <Typography className="th-no-apply" variant="body2">
-          An application link is not available for this listing yet.
-        </Typography>
-      )}
-      <AuthAction configured={configured} href={signInUrl}>
-        <PanelsTopLeft size={14} /> Tailor my CV
-      </AuthAction>
-      <AuthAction configured={configured} href={signInUrl}>
-        <Bookmark size={14} /> Save
-      </AuthAction>
+      ) : <Typography className="th-no-apply" variant="body2">An application link is not available for this listing yet.</Typography>}
+      <AuthAction configured={configured} href={signInUrl}><PanelsTopLeft size={14} /> Tailor my CV</AuthAction>
+      <AuthAction configured={configured} href={signInUrl}><Bookmark size={14} /> Save</AuthAction>
       {dismissed ? (
-        <Button variant="outlined" onClick={onRestore} fullWidth>
-          <EyeOff size={14} /> Restore job
-        </Button>
+        <Button variant="outlined" onClick={onRestore} fullWidth><EyeOff size={14} /> Restore job</Button>
+      ) : configured ? (
+        <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+          <Button variant="outlined" color="warning" fullWidth><EyeOff size={14} /> Dismiss</Button>
+        </SignInButton>
       ) : (
-        <Button
-          variant="outlined"
-          color="warning"
-          onClick={onDismiss}
-          fullWidth
-        >
+        <Button component="a" href={signInUrl} variant="outlined" color="warning" fullWidth>
           <EyeOff size={14} /> Dismiss
         </Button>
       )}
