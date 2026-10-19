@@ -25,7 +25,7 @@ export function JobFiltersDialog({ open, draft, onClose, onChange, onReset, onAp
       aria-label="Filter opportunities"
       slotProps={{ paper: { className: "th-jobs-popover th-jobs-filter-popover th-jobs-filter-dialog" } }}>
       <header><strong>Filter opportunities</strong>
-        <button type="button" aria-label="Close filters" onClick={onClose}><X size={16} /></button>
+        <Button variant="ghost" size="sm" aria-label="Close filters" onClick={onClose}><X size={16} /></Button>
       </header>
       <form onSubmit={(event) => { event.preventDefault(); onApply(); }}>
         <label>Search keywords
