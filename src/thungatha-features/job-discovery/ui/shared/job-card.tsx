@@ -37,7 +37,7 @@ export function JobCard({
         onSelect={onSelect}
       />
       {saveAction && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", pt: 0.5 }}>
+        <Box className="th-job-card-actions" sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 0.5, pt: 0.5 }}>
           {saveAction}
         </Box>
       )}
