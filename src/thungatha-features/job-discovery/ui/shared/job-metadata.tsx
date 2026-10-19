@@ -33,7 +33,7 @@ export function JobMetadata({
       { label: posted || "Date unknown", icon: CalendarDays },
     ];
     return (
-      <Stack spacing={0.6}>
+      <Stack spacing={0.25}>
         <Typography
           variant="caption"
           color="text.secondary"
@@ -45,7 +45,7 @@ export function JobMetadata({
         <Stack
           direction="row"
           spacing={0.6}
-          sx={{ pt: 0.25, flexWrap: "wrap", gap: 0.6 }}
+          sx={{ pt: 0.1, flexWrap: "wrap", gap: 0.4 }}
         >
           {tags.map(({ label, icon: Icon }) => (
             <Chip
@@ -54,9 +54,9 @@ export function JobMetadata({
               icon={Icon ? <Icon size={12} /> : undefined}
               label={label}
               sx={{
-                height: 24,
+                height: 20,
                 borderRadius: 1,
-                fontSize: "0.7rem",
+                fontSize: "0.65rem",
                 bgcolor: "action.hover",
                 color: "text.secondary",
                 "& .MuiChip-icon": { ml: 0.75 },
