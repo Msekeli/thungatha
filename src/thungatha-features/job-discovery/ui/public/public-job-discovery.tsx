@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Show } from "@clerk/nextjs";
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
 import { PublicJobMobileNav } from "./public-job-mobile-nav";
+import { PublicJobMobileFilters } from "./public-job-mobile-filters";
 import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
 import { PublicJobDiscoverySidebar } from "./public-job-discovery-sidebar";
@@ -54,5 +54,5 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   {promoVisible&&<PublicJobPromo configured={configured} variant="inline" onDismiss={dismissPromo} />}</section>
   <PublicJobDetailPanel job={selected} configured={configured} mobileOpen={mobileDetailOpen} dismissed={Boolean(selected&&dismissedJobs.some(item=>item.id===selected.id))} onDismiss={()=>selected&&dismissJob(selected.id)} onRestore={()=>selected&&restoreJob(selected.id)} onBack={() => setMobileDetailOpen(false)}/></main>{promoVisible&&<PublicJobPromo configured={configured} variant="wide" onDismiss={dismissPromo} /> }
   <PublicJobMobileNav configured={configured} />
-  {mobileFiltersOpen&&<div className="th-mobile-filter-backdrop" role="presentation" onClick={()=>setMobileFiltersOpen(false)}><section className="th-mobile-filter-sheet" role="dialog" aria-modal="true" aria-label="Job filters" onClick={e=>e.stopPropagation()}><div className="th-mobile-filter-sheet-head"><strong>Filters</strong><Button variant="ghost" size="sm" type="button" aria-label="Close filters" onClick={()=>setMobileFiltersOpen(false)}><X size={18}/></Button></div>{filterPanel}</section></div>}</div>;
+  {mobileFiltersOpen&&<PublicJobMobileFilters onClose={() => setMobileFiltersOpen(false)}>{filterPanel}</PublicJobMobileFilters>}</div>;
 }
