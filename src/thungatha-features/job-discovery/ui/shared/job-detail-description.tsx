@@ -36,7 +36,7 @@ export function JobDetailDescription({ description }: Props) {
       }}
     >
       <JobDetailTabs value={activeTab} onChange={setActiveTab} />
-      <Stack spacing={2} sx={{ p: { xs: 2, sm: 3 } }}>
+      <Stack spacing={1.25} sx={{ p: { xs: 1.5, sm: 2 } }}>
         {activeTab === "description" ? (
           <Typography
             variant="body2"
