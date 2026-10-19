@@ -28,6 +28,7 @@ export function JobDetailDescription({ description }: Props) {
   const activeSection = sections.find((section) => section.value === activeTab);
   return (
     <Box
+      className="th-job-description-panel"
       sx={{
         border: 1,
         borderColor: "divider",
@@ -36,7 +37,7 @@ export function JobDetailDescription({ description }: Props) {
       }}
     >
       <JobDetailTabs value={activeTab} onChange={setActiveTab} />
-      <Stack spacing={1.25} sx={{ p: { xs: 1.5, sm: 2 } }}>
+      <Stack className="th-job-description-body" spacing={1.25} sx={{ p: { xs: 1.5, sm: 2 } }}>
         {activeTab === "description" ? (
           <Typography
             variant="body2"
