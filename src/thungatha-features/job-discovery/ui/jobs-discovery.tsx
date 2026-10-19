@@ -17,6 +17,7 @@ import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import { Check } from "lucide-react";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
+import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -221,29 +222,7 @@ export default function JobsDiscovery({
     return () => controller.abort();
   }, [refreshFeed, retryFeed]);
 
-  useEffect(() => {
-    const target = loadMoreRef.current;
-    if (
-      !target ||
-      loading ||
-      !feed ||
-      page >= feed.totalPages ||
-      typeof IntersectionObserver === "undefined"
-    )
-      return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setPage((current) =>
-            current < feed.totalPages ? current + 1 : current,
-          );
-        }
-      },
-      { root: null, rootMargin: "500px 0px", threshold: 0 },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [loading, feed, page]);
+  useInfiniteJobPagination(loadMoreRef, loading, feed, page, setPage);
 
   const refreshDetail = useCallback(async (id: string, signal: AbortSignal) => {
     setDetailLoading(true);
