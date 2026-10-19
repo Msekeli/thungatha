@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = { title: string; employer?: string | null; onViewMatch: () => void };
 
@@ -12,7 +13,7 @@ export function JobDetailHeading({ title, employer, onViewMatch }: Props) {
       </div>
       <div className="th-jobs-match-scorebox">
         <span>Match</span><strong>—</strong>
-        <button type="button" onClick={onViewMatch}>View breakdown</button>
+        <Button variant="ghost" size="sm" onClick={onViewMatch}>View breakdown</Button>
       </div>
     </div>
   );
