@@ -1,8 +1,10 @@
 "use client";
 
-import { Bookmark, BriefcaseBusiness, CalendarDays, ExternalLink, MapPin } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, ExternalLink, MapPin } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { JobDetailMeta } from "../authenticated/job-detail-meta";
+import { JobDetailDescription } from "../authenticated/job-detail-description";
 
 export type PublicJobSource = {
   source_url: string | null;
@@ -33,30 +35,32 @@ function sourceFor(job: PublicJob): PublicJobSource | null {
   if (!job.job_sources) return null;
   return Array.isArray(job.job_sources) ? job.job_sources[0] ?? null : job.job_sources;
 }
-export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack, tab, setTab }: {
+export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack }: {
   job: PublicJob | null; configured: boolean; mobileOpen: boolean; onBack: () => void;
-  tab: string; setTab: (tab: string) => void;
 }) {
   const source = job ? sourceFor(job) : null;
   const applyUrl = safeUrl(source?.application_url) ?? safeUrl(source?.source_url);
   const sourceUrl = safeUrl(source?.source_url);
-  const description = job?.description?.trim();
-  return <aside className={"th-discovery-detail " + (mobileOpen ? "th-detail-mobile-open" : "")} aria-label="Selected job details">
-    <div className="th-mobile-detail-heading"><Button variant="ghost" type="button" onClick={onBack}>← Back to results</Button><Bookmark size={17}/></div>
+  return <aside className={"th-discovery-detail th-jobs-redesign-detail " + (mobileOpen ? "th-detail-mobile-open" : "")} aria-label="Selected job details">
+    <div className="th-mobile-detail-heading"><Button variant="ghost" type="button" onClick={onBack}>← Back to results</Button><BriefcaseBusiness size={17}/></div>
     {job ? <>
-      <div className="th-detail-actions-top"><span className="th-employer-logo th-employer-logo-large">{(job.employer_name || job.title).slice(0, 1).toUpperCase()}</span>
-        {configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" type="button" className="th-icon-button" aria-label="Sign in to save this job"><Bookmark size={18}/></Button></SignInButton>}
+      <div className="th-jobs-detail-content">
+        <div className="th-jobs-redesign-job-head">
+          <span className="th-jobs-employer-mark th-jobs-detail-logo">{(job.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</span>
+          <div className="th-jobs-redesign-title">
+            <p className="th-detail-employer">{job.employer_name || "Employer not listed"}</p>
+            <h1>{job.title}</h1>
+          </div>
+          {configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" type="button" aria-label="Sign in to save this job"><Bookmark size={18}/></Button></SignInButton>}
+        </div>
+        <JobDetailMeta location={job.location_text} employmentType={job.employment_type}
+          workMode={job.work_mode} postedAt={source?.published_at || job.updated_at}
+          formatDate={(value) => value ? new Intl.DateTimeFormat("en-ZA", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value)) : null} />
+        {salaryLabel(job) && <p className="th-jobs-detail-salary"><strong>Salary:</strong> {salaryLabel(job)}</p>}
+        {applyUrl ? <a className="th-apply-button" href={applyUrl} target="_blank" rel="noopener noreferrer">Apply on {job.employer_name || "employer site"} <ExternalLink size={15}/></a> : <p className="th-no-apply">An application link is not available for this listing yet.</p>}
+        <JobDetailDescription description={job.description} />
+        {sourceUrl && <a className="th-source-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a>}
       </div>
-      <div className="th-detail-employer">{job.employer_name || "Employer not listed"}</div><h1>{job.title}</h1>
-      <div className="th-detail-facts"><span><MapPin size={14}/>{job.location_text || "Location not specified"}</span><span><BriefcaseBusiness size={14}/>{job.employment_type?.replace(/[_-]+/g, " ") || "Full-time"}</span><span><CalendarDays size={14}/>{job.work_mode || "Hybrid"}</span>{salaryLabel(job) && <span>{salaryLabel(job)}</span>}</div>
-      {applyUrl ? <a className="th-apply-button" href={applyUrl} target="_blank" rel="noopener noreferrer">Apply on {job.employer_name || "employer site"} <ExternalLink size={15}/></a> : <p className="th-no-apply">An application link is not available for this listing yet.</p>}
-      <div className="th-detail-tabs" role="tablist" aria-label="Job information">{["Overview", "Requirements", "About"].map(item => <Button variant="ghost" type="button" role="tab" aria-selected={tab === item} data-active={tab === item} key={item} onClick={() => setTab(item)}>{item}</Button>)}</div>
-      <div className="th-detail-description th-job-description-content"><h2>{tab === "Requirements" ? "Requirements" : tab === "About" ? "About the company" : "Job description"}</h2><p>{description || "The employer has not supplied a full description for this listing."}</p>
-        {tab === "Overview" && <><h2 className="th-detail-subheading">Key responsibilities</h2><p>{job.description ? job.description.split(". ").slice(0, 3).join(". ") : "Review the original listing for responsibilities and role details."}</p></>}
-        {tab === "Requirements" && <p>Review the employer listing for required experience, qualifications and skills.</p>}
-        {tab === "About" && <p>{job.employer_name || "The employer"} — view the original listing for more company information.</p>}
-      </div>
-      {sourceUrl && <a className="th-source-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a>}
     </> : <div className="th-discovery-empty"><BriefcaseBusiness size={25}/><strong>Select a job</strong><p>Choose a listing to see more information.</p></div>}
   </aside>;
 }
