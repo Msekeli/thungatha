@@ -96,6 +96,32 @@
   color: var(--th-fg-muted, #64748b);
   font-size: 10px;
 }
+/* Shared description typography for public and authenticated detail panels. */
+.th-job-description-content {
+  color: var(--th-fg, #17243c);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.th-job-description-content h2,
+.th-job-description-content h3 {
+  margin: 0 0 8px;
+  color: var(--th-fg, #17243c);
+  font-size: 14px;
+  font-weight: 650;
+}
+.th-job-description-content p {
+  margin: 0 0 14px;
+  color: var(--th-fg-muted, #475569);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.th-job-description-content section {
+  padding: 12px 0 4px;
+  margin-top: 10px;
+  border-top: 1px solid var(--th-line, #dce4ee);
+  white-space: normal;
+}
 @media (max-width: 700px) {
   .th-job-card { gap: 9px; padding: 12px; }
   .th-job-card-logo { width: 36px; height: 36px; flex-basis: 36px; }
