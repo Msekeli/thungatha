@@ -17,12 +17,12 @@ export function JobDetailHeading({
   return (
     <Stack
       direction="row"
-      spacing={2}
+      spacing={1.25}
       className="th-jobs-redesign-job-head"
       sx={{
         alignItems: "center",
         minWidth: 0,
-        pb: 1.5,
+        pb: 1,
         borderBottom: 1,
         borderColor: "divider",
       }}
@@ -30,17 +30,17 @@ export function JobDetailHeading({
       <Avatar
         className="th-jobs-employer-mark th-jobs-detail-logo"
         sx={{
-          width: 48,
-          height: 48,
-          flex: "0 0 48px",
+          width: 40,
+          height: 40,
+          flex: "0 0 40px",
           borderRadius: 1.5,
           bgcolor: "action.selected",
           color: "primary.main",
-          fontSize: 1.375,
+          fontSize: 1.125,
           fontWeight: 700,
         }}
       >
-        {(employer?.trim() || "?").slice(0, 1).toUpperCase()}
+        {(employer?.trim() || title).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}
       </Avatar>
       <Box
         className="th-jobs-redesign-title"
@@ -48,9 +48,9 @@ export function JobDetailHeading({
           flex: 1,
           minWidth: 0,
           "& h2": {
-            mt: 0.5,
+            mt: 0,
             mb: 0,
-            fontSize: { xs: "1.125rem", sm: "1.3125rem" },
+            fontSize: { xs: "1.0625rem", sm: "1.1875rem" },
             lineHeight: 1.25,
             overflowWrap: "anywhere",
           },
