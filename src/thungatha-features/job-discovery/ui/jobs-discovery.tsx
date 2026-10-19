@@ -22,6 +22,7 @@ import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
 import { useUndoJobState } from "./hooks/use-undo-job-state";
+import { canReusePublicJobFeed, getReusablePublicFeed } from "./job-feed-cache";
 
 import {
   EMPTY_FILTERS, formatDate, getApiError, safeExternalUrl, shown, sourceFor,\n  buildJobFeedParams, isValidFeed,
@@ -93,56 +94,17 @@ export default function JobsDiscovery({
       setLoading(true);
       setError(null);
       try {
-        const canReusePublicFeed =
-          page === 1 &&
-          category === "new" &&
-          !filters.query.trim() &&
-          !filters.location.trim() &&
-          !filters.workMode.trim() &&
-          !filters.employmentType.trim() &&
-          filters.publishedWithin === "30d";
-        if (canReusePublicFeed) {
-          try {
-            const cached = JSON.parse(
-              sessionStorage.getItem("thungatha-public-job-feed-v1") ?? "null",
-            ) as { savedAt?: number; feed?: Feed } | null;
-            if (
-              cached?.feed &&
-              typeof cached.savedAt === "number" &&
-              Date.now() - cached.savedAt < 5 * 60 * 1000 &&
-              Array.isArray(cached.feed.jobs)
-            ) {
-              const stateResponse = await fetch(
-                "/api/jobs?state=all&statesOnly=1",
-                { headers: { Accept: "application/json" }, cache: "no-store", signal },
-              );
-              if (stateResponse.ok) {
-                const payload = (await stateResponse.json()) as {
-                  states?: { job_id: string; state: "saved" | "dismissed" }[];
-                };
-                const states = payload.states ?? [];
-                if (!states.some((item) => item.state === "dismissed")) {
-                  const stateById = new Map(states.map((item) => [item.job_id, item.state]));
-                  const reusedFeed = {
-                    ...cached.feed,
-                    jobs: cached.feed.jobs.map((job) => ({
-                      ...job,
-                      state: stateById.get(job.id) ?? null,
-                    })),
-                  };
-                  setIsAuthenticated(true);
-                  setFeed(reusedFeed);
-                  setSelectedId((current) =>
-                    current && reusedFeed.jobs.some((job) => job.id === current)
-                      ? current
-                      : reusedFeed.jobs[0]?.id ?? null,
-                  );
-                  return;
-                }
-              }
-            }
-          } catch {
-            // If the short-lived public cache is unavailable, load the full feed.
+        if (canReusePublicJobFeed(page, category, filters)) {
+          const reusedFeed = await getReusablePublicFeed(signal);
+          if (reusedFeed) {
+            setIsAuthenticated(true);
+            setFeed(reusedFeed);
+            setSelectedId((current) =>
+              current && reusedFeed.jobs.some((job) => job.id === current)
+                ? current
+                : reusedFeed.jobs[0]?.id ?? null,
+            );
+            return;
           }
         }
         const response = await fetch(`/api/jobs?${params}`, {
@@ -191,7 +153,7 @@ export default function JobsDiscovery({
         if (!signal.aborted) setLoading(false);
       }
     },
-    [params, page],
+    [params, page, category, filters],
   );
 
   useEffect(() => {
