@@ -30,11 +30,11 @@ export function MatchBreakdownDialog({ open, onClose }: Props) {
         </Button>
       </header>
       <div className="th-jobs-match-placeholder">
-        <h3>Match analysis is not available yet</h3>
+        <h3>Job matching is coming soon</h3>
         <p>
-          When profile matching is implemented, this panel will compare the role
-          requirements with your confirmed profile. No score is calculated at
-          this checkpoint.
+          Matching requires a completed profile with your skills and experience.
+          This placeholder does not calculate or imply a match score. Complete
+          your profile so it is ready when matching launches.
         </p>
         <ul>
           <li>Confirmed — evidence from your profile</li>
