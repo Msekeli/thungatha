@@ -12,6 +12,7 @@ type JobListProps = {
   postedLabel?: (job: JobCardData) => string | undefined;
   onSelect: (job: JobCardData) => void;
   saveAction?: (job: JobCardData) => ReactNode;
+  secondaryAction?: (job: JobCardData) => ReactNode;
   emptyTitle?: string;
   emptyMessage?: string;
 };
@@ -19,7 +20,7 @@ type JobListProps = {
 export function JobList({
   jobs, variant, selectedId, postedLabel, onSelect,
   emptyTitle = "No opportunities found",
-  emptyMessage = "Try changing your search or filters.", saveAction,
+  emptyMessage = "Try changing your search or filters.", saveAction, secondaryAction,
 }: JobListProps) {
   if (!jobs.length) {
     return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
@@ -34,7 +35,7 @@ export function JobList({
           selected={job.id === selectedId}
           postedLabel={postedLabel?.(job) ?? "Date unknown"}
           onSelect={() => onSelect(job)}
-          saveAction={saveAction?.(job)}
+          saveAction={<>{saveAction?.(job)}{secondaryAction?.(job)}</>}
         />
       ))}
     </Stack>
