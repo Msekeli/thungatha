@@ -13,6 +13,7 @@ import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
 import { JobDetailDescription } from "./authenticated/job-detail-description";
 import { JobDetailHeading } from "./authenticated/job-detail-heading";
 import { JobDetailMeta } from "./authenticated/job-detail-meta";
+import { JobDetailActions } from "./authenticated/job-detail-actions";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
@@ -927,79 +928,17 @@ export default function JobsDiscovery({
                   postedAt={selectedSource?.published_at}
                   formatDate={formatDate}
                 />
-                <div className="th-jobs-detail-actions th-jobs-redesign-actions">
-                  <Button
-                    variant="primary"
-                    disabled={
-                      !applicationDestination || stateBusy || detailLoading
-                    }
-                    title={
-                      applicationUrl
-                        ? "Opens the supplied application destination"
-                        : jobSourceUrl
-                          ? "Opens the available source listing; it may not be the employer application page"
-                          : "No job or application link is available"
-                    }
-                    onClick={() =>
-                      applicationDestination &&
-                      openApplicationLink(
-                        selectedDetail,
-                        applicationDestination,
-                      )
-                    }
-                  >
-                    <ExternalLink size={14} />{" "}
-                    {applicationUrl
-                      ? "Apply on company site"
-                      : "Open job listing"}
-                  </Button>
-                  <Link
-                    className="th-jobs-tailor-link"
-                    href={`/cv-studio?jobId=${encodeURIComponent(selectedDetail.id)}`}
-                  >
-                    <PanelsTopLeft size={14} /> Tailor my CV
-                  </Link>
-                  <Button
-                    variant="secondary"
-                    disabled={stateBusy || detailLoading}
-                    onClick={() =>
-                      void updateJobState(
-                        selectedDetail,
-                        selectedDetail.state === "saved" ? null : "saved",
-                      )
-                    }
-                  >
-                    {selectedDetail.state === "saved" ? (
-                      <>
-                        <Check size={14} /> Saved
-                      </>
-                    ) : (
-                      <>
-                        <Bookmark size={14} /> Save
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    disabled={stateBusy || detailLoading}
-                    onClick={() =>
-                      void updateJobState(
-                        selectedDetail,
-                        selectedDetail.state === "dismissed"
-                          ? null
-                          : "dismissed",
-                      )
-                    }
-                  >
-                    {selectedDetail.state === "dismissed" ? (
-                      "Restore"
-                    ) : (
-                      <>
-                        <EyeOff size={14} /> Dismiss
-                      </>
-                    )}
-                  </Button>
-                </div>
+                <JobDetailActions
+                  job={selectedDetail}
+                  applicationDestination={applicationDestination}
+                  applicationUrl={applicationUrl}
+                  jobSourceUrl={jobSourceUrl}
+                  busy={stateBusy}
+                  detailLoading={detailLoading}
+                  onApply={() => applicationDestination && openApplicationLink(selectedDetail, applicationDestination)}
+                  onSave={() => void updateJobState(selectedDetail, selectedDetail.state === "saved" ? null : "saved")}
+                  onDismiss={() => void updateJobState(selectedDetail, selectedDetail.state === "dismissed" ? null : "dismissed")}
+                />
                 {activityError && (
                   <p className="th-jobs-state-error" role="status">
                     {activityError}
