@@ -11,7 +11,7 @@ type JobDetailPanelProps = {
 
 export function JobDetailPanel({ title, employer, location, actions, children }: JobDetailPanelProps) {
   return (
-    <Paper variant="outlined" className="min-w-0 rounded-xl p-4 sm:p-5">
+    <Paper variant="outlined" sx={{ minWidth: 0, borderRadius: 3, p: { xs: 2, sm: 2.5 } }}>
       <Stack spacing={2}>
         <div>
           <Typography variant="h5" component="h2" sx={{ fontWeight: 700 }}>{title}</Typography>
