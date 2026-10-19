@@ -10,10 +10,7 @@ import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
 import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
-import { JobDetailDescription } from "./authenticated/job-detail-description";
-import { JobDetailHeading } from "./authenticated/job-detail-heading";
-import { JobDetailMeta } from "./authenticated/job-detail-meta";
-import { JobDetailActions } from "./authenticated/job-detail-actions";
+import { AuthenticatedJobDetailPanel } from "./authenticated/job-detail-panel";
 import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
@@ -819,82 +816,25 @@ export default function JobsDiscovery({
               setMobileDetail(true);
             }}
           />
-          <section
-            className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail ? "th-jobs-mobile-visible" : ""}`}
-            aria-label="Selected job details"
-            aria-busy={detailLoading}
-          >
-            {!selectedDetail ? (
-              <div className="th-jobs-detail-placeholder">
-                <strong>Select an opportunity</strong>
-                <p>
-                  Choose a listing to view its description and application
-                  destination.
-                </p>
-              </div>
-            ) : (
-              <div className="th-jobs-detail-content" key={selectedDetail.id}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  type="button"
-                  className="th-jobs-mobile-back"
-                  onClick={() => setMobileDetail(false)}
-                >
-                  <ArrowLeft size={17} aria-hidden="true" /> Back to results
-                </Button>
-                <JobDetailHeading
-                  title={selectedDetail.title}
-                  employer={selectedDetail.employer_name}
-                  onViewMatch={() => setMatchOpen(true)}
-                />
-                <JobDetailMeta
-                  location={selectedDetail.location_text}
-                  employmentType={selectedDetail.employment_type}
-                  workMode={selectedDetail.work_mode}
-                  postedAt={selectedSource?.published_at}
-                  formatDate={formatDate}
-                />
-                <JobDetailActions
-                  job={selectedDetail}
-                  applicationDestination={applicationDestination}
-                  applicationUrl={applicationUrl}
-                  jobSourceUrl={jobSourceUrl}
-                  busy={stateBusy}
-                  detailLoading={detailLoading}
-                  onApply={() => applicationDestination && openApplicationLink(selectedDetail, applicationDestination)}
-                  onSave={() => void updateJobState(selectedDetail, selectedDetail.state === "saved" ? null : "saved")}
-                  onDismiss={() => void updateJobState(selectedDetail, selectedDetail.state === "dismissed" ? null : "dismissed")}
-                />
-                {activityError && (
-                  <p className="th-jobs-state-error" role="status">
-                    {activityError}
-                  </p>
-                )}
-                {detailError && (
-                  <p className="th-jobs-state-error" role="status">
-                    {detailError}{" "}
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      type="button"
-                      onClick={() => setRetryDetail((v) => v + 1)}
-                    >
-                      Retry
-                    </Button>
-                  </p>
-                )}
-                <div className="th-jobs-source-status">
-                  <span data-available={Boolean(applicationUrl)}>
-                    {applicationUrl
-                      ? "✓ Application destination available"
-                      : "! Employer application link not verified"}
-                  </span>
-                </div>
-                <JobDetailDescription description={selectedDetail.description} />
-              </div>
-            )}
-          </section>
+          <AuthenticatedJobDetailPanel
+            job={selectedDetail}
+            source={selectedSource}
+            applicationDestination={applicationDestination}
+            applicationUrl={applicationUrl}
+            jobSourceUrl={jobSourceUrl}
+            busy={stateBusy}
+            detailLoading={detailLoading}
+            mobileDetail={mobileDetail}
+            activityError={activityError}
+            detailError={detailError}
+            formatDate={formatDate}
+            onBack={() => setMobileDetail(false)}
+            onViewMatch={() => setMatchOpen(true)}
+            onApply={() => applicationDestination && openApplicationLink(selectedDetail!, applicationDestination)}
+            onSave={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "saved" ? null : "saved")}
+            onDismiss={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "dismissed" ? null : "dismissed")}
+            onRetry={() => setRetryDetail((v) => v + 1)}
+          />
         </div>
         <JobFiltersDialog
           open={filtersOpen}
