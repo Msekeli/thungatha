@@ -1,5 +1,8 @@
 "use client";
 
+import { Bookmark } from "lucide-react";
+import { SignInButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 import { JobCard, type JobCardData } from "../shared/job-card";
 
 type JobListItem = { job: JobCardData; postedLabel: string };
@@ -20,6 +23,13 @@ export function PublicJobDiscoveryJobList({ jobs, selectedId, onSelect }: Props)
           selected={selectedId === job.id}
           postedLabel={postedLabel}
           onSelect={() => onSelect(job.id)}
+          saveAction={
+            <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+              <Button variant="ghost" size="sm" type="button" aria-label={`Sign in to save ${job.title}`} title="Sign in to save this job">
+                <Bookmark size={16} />
+              </Button>
+            </SignInButton>
+          }
         />
       ))}
     </div>
