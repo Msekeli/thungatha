@@ -45,6 +45,7 @@
     display:flex; flex:1 1 auto; flex-direction:column; gap:12px;
     min-height:0; overflow:hidden;
   }
+  .th-discovery-detail .th-jobs-detail-content > :not(style) { margin:0!important; }
   .th-discovery-detail .th-jobs-redesign-job-head { flex:0 0 auto; }
   .th-discovery-detail .th-jobs-detail-content > .th-job-description-panel {
     display:flex; flex:1 1 auto; flex-direction:column; min-height:0;
