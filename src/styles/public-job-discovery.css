@@ -11,6 +11,7 @@
     padding: 12px 16px 16px; gap: 12px;
   }
   .th-discovery-workspace > * { min-height: 0; }
+  .th-discovery-shell > .th-wide-promo { display: none; }
   .th-discovery-results {
     display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden;
   }
@@ -32,10 +33,10 @@
     .th-discovery-shell .th-discovery-hero h1 { font-size: 25px; line-height: 1.15; }
     .th-discovery-shell .th-discovery-hero p { margin-bottom: 8px; font-size: 12px; }
     .th-discovery-shell .th-discovery-hero .MuiChip-root { height: 30px; }
-    .th-discovery-workspace { display: block !important; position: relative; padding: 8px; }
+    .th-discovery-workspace { display: block !important; position: relative; padding: 8px 8px 68px; }
     .th-discovery-results { height: 100%; overflow: hidden; }
     .th-discovery-results > .th-discovery-job-list { height: 100%; overflow-y: auto; }
-    .th-discovery-detail { display: none; position: absolute; inset: 8px; z-index: 4; background: var(--th-page); }
+    .th-discovery-detail { display: none; position: absolute; inset: 8px 8px 68px; z-index: 4; background: var(--th-page); }
     .th-discovery-detail.th-detail-mobile-open { display: block; }
     .th-discovery-detail .th-mobile-detail-heading { display: flex; }
   }
