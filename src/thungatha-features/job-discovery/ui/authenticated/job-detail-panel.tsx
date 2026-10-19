@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobDetailActions } from "./job-detail-actions";
 import { JobDetailPresentation, JobDetailEmptyState } from "../shared/job-detail-presentation";
