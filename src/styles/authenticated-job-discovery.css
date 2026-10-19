@@ -36,7 +36,7 @@
     }
     .th-jobs-redesign-results,
     .th-jobs-redesign-detail {
-      height: 100%;
+      height: 100% !important;
       max-height: 100% !important;
       overflow-y: auto;
     }
