@@ -18,22 +18,7 @@ import {
 } from "lucide-react";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 
-type Destination = { href: string; label: string; icon: typeof Search };
-const workspace: Destination[] = [
-  { href: "/jobs", label: "Job Discovery", icon: Search },
-  { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
-  { href: "/applications", label: "Job Tracking", icon: ClipboardCheck },
-  { href: "/jobs?status=saved", label: "Saved Jobs", icon: Bookmark },
-  {
-    href: "/jobs?status=dismissed",
-    label: "Dismissed",
-    icon: BriefcaseBusiness,
-  },
-];
-const personal: Destination[] = [
-  { href: "/profile", label: "Profile", icon: UserRound },
-  { href: "/account", label: "Settings", icon: Settings },
-];
+import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
 
 export function WorkspaceShell({
   active,
@@ -51,43 +36,7 @@ export function WorkspaceShell({
         <div className="th-workspace-brand">
           <BrandMark />
         </div>
-        <nav className="th-workspace-nav" aria-label="Workspace">
-          <p className="th-workspace-nav-label">Workspace</p>
-          {workspace.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="th-workspace-nav-link"
-              data-active={active === item.href}
-              aria-current={active === item.href ? "page" : undefined}
-            >
-              <item.icon
-                className="th-workspace-nav-icon"
-                aria-hidden="true"
-                size={17}
-                strokeWidth={1.7}
-              />
-              {item.label}
-            </Link>
-          ))}
-          <p className="th-workspace-nav-label th-workspace-you-label">You</p>
-          {personal.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="th-workspace-nav-link"
-              data-active={active === item.href}
-            >
-              <item.icon
-                className="th-workspace-nav-icon"
-                aria-hidden="true"
-                size={17}
-                strokeWidth={1.7}
-              />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <WorkspaceSidebarNav active={active} />
         <div className="th-workspace-sidebar-footer">
           <Link href="/" className="th-workspace-home-link">
             ← Home
