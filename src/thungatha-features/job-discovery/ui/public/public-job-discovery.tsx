@@ -19,7 +19,7 @@ type JobSource = { source_url: string | null; application_url: string | null; pu
 type Job = { id: string; title: string; employer_name: string | null; description: string | null; location_text: string | null; country_code: string | null; work_mode: string | null; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; updated_at: string | null; job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null };
 type Feed = { jobs: Job[]; page: number; pageSize: number; total: number; totalPages: number };
 function sourceFor(job: Job | null): JobSource | null { if (!job?.job_sources) return null; return Array.isArray(job.job_sources) ? job.job_sources[0] ?? null : job.job_sources; }
-function dateLabel(value: string | null | undefined): string { if (!value) return "Recently listed"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "Recently listed" : new Intl.DateTimeFormat("en-ZA", { day: "numeric", month: "short" }).format(date); }
+function dateLabel(value: string | null | undefined): string { if (!value) return "Date unknown"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "Date unknown" : new Intl.DateTimeFormat("en-ZA", { year: "numeric", month: "short", day: "numeric" }).format(date); }
 
 
 export default function PublicJobDiscovery({ configured }: { configured: boolean }) {
