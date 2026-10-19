@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useClerk } from "@clerk/nextjs";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignOutConfirmationDialog } from "./sign-out-confirmation-dialog";
 import "./sign-out-control.css";
@@ -52,6 +53,7 @@ export function SignOutControl() {
           setIsOpen(true);
         }}
       >
+        <LogOut size={16} aria-hidden="true" />
         Sign out
       </Button>
       {isOpen ? (
