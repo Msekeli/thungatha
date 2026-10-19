@@ -8,7 +8,7 @@ import { JobList } from "../shared/job-list";
 import { JobDetailTabs } from "../shared/job-detail-tabs";
 import { JobSearchBar } from "../shared/job-search-bar";
 import { JobTypeChips } from "../shared/job-type-chips";
-import { AuthenticatedJobFilters } from "../shared/job-filters";
+import { AuthenticatedJobFilters } from "./job-filters-dialog";
 import { JobDetailPanel } from "../shared/job-detail-panel";
 import { displayValue, formatDate, getJobSource, safeExternalUrl } from "../shared/job-formatters";
 import { Button } from "@/components/ui/button";
