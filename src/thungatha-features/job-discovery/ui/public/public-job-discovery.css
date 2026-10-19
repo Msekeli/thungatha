@@ -50,6 +50,7 @@
   .th-discovery-detail .th-jobs-detail-header-actions .MuiButton-root { min-height:36px; padding:6px 12px; white-space:nowrap; }
   .th-discovery-detail .th-jobs-detail-actions .MuiButton-root { min-height:44px; padding:8px 12px; }
   .th-discovery-detail .th-jobs-detail-content { gap:10px; }
+  .th-discovery-detail .th-jobs-detail-content > :not(style) ~ :not(style) { margin-top:10px; }
   .th-discovery-detail .th-jobs-detail-content .th-jobs-redesign-job-head { padding-bottom:10px; }
   .th-discovery-shell>.th-wide-promo,.th-discovery-shell>.th-mobile-bottom-nav { display:none!important; }
   @media (max-width:1199px) {
