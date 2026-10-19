@@ -1,3 +1,4 @@
+import "@/thungatha-features/job-discovery/ui/public/public-job-discovery.css";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
