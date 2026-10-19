@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { Box, Button, Stack } from "@mui/material";
@@ -7,7 +6,6 @@ import { Show, SignInButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
-
 type Props = { configured: boolean; onOpenFilters: () => void };
 const navSx = {
   color: "text.secondary",
@@ -16,7 +14,6 @@ const navSx = {
   fontWeight: 600,
   "&:hover": { color: "primary.main" },
 };
-
 export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
   return (
     <Box
