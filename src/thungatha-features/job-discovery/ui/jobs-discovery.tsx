@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "./jobs-discovery.css";
 import { useJobDiscoveryState } from "./hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "./hooks/use-job-discovery-controller";
 import { JobDiscoveryScreen } from "./authenticated/job-discovery-screen";
