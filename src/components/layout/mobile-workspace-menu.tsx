@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Show, SignInButton } from "@clerk/nextjs";
 import {
   House,
   Compass,
@@ -77,22 +78,43 @@ export function MobileWorkspaceMenu({
 
 export function MobileWorkspaceBottomNav({
   isActive,
+  publicMode = false,
+  configured = true,
 }: {
   isActive: (href: string) => boolean;
+  publicMode?: boolean;
+  configured?: boolean;
 }) {
+  const items = publicMode ? [{ ...primary[0], href: "/" }, ...primary.slice(1)] : primary;
+  const renderLink = (item: (typeof primary)[number]) => (
+    <Link
+      key={item.href}
+      href={item.href}
+      data-active={isActive(item.href)}
+      aria-current={isActive(item.href) ? "page" : undefined}
+    >
+      <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
+      <span>{item.label}</span>
+    </Link>
+  );
   return (
     <nav className="th-mobile-bottom-nav" aria-label="Primary navigation">
-      {primary.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          data-active={isActive(item.href)}
-          aria-current={isActive(item.href) ? "page" : undefined}
-        >
-          <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
-          <span>{item.label}</span>
-        </Link>
-      ))}
+      {publicMode && configured ? (
+        <>
+          <Show when="signed-in">{items.map(renderLink)}</Show>
+          <Show when="signed-out">
+            {renderLink(items[0])}
+            {items.slice(1).map((item) => (
+              <SignInButton key={item.href} mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+                <a href={item.href} aria-label={`Sign in to access ${item.label}`}>
+                  <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
+                  <span>{item.label}</span>
+                </a>
+              </SignInButton>
+            ))}
+          </Show>
+        </>
+      ) : publicMode ? renderLink(items[0]) : items.map(renderLink)}
     </nav>
   );
 }
