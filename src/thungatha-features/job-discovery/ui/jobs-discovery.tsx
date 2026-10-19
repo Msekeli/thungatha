@@ -7,16 +7,11 @@ import { JobDiscoveryDialogs } from "./authenticated/job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./authenticated/job-discovery-workspace";
 import { JobDiscoveryControls } from "./authenticated/job-discovery-controls";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
-import { useJobActivitySync } from "./hooks/use-job-activity-sync";
-import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
-import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
-import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
-import { useUndoJobState } from "./hooks/use-undo-job-state";
 import { useJobFilterActions } from "./hooks/use-job-filter-actions";
-import { useJobFeed } from "./hooks/use-job-feed";
 import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
 import { useJobDiscoveryState } from "./hooks/use-job-discovery-state";
+import { useJobDiscoveryData } from "./hooks/use-job-discovery-data";
 
 import { formatDate, shown, sourceFor } from "./job-discovery-utils";
 
@@ -46,55 +41,14 @@ export default function JobsDiscovery({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  useJobFeed(
+  const { updateJobState, undoLastStateChange } = useJobDiscoveryData({
     page, category, filters, retryFeed, setFeed, setLoading, setError,
-    setIsAuthenticated, setSelectedId,
-  );
-
-  useInfiniteJobPagination(loadMoreRef, loading, feed, page, setPage);
-
-  useSelectedJobDetail(
-    selectedId,
-    retryDetail,
-    setDetail,
-    setDetailLoading,
-    setDetailError,
-  );
-
-  useJobActivitySync(
-    selectedId,
-    setJobActivity,
-    setActivityError,
-    setForceAppliedPrompt,
-    setDismissedPromptForJobId,
-  );
-
-  const updateJobState = useUpdateJobState(
-    stateBusy,
-    setStateBusy,
-    setStateError,
-    setStateMessage,
-    setFeed,
-    setDetail,
-    setUndoAction,
-    setRetryFeed,
-  );
-
-  const undoLastStateChange = useUndoJobState(
-    undoAction,
-    stateBusy,
-    detail,
-    feed,
-    updateJobState,
-    setUndoAction,
-    setStateMessage,
-  );
-
-  useEffect(() => {
-    if (!undoAction) return;
-    const timeoutId = window.setTimeout(() => setUndoAction(null), 10_000);
-    return () => window.clearTimeout(timeoutId);
-  }, [undoAction]);
+    setIsAuthenticated, setSelectedId, loadMoreRef, loading, feed, setPage,
+    selectedId, retryDetail, setDetail, setDetailLoading, setDetailError,
+    setJobActivity, setActivityError, setForceAppliedPrompt,
+    setDismissedPromptForJobId, stateBusy, setStateBusy, setStateError,
+    setStateMessage, setUndoAction, undoAction, detail,
+  });
 
   const view = buildJobDiscoveryViewModel({
     detail, selectedId, feed, jobActivity, filters, sortOrder,
