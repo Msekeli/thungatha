@@ -15,8 +15,7 @@
     grid-template-columns:250px minmax(0,.95fr) minmax(0,1.12fr)!important;
   }
   .th-discovery-workspace>* { min-width:0; min-height:0; }
-  .th-discovery-workspace>aside[aria-label="Thungatha features"] { overflow:hidden; }
-  .th-discovery-results {
+    .th-discovery-results {
     position:relative; display:flex; flex-direction:column; height:100%;
     min-height:0; overflow:hidden; border:1px solid var(--th-line);
     border-radius:12px; padding:0 12px 10px;
