@@ -22,7 +22,6 @@ export function PublicJobDiscoveryJobList({
   configured,
   onSelect,
   dismissed = false,
-  onDismiss,
   onRestore,
 }: Props) {
   const jobData = jobs.map(({ job }) => job);
