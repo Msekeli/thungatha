@@ -6,24 +6,24 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px;
-  border: 1px solid var(--job-card-border, var(--th-line, #dce4ee));
+  border: 1px solid var(--job-card-border, var(--th-line, #1b2740));
   border-radius: 10px;
-  background: var(--job-card-bg, var(--th-surface, #fff));
-  color: var(--job-card-fg, var(--th-fg, #17243c));
+  background: var(--job-card-bg, var(--th-panel, #0b1220));
+  color: var(--job-card-fg, var(--th-fg, #e9f6ff));
   text-align: left;
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 .th-job-card:hover {
-  border-color: var(--job-card-hover-border, var(--th-accent, #7c9bc4));
+  border-color: var(--job-card-hover-border, var(--th-accent, #38bdf8));
 }
 .th-job-card[data-selected="true"] {
-  border-color: var(--job-card-selected-border, var(--th-accent, #2563eb));
-  background: var(--job-card-selected-bg, var(--th-selected, #eff6ff));
-  box-shadow: inset 3px 0 0 var(--job-card-selected-border, var(--th-accent, #2563eb));
+  border-color: var(--job-card-selected-border, var(--th-accent, #38bdf8));
+  background: var(--job-card-selected-bg, var(--th-selected, rgba(56, 189, 248, 0.14)));
+  box-shadow: inset 3px 0 0 var(--job-card-selected-border, var(--th-accent, #38bdf8));
 }
 .th-job-card:focus-visible {
-  outline: 2px solid var(--th-accent, #2563eb);
+  outline: 2px solid var(--th-accent, #38bdf8);
   outline-offset: 2px;
 }
 .th-job-card-logo {
@@ -33,10 +33,10 @@
   flex: 0 0 42px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--th-line, #dce4ee);
+  border: 1px solid var(--th-line, #1b2740);
   border-radius: 9px;
-  background: var(--th-panel-2, #edf2f7);
-  color: var(--th-fg, #17243c);
+  background: var(--th-panel-2, #0f1a2e);
+  color: var(--th-fg, #e9f6ff);
   font-size: 16px;
   font-weight: 700;
 }
@@ -50,11 +50,11 @@
 .th-job-card-employer,
 .th-job-card-location,
 .th-job-card-posted {
-  color: var(--th-fg-muted, #64748b);
+  color: var(--th-fg-muted, #8fa9be);
   font-size: 11px;
 }
 .th-job-card-title {
-  color: var(--th-fg, #17243c);
+  color: var(--th-fg, #e9f6ff);
   font-size: 13px;
   font-weight: 650;
   line-height: 1.4;
@@ -79,10 +79,10 @@
   align-items: center;
   gap: 4px;
   padding: 3px 6px;
-  border: 1px solid var(--th-line, #dce4ee);
+  border: 1px solid var(--th-line, #1b2740);
   border-radius: 6px;
-  background: var(--th-panel-2, #f5f7fa);
-  color: var(--th-fg-muted, #64748b);
+  background: var(--th-panel-2, #0f1a2e);
+  color: var(--th-fg-muted, #8fa9be);
   font-size: 10px;
   font-style: normal;
 }
@@ -93,12 +93,12 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 10px;
-  color: var(--th-fg-muted, #64748b);
+  color: var(--th-fg-muted, #8fa9be);
   font-size: 10px;
 }
 /* Shared description typography for public and authenticated detail panels. */
 .th-job-description-content {
-  color: var(--th-fg, #17243c);
+  color: var(--th-fg, #e9f6ff);
   font-size: 13px;
   line-height: 1.75;
   overflow-wrap: anywhere;
@@ -106,20 +106,20 @@
 .th-job-description-content h2,
 .th-job-description-content h3 {
   margin: 0 0 8px;
-  color: var(--th-fg, #17243c);
+  color: var(--th-fg, #e9f6ff);
   font-size: 14px;
   font-weight: 650;
 }
 .th-job-description-content p {
   margin: 0 0 14px;
-  color: var(--th-fg-muted, #475569);
+  color: var(--th-fg-muted, #8fa9be);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .th-job-description-content section {
   padding: 12px 0 4px;
   margin-top: 10px;
-  border-top: 1px solid var(--th-line, #dce4ee);
+  border-top: 1px solid var(--th-line, #1b2740);
   white-space: normal;
 }
 @media (max-width: 700px) {
