@@ -14,6 +14,7 @@ import { PublicJobDiscoveryHero } from "./public-job-discovery-hero";
 import { PublicJobDiscoveryResultsToolbar } from "./public-job-discovery-results-toolbar";
 import { PublicJobDiscoveryJobList } from "./public-job-discovery-job-list";
 import { PublicJobDiscoveryResultState } from "./public-job-discovery-result-state";
+import { usePublicDismissedJobs } from "./use-public-dismissed-jobs";
 
 type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
 type Job = { id: string; title: string; employer_name: string | null; description: string | null; location_text: string | null; country_code: string | null; work_mode: string | null; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; updated_at: string | null; job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null };
@@ -26,10 +27,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const [query,setQuery]=useState(""); const [location,setLocation]=useState("Cape Town + 50 km"); const [jobs,setJobs]=useState<Job[]>([]); const [total,setTotal]=useState(0);
   const [selectedId,setSelectedId]=useState<string|null>(null); const [detail,setDetail]=useState<Job|null>(null); const [loading,setLoading]=useState(true); const [error,setError]=useState<string|null>(null);
   const [typesSelected,setTypesSelected]=useState<string[]>([]); const [quickType,setQuickType]=useState("all"); const [modesSelected,setModesSelected]=useState<string[]>([]); const [sort,setSort]=useState("relevant"); const [salary,setSalary]=useState("any"); const [experience,setExperience]=useState("any");
-  const [promoVisible,setPromoVisible]=useState(false); const [retry,setRetry]=useState(0); const [mobileFiltersOpen,setMobileFiltersOpen]=useState(false); const [mobileDetailOpen,setMobileDetailOpen]=useState(false); const [dismissedJobs,setDismissedJobs]=useState<Job[]>([]); const [dismissedLoaded,setDismissedLoaded]=useState(false); const [showDismissed,setShowDismissed]=useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- Hydrate client-only dismissed jobs from localStorage.
-  useEffect(()=>{try{const saved=localStorage.getItem("thungatha-public-dismissed-jobs-v1");if(saved){const parsed=JSON.parse(saved) as Job[];if(Array.isArray(parsed))setDismissedJobs(parsed);}}catch{/* optional local-only state */}finally{setDismissedLoaded(true);}},[]);
-  useEffect(()=>{if(!dismissedLoaded)return;try{localStorage.setItem("thungatha-public-dismissed-jobs-v1",JSON.stringify(dismissedJobs));}catch{/* optional local-only state */}},[dismissedJobs,dismissedLoaded]);
+  const [promoVisible,setPromoVisible]=useState(false); const [retry,setRetry]=useState(0); const [mobileFiltersOpen,setMobileFiltersOpen]=useState(false); const [mobileDetailOpen,setMobileDetailOpen]=useState(false); const { dismissedJobs, setDismissedJobs } = usePublicDismissedJobs(); const [showDismissed,setShowDismissed]=useState(false);
 
   function dismissJob(jobId:string){const job=jobs.find(item=>item.id===jobId) ?? (detail?.id===jobId ? detail : null);if(!job)return;setDismissedJobs(current=>[job,...current.filter(item=>item.id!==jobId)]);setSelectedId(current=>current===jobId?null:current);}
   function restoreJob(jobId:string){setDismissedJobs(current=>current.filter(item=>item.id!==jobId));setSelectedId(current=>current===jobId?null:current);}
