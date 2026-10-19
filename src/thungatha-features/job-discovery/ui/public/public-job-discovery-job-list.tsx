@@ -1,6 +1,7 @@
 "use client";
 
 import { Bookmark, EyeOff, RotateCcw } from "lucide-react";
+import Box from "@mui/material/Box";
 import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ type Props = {
 export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSelect, dismissed = false, onDismiss, onRestore }: Props) {
   const jobData = jobs.map(({ job }) => job);
   const postedById = new Map(jobs.map(({ job, postedLabel }) => [job.id, postedLabel]));
-  return <div className="th-job-list">
+  return <Box sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
     <JobList jobs={jobData} variant="public" selectedId={selectedId}
       postedLabel={(job) => postedById.get(job.id) ?? "Date unknown"}
       onSelect={(job) => onSelect(job.id)}
@@ -41,5 +42,5 @@ export function PublicJobDiscoveryJobList({ jobs, selectedId, configured, onSele
       ) : (
         <Button variant="ghost" size="sm" type="button" aria-label={`Dismiss ${job.title}`} title="Dismiss job" onClick={() => onDismiss?.(job.id)}><EyeOff size={15} /></Button>
       )} />
-  </div>;
+  </Box>;
 }
