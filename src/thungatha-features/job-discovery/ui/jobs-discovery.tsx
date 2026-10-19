@@ -218,47 +218,41 @@ export default function JobsDiscovery({
             onDismiss={() => setStateError(null)}
           />
         )}
-        <div className="th-jobs-workspace th-jobs-redesign-workspace">
-          <AuthenticatedJobResultsPanel
-            jobs={visibleJobs}
-            feed={feed}
-            loading={loading}
-            error={error}
-            hasFilters={hasFilters}
-            mobileDetail={mobileDetail}
-            selectedId={selectedId}
-            loadMoreRef={loadMoreRef}
-            sourceFor={sourceFor}
-            formatDate={formatDate}
-            onRetry={() => setRetryFeed((v) => v + 1)}
-            onSelect={(job) => {
-              setSelectedId(job.id);
-              setForceAppliedPrompt(false);
-              setDismissedPromptForJobId(null);
-              setActivityError(null);
-              setMobileDetail(true);
-            }}
-          />
-          <AuthenticatedJobDetailPanel
-            job={selectedDetail}
-            source={selectedSource}
-            applicationDestination={applicationDestination}
-            applicationUrl={applicationUrl}
-            jobSourceUrl={jobSourceUrl}
-            busy={stateBusy}
-            detailLoading={detailLoading}
-            mobileDetail={mobileDetail}
-            activityError={activityError}
-            detailError={detailError}
-            formatDate={formatDate}
-            onBack={() => setMobileDetail(false)}
-            onViewMatch={() => setMatchOpen(true)}
-            onApply={() => applicationDestination && openApplicationLink(selectedDetail!, applicationDestination)}
-            onSave={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "saved" ? null : "saved")}
-            onDismiss={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "dismissed" ? null : "dismissed")}
-            onRetry={() => setRetryDetail((v) => v + 1)}
-          />
-        </div>
+        <AuthenticatedJobWorkspace
+          jobs={visibleJobs}
+          feed={feed}
+          loading={loading}
+          error={error}
+          hasFilters={hasFilters}
+          mobileDetail={mobileDetail}
+          selectedId={selectedId}
+          loadMoreRef={loadMoreRef}
+          selectedDetail={selectedDetail}
+          selectedSource={selectedSource}
+          applicationDestination={applicationDestination}
+          applicationUrl={applicationUrl}
+          jobSourceUrl={jobSourceUrl}
+          busy={stateBusy}
+          detailLoading={detailLoading}
+          activityError={activityError}
+          detailError={detailError}
+          sourceFor={sourceFor}
+          formatDate={formatDate}
+          onRetryFeed={() => setRetryFeed((v) => v + 1)}
+          onSelect={(job) => {
+            setSelectedId(job.id);
+            setForceAppliedPrompt(false);
+            setDismissedPromptForJobId(null);
+            setActivityError(null);
+            setMobileDetail(true);
+          }}
+          onBack={() => setMobileDetail(false)}
+          onViewMatch={() => setMatchOpen(true)}
+          onApply={() => applicationDestination && openApplicationLink(selectedDetail!, applicationDestination)}
+          onSave={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "saved" ? null : "saved")}
+          onDismiss={() => selectedDetail && void updateJobState(selectedDetail, selectedDetail.state === "dismissed" ? null : "dismissed")}
+          onRetryDetail={() => setRetryDetail((v) => v + 1)}
+        />
         <JobDiscoveryDialogs
           filtersOpen={filtersOpen}
           draft={draft}
