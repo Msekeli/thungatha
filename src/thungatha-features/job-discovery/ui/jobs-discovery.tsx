@@ -25,8 +25,14 @@ import { useJobFeed } from "./hooks/use-job-feed";
 import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
 
 import {
-  EMPTY_FILTERS, formatDate, shown, sourceFor,
-  type Feed, type Filters, type Job, type JobActivity,
+  EMPTY_FILTERS,
+  formatDate,
+  shown,
+  sourceFor,
+  type Feed,
+  type Filters,
+  type Job,
+  type JobActivity,
 } from "./job-discovery-utils";
 
 export default function JobsDiscovery({
