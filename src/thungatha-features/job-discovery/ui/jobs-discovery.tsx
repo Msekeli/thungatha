@@ -1331,10 +1331,16 @@ export default function JobsDiscovery({
             !selectedActivity?.applied_at &&
             dismissedPromptForJobId !== selectedId)) &&
           selectedDetail && (
-            <div
-              className="th-jobs-popover th-jobs-apply-popover"
-              role="dialog"
+            <Dialog
+              open
+              onClose={() => {
+                setForceAppliedPrompt(false);
+                setDismissedPromptForJobId(selectedDetail.id);
+              }}
+              fullWidth
+              maxWidth="sm"
               aria-label="Application confirmation"
+              slotProps={{ paper: { className: "th-jobs-popover th-jobs-apply-popover th-jobs-mui-dialog" } }}
             >
               <header>
                 <span className="th-jobs-popover-icon">
@@ -1383,7 +1389,7 @@ export default function JobsDiscovery({
                   track of your applications.
                 </aside>
               </div>
-            </div>
+            </Dialog>
           )}
       </main>
     </WorkspaceShell>
