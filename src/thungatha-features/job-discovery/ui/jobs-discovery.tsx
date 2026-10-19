@@ -5,14 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { AuthenticatedJobResultsPanel } from "./authenticated/job-results-panel";
-import { AuthenticatedJobSearchToolbar } from "./authenticated/job-search-toolbar";
+import { JobDiscoveryHeader } from "./authenticated/job-discovery-header";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./authenticated/application-confirmation-dialog";
 import { JobFiltersDialog } from "./authenticated/job-filters-dialog";
 import { AuthenticatedJobDetailPanel } from "./authenticated/job-detail-panel";
 import { JobUndoNotice } from "./authenticated/job-undo-notice";
-import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
@@ -169,27 +168,16 @@ export default function JobsDiscovery({
             <Link href="/sign-in">Go to sign in</Link>
           </div>
         )}
-        <header className="th-jobs-header th-jobs-redesign-header">
-          <div>
-            <h1>Job Discovery</h1>
-            <p className="th-jobs-subtitle">
-              Official employer opportunities in Cape Town and surrounding areas
-            </p>
-          </div>
-          <AuthenticatedJobSearchToolbar
-            query={draft.query}
-            location={draft.location}
-            filtersOpen={filtersOpen}
-            onQueryChange={(value) => changeDraft("query", value)}
-            onLocationChange={(value) => changeDraft("location", value)}
-            onSubmit={submitFilters}
-            onToggleFilters={() => setFiltersOpen((value) => !value)}
-          />
-        </header>
-        <JobCategoryStrip
+        <JobDiscoveryHeader
+          draft={draft}
+          filtersOpen={filtersOpen}
           categories={categories}
           category={category}
           sortOrder={sortOrder}
+          onQueryChange={(value) => changeDraft("query", value)}
+          onLocationChange={(value) => changeDraft("location", value)}
+          onSubmit={submitFilters}
+          onToggleFilters={() => setFiltersOpen((value) => !value)}
           onSortChange={setSortOrder}
           onCategoryChange={(key, label) => {
             if (key === "all" || key === "saved" || key === "dismissed") {
@@ -198,7 +186,7 @@ export default function JobsDiscovery({
               return;
             }
             changeDraft("employmentType", label);
-            setFilters(current => ({ ...current, employmentType: label }));
+            setFilters((current) => ({ ...current, employmentType: label }));
             setPage(1);
           }}
         />
