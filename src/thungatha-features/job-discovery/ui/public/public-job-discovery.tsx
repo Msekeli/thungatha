@@ -1,0 +1,105 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { Bookmark, BriefcaseBusiness, CalendarDays, ChevronDown, ExternalLink, FileUser, MapPin, Menu, Search, SlidersHorizontal, X, ClipboardList, ChartNoAxesColumn, ShieldCheck } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
+import "./public-job-discovery.css";
+import { JobList } from "../shared/job-list";
+import { JobDetailTabs } from "../shared/job-detail-tabs";
+import { JobSearchBar } from "../shared/job-search-bar";
+import { JobTypeChips } from "../shared/job-type-chips";
+import { JobResultsToolbar } from "../shared/job-results-toolbar";
+import { JobFilters } from "../shared/job-filters";
+import { JobDetailPanel } from "../shared/job-detail-panel";
+import { formatPublicDate, formatSalary, getJobSource, safeExternalUrl } from "../shared/job-formatters";
+
+type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
+type Job = { id: string; title: string; employer_name: string | null; description: string | null; location_text: string | null; country_code: string | null; work_mode: string | null; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; updated_at: string | null; job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null };
+type Feed = { jobs: Job[]; page: number; pageSize: number; total: number; totalPages: number };
+const types = [{label:"Full-time",value:"full_time",count:245},{label:"Part-time",value:"part_time",count:32},{label:"Contract",value:"contract",count:78},{label:"Internships",value:"internship",count:18},{label:"Learnerships",value:"learnership",count:0},{label:"Graduate programmes",value:"graduate",count:0}];
+const modes = [{label:"Remote",value:"remote",count:112},{label:"Hybrid",value:"hybrid",count:146},{label:"On-site",value:"onsite",count:221}];
+
+export default function PublicJobDiscovery({ configured }: { configured: boolean }) {
+  const [query,setQuery]=useState(""); const [location,setLocation]=useState("Cape Town + 50 km"); const [jobs,setJobs]=useState<Job[]>([]); const [total,setTotal]=useState(0);
+  const [selectedId,setSelectedId]=useState<string|null>(null); const [detail,setDetail]=useState<Job|null>(null); const [loading,setLoading]=useState(true); const [error,setError]=useState<string|null>(null);
+  const [typesSelected,setTypesSelected]=useState<string[]>([]); const [quickType,setQuickType]=useState("all"); const [modesSelected,setModesSelected]=useState<string[]>([]); const [sort,setSort]=useState("relevant"); const [salary,setSalary]=useState("any"); const [experience,setExperience]=useState("any");
+  const [promoVisible,setPromoVisible]=useState(false); const [retry,setRetry]=useState(0); const [mobileFiltersOpen,setMobileFiltersOpen]=useState(false); const [mobileDetailOpen,setMobileDetailOpen]=useState(false);
+  const [tab,setTab]=useState("Overview");
+  const selected=useMemo(()=>jobs.find(j=>j.id===selectedId)??detail??jobs[0]??null,[jobs,selectedId,detail]);
+  const filteredJobs=useMemo(()=>{let list=jobs.filter(j=>{const t=(j.employment_type||"").toLowerCase().replace(/[ -]+/g,"_"); const m=(j.work_mode||"").toLowerCase(); const salaryMatch=salary==="any"||(salary==="disclosed"?(j.salary_min!=null||j.salary_max!=null):salary==="above50"?(j.salary_min??j.salary_max??0)>=500000:true); return (typesSelected.length===0||typesSelected.includes(t))&&(quickType==="all"||t===quickType||((quickType==="learnership"||quickType==="graduate")&&t.includes(quickType)))&&(modesSelected.length===0||modesSelected.includes(m))&&salaryMatch;}); if(sort==="newest") list=[...list].sort((a,b)=>new Date(getJobSource(b)?.published_at||b.updated_at||0).getTime()-new Date(getJobSource(a)?.published_at||a.updated_at||0).getTime()); return list;},[jobs,typesSelected,quickType,modesSelected,salary,sort]);
+  useEffect(()=>{const timer=window.setTimeout(()=>{try{setPromoVisible(sessionStorage.getItem("th-public-promo-dismissed")!=="1");}catch{setPromoVisible(true);}},0);return()=>window.clearTimeout(timer);},[]);
+  useEffect(()=>{const controller=new AbortController();const timer=window.setTimeout(async()=>{setLoading(true);setError(null);const params=new URLSearchParams({page:"1",pageSize:"30",publishedWithin:"30d"});if(query.trim())params.set("query",query.trim());if(location.trim()&&location!=="Cape Town + 50 km")params.set("location",location.trim());try{const response=await fetch("/api/jobs?"+params,{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}});if(!response.ok)throw new Error(response.status===503?"Job Discovery is temporarily unavailable. Please try again shortly.":"We couldn't load jobs right now. Please try again.");const data=await response.json() as Feed;if(!Array.isArray(data.jobs))throw new Error("The jobs service returned an unexpected response.");setJobs(data.jobs);setTotal(data.total);if(!query.trim()&&location==="Cape Town + 50 km"){try{sessionStorage.setItem("thungatha-public-job-feed-v1",JSON.stringify({savedAt:Date.now(),feed:data}));}catch{/* optional cache */}}setSelectedId(current=>current&&data.jobs.some(j=>j.id===current)?current:data.jobs[0]?.id??null);}catch(reason){if(reason instanceof Error&&reason.name==="AbortError")return;setError(reason instanceof Error?reason.message:"We couldn't load jobs right now.");}finally{if(!controller.signal.aborted)setLoading(false);}},250);return()=>{window.clearTimeout(timer);controller.abort();};},[query,location,retry]);
+  useEffect(()=>{if(!selectedId)return;const controller=new AbortController();fetch("/api/jobs/"+encodeURIComponent(selectedId),{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}}).then(async response=>{if(!response.ok)throw new Error("Listing unavailable");const payload=await response.json() as {job:Job};setDetail(payload.job);}).catch((reason:unknown)=>{if(reason instanceof Error&&reason.name!=="AbortError")setDetail(null);});return()=>controller.abort();},[selectedId]);
+  const filterPanel = (
+    <JobFilters
+      query={query}
+      location={location}
+      typesSelected={typesSelected}
+      modesSelected={modesSelected}
+      salary={salary}
+      experience={experience}
+      types={types}
+      modes={modes}
+      onQueryChange={setQuery}
+      onLocationChange={setLocation}
+      onToggleType={(value) => setTypesSelected((current) =>
+        current.includes(value) ? current.filter((item) => item !== value) : [...current, value]
+      )}
+      onToggleMode={(value) => setModesSelected((current) =>
+        current.includes(value) ? current.filter((item) => item !== value) : [...current, value]
+      )}
+      onSalaryChange={setSalary}
+      onExperienceChange={setExperience}
+      onClear={clearFilters}
+      onApply={() => setMobileFiltersOpen(false)}
+    />
+  );
+  return <div className="th-discovery-shell">
+  <header className="th-discovery-header"><Link href="/" className="th-discovery-brand" aria-label="Thungatha home"><Image src="/brand/thungatha-logo.svg" alt="THUNGATHA" width={180} height={42} priority className="th-full-logo"/></Link><nav className="th-desktop-nav" aria-label="Main navigation"><a className="active" href="#jobs">Find Jobs</a>{configured && <Show when="signed-in"><Link href="/cv-studio">Tailor Your CV</Link><Link href="/applications">Track Applications</Link><Link href="/jobs?status=saved">Saved Jobs</Link></Show>}{configured && <Show when="signed-out">{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" onClick={e=>e.preventDefault()}>Tailor Your CV</Link></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" onClick={e=>e.preventDefault()}>Track Applications</Link></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" onClick={e=>e.preventDefault()}>Saved Jobs</Link></SignInButton>}</Show>}</nav><div className="th-discovery-header-actions"><ThemeToggle/><HomeAuthActions configured={configured} variant="nav"/><button className="th-icon-button th-menu-button" type="button" aria-label="Open filters" onClick={()=>setMobileFiltersOpen(true)}><Menu size={19}/></button></div></header>
+  <section className="th-discovery-hero"><div className="th-hero-glow"></div><h1>Find your next <span>opportunity</span></h1><p>Explore thousands of jobs in South Africa and beyond. Create an account to tailor<br className="th-hero-break"/> your CV, save jobs and track your applications.</p><form className="th-hero-search" onSubmit={e=>{e.preventDefault();document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});}}><JobSearchBar className="th-hero-query" element="div" iconSize={18} iconStrokeWidth={2} ariaLabel="Search jobs" value={query} onChange={setQuery} placeholder="Job title, skills or company..." /><div className="th-hero-location"><MapPin size={16}/><select aria-label="Search location" value={location} onChange={e=>setLocation(e.target.value)}><option>Cape Town + 50 km</option><option>Cape Town</option><option>Johannesburg</option><option>Durban</option><option>Remote</option><option value="">Anywhere</option></select><ChevronDown size={15}/></div><button type="button" className="th-hero-filter-button" onClick={()=>setMobileFiltersOpen(true)}><SlidersHorizontal size={15}/> Filters</button></form><JobTypeChips
+    className="th-search-chips"
+    ariaLabel="Opportunity types"
+    items={[
+      { key: "all", label: "All opportunities" },
+      { key: "full_time", label: "Full-time" },
+      { key: "part_time", label: "Part-time" },
+      { key: "contract", label: "Contract" },
+      { key: "internship", label: "Internships" },
+      { key: "learnership", label: "Learnerships" },
+      { key: "graduate", label: "Graduate programmes" },
+    ]}
+    activeKey={quickType}
+    onSelect={(value) => {
+      setQuickType(value);
+      setTypesSelected([]);
+      document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" });
+    }}
+  /></section><main className="th-discovery-workspace"><aside className="th-discovery-sidebar th-feature-sidebar" aria-label="Thungatha features">
+  <div className="th-feature-sidebar-heading"><strong>Make more of your job search</strong><p>Find opportunities and use Thungatha tools to move forward with confidence.</p></div>
+  <article><span className="th-feature-icon purple"><ClipboardList size={20}/></span><div><strong>CV matching</strong><p>Build your profile so we can match opportunities to your skills and experience.</p><small>Personalised recommendations</small>{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><button type="button" className="th-feature-signin">Create your profile</button></SignInButton>}</div></article>
+  <article><span className="th-feature-icon green"><ChartNoAxesColumn size={20}/></span><div><strong>Track Applications</strong><p>Keep application status, follow-ups and next steps organised in one place.</p><small>Stay on top of progress</small>{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><button type="button" className="th-feature-signin">Sign in to track</button></SignInButton>}</div></article>
+  <article><span className="th-feature-icon orange"><ShieldCheck size={20}/></span><div><strong>Saved Jobs</strong><p>Bookmark relevant roles and return to them when you are ready to apply.</p><small>Build your shortlist</small>{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><button type="button" className="th-feature-signin">Sign in to save jobs</button></SignInButton>}</div></article>
+</aside>
+  <section className="th-discovery-results" id="jobs" aria-label="Job results"><JobResultsToolbar
+    className="th-results-toolbar"
+    summary={loading ? "Loading opportunities…" : filteredJobs.length === 0 ? "0 opportunities" : `1–${Math.min(filteredJobs.length, 10)} of ${total.toLocaleString()} opportunities`}
+    hasActiveFilters={hasActiveFilters}
+    onClearFilters={clearFilters}
+    sortValue={sort}
+    onSortChange={setSort}
+    sortOptions={[
+      { value: "relevant", label: "Most relevant" },
+      { value: "newest", label: "Newest" },
+    ]}
+  /><form className="th-mobile-search" onSubmit={e=>e.preventDefault()}><Search size={17}/><input aria-label="Search jobs, skills or companies" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search jobs, skills or companies..."/><button type="button" aria-label="Open filters" onClick={()=>setMobileFiltersOpen(true)}><SlidersHorizontal size={17}/></button></form>
+  {error&&<div className="th-discovery-empty"><p>{error}</p><button type="button" onClick={()=>setRetry(v=>v+1)}>Try again</button></div>}{!error&&!loading&&filteredJobs.length===0&&<div className="th-discovery-empty"><BriefcaseBusiness size={25}/><strong>No matching jobs yet</strong><p>Try changing your filters or search terms.</p></div>}
+  <div className="th-job-list"><JobList jobs={filteredJobs} variant="public" selectedId={selectedId} getPostedLabel={(job) => formatPublicDate(getJobSource(job)?.published_at)} onSelect={(job) => { setSelectedId(job.id); setMobileDetailOpen(true); }} /></div>{loading&&<div className="th-loading-rows"><span/><span/><span/><span/></div>}
+  {promoVisible&&<aside className="th-inline-promo"><span className="th-promo-art"><FileUser size={25}/></span><div><strong>Get more from Thungatha</strong><p>Tailor your CV, track your applications and use AI tools to stand out.</p><div className="th-promo-actions">{configured?<>{configured && <SignUpButton mode="modal"><button type="button">Create free account</button></SignUpButton>}{configured && <SignInButton mode="modal"><button type="button">Sign in</button></SignInButton>}</>:<><Link href="/sign-up">Create free account</Link><Link href="/sign-in">Sign in</Link></>}</div></div><button type="button" aria-label="Dismiss promotion" onClick={dismissPromo}><X size={16}/></button></aside>}</section>
+  <JobDetailPanel element="aside" className={"th-discovery-detail "+(mobileDetailOpen?"th-detail-mobile-open":"")} ariaLabel="Selected job details" isEmpty={!selected} emptyClassName="th-discovery-empty" emptyTitle="Select a job" emptyDescription="Choose a listing to see more information." emptyIcon={<BriefcaseBusiness size={25}/>} header={<div className="th-mobile-detail-heading"><button type="button" onClick={()=>setMobileDetailOpen(false)}>← Back to results</button><Bookmark size={17}/></div>}>{selected && <><div className="th-detail-actions-top"><span className="th-employer-logo th-employer-logo-large">{(selected.employer_name||selected.title).slice(0,1).toUpperCase()}</span>{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><button type="button" className="th-icon-button" aria-label="Sign in to save this job"><Bookmark size={18}/></button></SignInButton>}</div><div className="th-detail-employer">{selected.employer_name||"Employer not listed"}</div><h1>{selected.title}</h1><div className="th-detail-facts"><span><MapPin size={14}/>{selected.location_text||"Location not specified"}</span><span><BriefcaseBusiness size={14}/>{selected.employment_type?.replace(/[_-]+/g," ")||"Full-time"}</span><span><CalendarDays size={14}/>{selected.work_mode||"Hybrid"}</span>{formatSalary(selected)&&<span>{formatSalary(selected)}</span>}</div>{applyUrl?<a className="th-apply-button" href={applyUrl} target="_blank" rel="noopener noreferrer">Apply on {selected.employer_name||"employer site"} <ExternalLink size={15}/></a>:<p className="th-no-apply">An application link is not available for this listing yet.</p>}<JobDetailTabs className="th-detail-tabs" tabs={["Overview", "Requirements", "About"].map((label) => ({ label, selected: tab === label, onSelect: () => setTab(label) }))} /><div className="th-detail-description"><h2>{tab==="Requirements"?"Requirements":tab==="About"?"About the company":"Job description"}</h2><p>{description||"The employer has not supplied a full description for this listing."}</p>{tab==="Overview"&&<><h2 className="th-detail-subheading">Key responsibilities</h2><p>{selected?.description?selected.description.split(". ").slice(0,3).join(". "):"Review the original listing for responsibilities and role details."}</p></>}{tab==="Requirements"&&<p>Review the employer listing for required experience, qualifications and skills.</p>}{tab==="About"&&<p>{selected?.employer_name||"The employer"} — view the original listing for more company information.</p>}</div>{source?.source_url&&<a className="th-source-link" href={safeExternalUrl(source.source_url) ?? "#"} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a>}</>:</>}</JobDetailPanel></main>{promoVisible&&<aside className="th-wide-promo"><span className="th-promo-art"><FileUser size={28}/></span><div><small>GET MORE FROM THUNGATHA</small><h2>Take control of your job search journey</h2><p>Create a free account to tailor your CV, save jobs, track applications and access AI-powered tools.</p></div><div className="th-wide-promo-actions">{configured?<>{configured && <SignUpButton mode="modal"><button type="button">Create free account</button></SignUpButton>}{configured && <SignInButton mode="modal"><button type="button">Sign in</button></SignInButton>}</>:<><Link href="/sign-up">Create free account</Link><Link href="/sign-in">Sign in</Link></>}</div><button type="button" aria-label="Dismiss promotion" onClick={dismissPromo}><X size={16}/></button></aside>}
+  <nav className="th-mobile-bottom-nav" aria-label="Workspace navigation"><Link href="/" className="active"><Search size={18}/><span>Discover</span></Link>{configured && <Show when="signed-in"><Link href="/cv-studio"><FileUser size={18}/><span>CV Studio</span></Link><Link href="/applications"><BriefcaseBusiness size={18}/><span>Tracking</span></Link><Link href="/jobs?status=saved"><Bookmark size={18}/><span>Saved</span></Link></Show>}{configured && <Show when="signed-out">{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" aria-label="Sign in to use CV Studio" onClick={e=>e.preventDefault()}><FileUser size={18}/><span>CV Studio</span></Link></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" aria-label="Sign in to track applications" onClick={e=>e.preventDefault()}><BriefcaseBusiness size={18}/><span>Tracking</span></Link></SignInButton>}{configured && <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Link href="/sign-in" aria-label="Sign in to view saved jobs" onClick={e=>e.preventDefault()}><Bookmark size={18}/><span>Saved</span></Link></SignInButton>}</Show>}</nav>
+  {mobileFiltersOpen&&<div className="th-mobile-filter-backdrop" role="presentation" onClick={()=>setMobileFiltersOpen(false)}><section className="th-mobile-filter-sheet" role="dialog" aria-modal="true" aria-label="Job filters" onClick={e=>e.stopPropagation()}><div className="th-mobile-filter-sheet-head"><strong>Filters</strong><button type="button" aria-label="Close filters" onClick={()=>setMobileFiltersOpen(false)}><X size={18}/></button></div>{filterPanel}</section></div>}</div>;
+}
