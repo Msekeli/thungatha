@@ -2949,15 +2949,11 @@
     display: none;
   }
   .th-workspace-shell {
-    display: block;
-    padding-bottom: calc(66px + env(safe-area-inset-bottom));
   }
   .th-workspace-content {
     min-height: 0;
   }
   .th-jobs-page.th-jobs-redesign {
-    min-height: calc(100dvh - 58px);
-    height: auto;
     padding: 16px 12px 20px;
     overflow: visible;
   }
