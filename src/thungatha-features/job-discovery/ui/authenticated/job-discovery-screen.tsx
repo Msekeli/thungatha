@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import { JobDiscoveryDialogs } from "./job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./job-discovery-workspace";
 import { JobDiscoveryControls } from "./job-discovery-controls";
@@ -12,7 +13,10 @@ type Controller = ReturnType<typeof useJobDiscoveryController>;
 export function JobDiscoveryScreen({ configured, state: s, controller: c, routerPushProfile }: {
   configured: boolean; state: State; controller: Controller; routerPushProfile: () => void;
 }) {
-  return <WorkspaceShell active="/jobs" configured={configured}><main className="th-jobs-page th-jobs-redesign">
+  return <WorkspaceShell active="/jobs" configured={configured}><Box component="main" className="th-jobs-page th-jobs-redesign" sx={{
+    width: "min(calc(100% - 40px), 1600px)", pt: 2.25, pb: 2.25,
+    "@media (max-width: 760px)": { width: "100%", p: 1.5 },
+  }}>
     <JobDiscoveryControls isAuthenticated={s.isAuthenticated} draft={s.draft} filtersOpen={s.filtersOpen} categories={c.categories} category={s.category} sortOrder={s.sortOrder}
       onQueryChange={(v) => c.changeDraft("query", v)} onLocationChange={(v) => c.changeDraft("location", v)} onSubmit={c.submitFilters}
       onToggleFilters={() => s.setFiltersOpen((v) => !v)} onSortChange={s.setSortOrder}
@@ -37,5 +41,5 @@ export function JobDiscoveryScreen({ configured, state: s, controller: c, router
       stateBusy={s.stateBusy} jobTitle={c.selectedDetail?.title ?? ""} employer={shown(c.selectedDetail?.employer_name)}
       onCloseApplicationPrompt={() => { s.setForceAppliedPrompt(false); if (c.selectedDetail) s.setDismissedPromptForJobId(c.selectedDetail.id); }}
       onConfirmApplied={() => void c.confirmApplied()} />
-  </main></WorkspaceShell>;
+  </Box></WorkspaceShell>;
 }
