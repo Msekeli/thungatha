@@ -12,7 +12,7 @@ type Props = {
 
 export function JobEmptyState({ title, message, actionLabel, onAction }: Props) {
   return (
-    <Stack alignItems="center" textAlign="center" spacing={1.5} sx={{ border: 1, borderColor: "divider", borderRadius: 3, p: 4 }}>
+    <Stack spacing={1.5} sx={{ alignItems: "center", textAlign: "center", border: 1, borderColor: "divider", borderRadius: 3, p: 4 }}>
       <SearchX size={28} aria-hidden="true" />
       <Typography variant="h6" component="h3">{title}</Typography>
       <Typography color="text.secondary" variant="body2">{message}</Typography>
