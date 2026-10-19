@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, MapPin, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const types = [
   { label: "Full-time", value: "full_time", count: 245 },
@@ -25,7 +26,7 @@ export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, 
   const toggle = (values: string[], value: string, setter: (next: string[]) => void) =>
     setter(values.includes(value) ? values.filter(item => item !== value) : [...values, value]);
   return <div className="th-filter-content">
-    <div className="th-filter-title"><strong>Filters</strong><button type="button" onClick={onClear}>Clear all</button></div>
+    <div className="th-filter-title"><strong>Filters</strong><Button variant="ghost" size="sm" onClick={onClear}>Clear all</Button></div>
     <label className="th-filter-label" htmlFor="th-job-search">Search</label>
     <div className="th-filter-search"><Search size={15}/><input id="th-job-search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Job title, skills or company..."/></div>
     <label className="th-filter-label" htmlFor="th-location">Location</label>
@@ -36,6 +37,6 @@ export function PublicJobFiltersPanel({ query, setQuery, location, setLocation, 
     <select id="th-salary" className="th-filter-native-select" value={salary} onChange={event => setSalary(event.target.value)}><option value="any">Any salary</option><option value="disclosed">Salary disclosed</option><option value="above50">R500,000+ per year</option></select>
     <label className="th-filter-label" htmlFor="th-experience">Experience level</label>
     <select id="th-experience" className="th-filter-native-select" value={experience} onChange={event => setExperience(event.target.value)}><option value="any">Any level</option><option value="entry">Entry level</option><option value="mid">Mid-level</option><option value="senior">Senior</option></select>
-    <button className="th-mobile-apply-filters" type="button" onClick={onClose}>Apply filters</button>
+    <Button className="th-mobile-apply-filters" variant="primary" block onClick={onClose}>Apply filters</Button>
   </div>;
 }
