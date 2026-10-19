@@ -34,6 +34,11 @@
     padding-top:4px;
   }
   .th-discovery-job-list> .MuiStack-root { gap:6px; }
+  .th-discovery-job-list button[aria-pressed] { padding:10px!important; align-items:center!important; }
+  .th-discovery-job-list button[aria-pressed]>.MuiStack-root { gap:3px!important; }
+  .th-discovery-job-list button[aria-pressed]>.MuiStack-root>.MuiTypography-subtitle2 { order:2; }
+  .th-discovery-job-list button[aria-pressed]>.MuiStack-root>.MuiTypography-body2 { order:1; }
+  .th-discovery-job-list button[aria-pressed]>.MuiAvatar-root { width:42px; height:42px; }
   .th-discovery-detail {
     height:100%; min-height:0; overflow-y:auto; overscroll-behavior:contain;
     border-radius:12px;
