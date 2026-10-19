@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Show, SignInButton } from "@clerk/nextjs";
 import {
   House,
@@ -117,4 +120,10 @@ export function MobileWorkspaceBottomNav({
       ) : publicMode ? renderLink(items[0]) : items.map(renderLink)}
     </nav>
   );
+}
+
+export function PublicMobileShellNav() {
+  const pathname = usePathname();
+  if (pathname !== "/") return null;
+  return <MobileWorkspaceBottomNav publicMode isActive={(href) => href === "/"} configured={false} />;
 }
