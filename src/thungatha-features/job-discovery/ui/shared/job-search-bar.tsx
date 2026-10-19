@@ -1,57 +1,60 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
+import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
 
 type JobSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onSubmit?: () => void;
   placeholder?: string;
+  suggestions?: string[];
 };
 
 export function JobSearchBar({
-  value,
-  onChange,
-  onSubmit,
+  value, onChange, onSubmit,
   placeholder = "Job title, skill, or company",
+  suggestions = [],
 }: JobSearchBarProps) {
+  const options = [...new Set(suggestions.map((item) => item.trim()).filter(Boolean))];
   return (
-    <form
-      className="w-full"
-      role="search"
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSubmit?.();
-      }}
-    >
-      <TextField
+    <form className="w-full" role="search" onSubmit={(event) => {
+      event.preventDefault();
+      onSubmit?.();
+    }}>
+      <Autocomplete
+        freeSolo
         fullWidth
-        size="small"
+        options={options}
         value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        inputProps={{ "aria-label": "Search jobs" }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search size={17} aria-hidden="true" />
-            </InputAdornment>
-          ),
-          endAdornment: value ? (
-            <InputAdornment position="end">
-              <IconButton
-                size="small"
-                aria-label="Clear job search"
-                onClick={() => onChange("")}
-              >
-                <X size={15} />
-              </IconButton>
-            </InputAdornment>
-          ) : undefined,
-        }}
+        inputValue={value}
+        forcePopupIcon={false}
+        clearOnEscape
+        onInputChange={(_, nextValue) => onChange(nextValue)}
+        onChange={(_, nextValue) => onChange(typeof nextValue === "string" ? nextValue : "")}
+        noOptionsText="Keep typing to search jobs"
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            fullWidth
+            size="medium"
+            placeholder={placeholder}
+            inputProps={{ ...params.inputProps, "aria-label": "Search jobs" }}
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <InputAdornment position="start">
+                    <Search size={18} aria-hidden="true" />
+                  </InputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
       />
     </form>
   );
