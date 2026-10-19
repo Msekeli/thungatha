@@ -1,4 +1,3 @@
-import type { ComponentProps } from "react";
 import { JobDiscoveryDialogs } from "./job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./job-discovery-workspace";
 import { JobDiscoveryControls } from "./job-discovery-controls";
