@@ -24,8 +24,10 @@ export function AuthenticatedJobSearchToolbar({
         <select aria-label="Location" value={location} onChange={(event) => onLocationChange(event.target.value)}>
           <option value="">Cape Town + 50 km</option>
           <option value="Cape Town">Cape Town</option>
-          <option value="Stellenbosch">Stellenbosch</option>
-          <option value="Western Cape">Western Cape</option>
+          <option value="Johannesburg">Johannesburg</option>
+          <option value="Durban">Durban</option>
+          <option value="Remote">Remote</option>
+          <option value="Anywhere">Anywhere</option>
         </select>
       </label>
       <Button type="button" variant="secondary" onClick={onToggleFilters} aria-expanded={filtersOpen}>
