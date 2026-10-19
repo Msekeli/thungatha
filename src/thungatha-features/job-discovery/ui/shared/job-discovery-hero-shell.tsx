@@ -22,7 +22,7 @@ export function JobDiscoveryHeroShell({
       className="th-discovery-hero"
       sx={{
         px: { xs: 2, md: 4 },
-        py: { xs: 4, md: 6 },
+        py: { xs: 1, md: 1.5 },
         borderRadius: { xs: 0, md: 3 },
         background:
           "linear-gradient(135deg, rgba(25, 118, 210, 0.07), rgba(25, 118, 210, 0.015))",
@@ -33,13 +33,13 @@ export function JobDiscoveryHeroShell({
         component="h1"
         sx={{
           fontWeight: 800,
-          fontSize: { xs: "2.2rem", md: "3.5rem" },
+          fontSize: { xs: "1.7rem", md: "2.6rem" },
           lineHeight: 1.1,
         }}
       >
         {title}
       </Typography>
-      <Typography color="text.secondary" sx={{ mt: 1, mb: 3, maxWidth: 680 }}>
+      <Typography color="text.secondary" sx={{ mt: 0.5, mb: 1.5, maxWidth: 680 }}>
         {description}
       </Typography>
       {children}
