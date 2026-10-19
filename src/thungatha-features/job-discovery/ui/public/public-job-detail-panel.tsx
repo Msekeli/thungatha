@@ -2,7 +2,10 @@
 
 import { Bookmark, BriefcaseBusiness, ExternalLink, EyeOff, PanelsTopLeft } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { JobDetailPresentation, JobDetailEmptyState } from "../shared/job-detail-presentation";
 
 export type PublicJobSource = {
@@ -40,23 +43,26 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, dismissed = 
   const applicationUrl = safeUrl(source?.application_url);
   const sourceUrl = safeUrl(source?.source_url);
   const applyUrl = applicationUrl ?? sourceUrl;
-  return <aside className={"th-discovery-detail th-jobs-redesign-detail " + (mobileOpen ? "th-detail-mobile-open" : "")} aria-label="Selected job details">
-    <div className="th-mobile-detail-heading"><Button variant="ghost" type="button" onClick={onBack}>← Back to results</Button><BriefcaseBusiness size={17}/></div>
+  const signIn = "/sign-in";
+  return <Box component="aside" className={`th-discovery-detail th-jobs-redesign-detail ${mobileOpen ? "th-detail-mobile-open" : ""}`} aria-label="Selected job details">
+    <Stack direction="row" alignItems="center" spacing={1} className="th-mobile-detail-heading">
+      <Button variant="text" onClick={onBack}>← Back to results</Button>
+      <BriefcaseBusiness size={17} />
+    </Stack>
     {job ? <JobDetailPresentation job={job} postedAt={source?.published_at || job.updated_at} formatDate={dateLabel}
-      headingAction={configured ? <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="ghost" type="button" aria-label="Sign in to save this job"><Bookmark size={18}/></Button></SignInButton> : <a className="th-job-card-save-link" href="/sign-in" aria-label="Sign in to save this job"><Bookmark size={18}/></a>}
-      actions={<div className="th-jobs-detail-actions th-jobs-redesign-actions">
-        {applyUrl ? <a className="th-apply-button" href={applyUrl} target="_blank" rel="noopener noreferrer">Apply on company site <ExternalLink size={14}/></a> : <p className="th-no-apply">An application link is not available for this listing yet.</p>}
+      headingAction={configured ? <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="text" aria-label="Sign in to save this job"><Bookmark size={18}/></Button></SignInButton> : <Button component="a" href={signIn} aria-label="Sign in to save this job" variant="text"><Bookmark size={18}/></Button>}
+      actions={<Stack spacing={1} className="th-jobs-detail-actions th-jobs-redesign-actions">
+        {applyUrl ? <Button component="a" href={applyUrl} target="_blank" rel="noopener noreferrer" variant="contained">Apply on company site <ExternalLink size={14}/></Button> : <Typography className="th-no-apply" variant="body2">An application link is not available for this listing yet.</Typography>}
         {configured ? <>
-          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><PanelsTopLeft size={14}/> Tailor my CV</Button></SignInButton>
-          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="secondary"><Bookmark size={14}/> Save</Button></SignInButton>
-          {dismissed ? <Button variant="secondary" onClick={onRestore}><EyeOff size={14}/> Restore job</Button> : <Button variant="warning" onClick={onDismiss}><EyeOff size={14}/> Dismiss</Button>}
+          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="outlined" fullWidth><PanelsTopLeft size={14}/> Tailor my CV</Button></SignInButton>
+          <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1"><Button variant="outlined" fullWidth><Bookmark size={14}/> Save</Button></SignInButton>
         </> : <>
-          <a className="th-job-card-save-link" href="/sign-in"><PanelsTopLeft size={14}/> Tailor my CV</a>
-          <a className="th-job-card-save-link" href="/sign-in"><Bookmark size={14}/> Save</a>
-          {dismissed ? <Button variant="secondary" onClick={onRestore}><EyeOff size={14}/> Restore job</Button> : <Button variant="warning" onClick={onDismiss}><EyeOff size={14}/> Dismiss</Button>}
+          <Button component="a" href={signIn} variant="outlined" fullWidth><PanelsTopLeft size={14}/> Tailor my CV</Button>
+          <Button component="a" href={signIn} variant="outlined" fullWidth><Bookmark size={14}/> Save</Button>
         </>}
-      </div>}
-      afterDescription={sourceUrl ? <a className="th-source-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a> : null}
+        {dismissed ? <Button variant="outlined" onClick={onRestore} fullWidth><EyeOff size={14}/> Restore job</Button> : <Button variant="outlined" color="warning" onClick={onDismiss} fullWidth><EyeOff size={14}/> Dismiss</Button>}
+      </Stack>}
+      afterDescription={sourceUrl ? <Button component="a" href={sourceUrl} target="_blank" rel="noopener noreferrer" variant="text" size="small">View original listing <ExternalLink size={13}/></Button> : null}
     /> : <JobDetailEmptyState />}
-  </aside>;
+  </Box>;
 }
