@@ -21,6 +21,7 @@ import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 import { useUpdateJobState } from "./hooks/use-update-job-state";
 import { useJobApplicationActions } from "./hooks/use-job-application-actions";
 import { useSelectedJobDetail } from "./hooks/use-selected-job-detail";
+import { useUndoJobState } from "./hooks/use-undo-job-state";
 
 import {
   EMPTY_FILTERS, PAGE_SIZE, formatDate, getApiError, safeExternalUrl, shown, sourceFor,
@@ -254,43 +255,15 @@ export default function JobsDiscovery({
     setRetryFeed,
   );
 
-  const undoLastStateChange = async () => {
-    if (!undoAction || stateBusy) return;
-    const existingJob =
-      detail?.id === undoAction.jobId
-        ? detail
-        : feed?.jobs.find((item) => item.id === undoAction.jobId);
-    const job: Job = {
-      ...(existingJob ?? {
-        id: undoAction.jobId,
-        title: undoAction.title,
-        employer_name: null,
-        description: null,
-        location_text: null,
-        country_code: null,
-        work_mode: null,
-        employment_type: null,
-        salary_min: null,
-        salary_max: null,
-        salary_currency: null,
-        updated_at: null,
-        job_sources: null,
-        state: undoAction.nextState,
-      }),
-      state: undoAction.nextState,
-    };
-    const restored = await updateJobState(job, undoAction.previousState, false);
-    if (restored) {
-      setUndoAction(null);
-      setStateMessage(
-        undoAction.previousState === "saved"
-          ? "Previous saved state restored."
-          : undoAction.previousState === "dismissed"
-            ? "Previous dismissed state restored."
-            : "Job decision undone.",
-      );
-    }
-  };
+  const undoLastStateChange = useUndoJobState(
+    undoAction,
+    stateBusy,
+    detail,
+    feed,
+    updateJobState,
+    setUndoAction,
+    setStateMessage,
+  );
 
   useEffect(() => {
     if (!undoAction) return;
