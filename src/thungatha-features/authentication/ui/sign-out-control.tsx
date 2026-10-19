@@ -15,7 +15,10 @@ export function SignOutControl() {
   useEffect(() => {
     if (!isOpen || isSigningOut) return;
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") closeDialog();
+      if (event.key === "Escape") {
+          setIsOpen(false);
+          setError(null);
+        }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
