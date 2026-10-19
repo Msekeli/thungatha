@@ -1328,11 +1328,7 @@
   }
 }
 
-/* Job detail actions: keep dismissal visible without consuming layout space. */
-.th-jobs-detail-panel {
-  position: relative;
-}
-.th-jobs-dismiss-floating.th-btn {
+/* Job detail actions: keep dismissal visible without consuming layout space. */.th-jobs-dismiss-floating.th-btn {
   position: absolute;
   z-index: 5;
   top: 64px;
