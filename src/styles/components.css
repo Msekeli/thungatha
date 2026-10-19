@@ -494,4 +494,45 @@
     background-image: none;
     border-top: 1px solid var(--th-line);
   }
+
+  /* Shared mobile navigation: keep the four destinations in one fixed bottom bar. */
+  .th-mobile-bottom-nav {
+    position: fixed;
+    z-index: 120;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 6px 8px max(6px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--th-line);
+    background: var(--th-nav);
+  }
+  .th-mobile-bottom-nav > a,
+  .th-mobile-bottom-nav > button,
+  .th-mobile-bottom-nav > * > a {
+    display: flex;
+    min-width: 0;
+    min-height: 46px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: 0;
+    border-radius: var(--th-radius-control);
+    background: transparent;
+    color: var(--th-fg-muted);
+    font: inherit;
+    font-size: 10px;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+  .th-mobile-bottom-nav [data-active="true"] {
+    background: var(--th-accent-bg);
+    color: var(--th-accent-text);
+  }
+  @media (min-width: 761px) {
+    .th-mobile-bottom-nav { display: none !important; }
+  }
+
 }
