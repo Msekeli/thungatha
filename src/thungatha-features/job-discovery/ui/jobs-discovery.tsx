@@ -7,7 +7,6 @@ import { useJobDiscoveryState } from "./hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "./hooks/use-job-discovery-controller";
 import { JobDiscoveryScreen } from "./authenticated/job-discovery-screen";
 
-
 export default function JobsDiscovery({
   configured,
   showProfileSetupPrompt = false,
@@ -25,12 +24,7 @@ export default function JobsDiscovery({
   }, [showProfileSetupPrompt]);
 
   const controller = useJobDiscoveryController(state);
-  const {
-    updateJobState, undoLastStateChange, selectedDetail, selectedSource,
-    selectedActivity, applicationUrl, jobSourceUrl, applicationDestination,
-    hasFilters, visibleJobs, categories, openApplicationLink, confirmApplied,
-    changeDraft, submitFilters, clearFilters,
-  } = controller;
+
 
   return <JobDiscoveryScreen configured={configured} state={state} controller={controller} routerPushProfile={() => router.push("/profile")} />;
 }
