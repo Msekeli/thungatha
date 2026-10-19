@@ -1,3 +1,4 @@
+import "./job-discovery-components.css";
 import { AuthenticatedJobCard } from "./authenticated-job-card";
 import { PublicJobCard } from "./public-job-card";
 
