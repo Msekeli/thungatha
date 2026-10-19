@@ -34,9 +34,9 @@ export function JobDetailPresentation({
   const salary = salaryLabel(job);
   return <Stack className="th-jobs-detail-content" key={job.id} spacing={2}>
     {beforeContent}
-    <Stack direction="row" spacing={2} className="th-jobs-redesign-job-head" sx={{ alignItems: "center" }}>
-      <Avatar className="th-jobs-employer-mark th-jobs-detail-logo">{(job.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</Avatar>
-      <Box className="th-jobs-redesign-title" sx={{ flex: 1, minWidth: 0 }}>
+    <Stack direction="row" spacing={2} className="th-jobs-redesign-job-head" sx={{ alignItems: "center", minWidth: 0, pb: 1.5, borderBottom: 1, borderColor: "divider" }}>
+      <Avatar className="th-jobs-employer-mark th-jobs-detail-logo" sx={{ width: 48, height: 48, flex: "0 0 48px", borderRadius: 1.5, bgcolor: "action.selected", color: "primary.main", fontSize: 1.375, fontWeight: 700 }}>{(job.employer_name?.trim() || "?").slice(0, 1).toUpperCase()}</Avatar>
+      <Box className="th-jobs-redesign-title" sx={{ flex: 1, minWidth: 0, "& h2": { mt: 0.5, mb: 0, fontSize: { xs: "1.125rem", sm: "1.3125rem" }, lineHeight: 1.25, overflowWrap: "anywhere" }, "& p": { m: 0, fontSize: "0.75rem" } }}>
         <Typography variant="h5" component="h2">{job.title}</Typography>
         <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
           <Typography color="text.secondary">{job.employer_name?.trim() || "Employer not listed"}</Typography>
@@ -47,7 +47,7 @@ export function JobDetailPresentation({
     </Stack>
     <JobDetailMeta location={job.location_text} employmentType={job.employment_type}
       workMode={job.work_mode} postedAt={postedAt || job.updated_at} formatDate={formatDate} />
-    {salary && <Typography className="th-jobs-detail-salary"><strong>Salary:</strong> {salary}</Typography>}
+    {salary && <Typography className="th-jobs-detail-salary" sx={{ m: 0, color: "text.secondary", fontSize: "0.75rem", "& strong": { color: "text.primary" } }}><strong>Salary:</strong> {salary}</Typography>}
     {actions}
     <JobDetailDescription description={job.description} />
     {afterDescription}
