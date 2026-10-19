@@ -1,11 +1,12 @@
 "use client";
 
 import { JobCard, type JobCardData } from "./job-card";
+import { JobEmptyState } from "./job-empty-state";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 
 type JobListProps = {
   jobs: JobCardData[];
+  variant: "public" | "authenticated";
   selectedId?: string | null;
   postedLabel?: (job: JobCardData) => string | undefined;
   onSelect: (job: JobCardData) => void;
@@ -14,17 +15,12 @@ type JobListProps = {
 };
 
 export function JobList({
-  jobs, selectedId, postedLabel, onSelect,
+  jobs, variant, selectedId, postedLabel, onSelect,
   emptyTitle = "No opportunities found",
   emptyMessage = "Try changing your search or filters.",
 }: JobListProps) {
   if (!jobs.length) {
-    return (
-      <div className="rounded-xl border p-6 text-center">
-        <Typography fontWeight={600}>{emptyTitle}</Typography>
-        <Typography variant="body2" color="text.secondary">{emptyMessage}</Typography>
-      </div>
-    );
+    return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   }
   return (
     <Stack spacing={1}>
@@ -32,8 +28,9 @@ export function JobList({
         <JobCard
           key={job.id}
           job={job}
+          variant={variant}
           selected={job.id === selectedId}
-          postedLabel={postedLabel?.(job)}
+          postedLabel={postedLabel?.(job) ?? "Date unknown"}
           onSelect={() => onSelect(job)}
         />
       ))}
