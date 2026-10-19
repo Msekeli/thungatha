@@ -78,8 +78,7 @@
   @media (max-width:760px) {
     .th-discovery-shell>.th-mobile-bottom-nav { display:grid!important; }
     .th-discovery-shell>header { padding:6px 10px; gap:6px; }
-    .th-discovery-shell>header img { width:132px; height:auto; }
-    .th-discovery-shell>.th-discovery-hero { padding:6px 12px; }
+        .th-discovery-shell>.th-discovery-hero { padding:6px 12px; }
     .th-discovery-shell .th-discovery-hero h1 { font-size:24px; line-height:1.15; }
     .th-discovery-shell>.th-discovery-hero>p { margin:4px 0 8px; font-size:12px; }
     .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { flex-direction:column; }
