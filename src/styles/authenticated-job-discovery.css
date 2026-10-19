@@ -31,8 +31,8 @@
       overflow: hidden;
     }
     .th-jobs-redesign-workspace {
-      height: auto;
-      overflow: hidden;
+      height: 0 !important;
+      overflow: hidden !important;
     }
     .th-jobs-redesign-results,
     .th-jobs-redesign-detail {
