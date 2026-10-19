@@ -13,6 +13,8 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 @import "../styles/components.css";
+@import "../styles/public-job-discovery.css";
+@import "../styles/authenticated-job-discovery.css";
 
 /* Tailwind's dark: variant follows data-theme (the name MUI sets), not only the OS. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
