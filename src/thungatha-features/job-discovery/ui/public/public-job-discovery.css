@@ -145,10 +145,6 @@
   border-radius: 8px;
   font-size: 11px;
 }
-.th-job-list {
-  display: flex;
-  flex-direction: column;
-}
 .th-job-row {
   border: 1px solid transparent;
   text-align: left;
@@ -503,9 +499,6 @@
     display: grid;
     place-items: center;
     color: #c7d6e8;
-  }
-  .th-job-list {
-    gap: 8px;
   }
   .th-job-row {
     padding: 12px 10px;
@@ -1490,9 +1483,6 @@ body:has(.th-discovery-shell) {
 .th-discovery-results {
   padding: 10px 9px 20px;
 }
-.th-job-list {
-  gap: 5px;
-}
 .th-job-row {
   min-height: 70px;
   padding: 9px 10px;
@@ -1709,14 +1699,6 @@ body:has(.th-discovery-shell) {
 .th-results-toolbar {
   flex: 0 0 auto;
 }
-.th-job-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 2px 5px 16px 0;
-  scrollbar-gutter: stable;
-}
 .th-inline-promo {
   flex: 0 0 auto;
 }
@@ -1795,11 +1777,6 @@ body:has(.th-discovery-shell) {
     height: auto;
     min-height: 520px;
     overflow: visible;
-  }
-  .th-job-list {
-    flex: 0 0 auto;
-    max-height: 60vh;
-    overflow-y: auto;
   }
   .th-discovery-detail {
     height: auto;
