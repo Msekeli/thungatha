@@ -25,9 +25,9 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 2,
-        px: { xs: 2, md: 4 },
-        py: 1.5,
+        gap: { xs: 0.75, md: 2 },
+        px: { xs: 1.5, md: 4 },
+        py: { xs: 1, md: 1.5 },
         borderBottom: 1,
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -43,6 +43,7 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
           alt="THUNGATHA"
           width={180}
           height={42}
+          style={{ width: "clamp(112px, 34vw, 180px)", height: "auto" }}
           priority
         />
       </Link>
@@ -91,7 +92,7 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
           </Show>
         )}
       </Stack>
-      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+      <Stack direction="row" spacing={{ xs: 0.5, md: 1 }} sx={{ alignItems: "center", flexShrink: 0, minWidth: 0, "& > *": { flexShrink: 0 } }}>
         <ThemeToggle />
         <HomeAuthActions configured={configured} variant="nav" />
         <Button
@@ -100,8 +101,9 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
           aria-label="Open filters"
           onClick={onOpenFilters}
           sx={{
-            minWidth: 40,
-            px: 1,
+            minWidth: { xs: 34, md: 40 },
+            width: { xs: 34, md: "auto" },
+            px: { xs: 0.5, md: 1 },
             display: { xs: "inline-flex", md: "none" },
           }}
         >
