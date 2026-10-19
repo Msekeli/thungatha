@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { Show, SignInButton, useAuth } from "@clerk/nextjs";
 import {
   House,
   Compass,
@@ -88,6 +88,7 @@ export function MobileWorkspaceBottomNav({
   publicMode?: boolean;
   configured?: boolean;
 }) {
+  const { isLoaded, isSignedIn } = useAuth();
   const items = publicMode ? [{ ...primary[0], href: "/" }, ...primary.slice(1)] : primary;
   const renderLink = (item: (typeof primary)[number]) => (
     <Link
@@ -102,22 +103,19 @@ export function MobileWorkspaceBottomNav({
   );
   return (
     <nav className="th-mobile-bottom-nav" aria-label="Primary navigation">
-      {publicMode && configured ? (
+      {publicMode && configured && isLoaded && !isSignedIn ? (
         <>
-          <Show when="signed-in">{items.map(renderLink)}</Show>
-          <Show when="signed-out">
-            {renderLink(items[0])}
-            {items.slice(1).map((item) => (
-              <SignInButton key={item.href} mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-                <a href={item.href} aria-label={`Sign in to access ${item.label}`}>
-                  <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
-                  <span>{item.label}</span>
-                </a>
-              </SignInButton>
-            ))}
-          </Show>
+          {renderLink(items[0])}
+          {items.slice(1).map((item) => (
+            <SignInButton key={item.href} mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+              <a href={item.href} aria-label={`Sign in to access ${item.label}`}>
+                <item.icon size={19} strokeWidth={1.8} aria-hidden="true" />
+                <span>{item.label}</span>
+              </a>
+            </SignInButton>
+          ))}
         </>
-      ) : publicMode ? renderLink(items[0]) : items.map(renderLink)}
+      ) : publicMode && !configured ? renderLink(items[0]) : items.map(renderLink)}
     </nav>
   );
 }
