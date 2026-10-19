@@ -38,19 +38,27 @@
   .th-discovery-job-list button[aria-pressed]>.MuiStack-root { gap:3px!important; }
   .th-discovery-job-list button[aria-pressed]>.MuiAvatar-root { width:42px; height:42px; }
   .th-discovery-detail {
-    height:100%; min-height:0; overflow-y:auto; overscroll-behavior:contain;
-    border-radius:12px;
+    display:flex; flex-direction:column; height:100%; min-height:0;
+    overflow:hidden; overscroll-behavior:contain; border-radius:12px;
   }
-  .th-discovery-detail .th-jobs-detail-content { gap:14px; }
+  .th-discovery-detail .th-jobs-detail-content {
+    display:flex; flex:1 1 auto; flex-direction:column; gap:12px;
+    min-height:0; overflow:hidden;
+  }
+  .th-discovery-detail .th-jobs-redesign-job-head { flex:0 0 auto; }
+  .th-discovery-detail .th-jobs-detail-content > .th-job-description-panel {
+    display:flex; flex:1 1 auto; flex-direction:column; min-height:0;
+  }
+  .th-discovery-detail .th-job-description-panel > .MuiTabs-root { flex:0 0 auto; }
+  .th-discovery-detail .th-job-description-body { flex:1 1 auto; min-height:0; overflow-y:auto; }
+  .th-discovery-detail .th-jobs-detail-header-actions { flex-wrap:nowrap; align-items:center; }
+  .th-discovery-detail .th-jobs-detail-header-actions .MuiButton-root { min-height:36px; padding:6px 10px; white-space:nowrap; }
+  .th-discovery-detail .th-jobs-detail-header-actions .th-restricted-action { width:auto; min-width:0; }
   .th-discovery-detail .th-jobs-detail-actions {
     display:grid!important; grid-template-columns:1.2fr 1fr; gap:10px!important;
   }
   .th-discovery-detail .th-jobs-detail-actions>* { min-width:0; }
-  .th-discovery-detail .th-jobs-detail-header-actions { flex-wrap:wrap; align-items:center; }
-  .th-discovery-detail .th-jobs-detail-header-actions .MuiButton-root { min-height:36px; padding:6px 12px; white-space:nowrap; }
   .th-discovery-detail .th-jobs-detail-actions .MuiButton-root { min-height:44px; padding:8px 12px; }
-  .th-discovery-detail .th-jobs-detail-content { gap:10px; }
-  .th-discovery-detail .th-jobs-detail-content > :not(style) ~ :not(style) { margin-top:10px; }
   .th-discovery-detail .th-jobs-detail-content .th-jobs-redesign-job-head { padding-bottom:10px; }
   .th-discovery-shell>.th-wide-promo,.th-discovery-shell>.th-mobile-bottom-nav { display:none!important; }
   @media (max-width:1199px) {
@@ -78,8 +86,8 @@
       display:none; position:absolute; inset:8px 8px 68px; z-index:4;
       background:var(--th-page); height:auto;
     }
-    .th-discovery-detail.th-detail-mobile-open { display:block; overflow-y:auto!important; }
-    .th-discovery-detail .th-mobile-detail-heading { display:flex; }
+    .th-discovery-detail.th-detail-mobile-open { display:flex; overflow:hidden!important; }
+    .th-discovery-detail .th-job-description-body { overflow-y:auto; }
     .th-discovery-detail .th-jobs-detail-actions { grid-template-columns:1fr; }
   }
 }
