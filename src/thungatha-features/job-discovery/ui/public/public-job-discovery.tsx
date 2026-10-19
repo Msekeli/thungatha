@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { Show } from "@clerk/nextjs";
-import { FileUser, Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
