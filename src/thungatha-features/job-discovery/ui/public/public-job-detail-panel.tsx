@@ -36,7 +36,13 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, dismissed = 
   const sourceUrl = safeUrl(source?.source_url);
   const applyUrl = applicationUrl ?? sourceUrl;
   const signIn = "/sign-in";
-  return <Box component="aside" className={`th-discovery-detail th-jobs-redesign-detail ${mobileOpen ? "th-detail-mobile-open" : ""}`} aria-label="Selected job details">
+  return <Box component="aside" className={`th-discovery-detail th-jobs-redesign-detail ${mobileOpen ? "th-detail-mobile-open" : ""}`} aria-label="Selected job details" sx={{
+    minWidth: 0, minHeight: 0, height: "100%", overflowY: "auto", p: 2.5,
+    border: 1, borderColor: "divider", bgcolor: "background.paper", color: "text.primary",
+    "& .th-jobs-detail-actions": { display: "flex", flexDirection: "column", gap: 1 },
+    "& .th-no-apply": { color: "text.secondary" },
+    "@media (max-width: 760px)": { height: "auto", maxHeight: "none", overflow: "visible", p: 1.75 },
+  }}>
     <Stack direction="row" spacing={1} className="th-mobile-detail-heading" sx={{ alignItems: "center" }}>
       <Button variant="text" onClick={onBack}>← Back to results</Button><BriefcaseBusiness size={17} />
     </Stack>
