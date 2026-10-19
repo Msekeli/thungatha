@@ -8,7 +8,6 @@ import { apiError, apiFailure } from "@/lib/http/api-response";
 import { searchJobs } from "@/thungatha-features/job-discovery/server/search";
 import {
   createAuthenticatedSupabaseClient,
-  createPublicSupabaseClient,
   SupabaseConfigurationError,
 } from "@/lib/supabase/server";
 
@@ -101,6 +100,9 @@ export async function GET(request: Request) {
 
   try {
     if (!identity) {
+      if (params.get("statesOnly") === "1") {
+        return apiError("Authentication required", 401);
+      }
       if (input.state !== "all") {
         return NextResponse.json({
           jobs: [],
