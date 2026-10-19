@@ -3,7 +3,7 @@
 import type { RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
-import { JobCard } from "../shared/job-card";
+import { JobList } from "../shared/job-list";
 
 type JobSource = {
   id: string; provider_key: string; provider_kind: string; external_job_id: string;
@@ -58,13 +58,21 @@ export function AuthenticatedJobResultsPanel({
         </div>
       ) : (
         <>
-          {jobs.map((job) => {
-            const source = sourceFor(job);
-            const posted = source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown";
-            return <JobCard key={job.id} job={job}
-              selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)}
-              saveAction={<Button variant="ghost" size="sm" type="button" aria-label={job.state === "saved" ? `Unsave ${job.title}` : `Save ${job.title}`} title={job.state === "saved" ? "Remove from saved jobs" : "Save job"} onClick={() => onSave(job)}><Bookmark size={16} fill={job.state === "saved" ? "currentColor" : "none"} /></Button>} />;
-          })}
+          <JobList jobs={jobs} variant="authenticated" selectedId={selectedId}
+            postedLabel={(job) => {
+              const source = sourceFor(job as Job);
+              return source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown";
+            }}
+            onSelect={(job) => onSelect(job as Job)}
+            saveAction={(job) => {
+              const fullJob = jobs.find((item) => item.id === job.id)!;
+              return <Button variant="ghost" size="sm" type="button"
+                aria-label={fullJob.state === "saved" ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`}
+                title={fullJob.state === "saved" ? "Remove from saved jobs" : "Save job"}
+                onClick={() => onSave(fullJob)}>
+                <Bookmark size={16} fill={fullJob.state === "saved" ? "currentColor" : "none"} />
+              </Button>;
+            }} />
           {feed && feed.page < feed.totalPages && (
             <div ref={loadMoreRef} className="th-jobs-load-more" aria-live="polite">
               {loading ? "Loading more opportunities…" : "Scroll to load more opportunities"}
