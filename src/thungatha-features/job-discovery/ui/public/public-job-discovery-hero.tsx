@@ -68,7 +68,7 @@ export function PublicJobDiscoveryHero(props: Props) {
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={1.5}
-        sx={{ maxWidth: 1050 }}
+        sx={{ width: "min(100%, 1010px)", alignItems: "stretch" }}
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <JobSearchBar
@@ -83,9 +83,8 @@ export function PublicJobDiscoveryHero(props: Props) {
             suggestions={suggestions}
           />
         </Box>
-        <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 210 } }}>
-          <Select
-            displayEmpty
+        <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 290 }, flex: { md: "0 0 290px" } }}>
+          <Select sx={{ height: 60, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15, "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" } }} displayEmpty
             value={location}
             onChange={(event) => onLocationChange(event.target.value)}
             inputProps={{ "aria-label": "Search location" }}
@@ -119,7 +118,7 @@ export function PublicJobDiscoveryHero(props: Props) {
               item.value === "all" ? `${item.label} · ${total}` : item.label
             }
             color={quickType === item.value ? "primary" : "default"}
-            variant={quickType === item.value ? "filled" : "outlined"}
+            variant={quickType === item.value ? "filled" : "outlined"} sx={{ height: 40, borderRadius: "999px", px: 1.1, fontWeight: 600, borderColor: quickType === item.value ? "primary.main" : "divider", color: quickType === item.value ? "primary.main" : "text.primary", backgroundColor: quickType === item.value ? "rgba(0,188,242,.12)" : "transparent", "& .MuiChip-label": { px: 1.1 } }}
             onClick={() => {
               onQuickTypeChange(item.value);
               onClearTypes();
