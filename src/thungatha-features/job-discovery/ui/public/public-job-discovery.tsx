@@ -36,7 +36,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const selected=useMemo(()=>{const source=showDismissed?dismissedJobs:filteredJobs;const selectedJob=selectedId?source.find(j=>j.id===selectedId):null;if(selectedJob)return selectedJob;if(selectedId&&detail?.id===selectedId&&!showDismissed)return detail;return source[0]??null;},[showDismissed,dismissedJobs,filteredJobs,selectedId,detail]);
   useEffect(()=>{const timer=window.setTimeout(()=>{try{setPromoVisible(sessionStorage.getItem("th-public-promo-dismissed")!=="1");}catch{setPromoVisible(true);}},0);return()=>window.clearTimeout(timer);},[]);
   const feed = usePublicJobFeed(query, location, retry, setSelectedId);
-  const { jobs, setJobs, total, loading, setLoading, error, setError } = feed;
+  const { jobs, total, loading, error } = feed;
 
   useEffect(()=>{if(!selectedId)return;const controller=new AbortController();fetch("/api/jobs/"+encodeURIComponent(selectedId),{signal:controller.signal,cache:"no-store",headers:{Accept:"application/json"}}).then(async response=>{if(!response.ok)throw new Error("Listing unavailable");const payload=await response.json() as {job:Job};setDetail(payload.job);}).catch((reason:unknown)=>{if(reason instanceof Error&&reason.name!=="AbortError")setDetail(null);});return()=>controller.abort();},[selectedId]);
   function dismissPromo(){setPromoVisible(false);try{sessionStorage.setItem("th-public-promo-dismissed","1");}catch{/* optional */}}
