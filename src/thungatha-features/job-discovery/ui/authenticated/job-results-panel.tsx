@@ -19,7 +19,7 @@ type Job = {
   salary_currency: string | null; updated_at: string | null;
   job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null;
 };
-type Feed = { page: number; totalPages: number };
+type Feed = { page: number; totalPages: number; total: number };
 type Props = {
   jobs: Job[]; feed: Feed | null; loading: boolean; error: string | null;
   hasFilters: boolean; mobileDetail: boolean; selectedId: string | null;
@@ -39,7 +39,7 @@ export function AuthenticatedJobResultsPanel({
       aria-label="Job search results" aria-busy={loading}
     >
       <JobDiscoveryResultsSummary
-        label={loading ? "Updating opportunities…" : `${jobs.length ? "Showing " : ""}${jobs.length} opportunities`}
+        label={loading ? "Updating opportunities…" : jobs.length === 0 ? "0 opportunities" : `1–${Math.min(jobs.length, feed?.total ?? jobs.length)} of ${(feed?.total ?? jobs.length).toLocaleString()} opportunities`}
         secondary="Official-source listings"
       />
       {loading && !feed ? (
