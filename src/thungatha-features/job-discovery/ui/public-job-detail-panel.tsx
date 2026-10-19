@@ -39,6 +39,7 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack, tab,
 }) {
   const source = job ? sourceFor(job) : null;
   const applyUrl = safeUrl(source?.application_url) ?? safeUrl(source?.source_url);
+  const sourceUrl = safeUrl(source?.source_url);
   const description = job?.description?.trim();
   return <aside className={"th-discovery-detail " + (mobileOpen ? "th-detail-mobile-open" : "")} aria-label="Selected job details">
     <div className="th-mobile-detail-heading"><Button variant="ghost" type="button" onClick={onBack}>← Back to results</Button><Bookmark size={17}/></div>
@@ -55,7 +56,7 @@ export function PublicJobDetailPanel({ job, configured, mobileOpen, onBack, tab,
         {tab === "Requirements" && <p>Review the employer listing for required experience, qualifications and skills.</p>}
         {tab === "About" && <p>{job.employer_name || "The employer"} — view the original listing for more company information.</p>}
       </div>
-      {source?.source_url && <a className="th-source-link" href={safeUrl(source.source_url) ?? "#"} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a>}
+      {sourceUrl && <a className="th-source-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">View original listing <ExternalLink size={13}/></a>}
     </> : <div className="th-discovery-empty"><BriefcaseBusiness size={25}/><strong>Select a job</strong><p>Choose a listing to see more information.</p></div>}
   </aside>;
 }
