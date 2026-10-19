@@ -1,0 +1,135 @@
+.th-signout-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(2 8 18 / 72%);
+  backdrop-filter: blur(6px);
+  animation: th-signout-fade-in 140ms ease-out;
+}
+
+.th-signout-dialog {
+  position: relative;
+  width: min(100%, 420px);
+  padding: 28px;
+  border: 1px solid var(--th-line);
+  border-radius: 18px;
+  background: var(--th-panel);
+  color: var(--th-fg);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 38%), 0 0 0 1px rgb(255 255 255 / 2%);
+  animation: th-signout-rise-in 180ms ease-out;
+}
+
+.th-signout-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--th-line);
+  border-radius: 9px;
+  background: var(--th-panel-2);
+  color: var(--th-fg-muted);
+  cursor: pointer;
+}
+
+.th-signout-close:hover:not(:disabled) {
+  color: var(--th-fg);
+  border-color: var(--th-accent);
+}
+
+.th-signout-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  margin-bottom: 18px;
+  border: 1px solid var(--th-accent-bg);
+  border-radius: 14px;
+  background: var(--th-accent-bg);
+  color: var(--th-accent-text);
+}
+
+.th-signout-dialog h2 {
+  margin: 0 36px 9px 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+.th-signout-dialog > p {
+  margin: 0;
+  color: var(--th-fg-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.th-signout-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px !important;
+  padding: 10px 12px;
+  border: 1px solid var(--th-warn);
+  border-radius: 9px;
+  background: var(--th-warn-bg);
+  color: var(--th-fg) !important;
+}
+
+.th-signout-error svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.th-signout-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.th-signout-actions .th-btn {
+  min-height: 40px;
+}
+
+.th-signout-close:focus-visible,
+.th-signout-actions .th-btn:focus-visible {
+  outline: 2px solid var(--th-accent-text);
+  outline-offset: 3px;
+}
+
+@keyframes th-signout-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes th-signout-rise-in {
+  from { opacity: 0; transform: translateY(7px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 460px) {
+  .th-signout-dialog {
+    padding: 24px 20px 20px;
+  }
+
+  .th-signout-actions {
+    flex-direction: column-reverse;
+  }
+
+  .th-signout-actions .th-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .th-signout-backdrop,
+  .th-signout-dialog {
+    animation: none;
+  }
+}
