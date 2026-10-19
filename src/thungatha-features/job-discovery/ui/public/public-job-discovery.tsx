@@ -32,7 +32,7 @@ export default function PublicJobDiscovery({ configured }: { configured: boolean
   const [promoVisible,setPromoVisible]=useState(false); const [retry,setRetry]=useState(0); const [mobileFiltersOpen,setMobileFiltersOpen]=useState(false); const [mobileDetailOpen,setMobileDetailOpen]=useState(false); const { dismissedJobs, setDismissedJobs } = usePublicDismissedJobs(); const [showDismissed,setShowDismissed]=useState(false);
   const feed = usePublicJobFeed(query, location, retry, setSelectedId);
   const { jobs, total, loading, error } = feed;
-  const { detail, setDetail } = usePublicJobDetail(selectedId);
+  const { detail } = usePublicJobDetail(selectedId);
 
   function dismissJob(jobId:string){const job=jobs.find(item=>item.id===jobId) ?? (detail?.id===jobId ? detail : null);if(!job)return;setDismissedJobs(current=>[job,...current.filter(item=>item.id!==jobId)]);setSelectedId(current=>current===jobId?null:current);}
   function restoreJob(jobId:string){setDismissedJobs(current=>current.filter(item=>item.id!==jobId));setSelectedId(current=>current===jobId?null:current);}
