@@ -5,6 +5,7 @@ import {
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
+import { searchJobs } from "@/thungatha-features/job-discovery/server/search";
 import {
   createAuthenticatedSupabaseClient,
   createPublicSupabaseClient,
@@ -33,6 +34,38 @@ const querySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
 });
+
+function publicJobFeed(jobs: Awaited<ReturnType<typeof searchJobs>>) {
+  return jobs.map((job) => ({
+    // Provider IDs are not necessarily UUIDs; public listings do not support
+    // persisted save/dismiss actions until they exist in the catalogue.
+    id: `public:${job.providerKey}:${job.externalJobId}`,
+    title: job.title,
+    employer_name: job.employerName,
+    description: job.description,
+    location_text: job.locationText,
+    country_code: job.countryCode,
+    work_mode: job.workMode,
+    employment_type: job.employmentType,
+    salary_min: job.salaryMin,
+    salary_max: job.salaryMax,
+    salary_currency: job.salaryCurrency,
+    updated_at: job.publishedAt,
+    job_sources: [
+      {
+        id: `public-source:${job.providerKey}:${job.externalJobId}`,
+        provider_key: job.providerKey,
+        provider_kind: job.providerKind,
+        external_job_id: job.externalJobId,
+        source_url: job.sourceUrl,
+        application_url: job.applicationUrl,
+        published_at: job.publishedAt,
+        availability_status: "active",
+      },
+    ],
+    state: null,
+  }));
+}
 
 export async function GET(request: Request) {
   await connection();
@@ -67,33 +100,50 @@ export async function GET(request: Request) {
   const input = parsed.data;
 
   try {
-    if (!identity && input.state !== "all") {
+    if (!identity) {
+      if (input.state !== "all") {
+        return NextResponse.json({
+          jobs: [],
+          page: input.page,
+          pageSize: input.pageSize,
+          total: 0,
+          totalPages: 0,
+        });
+      }
+
+      // Preserve the original public discovery behaviour: search configured
+      // providers directly so anonymous visitors do not depend on an ingestion
+      // run having populated Supabase first.
+      const providerJobs = await searchJobs({
+        query: input.query,
+        location: input.location,
+        countryCode: input.countryCode,
+        page: Math.min(input.page, 100),
+        pageSize: input.pageSize,
+      });
+      const jobs = publicJobFeed(providerJobs);
       return NextResponse.json({
-        jobs: [],
+        jobs,
         page: input.page,
         pageSize: input.pageSize,
-        total: 0,
-        totalPages: 0,
+        total: jobs.length,
+        totalPages: jobs.length === input.pageSize ? input.page + 1 : input.page,
       });
     }
-    const db = identity
-      ? await createAuthenticatedSupabaseClient(identity.getToken)
-      : await createPublicSupabaseClient();
+
+    const db = await createAuthenticatedSupabaseClient(identity.getToken);
     let states: { job_id: string; state: "saved" | "dismissed" }[] = [];
-    if (identity) {
-      let stateQuery = db
-        .from("user_job_states")
-        .select("job_id,state")
-        .eq("user_id", identity.userId);
-      if (input.state !== "all")
-        stateQuery = stateQuery.eq("state", input.state);
-      const { data: userStates, error: stateError } = await stateQuery;
-      if (stateError) throw stateError;
-      states = userStates ?? [];
-    }
+    let stateQuery = db
+      .from("user_job_states")
+      .select("job_id,state")
+      .eq("user_id", identity.userId);
+    if (input.state !== "all")
+      stateQuery = stateQuery.eq("state", input.state);
+    const { data: userStates, error: stateError } = await stateQuery;
+    if (stateError) throw stateError;
+    states = userStates ?? [];
     const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
     if (params.get("statesOnly") === "1") {
-      if (!identity) return apiError("Authentication required", 401);
       return NextResponse.json({ states });
     }
 
@@ -125,8 +175,6 @@ export async function GET(request: Request) {
       .gte("job_sources.published_at", publishedAfter)
       .not("job_sources.published_at", "is", null);
     if (input.employmentType) {
-      // Provider records commonly use values such as "full_time", while the UI
-      // naturally uses "Full-time". Normalize separators before querying.
       const term = sanitizeFilterTerm(input.employmentType)
         .toLowerCase()
         .replace(/[\s-]+/g, "_");
@@ -175,17 +223,16 @@ export async function GET(request: Request) {
   } catch (error) {
     if (error instanceof SupabaseConfigurationError)
       return apiError("Job storage is not configured", 503);
-    console.error("[jobs feed API] Database query failed:", {
+    if (
+      error instanceof Error &&
+      (error.message === "No job providers are configured." ||
+        error.message === "All configured job providers failed.")
+    ) {
+      return apiError("Job search is temporarily unavailable", 503);
+    }
+    console.error("[jobs feed API] Request failed:", {
       errorName: error instanceof Error ? error.name : "unknown",
       message: error instanceof Error ? error.message : String(error),
-      details:
-        typeof error === "object" && error !== null && "details" in error
-          ? error.details
-          : undefined,
-      hint:
-        typeof error === "object" && error !== null && "hint" in error
-          ? error.hint
-          : undefined,
       code:
         typeof error === "object" && error !== null && "code" in error
           ? error.code
