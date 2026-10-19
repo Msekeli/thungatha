@@ -7,11 +7,8 @@ import { JobDiscoveryDialogs } from "./authenticated/job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./authenticated/job-discovery-workspace";
 import { JobDiscoveryControls } from "./authenticated/job-discovery-controls";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
-import { useJobApplicationActions } from "./hooks/use-job-application-actions";
-import { useJobFilterActions } from "./hooks/use-job-filter-actions";
-import { buildJobDiscoveryViewModel } from "./job-discovery-view-model";
 import { useJobDiscoveryState } from "./hooks/use-job-discovery-state";
-import { useJobDiscoveryData } from "./hooks/use-job-discovery-data";
+import { useJobDiscoveryController } from "./hooks/use-job-discovery-controller";
 
 import { formatDate, shown, sourceFor } from "./job-discovery-utils";
 
@@ -41,38 +38,16 @@ export default function JobsDiscovery({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const { updateJobState, undoLastStateChange } = useJobDiscoveryData({
-    page, category, filters, retryFeed, setFeed, setLoading, setError,
-    setIsAuthenticated, setSelectedId, loadMoreRef, loading, feed, setPage,
-    selectedId, retryDetail, setDetail, setDetailLoading, setDetailError,
-    setJobActivity, setActivityError, setForceAppliedPrompt,
-    setDismissedPromptForJobId, stateBusy, setStateBusy, setStateError,
-    setStateMessage, setUndoAction, undoAction, detail,
-  });
-
-  const view = buildJobDiscoveryViewModel({
-    detail, selectedId, feed, jobActivity, filters, sortOrder,
+  const controller = useJobDiscoveryController({
+    ...useJobDiscoveryState(showProfileSetupPrompt),
   });
   const {
-    selectedDetail, selectedSource, selectedActivity, applicationUrl,
-    jobSourceUrl, applicationDestination, hasFilters, visibleJobs, categories,
-  } = view;
+    updateJobState, undoLastStateChange, selectedDetail, selectedSource,
+    selectedActivity, applicationUrl, jobSourceUrl, applicationDestination,
+    hasFilters, visibleJobs, categories, openApplicationLink, confirmApplied,
+    changeDraft, submitFilters, clearFilters,
+  } = controller;
 
-  const { openApplicationLink, confirmApplied } = useJobApplicationActions(
-    selectedDetail,
-    stateBusy,
-    setStateBusy,
-    setStateError,
-    setStateMessage,
-    setJobActivity,
-    setForceAppliedPrompt,
-    setDismissedPromptForJobId,
-    setRetryFeed,
-  );
-
-  const { changeDraft, submitFilters, clearFilters } = useJobFilterActions(
-    draft, setDraft, setFilters, setPage, setMobileDetail,
-  );
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <main className="th-jobs-page th-jobs-redesign">
