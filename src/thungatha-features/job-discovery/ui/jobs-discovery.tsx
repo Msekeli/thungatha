@@ -16,19 +16,8 @@ import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
 import {
-  Search,
-  MapPin,
-  SlidersHorizontal,
-  CalendarDays,
-  ExternalLink,
-  PanelsTopLeft,
-  Bookmark,
-  EyeOff,
-  BriefcaseBusiness,
-  Clock3,
   X,
   Check,
-  ArrowLeft,
 } from "lucide-react";
 
 type JobSource = {
