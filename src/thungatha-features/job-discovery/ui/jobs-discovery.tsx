@@ -15,7 +15,6 @@ import { JobUndoNotice } from "./authenticated/job-undo-notice";
 import { JobCategoryStrip } from "./authenticated/job-category-strip";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Toast } from "@/components/ui/toast";
-import { Check } from "lucide-react";
 import { useJobActivitySync } from "./hooks/use-job-activity-sync";
 import { useInfiniteJobPagination } from "./hooks/use-infinite-job-pagination";
 import { useUpdateJobState } from "./hooks/use-update-job-state";
