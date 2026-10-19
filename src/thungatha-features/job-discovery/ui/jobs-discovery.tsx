@@ -38,9 +38,8 @@ export default function JobsDiscovery({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const controller = useJobDiscoveryController({
-    ...useJobDiscoveryState(showProfileSetupPrompt),
-  });
+  const state = useJobDiscoveryState(showProfileSetupPrompt);
+  const controller = useJobDiscoveryController(state);
   const {
     updateJobState, undoLastStateChange, selectedDetail, selectedSource,
     selectedActivity, applicationUrl, jobSourceUrl, applicationDestination,
