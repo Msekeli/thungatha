@@ -35,6 +35,8 @@ export function PublicJobDetailContent({
         </SignInButton>
       </Show>
     </> : <Button component="a" href={signInUrl} size="small" variant="outlined">Check profile match</Button>}
+    <PublicJobDetailActions configured={configured} applyUrl={applyUrl} signInUrl={signInUrl}
+      dismissed={dismissed} onDismiss={onDismiss} onRestore={onRestore} placement="header" />
   </Stack>;
   return <>
     <JobDetailPresentation job={job} postedAt={source?.published_at || job.updated_at}
