@@ -161,7 +161,7 @@ describe("GET /api/jobs", () => {
 
     const response = await GET(
       new Request(
-        "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&page=2&pageSize=10",
+        "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&publishedWithin=7d&page=2&pageSize=10",
       ),
     );
     expect(response.status).toBe(200);
@@ -238,6 +238,26 @@ describe("GET /api/jobs", () => {
       totalPages: 0,
     });
     expect(from).toHaveBeenCalledTimes(2);
+  });
+
+  it("excludes only this authenticated user's dismissed jobs from the normal feed", async () => {
+    const userStates = query({
+      data: [{ job_id: "job-dismissed", state: "dismissed" }],
+      error: null,
+    });
+    const jobs = query({ data: [], error: null, count: 0 });
+    const from = vi
+      .fn()
+      .mockReturnValueOnce(userStates)
+      .mockReturnValueOnce(jobs);
+    client.mockResolvedValue({ from } as never);
+
+    const response = await GET(new Request("http://localhost/api/jobs"));
+
+    expect(response.status).toBe(200);
+    expect(from).toHaveBeenNthCalledWith(1, "user_job_states");
+    expect(userStates.eq).toHaveBeenCalledWith("user_id", "user_alice");
+    expect(jobs.not).toHaveBeenCalledWith("id", "in", "(job-dismissed)");
   });
 
   it("returns a safe server error when the database query fails", async () => {
