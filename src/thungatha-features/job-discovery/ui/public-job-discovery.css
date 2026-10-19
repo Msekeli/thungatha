@@ -1389,9 +1389,6 @@ body:has(.th-discovery-shell) {
   right: 12px;
   color: #596b85;
 }
-.th-mobile-search {
-  display: none;
-}
 @media (max-width: 1050px) {
   .th-discovery-shell {
     width: 100%;
@@ -2328,9 +2325,6 @@ body:has(.th-discovery-shell) {
   color: var(--th-fg-muted);
   font-size: 14px;
   line-height: 1.55;
-}
-.th-discovery-hero {
-  background: var(--th-page);
 }
 .th-discovery-header,
 .th-discovery-header a {
