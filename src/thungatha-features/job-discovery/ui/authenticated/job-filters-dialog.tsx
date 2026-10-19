@@ -45,7 +45,7 @@ export function JobFiltersDialog({ open, draft, onClose, onChange, onReset, onAp
           </label>)}
         </fieldset>
         <fieldset><legend>Employment type</legend>
-          {["Full-time", "Part-time", "Contract", "Internship", "Learnership", "Graduate programme"].map((v) => <label key={v}>
+          {["Full-time", "Part-time", "Contract", "Internships", "Learnerships", "Graduate programmes"].map((v) => <label key={v}>
             <input type="checkbox" checked={draft.employmentType === v} onChange={(e) => onChange("employmentType", e.target.checked ? v : "")} />{v}
           </label>)}
         </fieldset>
