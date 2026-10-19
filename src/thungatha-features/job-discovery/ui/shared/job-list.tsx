@@ -3,6 +3,7 @@
 import { JobCard, type JobCardData } from "./job-card";
 import { JobEmptyState } from "./job-empty-state";
 import Stack from "@mui/material/Stack";
+import type { ReactNode } from "react";
 
 type JobListProps = {
   jobs: JobCardData[];
@@ -10,6 +11,7 @@ type JobListProps = {
   selectedId?: string | null;
   postedLabel?: (job: JobCardData) => string | undefined;
   onSelect: (job: JobCardData) => void;
+  saveAction?: (job: JobCardData) => ReactNode;
   emptyTitle?: string;
   emptyMessage?: string;
 };
@@ -17,7 +19,7 @@ type JobListProps = {
 export function JobList({
   jobs, variant, selectedId, postedLabel, onSelect,
   emptyTitle = "No opportunities found",
-  emptyMessage = "Try changing your search or filters.",
+  emptyMessage = "Try changing your search or filters.", saveAction,
 }: JobListProps) {
   if (!jobs.length) {
     return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
@@ -32,6 +34,7 @@ export function JobList({
           selected={job.id === selectedId}
           postedLabel={postedLabel?.(job) ?? "Date unknown"}
           onSelect={() => onSelect(job)}
+          saveAction={saveAction?.(job)}
         />
       ))}
     </Stack>
