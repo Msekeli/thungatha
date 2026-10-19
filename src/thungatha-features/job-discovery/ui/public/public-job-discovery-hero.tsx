@@ -98,9 +98,10 @@ export function PublicJobDiscoveryHero(props: Props) {
           </Select>
         </FormControl>
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={onOpenFilters}
-          startIcon={<SlidersHorizontal size={16} />}
+          startIcon={<SlidersHorizontal size={18} />}
+          sx={{ minWidth: 132, height: 60, borderRadius: "12px", fontWeight: 700, boxShadow: "none" }}
         >
           Filters
         </Button>
