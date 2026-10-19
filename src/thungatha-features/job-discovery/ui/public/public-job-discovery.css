@@ -1,98 +1,76 @@
 @layer components {
   .th-discovery-shell {
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    min-height: 0 !important;
-    overflow: hidden;
+    display:flex; flex-direction:column; height:100dvh; min-height:0!important;
+    overflow:hidden;
   }
-  .th-discovery-shell > header,
-  .th-discovery-shell > .th-discovery-hero { flex: 0 0 auto; }
-  .th-discovery-shell > .th-discovery-hero {
-    padding-block: 12px 14px;
-    text-align: center;
-  }
-  .th-discovery-shell > .th-discovery-hero > .MuiStack-root {
-    margin-inline: auto;
-    justify-content: center;
-  }
-  .th-discovery-shell > .th-discovery-hero > .MuiStack-root:first-of-type {
-    width: min(100%, 1050px);
-  }
-  .th-discovery-shell .th-discovery-hero h1 { font-size: clamp(28px, 2.7vw, 42px); }
+  .th-discovery-shell>header,.th-discovery-shell>.th-discovery-hero { flex:0 0 auto; }
+  .th-discovery-shell>.th-discovery-hero { padding:14px 16px 16px; text-align:center; }
+  .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
+  .th-discovery-shell .th-discovery-hero p { max-width:none; margin:6px auto 20px; }
+  .th-discovery-shell>.th-discovery-hero>.MuiStack-root { margin-inline:auto; justify-content:center; }
+  .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { width:min(100%,1010px); }
   .th-discovery-workspace {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
-    align-items: stretch !important;
-    padding: 12px 16px 16px;
-    gap: 12px;
+    flex:1 1 auto; min-height:0; overflow:hidden; align-items:stretch!important;
+    padding:0 16px 16px; gap:12px;
+    grid-template-columns:250px minmax(0,.95fr) minmax(0,1.12fr)!important;
   }
-  .th-discovery-workspace > * { min-height: 0; }
-  @media (min-width: 1536px) {
-    .th-discovery-workspace {
-      grid-template-columns: 250px minmax(0, .92fr) minmax(0, 1.08fr) !important;
-      padding-top: 12px;
-    }
-  }
+  .th-discovery-workspace>* { min-width:0; min-height:0; }
+  .th-discovery-workspace>aside[aria-label="Thungatha features"] { overflow:hidden; }
   .th-discovery-results {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
+    position:relative; display:flex; flex-direction:column; height:100%;
+    min-height:0; overflow:hidden; border:1px solid var(--th-border, #183047);
+    border-radius:12px; padding:0 12px 10px;
   }
+  .th-discovery-results>.MuiStack-root:first-child { flex:0 0 48px; padding:0!important; }
+  .th-discovery-results>.MuiStack-root:first-child .MuiTypography-caption { display:none; }
+  .th-discovery-results .th-results-toolbar {
+    position:absolute; z-index:2; top:6px; right:12px; margin:0;
+  }
+  .th-discovery-results .th-results-toolbar>button,
+  .th-discovery-results .th-mobile-search { display:none!important; }
+  .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
   .th-discovery-job-list {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+    padding-top:4px;
   }
+  .th-discovery-job-list> .MuiStack-root { gap:6px; }
   .th-discovery-detail {
-    height: 100%;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    height:100%; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+    border-radius:12px;
   }
-  .th-discovery-shell > .th-wide-promo { display: none; }
-  .th-discovery-shell > .th-mobile-bottom-nav { display: none !important; }
-  @media (max-width: 1199px) {
-    .th-discovery-workspace {
-      grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr) !important;
-    }
-    .th-discovery-workspace > aside[aria-label="Thungatha features"] { display: none; }
+  .th-discovery-detail .th-jobs-detail-content { gap:14px; }
+  .th-discovery-detail .th-jobs-detail-actions {
+    display:grid!important; grid-template-columns:1.2fr 1fr; gap:10px!important;
   }
-  @media (max-width: 760px) {
-    .th-discovery-shell > .th-mobile-bottom-nav { display: grid !important; }
-    .th-discovery-shell > header { padding: 6px 10px; gap: 6px; }
-    .th-discovery-shell > header img { width: 132px; height: auto; }
-    .th-discovery-shell > .th-discovery-hero { padding: 6px 12px; }
-    .th-discovery-shell .th-discovery-hero h1 { font-size: 24px; line-height: 1.15; }
-    .th-discovery-shell > .th-discovery-hero > .MuiStack-root:first-of-type {
-      flex-direction: column;
-    }
-    .th-discovery-shell .th-discovery-hero p { margin: 4px 0 8px; font-size: 12px; }
-    .th-discovery-shell .th-discovery-hero .MuiChip-root { height: 28px; }
-    .th-discovery-shell .th-discovery-hero .MuiStack-root { gap: 6px; }
-    .th-discovery-workspace {
-      display: block !important;
-      position: relative;
-      padding: 8px 8px 68px;
-    }
-    .th-discovery-results { height: 100%; overflow: hidden; }
-    .th-discovery-job-list { height: 100%; overflow-y: auto; }
+  .th-discovery-detail .th-jobs-detail-actions>* { min-width:0; }
+  .th-discovery-shell>.th-wide-promo,.th-discovery-shell>.th-mobile-bottom-nav { display:none!important; }
+  @media (max-width:1199px) {
+    .th-discovery-workspace { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)!important; }
+    .th-discovery-workspace>aside[aria-label="Thungatha features"] { display:none; }
+  }
+  @media (max-width:760px) {
+    .th-discovery-shell>.th-mobile-bottom-nav { display:grid!important; }
+    .th-discovery-shell>header { padding:6px 10px; gap:6px; }
+    .th-discovery-shell>header img { width:132px; height:auto; }
+    .th-discovery-shell>.th-discovery-hero { padding:6px 12px; }
+    .th-discovery-shell .th-discovery-hero h1 { font-size:24px; line-height:1.15; }
+    .th-discovery-shell>.th-discovery-hero>p { margin:4px 0 8px; font-size:12px; }
+    .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { flex-direction:column; }
+    .th-discovery-shell .th-discovery-hero .MuiChip-root { height:28px; }
+    .th-discovery-workspace { display:block!important; position:relative; padding:8px 8px 68px; }
+    .th-discovery-results { height:100%; border:0; padding:0; overflow:hidden; }
+    .th-discovery-results>.MuiStack-root:first-child { flex-basis:42px; }
+    .th-discovery-results .th-results-toolbar { position:static; flex-wrap:wrap; padding:0 0 8px; }
+    .th-discovery-results .th-results-toolbar>button,
+    .th-discovery-results .th-mobile-search { display:flex!important; }
+    .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:130px!important; }
+    .th-discovery-job-list { height:100%; overflow-y:auto; }
     .th-discovery-detail {
-      display: none;
-      position: absolute;
-      inset: 8px 8px 68px;
-      z-index: 4;
-      background: var(--th-page);
+      display:none; position:absolute; inset:8px 8px 68px; z-index:4;
+      background:var(--th-page); height:auto;
     }
-    .th-discovery-detail.th-detail-mobile-open {
-      display: block;
-      height: auto !important;
-      overflow-y: auto !important;
-    }
-    .th-discovery-detail .th-mobile-detail-heading { display: flex; }
+    .th-discovery-detail.th-detail-mobile-open { display:block; overflow-y:auto!important; }
+    .th-discovery-detail .th-mobile-detail-heading { display:flex; }
+    .th-discovery-detail .th-jobs-detail-actions { grid-template-columns:1fr; }
   }
 }
