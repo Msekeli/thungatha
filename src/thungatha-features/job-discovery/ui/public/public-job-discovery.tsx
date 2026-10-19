@@ -18,8 +18,7 @@ import { usePublicDismissedJobs } from "./use-public-dismissed-jobs";
 import { usePublicJobFeed } from "./use-public-job-feed";
 import { usePublicJobDetail } from "./use-public-job-detail";
 
-type JobSource = { source_url: string | null; application_url: string | null; published_at: string | null; availability_status: string; provider_kind: string };
-type Job = { id: string; title: string; employer_name: string | null; description: string | null; location_text: string | null; country_code: string | null; work_mode: string | null; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; updated_at: string | null; job_sources: JobSource[] | JobSource | null; state: "saved" | "dismissed" | null };
+import type { PublicJob as Job, PublicJobSource as JobSource } from "./public-job-types";
 function sourceFor(job: Job | null): JobSource | null { if (!job?.job_sources) return null; return Array.isArray(job.job_sources) ? job.job_sources[0] ?? null : job.job_sources; }
 function dateLabel(value: string | null | undefined): string { if (!value) return "Date unknown"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "Date unknown" : new Intl.DateTimeFormat("en-ZA", { year: "numeric", month: "short", day: "numeric" }).format(date); }
 
