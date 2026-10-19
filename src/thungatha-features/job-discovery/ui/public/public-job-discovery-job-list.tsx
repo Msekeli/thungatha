@@ -1,5 +1,4 @@
 "use client";
-
 import { Bookmark, EyeOff, RotateCcw } from "lucide-react";
 import Box from "@mui/material/Box";
 import Link from "next/link";
@@ -7,7 +6,6 @@ import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
 import type { JobCardData } from "../shared/job-card";
-
 type JobListItem = { job: JobCardData; postedLabel: string };
 type Props = {
   jobs: JobListItem[];
@@ -18,7 +16,6 @@ type Props = {
   onDismiss?: (jobId: string) => void;
   onRestore?: (jobId: string) => void;
 };
-
 export function PublicJobDiscoveryJobList({
   jobs,
   selectedId,
