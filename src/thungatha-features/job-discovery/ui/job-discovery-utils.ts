@@ -63,3 +63,32 @@ export async function getApiError(response: Response): Promise<string> {
   if (response.status === 404) return "This listing is no longer available.";
   return payload.error || "The request could not be completed. Please try again.";
 }
+
+export function buildJobFeedParams(
+  page: number,
+  category: string,
+  filters: Filters,
+): string {
+  const search = new URLSearchParams({
+    page: String(page),
+    pageSize: String(PAGE_SIZE),
+    state: category === "saved" || category === "dismissed" ? category : "all",
+  });
+  for (const [key, value] of Object.entries(filters)) {
+    if (value.trim()) search.set(key, value.trim());
+  }
+  return search.toString();
+}
+
+export function isValidFeed(value: unknown): value is Feed {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Partial<Feed>;
+  return Array.isArray(data.jobs) &&
+    Number.isInteger(data.page) && data.page! >= 1 &&
+    Number.isInteger(data.pageSize) && data.pageSize! >= 1 &&
+    Number.isInteger(data.total) && data.total! >= 0 &&
+    Number.isInteger(data.totalPages) && data.totalPages! >= 0 &&
+    data.totalPages === Math.ceil(data.total! / data.pageSize!) &&
+    data.jobs.every((job) => Boolean(job) &&
+      typeof job.id === "string" && typeof job.title === "string");
+}
