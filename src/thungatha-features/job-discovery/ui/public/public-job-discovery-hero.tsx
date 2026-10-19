@@ -46,8 +46,7 @@ export function PublicJobDiscoveryHero(props: Props) {
           onSubmit={() => document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" })}
           placeholder="Job title, skills or company..." suggestions={suggestions} /></Box>
         <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 210 } }}>
-          <Select displayEmpty value={location} onChange={(event) => onLocationChange(event.target.value)}
-            startAdornment={<MapPin size={15} style={{ marginRight: 8 }} />} inputProps={{ "aria-label": "Search location" }}>
+          <Select displayEmpty value={location} onChange={(event) => onLocationChange(event.target.value)} inputProps={{ "aria-label": "Search location" }}>
             <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
             <MenuItem value="Cape Town">Cape Town</MenuItem>
             <MenuItem value="Johannesburg">Johannesburg</MenuItem>
