@@ -446,6 +446,17 @@
     color: var(--th-fg);
   }
 
+  /* Warning: clear orange outline for destructive or cautionary actions */
+  .th-btn-warning {
+    background: transparent;
+    color: var(--th-warn);
+    border-color: var(--th-warn);
+  }
+  .th-btn-warning:hover {
+    background: var(--th-warn-bg);
+    border-color: var(--th-warn);
+  }
+
   /* Text inputs, shared with Clerk's form fields */
   .th-input {
     height: 44px;
