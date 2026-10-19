@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { JobList } from "./shared/job-list";
 import { JobDetailTabs } from "./shared/job-detail-tabs";
+import { JobSearchBar } from "./shared/job-search-bar";
 import { displayValue, formatDate, getJobSource, safeExternalUrl } from "./shared/job-formatters";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
@@ -667,16 +668,14 @@ export default function JobsDiscovery({
             </p>
           </div>
           <form className="th-jobs-toolbar" onSubmit={submitFilters}>
-            <label className="th-jobs-quick-search">
-              <Search aria-hidden="true" size={17} strokeWidth={1.7} />
-              <input
-                aria-label="Search roles, skills, or companies"
-                name="query"
-                placeholder="Search roles, skills, or companies..."
-                value={draft.query}
-                onChange={(e) => changeDraft("query", e.target.value)}
-              />
-            </label>
+            <JobSearchBar
+              className="th-jobs-quick-search"
+              value={draft.query}
+              onChange={(value) => changeDraft("query", value)}
+              ariaLabel="Search roles, skills, or companies"
+              name="query"
+              placeholder="Search roles, skills, or companies..."
+            />
             <label className="th-jobs-location-select">
               <MapPin aria-hidden="true" size={17} strokeWidth={1.7} />
               <select
