@@ -1,7 +1,7 @@
 "use client";
 
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { BriefcaseBusiness } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type Props = {
   error?: string | null;
@@ -15,23 +15,29 @@ type Props = {
 export function PublicJobDiscoveryResultState({ error, loading, resultCount, onRetry, showStatus, showLoading }: Props) {
   if (showStatus && error) {
     return (
-      <div className="th-discovery-empty">
-        <p>{error}</p>
-        <Button variant="secondary" size="sm" type="button" onClick={onRetry}>Try again</Button>
-      </div>
+      <Alert severity="error" action={<Button color="inherit" size="small" onClick={onRetry}>Try again</Button>}>
+        {error}
+      </Alert>
     );
   }
+
   if (showStatus && !loading && resultCount === 0) {
     return (
-      <div className="th-discovery-empty">
-        <BriefcaseBusiness size={25} />
-        <strong>No matching jobs yet</strong>
-        <p>Try changing your filters or search terms.</p>
-      </div>
+      <Stack alignItems="center" spacing={1.5} sx={{ py: 5, px: 2, textAlign: "center" }}>
+        <BriefcaseBusiness size={28} aria-hidden="true" />
+        <Typography variant="h6">No matching jobs yet</Typography>
+        <Typography variant="body2" color="text.secondary">Try changing your filters or search terms.</Typography>
+      </Stack>
     );
   }
+
   if (showLoading && loading) {
-    return <div className="th-loading-rows"><span /><span /><span /><span /></div>;
+    return (
+      <Box role="status" aria-label="Loading jobs" sx={{ display: "flex", justifyContent: "center", py: 5 }}>
+        <CircularProgress size={28} />
+      </Box>
+    );
   }
+
   return null;
 }
