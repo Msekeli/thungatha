@@ -4,7 +4,7 @@
     overflow:hidden;
   }
   .th-discovery-shell>header,.th-discovery-shell>.th-discovery-hero { flex:0 0 auto; }
-  .th-discovery-shell>.th-mobile-bottom-nav { display:none; }
+  .th-mobile-bottom-nav { display:none; }
   .th-discovery-shell>.th-discovery-hero { padding:8px 16px 10px; text-align:center; }
   .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
   .th-discovery-shell .th-discovery-hero p { max-width:none; margin:4px auto 12px; }
@@ -70,7 +70,7 @@
     .th-discovery-workspace>aside[aria-label="Thungatha features"] { display:none; }
   }
   @media (max-width:760px) {
-    .th-discovery-shell>.th-mobile-bottom-nav {
+    .th-mobile-bottom-nav {
       position:fixed!important; left:0; right:0; bottom:0; top:auto;
       z-index:1300; display:grid!important;
       grid-template-columns:repeat(4,minmax(0,1fr));
@@ -80,18 +80,18 @@
       background:var(--th-panel); box-sizing:border-box;
       visibility:visible; opacity:1; transform:none;
     }
-    .th-discovery-shell>.th-mobile-bottom-nav>a {
+    .th-mobile-bottom-nav>a {
       display:flex; min-width:0; flex-direction:column; align-items:center;
       justify-content:center; gap:3px; padding:4px 2px;
       border-radius:8px; color:var(--th-fg-muted); text-decoration:none;
       font-size:11px; line-height:1.2; white-space:nowrap;
     }
-    .th-discovery-shell>.th-mobile-bottom-nav>a[data-active="true"] {
+    .th-mobile-bottom-nav>a[data-active="true"] {
       color:var(--th-accent-text); background:var(--th-accent-bg);
     }
-    .th-discovery-shell>.th-mobile-bottom-nav>a svg { flex:0 0 auto; }
+    .th-mobile-bottom-nav>a svg { flex:0 0 auto; }
     .th-discovery-shell { padding-bottom:calc(56px + env(safe-area-inset-bottom)); height:100dvh; min-height:0; }
-    .th-discovery-shell>.th-mobile-bottom-nav * { visibility:visible; }
+    .th-mobile-bottom-nav * { visibility:visible; }
     .th-discovery-shell>header { min-height:58px; padding:6px 10px; gap:6px; }
     .th-discovery-shell>header img { width:148px; height:auto; }
     .th-discovery-shell>.th-discovery-hero { padding:6px 12px 8px; }
