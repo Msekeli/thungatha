@@ -79,18 +79,6 @@ export function PublicJobFiltersPanel({
     );
   return (
     <Stack spacing={2} className="th-filter-content">
-      <Stack
-        direction="row"
-        className="th-filter-title"
-        sx={{ alignItems: "center", justifyContent: "space-between" }}
-      >
-        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-          Filters
-        </Typography>
-        <Button variant="text" size="small" onClick={onClear}>
-          Clear all
-        </Button>
-      </Stack>
       <TextField
         label="Search"
         value={query}
@@ -181,13 +169,16 @@ export function PublicJobFiltersPanel({
           <MenuItem value="senior">Senior</MenuItem>
         </Select>
       </FormControl>
-      <Button
-        className="th-mobile-apply-filters"
-        variant="contained"
-        onClick={onClose}
-      >
-        Apply filters
-      </Button>
+      <Stack direction="row" className="th-mobile-filter-actions">
+        <Button variant="text" onClick={onClear}>Reset</Button>
+        <Button
+          className="th-mobile-apply-filters"
+          variant="contained"
+          onClick={onClose}
+        >
+          Apply filters
+        </Button>
+      </Stack>
     </Stack>
   );
 }
