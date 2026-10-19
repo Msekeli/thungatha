@@ -27,6 +27,7 @@ type Props = {
   formatDate: (value: string | null | undefined) => string | null;
   onRetryFeed: () => void;
   onSelect: (job: Job) => void;
+  onSaveJob: (job: Job) => void;
   onBack: () => void;
   onViewMatch: () => void;
   onApply: () => void;
@@ -51,6 +52,7 @@ export function AuthenticatedJobWorkspace(props: Props) {
         formatDate={props.formatDate}
         onRetry={props.onRetryFeed}
         onSelect={props.onSelect}
+        onSave={props.onSaveJob}
       />
       <AuthenticatedJobDetailPanel
         job={props.selectedDetail}
