@@ -1,6 +1,6 @@
 "use client";
 
-import { JobCard, type JobCardData } from "./shared/job-card";
+import { JobCard, type JobCardData } from "../shared/job-card";
 
 type JobListItem = { job: JobCardData; postedLabel: string };
 type Props = {

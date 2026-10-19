@@ -2,7 +2,7 @@
 
 import { ChevronDown, MapPin, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { JobSearchBar } from "./shared/job-search-bar";
+import { JobSearchBar } from "../shared/job-search-bar";
 
 type JobSuggestion = { title: string; employer_name: string | null };
 type Props = {
