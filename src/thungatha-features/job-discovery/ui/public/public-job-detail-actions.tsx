@@ -19,7 +19,7 @@ function AuthAction({ configured, href, children }: {
 }
 
 export function PublicJobDetailActions({
-  configured, applyUrl, signInUrl, dismissed, onDismiss, onRestore,
+  configured, applyUrl, signInUrl, dismissed, onRestore,
 }: Props) {
   return (
     <Stack spacing={1} className="th-jobs-detail-actions th-jobs-redesign-actions">
