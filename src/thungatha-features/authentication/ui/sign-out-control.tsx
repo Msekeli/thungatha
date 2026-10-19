@@ -101,6 +101,7 @@ export function SignOutControl() {
               <Button
                 variant="secondary"
                 size="md"
+                autoFocus
                 disabled={isSigningOut}
                 onClick={() => {
                   setIsOpen(false);
