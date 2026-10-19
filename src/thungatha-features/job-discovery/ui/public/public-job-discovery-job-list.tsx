@@ -18,7 +18,7 @@ export function PublicJobDiscoveryJobList({
 }: Props) {
   const jobData = jobs.map(({ job }) => job);
   const postedById = new Map(jobs.map(({ job, postedLabel }) => [job.id, postedLabel]));
-  return <Box sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+  return <Box className="th-discovery-job-list" sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
     <JobList jobs={jobData} variant="public" selectedId={selectedId}
       postedLabel={(job) => postedById.get(job.id) ?? "Date unknown"}
       onSelect={(job) => onSelect(job.id)}
