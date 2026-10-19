@@ -4,6 +4,7 @@
     overflow:hidden;
   }
   .th-discovery-shell>header,.th-discovery-shell>.th-discovery-hero { flex:0 0 auto; }
+  .th-discovery-shell>.th-mobile-bottom-nav { display:none; }
   .th-discovery-shell>.th-discovery-hero { padding:14px 16px 16px; text-align:center; }
   .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
   .th-discovery-shell .th-discovery-hero p { max-width:none; margin:6px auto 20px; }
@@ -24,6 +25,7 @@
   }
     .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
   .th-discovery-results .th-mobile-search { display:none; }
+  .th-discovery-results .th-results-toolbar { left:auto; }
   .th-discovery-job-list {
     flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   }
