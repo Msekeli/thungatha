@@ -35,7 +35,7 @@ export function JobCardButton({
         border: selected ? 1.5 : 1,
         borderColor: selected ? "primary.main" : "divider",
         borderRadius: 2,
-        bgcolor: selected ? "action.selected" : "background.paper",
+        bgcolor: selected ? "var(--th-accent-bg)" : "background.paper",
         boxShadow: "none",
         textAlign: "left",
         transition: "border-color 150ms, background-color 150ms",
