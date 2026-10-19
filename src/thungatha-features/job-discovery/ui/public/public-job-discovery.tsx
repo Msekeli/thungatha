@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import "./public-job-discovery.css";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
 import { PublicJobMobileNav } from "./public-job-mobile-nav";
