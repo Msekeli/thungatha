@@ -15,9 +15,9 @@ export function ProfileSetupDialog({ open, onClose, onCreateProfile }: Props) {
       slotProps={{ paper: { className: "th-jobs-popover th-jobs-match-popover th-jobs-mui-dialog" } }}>
       <header>
         <strong>Get better job matches</strong>
-        <button type="button" aria-label="Dismiss profile setup" onClick={onClose}>
+        <Button variant="ghost" size="sm" aria-label="Dismiss profile setup" onClick={onClose}>
           <X size={16} />
-        </button>
+        </Button>
       </header>
       <div className="th-jobs-match-placeholder">
         <h3>Set up your profile</h3>
