@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
-import { JobCard } from "./shared/job-card";
+import { AuthenticatedJobResultsPanel } from "./authenticated/job-results-panel";
 import { Button } from "@/components/ui/button";
 import { ProfileSetupDialog } from "./authenticated/profile-setup-dialog";
 import { MatchBreakdownDialog } from "./authenticated/match-breakdown-dialog";
@@ -799,72 +799,26 @@ export default function JobsDiscovery({
           />
         )}
         <div className="th-jobs-workspace th-jobs-redesign-workspace">
-          <section
-            className={`th-jobs-results-panel th-jobs-redesign-results ${mobileDetail ? "th-jobs-mobile-hidden" : ""}`}
-            aria-label="Job search results"
-            aria-busy={loading}
-          >
-            <div className="th-jobs-results-head">
-              <span>{loading ? "Updating…" : range + " opportunities"}</span>
-              <span className="th-jobs-label">Official-source listings</span>
-            </div>
-            {loading && !feed ? (
-              <div className="th-jobs-state" role="status">
-                <span className="th-jobs-spinner" aria-hidden="true" />
-                <strong>Loading opportunities</strong>
-              </div>
-            ) : error ? (
-              <div className="th-jobs-state" role="alert">
-                <strong>We couldn’t load opportunities</strong>
-                <p>{error}</p>
-                <Button onClick={() => setRetryFeed((v) => v + 1)}>
-                  Retry
-                </Button>
-              </div>
-            ) : visibleJobs.length === 0 ? (
-              <div className="th-jobs-state">
-                <strong>
-                  {hasFilters
-                    ? "No opportunities match these filters"
-                    : "No active opportunities available"}
-                </strong>
-                <p>Try changing your search or filters.</p>
-              </div>
-            ) : (
-              <>
-                {visibleJobs.map((job) => {
-                  const source = sourceFor(job);
-                  return (
-                    <JobCard
-                      key={job.id}
-                      job={job}
-                      variant="authenticated"
-                      selected={job.id === selectedId}
-                      postedLabel={source?.published_at ? formatDate(source.published_at) || "Date unknown" : "Date unknown"}
-                      onSelect={() => {
-                        setSelectedId(job.id);
-                        setForceAppliedPrompt(false);
-                        setDismissedPromptForJobId(null);
-                        setActivityError(null);
-                        setMobileDetail(true);
-                      }}
-                    />
-                  );
-                })}
-                {feed && feed.page < feed.totalPages && (
-                  <div
-                    ref={loadMoreRef}
-                    className="th-jobs-load-more"
-                    aria-live="polite"
-                  >
-                    {loading
-                      ? "Loading more opportunities…"
-                      : "Scroll to load more opportunities"}
-                  </div>
-                )}
-              </>
-            )}
-          </section>
+          <AuthenticatedJobResultsPanel
+            jobs={visibleJobs}
+            feed={feed}
+            loading={loading}
+            error={error}
+            hasFilters={hasFilters}
+            mobileDetail={mobileDetail}
+            selectedId={selectedId}
+            loadMoreRef={loadMoreRef}
+            sourceFor={sourceFor}
+            formatDate={formatDate}
+            onRetry={() => setRetryFeed((v) => v + 1)}
+            onSelect={(job) => {
+              setSelectedId(job.id);
+              setForceAppliedPrompt(false);
+              setDismissedPromptForJobId(null);
+              setActivityError(null);
+              setMobileDetail(true);
+            }}
+          />
           <section
             className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail ? "th-jobs-mobile-visible" : ""}`}
             aria-label="Selected job details"
