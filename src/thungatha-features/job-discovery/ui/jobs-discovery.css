@@ -121,42 +121,11 @@
 .th-jobs-results-head .th-jobs-label {
   margin-bottom: 5px;
 }
-.th-jobs-state {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  padding: 28px 8px;
-  color: var(--th-fg-muted);
-  font-size: 12px;
-}
-.th-jobs-state strong {
-  color: var(--th-fg);
-  font-size: 13px;
-  font-weight: 600;
-}
-.th-jobs-state p {
-  margin: 0 0 4px;
-  line-height: 1.6;
-}
-.th-jobs-state-symbol {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--th-tag-bg);
-  color: var(--th-accent-text);
-  font-size: 18px;
-}
-.th-jobs-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--th-line);
-  border-top-color: var(--th-accent);
-  border-radius: 50%;
-  animation: th-jobs-spin 0.8s linear infinite;
-}
+
+
+
+
+
 .th-jobs-skeleton {
   display: grid;
   width: 100%;
@@ -2753,16 +2722,7 @@
   }
 }
 
-.th-jobs-load-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 48px;
-  margin: 8px 0 18px;
-  color: var(--th-fg-muted);
-  font-size: 11px;
-  text-align: center;
-}
+
 @media (max-width: 700px) {
   .th-jobs-load-more {
     min-height: 56px;
