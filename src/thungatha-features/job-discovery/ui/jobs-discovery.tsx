@@ -207,6 +207,11 @@ export default function JobsDiscovery({
     return () => window.clearTimeout(timeoutId);
   }, [undoAction]);
 
+  const selectedDetail =
+    detail?.id === selectedId
+      ? detail
+      : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
+
   const { openApplicationLink, confirmApplied } = useJobApplicationActions(
     selectedDetail,
     stateBusy,
@@ -235,10 +240,6 @@ export default function JobsDiscovery({
 
   const changeDraft = (key: keyof Filters, value: string) =>
     setDraft((current) => ({ ...current, [key]: value }));
-  const selectedDetail =
-    detail?.id === selectedId
-      ? detail
-      : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
   const selectedSource = sourceFor(selectedDetail);
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
