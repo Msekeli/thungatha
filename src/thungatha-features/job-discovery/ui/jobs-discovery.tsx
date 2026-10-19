@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./jobs-discovery.css";
 import { JobList } from "./shared/job-list";
+import { JobDetailTabs } from "./shared/job-detail-tabs";
 import { Button } from "@/components/ui/button";
 import Dialog from "@mui/material/Dialog";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -1059,51 +1060,33 @@ export default function JobsDiscovery({
                   </span>
                 </div>
                 <section className="th-jobs-description-panel th-jobs-redesign-description">
-                  <div
+                  <JobDetailTabs
                     className="th-jobs-description-tabs"
-                    role="tablist"
-                    aria-label="Job information"
-                  >
-                    <button type="button" role="tab" aria-selected="true">
-                      Job description
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-requirements")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      Requirements
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-benefits")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      Benefits
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      onClick={() =>
-                        document
-                          .getElementById("th-job-about")
-                          ?.scrollIntoView({ block: "nearest" })
-                      }
-                    >
-                      About the company
-                    </button>
-                  </div>
+                    tabs={[
+                      { label: "Job description", selected: true },
+                      {
+                        label: "Requirements",
+                        onSelect: () =>
+                          document
+                            .getElementById("th-job-requirements")
+                            ?.scrollIntoView({ block: "nearest" }),
+                      },
+                      {
+                        label: "Benefits",
+                        onSelect: () =>
+                          document
+                            .getElementById("th-job-benefits")
+                            ?.scrollIntoView({ block: "nearest" }),
+                      },
+                      {
+                        label: "About the company",
+                        onSelect: () =>
+                          document
+                            .getElementById("th-job-about")
+                            ?.scrollIntoView({ block: "nearest" }),
+                      },
+                    ]}
+                  />
                   <div className="th-jobs-description-body">
                     {selectedDetail.description?.trim() ||
                       "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
