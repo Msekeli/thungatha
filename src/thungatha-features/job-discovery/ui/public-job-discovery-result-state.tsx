@@ -8,10 +8,12 @@ type Props = {
   loading: boolean;
   resultCount: number;
   onRetry?: () => void;
+  showStatus?: boolean;
+  showLoading?: boolean;
 };
 
-export function PublicJobDiscoveryResultState({ error, loading, resultCount, onRetry }: Props) {
-  if (error) {
+export function PublicJobDiscoveryResultState({ error, loading, resultCount, onRetry, showStatus, showLoading }: Props) {
+  if (showStatus && error) {
     return (
       <div className="th-discovery-empty">
         <p>{error}</p>
@@ -19,7 +21,7 @@ export function PublicJobDiscoveryResultState({ error, loading, resultCount, onR
       </div>
     );
   }
-  if (!loading && resultCount === 0) {
+  if (showStatus && !loading && resultCount === 0) {
     return (
       <div className="th-discovery-empty">
         <BriefcaseBusiness size={25} />
@@ -28,7 +30,7 @@ export function PublicJobDiscoveryResultState({ error, loading, resultCount, onR
       </div>
     );
   }
-  if (loading) {
+  if (showLoading && loading) {
     return <div className="th-loading-rows"><span /><span /><span /><span /></div>;
   }
   return null;
