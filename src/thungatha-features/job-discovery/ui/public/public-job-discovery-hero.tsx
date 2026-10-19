@@ -29,26 +29,34 @@ export function PublicJobDiscoveryHero(props: Props) {
   const suggestions = jobs.flatMap((job) => [job.title, job.employer_name ?? ""]);
   return <JobDiscoveryHeroShell title={<>Find your next <Box component="span" sx={{ color: "primary.main" }}>opportunity</Box></>}
     description="Explore thousands of jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track your applications.">
-    <Stack direction={{ xs: "column", md: "row" }} spacing={1.5}
-      sx={{ width: "min(100%, 1010px)", alignItems: "stretch" }}>
+    <Stack direction={{ xs: "column", md: "row" }} spacing={1}
+      sx={{ width: "min(100%, 1010px)", alignItems: "stretch", mx: "auto" }}>
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <JobSearchBar value={query} onChange={onQueryChange} onSubmit={() =>
           document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" })}
           placeholder="Job title, skills or company..." suggestions={suggestions} />
       </Box>
-      <FormControl size="small" sx={{ minWidth: { xs: "100%", md: 290 }, flex: { md: "0 0 290px" } }}>
-        <Select value={location} onChange={(event) => onLocationChange(event.target.value)}
-          inputProps={{ "aria-label": "Search location" }}
-          sx={{ height: 44, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15,
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" } }}>
-          <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
-          <MenuItem value="Cape Town">Cape Town</MenuItem><MenuItem value="Johannesburg">Johannesburg</MenuItem>
-          <MenuItem value="Durban">Durban</MenuItem><MenuItem value="Remote">Remote</MenuItem>
-          <MenuItem value="">Anywhere</MenuItem>
-        </Select>
-      </FormControl>
-      <Button variant="contained" onClick={onOpenFilters} startIcon={<SlidersHorizontal size={18} />}
-        sx={{ minWidth: 116, height: 44, borderRadius: "12px", fontWeight: 700, boxShadow: "none" }}>Filters</Button>
+      <Stack direction="row" spacing={1} sx={{ minWidth: 0, flex: { md: "0 0 auto" } }}>
+        <FormControl size="small" sx={{ flex: 1, minWidth: 0, width: { md: 290 } }}>
+          <Select value={location} onChange={(event) => onLocationChange(event.target.value)}
+            inputProps={{ "aria-label": "Search location" }}
+            sx={{ height: 44, borderRadius: "12px", backgroundColor: "background.paper", fontSize: 15,
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" } }}>
+            <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
+            <MenuItem value="Cape Town">Cape Town</MenuItem><MenuItem value="Johannesburg">Johannesburg</MenuItem>
+            <MenuItem value="Durban">Durban</MenuItem><MenuItem value="Remote">Remote</MenuItem>
+            <MenuItem value="">Anywhere</MenuItem>
+          </Select>
+        </FormControl>
+        <Button variant="contained" aria-label="Open filters" onClick={onOpenFilters}
+          startIcon={<SlidersHorizontal size={18} />}
+          sx={{ minWidth: { xs: 44, md: 116 }, width: { xs: 44, md: "auto" }, px: { xs: 0, md: 2 },
+            height: 44, borderRadius: "12px", fontWeight: 700, boxShadow: "none",
+            "& .MuiButton-startIcon": { mx: { xs: 0, md: -0.5 } },
+            "& .th-filter-label": { display: { xs: "none", md: "inline" } }}>
+          <Box component="span" className="th-filter-label">Filters</Box>
+        </Button>
+      </Stack>
     </Stack>
     <Stack direction="row" spacing={1} sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
       {jobTypes.map((item) => <Chip key={item.value} clickable
