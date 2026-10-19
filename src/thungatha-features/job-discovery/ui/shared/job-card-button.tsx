@@ -29,9 +29,9 @@ export function JobCardButton({
         minWidth: 0,
         alignItems: "center",
         justifyContent: "flex-start",
-        gap: 1.1,
-        p: 1.25,
-        pr: 5.5,
+        gap: 0.9,
+        p: 0.85,
+        pr: 4.5,
         border: selected ? 1.5 : 1,
         borderColor: selected ? "primary.main" : "divider",
         borderRadius: 2,
@@ -50,8 +50,8 @@ export function JobCardButton({
       <Avatar
         variant="rounded"
         sx={{
-          width: 38,
-          height: 38,
+          width: 34,
+          height: 34,
           bgcolor: "primary.main",
           color: "primary.contrastText",
           fontWeight: 700,
@@ -61,10 +61,10 @@ export function JobCardButton({
           .slice(0, 1)
           .toUpperCase()}
       </Avatar>
-      <Stack spacing={0.6} sx={{ minWidth: 0, flex: 1 }}>
+      <Stack spacing={0.35} sx={{ minWidth: 0, flex: 1 }}>
         <Typography
           variant="subtitle2"
-          sx={{ fontWeight: 700, lineHeight: 1.35, overflowWrap: "anywhere" }}
+          sx={{ fontWeight: 700, lineHeight: 1.2, overflowWrap: "anywhere" }}
         >
           {job.title}
         </Typography>
