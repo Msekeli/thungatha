@@ -27,20 +27,15 @@
     flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   }
   .th-discovery-job-list> .MuiStack-root { gap:6px; }
-  .th-discovery-job-list button[aria-pressed] { padding:10px 42px 10px 10px!important; align-items:center!important; }
-      .th-discovery-job-list .th-job-card-actions button,
+  .th-discovery-job-list .th-job-card-actions button,
   .th-discovery-job-list .th-job-card-actions a {
     display:grid; place-items:center; width:28px; height:28px;
     min-width:28px; padding:5px; border-radius:8px;
-    color:var(--th-fg-muted); background:transparent;
+    color:var(--th-fg-muted); background:var(--th-surface, transparent);
   }
   .th-discovery-job-list .th-job-card-actions button:hover,
   .th-discovery-job-list .th-job-card-actions a:hover {
     color:var(--th-accent-text); background:var(--th-accent-bg);
-  }
-  .th-discovery-job-list button[aria-pressed="true"] {
-    border-color:var(--th-accent)!important;
-    background:var(--th-selected,var(--th-accent-bg))!important;
   }
   .th-discovery-detail {
     display:flex; flex-direction:column; height:100%; min-height:0;
