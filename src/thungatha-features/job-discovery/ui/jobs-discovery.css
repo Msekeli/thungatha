@@ -285,14 +285,6 @@
   letter-spacing: 0.12em;
   color: var(--th-accent-text);
 }
-.th-jobs-back {
-  display: none;
-  border: 0;
-  background: transparent;
-  color: var(--th-fg-muted);
-  font: inherit;
-  cursor: pointer;
-}
 .th-jobs-detail-content h3 {
   margin: 0 0 7px;
   font-size: 22px;
@@ -431,9 +423,6 @@
   .th-jobs-detail-panel:has(.th-jobs-empty-detail) {
     display: none;
   }
-  .th-jobs-back {
-    display: inline-flex;
-  }
   .th-jobs-auth-notice {
     align-items: flex-start;
     flex-direction: column;
@@ -452,16 +441,6 @@
 .th-jobs-open-label {
   color: var(--th-accent-text);
   white-space: nowrap;
-}
-.th-jobs-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--th-line);
-  color: var(--th-fg-muted);
-  font-size: 11px;
 }
 .th-jobs-detail-head {
   display: flex;
@@ -914,36 +893,6 @@
   }
 }
 
-.th-jobs-category-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0 0 2px;
-}
-.th-jobs-category-tab {
-  min-height: 38px;
-  padding: 8px 13px;
-  border: 1px solid var(--th-line);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--th-fg-muted);
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-.th-jobs-category-tab:hover:not(:disabled) {
-  border-color: var(--th-accent);
-  color: var(--th-fg);
-}
-.th-jobs-category-tab[data-active="true"] {
-  border-color: var(--th-accent);
-  background: var(--th-accent-bg);
-  color: var(--th-accent-text);
-}
-.th-jobs-category-tab:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
 .th-jobs-detail-actions {
   align-items: center;
 }
@@ -968,13 +917,6 @@
     grid-column: 1 / -1;
     max-height: 32dvh;
   }
-}
-.th-jobs-category-tabs {
-  margin-top: 0;
-  margin-bottom: 2px;
-}
-.th-jobs-category-tab {
-  flex: 0 0 auto;
 }
 
 .th-jobs-match-placeholder {
@@ -1076,14 +1018,6 @@
   margin-top: 4px;
   font-size: 14px;
 }
-.th-jobs-feed-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
 .th-workspace-content
   .th-jobs-search-panel
   .th-jobs-field:first-of-type
@@ -1165,9 +1099,6 @@
     flex-direction: column;
     overflow: visible;
   }
-  .th-jobs-feed-column {
-    overflow: visible;
-  }
   .th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(2),
   .th-workspace-content .th-jobs-results-panel {
     padding: 14px 0 0;
@@ -1229,13 +1160,6 @@
   display: grid;
   grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
   gap: 22px;
-  overflow: hidden;
-}
-.th-workspace-content .th-jobs-feed-column {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
   overflow: hidden;
 }
 .th-workspace-content
@@ -1304,17 +1228,6 @@
   padding: 14px;
   border-color: var(--th-accent);
   background: var(--th-selected, var(--th-accent-bg));
-}
-.th-workspace-content .th-jobs-pagination {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 0 2px;
-  background: var(--th-page);
 }
 .th-workspace-content .th-jobs-detail-panel {
   grid-column: auto;
@@ -1395,10 +1308,6 @@
     overflow: visible;
     gap: 12px;
   }
-  .th-workspace-content .th-jobs-feed-column {
-    display: contents;
-    overflow: visible;
-  }
   .th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(2),
   .th-workspace-content .th-jobs-search-panel .th-jobs-field:nth-of-type(3),
   .th-workspace-content .th-jobs-results-panel {
@@ -1424,9 +1333,6 @@
   }
   .th-workspace-content .th-jobs-desktop-back {
     display: none;
-  }
-  .th-workspace-content .th-jobs-pagination {
-    position: static;
   }
 }
 
@@ -1855,9 +1761,6 @@
 .th-jobs-page .th-jobs-detail-panel {
   overflow-y: auto;
   scrollbar-color: var(--th-line) transparent;
-}
-.th-jobs-page .th-jobs-feed-column {
-  min-height: 0;
 }
 
 /* Reusable accessible modal. */
@@ -3017,10 +2920,6 @@
     bottom: calc(72px + env(safe-area-inset-bottom));
     left: 8px;
     max-width: none;
-  }
-  .th-jobs-pagination {
-    flex-wrap: wrap;
-    gap: 8px;
   }
 }
 @media (min-width: 701px) {
