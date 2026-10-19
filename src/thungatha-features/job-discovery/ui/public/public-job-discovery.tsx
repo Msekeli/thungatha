@@ -10,12 +10,12 @@ import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
 import { PublicJobDiscoverySidebar } from "./public-job-discovery-sidebar";
 import { PublicJobDiscoveryHero } from "./public-job-discovery-hero";
-import { PublicJobDiscoveryResultsToolbar } from "./public-job-discovery-results-toolbar";
-import { PublicJobDiscoveryJobList } from "./public-job-discovery-job-list";
-import { PublicJobDiscoveryResultState } from "./public-job-discovery-result-state";
+import { PublicJobDiscoveryResults } from "./public-job-discovery-results";
 import { usePublicDismissedJobs } from "./use-public-dismissed-jobs";
 import { usePublicJobFeed } from "./use-public-job-feed";
 import { usePublicJobDetail } from "./use-public-job-detail";
+import { usePublicJobDiscoveryFilters } from "./use-public-job-discovery-filters";
+import { filterPublicJobDiscoveries } from "./filter-public-job-discoveries";
 
 import type {
   PublicJob as Job,
@@ -44,15 +44,28 @@ export default function PublicJobDiscovery({
 }: {
   configured: boolean;
 }) {
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("Cape Town + 50 km");
+  const filters = usePublicJobDiscoveryFilters();
+  const {
+    query,
+    setQuery,
+    location,
+    setLocation,
+    typesSelected,
+    setTypesSelected,
+    quickType,
+    setQuickType,
+    modesSelected,
+    setModesSelected,
+    sort,
+    setSort,
+    salary,
+    setSalary,
+    experience,
+    setExperience,
+    hasActiveFilters,
+    clearFilters,
+  } = filters;
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [typesSelected, setTypesSelected] = useState<string[]>([]);
-  const [quickType, setQuickType] = useState("all");
-  const [modesSelected, setModesSelected] = useState<string[]>([]);
-  const [sort, setSort] = useState("relevant");
-  const [salary, setSalary] = useState("any");
-  const [experience, setExperience] = useState("any");
   const [promoVisible, setPromoVisible] = useState(false);
   const [retry, setRetry] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -78,35 +91,17 @@ export default function PublicJobDiscovery({
     setDismissedJobs((current) => current.filter((item) => item.id !== jobId));
     setSelectedId((current) => (current === jobId ? null : current));
   }
-  const filteredJobs = useMemo(() => {
-    let list = jobs.filter((j) => {
-      const t = (j.employment_type || "").toLowerCase().replace(/[ -]+/g, "_");
-      const m = (j.work_mode || "").toLowerCase();
-      const salaryMatch =
-        salary === "any" ||
-        (salary === "disclosed"
-          ? j.salary_min != null || j.salary_max != null
-          : salary === "above50"
-            ? (j.salary_min ?? j.salary_max ?? 0) >= 500000
-            : true);
-      return (
-        (typesSelected.length === 0 || typesSelected.includes(t)) &&
-        (quickType === "all" ||
-          t === quickType ||
-          ((quickType === "learnership" || quickType === "graduate") &&
-            t.includes(quickType))) &&
-        (modesSelected.length === 0 || modesSelected.includes(m)) &&
-        salaryMatch
-      );
-    });
-    if (sort === "newest")
-      list = [...list].sort(
-        (a, b) =>
-          new Date(sourceFor(b)?.published_at || b.updated_at || 0).getTime() -
-          new Date(sourceFor(a)?.published_at || a.updated_at || 0).getTime(),
-      );
-    return list;
-  }, [jobs, typesSelected, quickType, modesSelected, salary, sort]);
+  const filteredJobs = useMemo(
+    () =>
+      filterPublicJobDiscoveries(jobs, {
+        typesSelected,
+        quickType,
+        modesSelected,
+        salary,
+        sort,
+      }),
+    [jobs, typesSelected, quickType, modesSelected, salary, sort],
+  );
   const selected = useMemo(() => {
     const source = showDismissed ? dismissedJobs : filteredJobs;
     const selectedJob = selectedId
@@ -143,24 +138,6 @@ export default function PublicJobDiscovery({
     : filteredJobs.filter(
         (job) => !dismissedJobs.some((item) => item.id === job.id),
       );
-  const hasActiveFilters = Boolean(
-    query.trim() ||
-    location !== "Cape Town + 50 km" ||
-    typesSelected.length ||
-    quickType !== "all" ||
-    modesSelected.length ||
-    salary !== "any" ||
-    experience !== "any",
-  );
-  function clearFilters() {
-    setQuery("");
-    setTypesSelected([]);
-    setQuickType("all");
-    setModesSelected([]);
-    setSalary("any");
-    setExperience("any");
-    setLocation("Cape Town + 50 km");
-  }
   const filterPanel = (
     <PublicJobFiltersPanel
       query={query}
@@ -224,67 +201,39 @@ export default function PublicJobDiscovery({
         }}
       >
         <PublicJobDiscoverySidebar configured={configured} />
-        <Box
-          component="section"
-          className="th-discovery-results"
-          id="jobs"
-          aria-label="Job results"
-          sx={{ minWidth: 0, boxSizing: "border-box" }}
-        >
-          <PublicJobDiscoveryResultsToolbar
-            loading={loading && !showDismissed}
-            resultCount={visibleJobs.length}
-            total={showDismissed ? dismissedJobs.length : total}
-            hasActiveFilters={hasActiveFilters}
-            dismissedCount={dismissedJobs.length}
-            showingDismissed={showDismissed}
-            onToggleDismissed={() => {
-              setShowDismissed((value) => !value);
-              setSelectedId(null);
-            }}
-            onClearFilters={clearFilters}
-            sort={sort}
-            onSortChange={setSort}
-            query={query}
-            onQueryChange={setQuery}
-            jobs={jobs}
-            onOpenFilters={() => setMobileFiltersOpen(true)}
-          />
-          <PublicJobDiscoveryResultState
-            error={showDismissed ? null : error}
-            loading={loading && !showDismissed}
-            resultCount={visibleJobs.length}
-            onRetry={() => setRetry((value) => value + 1)}
-            showStatus
-          />
-          <PublicJobDiscoveryJobList
-            jobs={visibleJobs.map((job) => ({
-              job,
-              postedLabel: dateLabel(sourceFor(job)?.published_at),
-            }))}
-            selectedId={selectedId}
-            configured={configured}
-            dismissed={showDismissed}
-            onDismiss={dismissJob}
-            onRestore={restoreJob}
-            onSelect={(jobId) => {
-              setSelectedId(jobId);
-              setMobileDetailOpen(true);
-            }}
-          />
-          <PublicJobDiscoveryResultState
-            loading={loading && !showDismissed}
-            resultCount={visibleJobs.length}
-            showLoading
-          />
-          {promoVisible && (
-            <PublicJobPromo
-              configured={configured}
-              variant="inline"
-              onDismiss={dismissPromo}
-            />
-          )}
-        </Box>
+        <PublicJobDiscoveryResults
+          jobs={jobs}
+          visibleJobs={visibleJobs}
+          configured={configured}
+          loading={loading}
+          error={error}
+          total={total}
+          dismissedCount={dismissedJobs.length}
+          showingDismissed={showDismissed}
+          selectedId={selectedId}
+          hasActiveFilters={hasActiveFilters}
+          sort={sort}
+          query={query}
+          promoVisible={promoVisible}
+          dateLabel={dateLabel}
+          sourceFor={sourceFor}
+          onToggleDismissed={() => {
+            setShowDismissed((value) => !value);
+            setSelectedId(null);
+          }}
+          onClearFilters={clearFilters}
+          onSortChange={setSort}
+          onQueryChange={setQuery}
+          onOpenFilters={() => setMobileFiltersOpen(true)}
+          onRetry={() => setRetry((value) => value + 1)}
+          onDismiss={dismissJob}
+          onRestore={restoreJob}
+          onSelect={(jobId) => {
+            setSelectedId(jobId);
+            setMobileDetailOpen(true);
+          }}
+          onPromoDismiss={dismissPromo}
+        />
         <PublicJobDetailPanel
           job={selected}
           configured={configured}

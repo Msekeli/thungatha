@@ -2,12 +2,15 @@ import { SearchX } from "lucide-react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import type { ReactNode } from "react";
 
 type Props = {
   title: string;
   message: string;
   actionLabel?: string;
   onAction?: () => void;
+  presentation?: "card" | "minimal";
+  icon?: ReactNode;
 };
 
 export function JobEmptyState({
@@ -15,6 +18,8 @@ export function JobEmptyState({
   message,
   actionLabel,
   onAction,
+  presentation = "card",
+  icon,
 }: Props) {
   return (
     <Stack
@@ -22,13 +27,12 @@ export function JobEmptyState({
       sx={{
         alignItems: "center",
         textAlign: "center",
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 3,
-        p: 4,
+        ...(presentation === "card"
+          ? { border: 1, borderColor: "divider", borderRadius: 3, p: 4 }
+          : { py: 5, px: 2 }),
       }}
     >
-      <SearchX size={28} aria-hidden="true" />
+      {icon ?? <SearchX size={28} aria-hidden="true" />}
       <Typography variant="h6" component="h3">
         {title}
       </Typography>

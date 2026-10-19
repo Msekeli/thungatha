@@ -22,3 +22,13 @@ export type PublicJob = {
   job_sources: PublicJobSource[] | PublicJobSource | null;
   state: "saved" | "dismissed" | null;
 };
+
+export type PublicJobDetailPanelProps = {
+  job: PublicJob | null;
+  configured: boolean;
+  mobileOpen: boolean;
+  dismissed?: boolean;
+  onDismiss?: () => void;
+  onRestore?: () => void;
+  onBack: () => void;
+};
