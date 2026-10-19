@@ -1,7 +1,10 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { JobDetailActions } from "./job-detail-actions";
 import { JobDetailPresentation, JobDetailEmptyState } from "../shared/job-detail-presentation";
 
@@ -33,33 +36,35 @@ export function AuthenticatedJobDetailPanel({
   onBack, onViewMatch, onApply, onSave, onDismiss, onRetry,
 }: Props) {
   return (
-    <section className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail ? "th-jobs-mobile-visible" : ""}`}
+    <Box component="section" className={`th-jobs-detail-panel th-jobs-redesign-detail ${mobileDetail ? "th-jobs-mobile-visible" : ""}`}
       aria-label="Selected job details" aria-busy={detailLoading}>
       {!job ? <JobDetailEmptyState /> : (
         <JobDetailPresentation job={job} postedAt={source?.published_at || null} formatDate={formatDate}
-          beforeContent={<Button variant="ghost" size="sm" type="button" className="th-jobs-mobile-back" onClick={onBack}>
+          beforeContent={<Button variant="text" size="small" className="th-jobs-mobile-back" onClick={onBack}>
             <ArrowLeft size={17} aria-hidden="true" /> Back to results
           </Button>}
-          headingAction={<div className="th-jobs-match-scorebox">
-            <span>Match</span><strong>—</strong>
-            <Button variant="ghost" size="sm" onClick={onViewMatch}>View breakdown</Button>
-          </div>}
-          actions={<>
+          headingAction={<Stack className="th-jobs-match-scorebox" spacing={0.5} alignItems="flex-start">
+            <Typography variant="caption">Match</Typography>
+            <Typography component="strong" fontWeight={700}>—</Typography>
+            <Button variant="text" size="small" onClick={onViewMatch}>View breakdown</Button>
+          </Stack>}
+          actions={<Stack spacing={1}>
             <JobDetailActions job={job} applicationDestination={applicationDestination}
               applicationUrl={applicationUrl} jobSourceUrl={jobSourceUrl} busy={busy}
               detailLoading={detailLoading} onApply={onApply} onSave={onSave} onDismiss={onDismiss} />
-            {activityError && <p className="th-jobs-state-error" role="status">{activityError}</p>}
-            {detailError && <p className="th-jobs-state-error" role="status">
-              {detailError} <Button variant="secondary" size="sm" onClick={onRetry}>Retry</Button>
-            </p>}
-            <div className="th-jobs-source-status">
-              <span data-available={Boolean(applicationUrl)}>
+            {activityError && <Typography color="error" variant="body2" role="status">{activityError}</Typography>}
+            {detailError && <Stack direction="row" alignItems="center" spacing={1} role="status">
+              <Typography color="error" variant="body2">{detailError}</Typography>
+              <Button variant="outlined" size="small" onClick={onRetry}>Retry</Button>
+            </Stack>}
+            <Box className="th-jobs-source-status">
+              <Typography component="span" variant="caption" data-available={Boolean(applicationUrl)}>
                 {applicationUrl ? "✓ Application destination available" : "! Employer application link not verified"}
-              </span>
-            </div>
-          </>}
+              </Typography>
+            </Box>
+          </Stack>}
         />
       )}
-    </section>
+    </Box>
   );
 }
