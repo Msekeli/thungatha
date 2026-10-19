@@ -6,7 +6,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
  * (.th-btn*), so Clerk's buttons use the exact same classes via
  * src/theme/clerk-appearance.ts. Do not hand-write button classes elsewhere.
  */
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "warning";
 export type ButtonSize = "sm" | "md" | "lg";
 
 type Shared = {
