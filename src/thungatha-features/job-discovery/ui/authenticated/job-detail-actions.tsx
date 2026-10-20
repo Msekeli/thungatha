@@ -19,7 +19,7 @@ type Props = {
   jobSourceUrl: string | null;
   busy: boolean;
   detailLoading: boolean;
-  onApply: () => void;
+  onApply: (anchorEl: HTMLElement) => void;
   onSave: () => void;
   onDismiss: () => void;
 };
@@ -52,7 +52,7 @@ export function JobDetailActions({
         variant="contained"
         disabled={!applicationDestination || disabled}
         title={applyTitle}
-        onClick={onApply}
+        onClick={(event) => onApply(event.currentTarget)}
         startIcon={<ExternalLink size={14} />}
       >
         {applicationUrl ? "Apply on company site" : "Open job listing"}
