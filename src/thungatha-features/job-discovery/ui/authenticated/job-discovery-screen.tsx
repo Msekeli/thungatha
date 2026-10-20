@@ -165,6 +165,8 @@ export function JobDiscoveryScreen({
           setFiltersOpen={s.setFiltersOpen}
           profileSetupPrompt={s.profileSetupPrompt}
           setProfileSetupPrompt={s.setProfileSetupPrompt}
+          profileSetupAnchorEl={s.profileSetupAnchorEl}
+          setProfileSetupAnchorEl={s.setProfileSetupAnchorEl}
           routerPushProfile={routerPushProfile}
           matchOpen={s.matchOpen}
           setMatchOpen={s.setMatchOpen}
