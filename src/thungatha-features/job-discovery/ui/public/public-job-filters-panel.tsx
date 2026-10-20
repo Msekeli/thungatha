@@ -6,8 +6,6 @@ import { JobFilterFields } from "../shared/job-filter-fields";
 export function PublicJobFiltersPanel({
   modesSelected,
   setModesSelected,
-  salary,
-  setSalary,
   experience,
   setExperience,
   employmentType,
@@ -19,8 +17,6 @@ export function PublicJobFiltersPanel({
 }: {
   modesSelected: string[];
   setModesSelected: (value: string[]) => void;
-  salary: string;
-  setSalary: (value: string) => void;
   experience: string;
   setExperience: (value: string) => void;
   employmentType: string;
@@ -39,8 +35,6 @@ export function PublicJobFiltersPanel({
         onEmploymentTypeChange={setEmploymentType}
         publishedWithin={publishedWithin}
         onPublishedWithinChange={setPublishedWithin}
-        salary={salary}
-        onSalaryChange={setSalary}
         experience={experience}
         onExperienceChange={setExperience}
       />
