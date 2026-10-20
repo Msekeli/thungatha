@@ -45,6 +45,7 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     string | null
   >(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(null);
   const [matchOpen, setMatchOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("newest");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -100,6 +101,8 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     setDismissedPromptForJobId,
     filtersOpen,
     setFiltersOpen,
+    filterAnchorEl,
+    setFilterAnchorEl,
     matchOpen,
     setMatchOpen,
     sortOrder,
