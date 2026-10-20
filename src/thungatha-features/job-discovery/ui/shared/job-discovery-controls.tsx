@@ -88,7 +88,7 @@ export function JobTypeChips({
       {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
         const count = counts[item.key];
-        const label = count != null ? `${item.label} · ${count}` : item.label;
+        const label = showAllCount && item.key === "all" && count != null ? `${item.label} · ${count}` : item.label;
         return (
           <Chip
             key={item.key}
