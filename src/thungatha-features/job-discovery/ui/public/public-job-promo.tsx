@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { FileUser, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PublicAuthPrompt } from "./public-auth-prompt";
 
 type Props = {
   configured: boolean;
@@ -20,25 +19,20 @@ function PromoActions({
 }) {
   return (
     <div className={wide ? "th-wide-promo-actions" : "th-promo-actions"}>
-      {configured ? (
-        <>
-          <SignUpButton mode="modal">
-            <Button variant="primary" size="sm">
-              Create free account
-            </Button>
-          </SignUpButton>
-          <SignInButton mode="modal">
-            <Button variant="secondary" size="sm">
-              Sign in
-            </Button>
-          </SignInButton>
-        </>
-      ) : (
-        <>
-          <Link href="/sign-up">Create free account</Link>
-          <Link href="/sign-in">Sign in</Link>
-        </>
-      )}
+      <PublicAuthPrompt
+        configured={configured}
+        title="Get more from Thungatha"
+        description="Create a free account or sign in to tailor your CV, save jobs, track applications and access AI-powered tools."
+      >
+        <Button variant="primary" size="sm">Create free account</Button>
+      </PublicAuthPrompt>
+      <PublicAuthPrompt
+        configured={configured}
+        title="Welcome back"
+        description="Sign in to continue managing your job search and saved opportunities."
+      >
+        <Button variant="secondary" size="sm">Sign in</Button>
+      </PublicAuthPrompt>
     </div>
   );
 }
