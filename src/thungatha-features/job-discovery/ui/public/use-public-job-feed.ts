@@ -7,6 +7,9 @@ import { requestJobFeed } from "../request-job-feed";
 export function usePublicJobFeed(
   query: string,
   location: string,
+  employmentType: string,
+  publishedWithin: string,
+  workMode: string[],
   retry: number,
   setSelectedId: Dispatch<SetStateAction<string | null>>,
 ) {
@@ -23,11 +26,15 @@ export function usePublicJobFeed(
       const params = new URLSearchParams({
         page: "1",
         pageSize: "30",
-        publishedWithin: "30d",
+        publishedWithin: publishedWithin || "30d",
       });
       if (query.trim()) params.set("query", query.trim());
-      if (location.trim() && location !== "Cape Town + 50 km")
-        params.set("location", location.trim());
+      if (location.trim()) params.set("location", location.trim());
+      if (employmentType && employmentType !== "all")
+        params.set("employmentType", employmentType);
+      // The API currently accepts one work mode; multi-select combinations are
+      // completed by the shared client-side filter on the returned feed.
+      if (workMode.length === 1) params.set("workMode", workMode[0]);
       try {
         const data = await requestJobFeed(params.toString(), controller.signal);
         setJobs(data.jobs);
@@ -37,7 +44,11 @@ export function usePublicJobFeed(
             ? current
             : (data.jobs[0]?.id ?? null),
         );
-        if (!query.trim() && location === "Cape Town + 50 km") {
+        if (
+          !query.trim() && !location.trim() &&
+          (!employmentType || employmentType === "all") &&
+          publishedWithin === "30d" && workMode.length === 0
+        ) {
           try {
             sessionStorage.setItem(
               "thungatha-public-job-feed-v1",
@@ -62,7 +73,7 @@ export function usePublicJobFeed(
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [query, location, retry, setSelectedId]);
+  }, [query, location, employmentType, publishedWithin, workMode, retry, setSelectedId]);
 
   return { jobs, setJobs, total, loading, setLoading, error, setError };
 }
