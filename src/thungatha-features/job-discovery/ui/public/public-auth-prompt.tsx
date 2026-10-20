@@ -25,7 +25,8 @@ export function PublicAuthPrompt({
   title = "Make this job search yours",
   description = "Sign in or create a free account to use this feature and keep your job search organised.",
 }: Props) {
-  const [open, setOpen] = useState(false);\n  const promptId = useId();
+  const [open, setOpen] = useState(false);
+  const promptId = useId();
 
   return (
     <>
