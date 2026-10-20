@@ -72,12 +72,29 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
             </Box>
           </Show>
         )}
-        <Show when="signed-out">
-          {["Tailor Your CV", "Track Applications", "Saved Jobs"].map(
+        {configured ? (
+          <Show when="signed-out">
+            {["Tailor Your CV", "Track Applications", "Saved Jobs"].map(
+              (label) => (
+                <PublicAuthPrompt
+                  key={label}
+                  configured
+                  title={label}
+                  description={`Sign in or create a free account to use ${label.toLowerCase()} and keep your job search organised.`}
+                >
+                  <Button variant="text" size="small">
+                    {label}
+                  </Button>
+                </PublicAuthPrompt>
+              ),
+            )}
+          </Show>
+        ) : (
+          ["Tailor Your CV", "Track Applications", "Saved Jobs"].map(
             (label) => (
               <PublicAuthPrompt
                 key={label}
-                configured={configured}
+                configured={false}
                 title={label}
                 description={`Sign in or create a free account to use ${label.toLowerCase()} and keep your job search organised.`}
               >
@@ -86,8 +103,8 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
                 </Button>
               </PublicAuthPrompt>
             ),
-          )}
-        </Show>
+          )
+        )}
       </Stack>
       <Stack
         direction="row"
