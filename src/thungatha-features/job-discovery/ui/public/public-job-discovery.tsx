@@ -75,7 +75,7 @@ export default function PublicJobDiscovery({
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const { dismissedJobs, setDismissedJobs } = usePublicDismissedJobs();
   const [showDismissed, setShowDismissed] = useState(false);
-  const feed = usePublicJobFeed(query, location, retry, setSelectedId);
+  const feed = usePublicJobFeed(query, location, quickType, publishedWithin, modesSelected, retry, setSelectedId);
   const { jobs, total, loading, error } = feed;
   const { detail } = usePublicJobDetail(selectedId);
 
