@@ -16,17 +16,22 @@ export function JobLocationSelect({
   value,
   onChange,
   compact = false,
+  emptyMeansDefault = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   compact?: boolean;
+  emptyMeansDefault?: boolean;
 }) {
   return (
     <FormControl size="small" sx={{ minWidth: 0, width: compact ? "100%" : { xs: "100%", sm: 220 }, flex: compact ? 1 : "0 0 auto" }}>
       <Select
         displayEmpty
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={value || (emptyMeansDefault ? "Cape Town + 50 km" : value)}
+        onChange={(event) => {
+          const next = event.target.value;
+          onChange(emptyMeansDefault && next === "Cape Town + 50 km" ? "" : next);
+        }}
         inputProps={{ "aria-label": "Search location" }}
         sx={{
           height: 44,
