@@ -76,6 +76,7 @@ export function PublicJobFiltersPanel({
         <Select
           labelId="th-salary-label"
           label="Salary range"
+          MenuProps={{ sx: { zIndex: 1500 } }}
           value={salary}
           onChange={(event) => setSalary(event.target.value)}
         >
@@ -89,6 +90,7 @@ export function PublicJobFiltersPanel({
         <Select
           labelId="th-experience-label"
           label="Experience level"
+          MenuProps={{ sx: { zIndex: 1500 } }}
           value={experience}
           onChange={(event) => setExperience(event.target.value)}
         >
