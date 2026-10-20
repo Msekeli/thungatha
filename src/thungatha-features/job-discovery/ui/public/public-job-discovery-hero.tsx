@@ -93,7 +93,7 @@ export function PublicJobDiscoveryHero(props: Props) {
           sx={{ minWidth: 0, flex: { md: "0 0 auto" } }}
         >
           <Box sx={{ flex: 1, minWidth: 0, width: { md: 290 } }}>
-            <JobLocationSelect value={location} onChange={onLocationChange} />
+            <JobLocationSelect value={location} onChange={onLocationChange} anywhereValue="" />
           </Box>
           <Button
             variant="contained"
