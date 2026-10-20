@@ -40,11 +40,18 @@ npm run dev
 
 Configure the required environment variables in `.env.local` before using authenticated features. If `.env.local` already exists, preserve it and add only missing variables from `.env.example`. Never commit secrets.
 
-### Job ingestion (current implementation)
+### Job ingestion
 
-The current protected ingestion endpoint and provider adapters are legacy implementation details under review. The agreed direction is to remove Adzuna and Jooble from active vacancy ingestion and replace aggregator-fed listings with direct employer-careers and permitted employer-authorized ATS sources. Do not add new aggregator configuration or treat aggregator listings as eligible jobs.
+The job catalogue is populated by a protected server-side runner; visiting the feed does not trigger provider calls. Configure at least one provider (Adzuna or Jooble), `NEXT_PUBLIC_SUPABASE_URL`, and the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Also set `INGESTION_CRON_SECRET` to a long random secret. Do not expose the Supabase secret key to the browser or commit it.
 
-The target pipeline and implementation sequence are documented in [Employer Discovery and Job Ingestion Pipeline](<Project Documentation/EMPLOYER-DISCOVERY-PIPELINE.md>). The replacement is not considered implemented merely because the design is documented. Until migration is complete and verified, inspect the current code and configuration before running ingestion; do not assume the legacy setup matches the target design.
+With the app running locally, trigger one ingestion run from a trusted terminal:
+
+```bash
+curl -X POST http://localhost:3000/api/internal/jobs/ingest \
+  -H "Authorization: Bearer $INGESTION_CRON_SECRET"
+```
+
+The endpoint returns per-provider received/inserted/updated/skipped counts. HTTP 207 indicates that at least one provider reported a failure; inspect the response before treating the run as successful. A missing server key or missing provider configuration returns HTTP 503. For production, schedule this endpoint using a server-side scheduler and store the same secret in its protected configuration.
 
 See [Local Development](#local-development) below for the database and verification commands.
 
@@ -99,7 +106,6 @@ Development follows six planned milestones, from job discovery through profile a
 - **[Architecture](<Project Documentation/ARCHITECTURE.md>):** Application structure, module boundaries, request flows, authentication, and data access.
 - **[Folder Naming and API Route Map](<Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md>):** Naming conventions, current API inventory, and URL-preserving route organisation.
 - **[Public Job Discovery Plan](<Project Documentation/PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md>):** Existing public discovery implementation scope and verification record.
-- **[Employer Discovery and Job Ingestion Pipeline](<Project Documentation/EMPLOYER-DISCOVERY-PIPELINE.md>):** Agreed target for six-month employer discovery, five Azure Functions, temporary processing storage, AI-assisted checks, and human approval.
 - **[Technical Decisions](DECISIONS.md):** Confirmed decisions, provisional choices, and unresolved questions.
 - **[Implementation Plan](IMPLEMENTATION-PLAN.md):** Milestones, checkpoints, acceptance criteria, and progress.
 - **[Agent Instructions](AGENTS.md):** Development rules and guidance for AI coding assistants.
