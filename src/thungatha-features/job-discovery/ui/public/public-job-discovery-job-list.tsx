@@ -1,11 +1,11 @@
 "use client";
 import { Bookmark, EyeOff, RotateCcw } from "lucide-react";
 import Box from "@mui/material/Box";
-import Link from "next/link";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { Show } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
 import type { JobCardData } from "../shared/job-card";
+import { PublicAuthPrompt } from "./public-auth-prompt";
 
 type JobListItem = { job: JobCardData; postedLabel: string };
 type Props = {
@@ -41,29 +41,23 @@ export function PublicJobDiscoveryJobList({
         selectedId={selectedId}
         postedLabel={(job) => postedById.get(job.id) ?? "Date unknown"}
         onSelect={(job) => onSelect(job.id)}
-        saveAction={(job) =>
-          configured ? (
-            <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-              <Button
-                variant="ghost"
-                size="sm"
-                type="button"
-                aria-label={`Sign in to save ${job.title}`}
-                title="Sign in to save this job"
-              >
-                <Bookmark size={16} />
-              </Button>
-            </SignInButton>
-          ) : (
-            <Link
-              href="/sign-in"
-              aria-label={`Sign in to save ${job.title}`}
-              title="Sign in to save this job"
+        saveAction={(job) => (
+          <PublicAuthPrompt
+            configured={configured}
+            title={`Save ${job.title}`}
+            description="Sign in or create a free account to save this opportunity and return to it later."
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              aria-label={`Save ${job.title}`}
+              title="Save this job"
             >
               <Bookmark size={16} />
-            </Link>
-          )
-        }
+            </Button>
+          </PublicAuthPrompt>
+        )}
         secondaryAction={(job) =>
           dismissed ? (
             <Button
@@ -91,30 +85,39 @@ export function PublicJobDiscoveryJobList({
                 </Button>
               </Show>
               <Show when="signed-out">
-                <SignInButton
-                  mode="modal"
-                  fallbackRedirectUrl="/jobs?welcome=1"
+                <PublicAuthPrompt
+                  configured
+                  title="Personalise your job feed"
+                  description="Sign in or create a free account to dismiss jobs you are not interested in."
                 >
                   <Button
                     variant="ghost"
                     size="sm"
                     type="button"
                     aria-label={`Sign in to dismiss ${job.title}`}
-                    title="Sign in to dismiss this job"
+                    title="Dismiss job"
                   >
                     <EyeOff size={15} />
                   </Button>
-                </SignInButton>
+                </PublicAuthPrompt>
               </Show>
             </>
           ) : (
-            <Link
-              href="/sign-in"
-              aria-label={`Sign in to dismiss ${job.title}`}
-              title="Sign in to dismiss this job"
+            <PublicAuthPrompt
+              configured={false}
+              title="Personalise your job feed"
+              description="Create an account or sign in to dismiss jobs you are not interested in."
             >
-              <EyeOff size={15} />
-            </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                aria-label={`Dismiss ${job.title}`}
+                title="Dismiss job"
+              >
+                <EyeOff size={15} />
+              </Button>
+            </PublicAuthPrompt>
           )
         }
       />
