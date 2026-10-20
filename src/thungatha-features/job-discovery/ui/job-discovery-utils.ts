@@ -47,7 +47,7 @@ type ApiError = { error?: string; requestId?: string };
 
 export const EMPTY_FILTERS: Filters = {
   query: "",
-  location: "",
+  location: "Cape Town",
   workMode: "",
   employmentType: "",
   publishedWithin: "30d",
