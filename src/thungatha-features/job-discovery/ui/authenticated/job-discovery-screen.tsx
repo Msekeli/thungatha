@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import { useEffect } from "react";
 import { JobDiscoveryDialogs } from "./job-discovery-dialogs";
 import { AuthenticatedJobWorkspace } from "./job-discovery-workspace";
 import { JobDiscoveryControls } from "./job-discovery-controls";
@@ -21,6 +22,20 @@ export function JobDiscoveryScreen({
   controller: Controller;
   routerPushProfile: () => void;
 }) {
+  const showApplicationPrompt = Boolean(
+    c.selectedDetail &&
+    (s.forceAppliedPrompt ||
+      (Boolean(c.selectedActivity?.application_link_opened_at) &&
+        !c.selectedActivity?.applied_at &&
+        s.dismissedPromptForJobId !== s.selectedId)),
+  );
+
+  useEffect(() => {
+    if (!showApplicationPrompt || s.applicationPromptAnchorEl?.isConnected) return;
+    const anchor = document.querySelector<HTMLElement>("[data-job-application-trigger]");
+    if (anchor) s.setApplicationPromptAnchorEl(anchor);
+  }, [showApplicationPrompt, s.applicationPromptAnchorEl, s.selectedId, s.setApplicationPromptAnchorEl]);
+
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <Box
@@ -99,7 +114,6 @@ export function JobDiscoveryScreen({
             s.setMatchAnchorEl(null);
             s.setMatchOpen(false);
             s.setForceAppliedPrompt(false);
-            s.setDismissedPromptForJobId(null);
             s.setActivityError(null);
             s.setMobileDetail(true);
           }}
@@ -147,13 +161,7 @@ export function JobDiscoveryScreen({
           setMatchOpen={s.setMatchOpen}
           matchAnchorEl={s.matchAnchorEl}
           applicationPromptAnchorEl={s.applicationPromptAnchorEl}
-          showApplicationPrompt={Boolean(
-            c.selectedDetail &&
-            (s.forceAppliedPrompt ||
-              (Boolean(c.selectedActivity?.application_link_opened_at) &&
-                !c.selectedActivity?.applied_at &&
-                s.dismissedPromptForJobId !== s.selectedId)),
-          )}
+          showApplicationPrompt={showApplicationPrompt}
           stateBusy={s.stateBusy}
           jobTitle={c.selectedDetail?.title ?? ""}
           employer={shown(c.selectedDetail?.employer_name)}
