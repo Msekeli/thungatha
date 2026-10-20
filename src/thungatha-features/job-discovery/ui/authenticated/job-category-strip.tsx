@@ -1,6 +1,7 @@
 "use client";
 
-import { Chip, FormControl, MenuItem, Select, Stack } from "@mui/material";
+import { FormControl, MenuItem, Select, Stack } from "@mui/material";
+import { JobTypeChips } from "../shared/job-discovery-controls";
 import { ArrowDownUp } from "lucide-react";
 
 type Category = { key: string; label: string; count: number | null };
@@ -27,22 +28,11 @@ export function JobCategoryStrip({
       aria-label="Opportunity categories"
       sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}
     >
-      {categories.map((item) => {
-        const active =
-          item.key === "all" ? category === "new" : category === item.key;
-        return (
-          <Chip
-            key={item.key}
-            clickable
-            label={
-              item.count !== null ? `${item.label} · ${item.count}` : item.label
-            }
-            color={active ? "primary" : "default"}
-            variant={active ? "filled" : "outlined"}
-            onClick={() => onCategoryChange(item.key, item.label)}
-          />
-        );
-      })}
+      <JobTypeChips
+        activeKey={category === "new" ? "all" : category}
+        counts={Object.fromEntries(categories.map((item) => [item.key, item.count]))}
+        onSelect={(key, label) => onCategoryChange(key, label)}
+      />
       <Stack
         direction="row"
         spacing={0.75}
