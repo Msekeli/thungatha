@@ -6,6 +6,7 @@ type Filters = {
   modesSelected: string[];
   salary: string;
   publishedWithin: string;
+  experience: string;
   sort: string;
 };
 
@@ -25,6 +26,14 @@ export function filterPublicJobDiscoveries(
       : filters.publishedWithin === "14d" ? 14 * 24 * 60 * 60 * 1000
       : 30 * 24 * 60 * 60 * 1000;
     const publishedMatch = ageMs === null || !Number.isFinite(ageMs) || ageMs <= maxAgeMs;
+    const experienceText = `${job.title} ${job.description ?? ""}`.toLowerCase();
+    const experienceMatch = filters.experience === "any" || (
+      filters.experience === "entry"
+        ? /\\b(entry[- ]level|junior|graduate|intern|trainee|learnership)\\b/.test(experienceText)
+        : filters.experience === "mid"
+          ? /\\b(mid[- ]level|intermediate)\\b/.test(experienceText)
+          : /\\b(senior|lead|principal|staff engineer|head of)\\b/.test(experienceText)
+    );
     const salaryMatch =
       filters.salary === "any" ||
       (filters.salary === "disclosed"
@@ -43,7 +52,8 @@ export function filterPublicJobDiscoveries(
       (filters.modesSelected.length === 0 ||
         filters.modesSelected.includes(mode)) &&
       salaryMatch &&
-      publishedMatch
+      publishedMatch &&
+      experienceMatch
     );
   });
   if (filters.sort === "newest")
