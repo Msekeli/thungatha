@@ -5,7 +5,7 @@ import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { JobFilterFields, EMPLOYMENT_TYPE_OPTIONS } from "../shared/job-filter-fields";
+import { JobFilterFields } from "../shared/job-filter-fields";
 
 export type JobFiltersDraft = {
   query: string;
@@ -34,9 +34,6 @@ function canonicalEmploymentType(value: string) {
   return EMPLOYMENT_TYPE_OPTIONS.find((option) => option.value === normalized)?.value ?? normalized;
 }
 
-function employmentTypeLabel(value: string) {
-  return EMPLOYMENT_TYPE_OPTIONS.find((option) => option.value === value)?.label ?? "";
-}
 
 export function JobFiltersDialog({ open, anchorEl, draft, onClose, onChange, onReset, onApply }: Props) {
   return (
@@ -67,7 +64,7 @@ export function JobFiltersDialog({ open, anchorEl, draft, onClose, onChange, onR
             workMode={draft.workMode}
             onWorkModeChange={(value) => onChange("workMode", String(value))}
             employmentType={canonicalEmploymentType(draft.employmentType)}
-            onEmploymentTypeChange={(value) => onChange("employmentType", value === "all" ? "" : employmentTypeLabel(value))}
+            onEmploymentTypeChange={(value) => onChange("employmentType", value === "all" ? "" : value)}
             publishedWithin={draft.publishedWithin}
             onPublishedWithinChange={(value) => onChange("publishedWithin", value)}
           />
