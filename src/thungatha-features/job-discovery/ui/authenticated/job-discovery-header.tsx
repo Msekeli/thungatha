@@ -22,7 +22,7 @@ export function JobDiscoveryHeader({
   draft: Filters;
   categories: Category[];
   category: string;
-  jobs: JobItem[];
+  jobs?: JobItem[];
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -39,7 +39,7 @@ export function JobDiscoveryHeader({
         onQueryChange={onQueryChange}
         location={draft.location}
         onLocationChange={onLocationChange}
-        jobs={jobs}
+        jobs={jobs ?? []}
         selectedType={selectedType}
         total={allCount}
         onTypeChange={onCategoryChange}
