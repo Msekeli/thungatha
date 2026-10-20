@@ -42,10 +42,10 @@ export function PublicJobFiltersPopover({
             if (event.key === "Escape") onClose();
           }}
           sx={{
-            width: "min(560px, calc(100vw - 24px))",
-            maxHeight: "min(80dvh, 680px)",
+            width: "min(340px, calc(100vw - 24px))",
+            maxHeight: "min(68dvh, 480px)",
             overflowY: "auto",
-            p: 2,
+            p: 1.5,
             color: "var(--th-fg)",
             bgcolor: "var(--th-panel)",
             border: "1px solid var(--th-line)",
@@ -59,7 +59,7 @@ export function PublicJobFiltersPopover({
               alignItems: "center",
               justifyContent: "space-between",
               gap: 12,
-              marginBottom: 16,
+              marginBottom: 10,
             }}
           >
             <strong>Filter opportunities</strong>
