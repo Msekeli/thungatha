@@ -25,7 +25,7 @@ export function JobLocationSelect({
   value,
   onChange,
   compact = false,
-  emptyMeansDefault = true,
+  emptyMeansDefault = false,
   anywhereValue = "",
 }: {
   value: string;
