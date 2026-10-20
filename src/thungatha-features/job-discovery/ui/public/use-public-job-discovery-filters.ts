@@ -11,7 +11,6 @@ export function usePublicJobDiscoveryFilters() {
   const [quickType, setQuickType] = useState("all");
   const [modesSelected, setModesSelected] = useState<string[]>([]);
   const [sort, setSort] = useState("relevant");
-  const [salary, setSalary] = useState("any");
   const [experience, setExperience] = useState("any");
   const [publishedWithin, setPublishedWithin] = useState("30d");
 
@@ -21,7 +20,6 @@ export function usePublicJobDiscoveryFilters() {
     typesSelected.length ||
     quickType !== "all" ||
     modesSelected.length ||
-    salary !== "any" ||
     experience !== "any" ||
     publishedWithin !== "30d",
   );
@@ -30,7 +28,6 @@ export function usePublicJobDiscoveryFilters() {
     setTypesSelected([]);
     setQuickType("all");
     setModesSelected([]);
-    setSalary("any");
     setExperience("any");
     setPublishedWithin("30d");
     setLocation("");
@@ -39,7 +36,7 @@ export function usePublicJobDiscoveryFilters() {
   return {
     query, setQuery, location, setLocation, typesSelected, setTypesSelected,
     quickType, setQuickType, modesSelected, setModesSelected, sort, setSort,
-    salary, setSalary, experience, setExperience, publishedWithin,
+    experience, setExperience, publishedWithin,
     setPublishedWithin, hasActiveFilters, clearFilters,
   };
 }
