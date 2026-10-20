@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Bookmark, ChartNoAxesColumn, ClipboardList } from "lucide-react";
-import { SignInButton } from "@clerk/nextjs";
+import { PublicAuthPrompt } from "./public-auth-prompt";
 
 const features = [
   {
@@ -81,20 +81,19 @@ export function PublicJobDiscoverySidebar({
                 <Typography variant="caption" color="text.secondary">
                   {note}
                 </Typography>
-                {configured && (
-                  <SignInButton
-                    mode="modal"
-                    fallbackRedirectUrl="/jobs?welcome=1"
+                <PublicAuthPrompt
+                  configured={configured}
+                  title={title}
+                  description={`Sign in or create a free account to access ${title.toLowerCase()} and keep your job search organised.`}
+                >
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ alignSelf: "flex-start" }}
                   >
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      sx={{ alignSelf: "flex-start" }}
-                    >
-                      {action}
-                    </Button>
-                  </SignInButton>
-                )}
+                    {action}
+                  </Button>
+                </PublicAuthPrompt>
               </Stack>
             </CardContent>
           </Card>
