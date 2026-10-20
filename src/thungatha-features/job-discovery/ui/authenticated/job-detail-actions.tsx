@@ -52,6 +52,7 @@ export function JobDetailActions({
         variant="contained"
         disabled={!applicationDestination || disabled}
         title={applyTitle}
+        data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
         startIcon={<ExternalLink size={14} />}
       >
