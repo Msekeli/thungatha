@@ -27,7 +27,17 @@ const employmentTypes = ["Full-time", "Part-time", "Contract", "Internships", "L
 
 export function JobFiltersDialog({ open, anchorEl, draft, onClose, onChange, onReset, onApply }: Props) {
   return (
-    <Popper open={open && Boolean(anchorEl)} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 1300, maxWidth: "calc(100vw - 24px)" }} modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}>
+    <Popper
+      open={open && Boolean(anchorEl)}
+      anchorEl={anchorEl}
+      placement="bottom-start"
+      sx={{ zIndex: 1500, maxWidth: "calc(100vw - 24px)" }}
+      modifiers={[
+        { name: "offset", options: { offset: [0, 8] } },
+        { name: "flip", enabled: true, options: { padding: 12 } },
+        { name: "preventOverflow", enabled: true, options: { padding: 12, altAxis: true } },
+      ]}
+    >
       <ClickAwayListener onClickAway={(event) => {
         if (anchorEl?.contains(event.target as Node)) return;
         onClose();
@@ -39,16 +49,46 @@ export function JobFiltersDialog({ open, anchorEl, draft, onClose, onChange, onR
           elevation={8}
           onKeyDown={(event) => { if (event.key === "Escape") onClose(); }}
           sx={{
-            width: "min(560px, calc(100vw - 24px))", maxHeight: "min(80dvh, 680px)", overflowY: "auto",
-            p: 2, color: "var(--th-fg)", bgcolor: "var(--th-panel)", border: "1px solid var(--th-line)", borderRadius: "var(--th-radius-panel)",
-            "& header": { display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 },
-            "& form": { display: "grid", gap: 2 },
+            boxSizing: "border-box",
+            width: "min(560px, calc(100vw - 24px))",
+            maxHeight: "min(80dvh, 680px)",
+            overflowY: "auto",
+            p: { xs: 1.5, sm: 2 },
+            color: "var(--th-fg)",
+            bgcolor: "var(--th-panel)",
+            border: "1px solid var(--th-line)",
+            borderRadius: "var(--th-radius-panel)",
+            boxShadow: "0 24px 64px rgba(0,0,0,.22)",
+            "& header": {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1,
+              mb: 2,
+              pb: 1.25,
+              borderBottom: "1px solid var(--th-line)",
+            },
+            "& form": { display: "grid", gap: 1.5 },
             "& form > label": { display: "grid", gap: 0.75, fontSize: 13 },
             "& .th-input": { width: "100%", minWidth: 0, boxSizing: "border-box" },
-            "& fieldset": { display: "flex", flexWrap: "wrap", gap: 1, p: 1.25, border: "1px solid var(--th-line)", borderRadius: 2 },
+            "& fieldset": {
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              p: 1.25,
+              m: 0,
+              border: "1px solid var(--th-line)",
+              borderRadius: 2,
+            },
             "& fieldset label": { display: "flex", alignItems: "center", gap: 0.5 },
             "& legend": { px: 0.5, fontSize: 13 },
-            "& footer": { display: "flex", justifyContent: "space-between", gap: 1, pt: 1, borderTop: "1px solid var(--th-line)" },
+            "& footer": {
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 1,
+              pt: 1.25,
+              borderTop: "1px solid var(--th-line)",
+            },
           }}
         >
           <header>
