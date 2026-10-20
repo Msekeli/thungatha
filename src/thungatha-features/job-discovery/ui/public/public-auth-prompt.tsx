@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import {
   Button,
@@ -25,7 +25,7 @@ export function PublicAuthPrompt({
   title = "Make this job search yours",
   description = "Sign in or create a free account to use this feature and keep your job search organised.",
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);\n  const promptId = useId();
 
   return (
     <>
@@ -35,14 +35,14 @@ export function PublicAuthPrompt({
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        aria-labelledby="public-auth-prompt-title"
-        aria-describedby="public-auth-prompt-description"
+        aria-labelledby={`${promptId}-title`}
+        aria-describedby={`${promptId}-description`}
         fullWidth
         maxWidth="xs"
       >
-        <DialogTitle id="public-auth-prompt-title">{title}</DialogTitle>
+        <DialogTitle id={`${promptId}-title`}>{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="public-auth-prompt-description">
+          <DialogContentText id={`${promptId}-description`}>
             {description}
           </DialogContentText>
         </DialogContent>
