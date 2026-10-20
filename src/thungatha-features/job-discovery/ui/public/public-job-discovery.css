@@ -378,3 +378,27 @@
     }
   }
 }
+
+
+@layer components {
+  .th-public-filter-popover .th-filter-content {
+    gap: 14px;
+  }
+  .th-public-filter-popover .th-filter-group {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--th-line);
+  }
+  .th-public-filter-popover .th-mobile-filter-actions {
+    position: sticky;
+    bottom: -16px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0 4px;
+    background: var(--th-panel);
+  }
+  .th-public-filter-popover .th-mobile-apply-filters {
+    flex: 1;
+  }
+}
