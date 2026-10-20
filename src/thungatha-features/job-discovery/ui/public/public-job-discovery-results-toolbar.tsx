@@ -24,7 +24,7 @@ type Props = {
   query: string;
   onQueryChange: (value: string) => void;
   jobs: JobSuggestion[];
-  onOpenFilters: () => void;
+  onOpenFilters: (anchorEl: HTMLElement) => void;
   dismissedCount?: number;
   showingDismissed?: boolean;
   onToggleDismissed?: () => void;
@@ -120,7 +120,7 @@ export function PublicJobDiscoveryResultsToolbar(props: Props) {
           variant="outlined"
           size="small"
           aria-label="Open filters"
-          onClick={onOpenFilters}
+          onClick={(event) => onOpenFilters(event.currentTarget)}
           sx={{ minWidth: 40, px: 1 }}
         >
           <SlidersHorizontal size={17} />
