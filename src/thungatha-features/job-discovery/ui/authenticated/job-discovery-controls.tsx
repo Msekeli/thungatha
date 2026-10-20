@@ -5,7 +5,7 @@ import type { FormEvent } from "react";
 import { JobDiscoveryHeader } from "./job-discovery-header";
 import { JobUndoNotice } from "./job-undo-notice";
 import { Toast } from "@/components/ui/toast";
-import type { Filters } from "../job-discovery-utils";
+import type { Filters, Job } from "../job-discovery-utils";
 
 type UndoAction = {
   jobId: string;
@@ -21,6 +21,7 @@ type Props = {
   categories: { key: string; label: string; count: number | null }[];
   category: string;
   sortOrder: string;
+  jobs: Job[];
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -48,15 +49,13 @@ export function JobDiscoveryControls(props: Props) {
       )}
       <JobDiscoveryHeader
         draft={props.draft}
-        filtersOpen={props.filtersOpen}
         categories={props.categories}
         category={props.category}
-        sortOrder={props.sortOrder}
+        jobs={props.jobs}
         onQueryChange={props.onQueryChange}
         onLocationChange={props.onLocationChange}
         onSubmit={props.onSubmit}
         onToggleFilters={props.onToggleFilters}
-        onSortChange={props.onSortChange}
         onCategoryChange={props.onCategoryChange}
       />
       {props.undoAction && (
