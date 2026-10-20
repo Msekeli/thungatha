@@ -43,7 +43,10 @@ export function JobDiscoveryScreen({
           onQueryChange={(v) => c.changeDraft("query", v)}
           onLocationChange={(v) => c.changeDraft("location", v)}
           onSubmit={c.submitFilters}
-          onToggleFilters={() => s.setFiltersOpen((v) => !v)}
+          onToggleFilters={(anchorEl) => {
+            s.setFilterAnchorEl(anchorEl);
+            s.setFiltersOpen((v) => !v);
+          }}
           onSortChange={s.setSortOrder}
           onCategoryChange={(key, label) => {
             if (key === "all" || key === "saved" || key === "dismissed") {
@@ -119,6 +122,7 @@ export function JobDiscoveryScreen({
         />
         <JobDiscoveryDialogs
           filtersOpen={s.filtersOpen}
+          filterAnchorEl={s.filterAnchorEl}
           draft={s.draft}
           changeDraft={c.changeDraft}
           clearFilters={c.clearFilters}
