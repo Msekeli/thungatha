@@ -4,9 +4,8 @@ import { useState } from "react";
 
 export function usePublicJobDiscoveryFilters() {
   const [query, setQuery] = useState("");
-  // An empty location is the shared "Cape Town + 50 km" default display,
-  // and intentionally means no location constraint in the feed API.
-  const [location, setLocation] = useState("");
+  // Keep the default visible in the control and applied to the feed query.
+  const [location, setLocation] = useState("Cape Town");
   const [typesSelected, setTypesSelected] = useState<string[]>([]);
   const [quickType, setQuickType] = useState("all");
   const [modesSelected, setModesSelected] = useState<string[]>([]);
@@ -30,7 +29,7 @@ export function usePublicJobDiscoveryFilters() {
     setModesSelected([]);
     setExperience("any");
     setPublishedWithin("30d");
-    setLocation("");
+    setLocation("Cape Town");
   }
 
   return {
