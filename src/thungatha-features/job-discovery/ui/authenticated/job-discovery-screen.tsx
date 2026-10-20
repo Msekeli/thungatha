@@ -38,7 +38,7 @@ export function JobDiscoveryScreen({
           draft={s.draft}
           filtersOpen={s.filtersOpen}
           categories={c.categories}
-          category={s.category}
+          category={s.filters.employmentType || s.category}
           sortOrder={s.sortOrder}
           onQueryChange={(v) => c.changeDraft("query", v)}
           onLocationChange={(v) => c.changeDraft("location", v)}
@@ -49,13 +49,15 @@ export function JobDiscoveryScreen({
           }}
           onSortChange={s.setSortOrder}
           onCategoryChange={(key, label) => {
-            if (key === "all" || key === "saved" || key === "dismissed") {
-              s.setCategory(key === "all" ? "new" : key);
+            if (key === "saved" || key === "dismissed") {
+              s.setCategory(key);
               s.setPage(1);
               return;
             }
-            c.changeDraft("employmentType", label);
-            s.setFilters((current) => ({ ...current, employmentType: label }));
+            s.setCategory("new");
+            const employmentType = key === "all" ? "" : label;
+            c.changeDraft("employmentType", employmentType);
+            s.setFilters((current) => ({ ...current, employmentType }));
             s.setPage(1);
           }}
           undoAction={s.undoAction}
@@ -93,6 +95,9 @@ export function JobDiscoveryScreen({
           }
           onSelect={(job) => {
             s.setSelectedId(job.id);
+            s.setApplicationPromptAnchorEl(null);
+            s.setMatchAnchorEl(null);
+            s.setMatchOpen(false);
             s.setForceAppliedPrompt(false);
             s.setDismissedPromptForJobId(null);
             s.setActivityError(null);
