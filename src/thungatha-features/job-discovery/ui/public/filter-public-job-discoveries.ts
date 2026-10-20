@@ -29,10 +29,10 @@ export function filterPublicJobDiscoveries(
     const experienceText = `${job.title} ${job.description ?? ""}`.toLowerCase();
     const experienceMatch = filters.experience === "any" || (
       filters.experience === "entry"
-        ? /\\b(entry[- ]level|junior|graduate|intern|trainee|learnership)\\b/.test(experienceText)
+        ? /\b(entry[- ]level|junior|graduate|intern|trainee|learnership)\b/.test(experienceText)
         : filters.experience === "mid"
-          ? /\\b(mid[- ]level|intermediate)\\b/.test(experienceText)
-          : /\\b(senior|lead|principal|staff engineer|head of)\\b/.test(experienceText)
+          ? /\b(mid[- ]level|intermediate)\b/.test(experienceText)
+          : /\b(senior|lead|principal|staff engineer|head of)\b/.test(experienceText)
     );
     const salaryMatch =
       filters.salary === "any" ||
