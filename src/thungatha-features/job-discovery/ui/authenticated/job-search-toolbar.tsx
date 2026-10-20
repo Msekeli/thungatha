@@ -4,13 +4,11 @@ import type { FormEvent } from "react";
 import {
   Box,
   Button,
-  FormControl,
-  MenuItem,
-  Select,
   Stack,
 } from "@mui/material";
 import { SlidersHorizontal } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
+import { JobLocationSelect } from "../shared/job-discovery-controls";
 
 type Props = {
   query: string;
@@ -45,22 +43,7 @@ export function AuthenticatedJobSearchToolbar({
           onSubmit={onSubmit}
         />
       </Box>
-      <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 165 } }}>
-        <Select
-          displayEmpty
-          value={location}
-          onChange={(event) => onLocationChange(event.target.value)}
-          inputProps={{ "aria-label": "Location" }}
-          sx={{ height: 40, borderRadius: 2, fontSize: 13 }}
-        >
-          <MenuItem value="">Cape Town + 50 km</MenuItem>
-          <MenuItem value="Cape Town">Cape Town</MenuItem>
-          <MenuItem value="Johannesburg">Johannesburg</MenuItem>
-          <MenuItem value="Durban">Durban</MenuItem>
-          <MenuItem value="Remote">Remote</MenuItem>
-          <MenuItem value="Anywhere">Anywhere</MenuItem>
-        </Select>
-      </FormControl>
+      <Box sx={{ minWidth: { xs: "100%", sm: 220 }, flex: { sm: "0 0 220px" } }}><JobLocationSelect value={location} onChange={onLocationChange} emptyMeansDefault /></Box>
       <Button
         type="button"
         size="small"
