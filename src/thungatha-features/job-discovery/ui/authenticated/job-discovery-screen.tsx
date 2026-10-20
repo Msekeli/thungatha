@@ -7,6 +7,7 @@ import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { useJobDiscoveryState } from "../hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "../hooks/use-job-discovery-controller";
 import { formatDate, shown, sourceFor } from "../job-discovery-utils";
+import { employmentTypeForJobType } from "../shared/job-discovery-controls";
 
 type State = ReturnType<typeof useJobDiscoveryState>;
 type Controller = ReturnType<typeof useJobDiscoveryController>;
@@ -79,7 +80,7 @@ export function JobDiscoveryScreen({
               return;
             }
             s.setCategory("new");
-            const employmentType = key === "all" ? "" : label;
+            const employmentType = employmentTypeForJobType(key);
             c.changeDraft("employmentType", employmentType);
             s.setFilters((current) => ({ ...current, employmentType }));
             s.setPage(1);
