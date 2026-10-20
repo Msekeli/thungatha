@@ -11,6 +11,7 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
   const [profileSetupPrompt, setProfileSetupPrompt] = useState(
     showProfileSetupPrompt,
   );
+  const [profileSetupAnchorEl, setProfileSetupAnchorEl] = useState<HTMLElement | null>(null);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -55,6 +56,8 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
   return {
     profileSetupPrompt,
     setProfileSetupPrompt,
+    profileSetupAnchorEl,
+    setProfileSetupAnchorEl,
     draft,
     setDraft,
     filters,
