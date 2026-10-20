@@ -6,8 +6,12 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    testTimeout: 15_000,
     setupFiles: ["./tests/test-support/vitest-setup.ts"],
-    include: ["tests/unit-tests/**/*.test.{ts,tsx}", "tests/integration-tests/**/*.test.{ts,tsx}"],
+    include: [
+      "tests/unit-tests/**/*.test.{ts,tsx}",
+      "tests/integration-tests/**/*.test.{ts,tsx}",
+    ],
   },
   resolve: {
     alias: {

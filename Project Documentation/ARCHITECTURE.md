@@ -163,7 +163,7 @@ thungatha/
 Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
-- The `src/thungatha-features/job-discovery/` feature now contains the public and authenticated discovery experiences plus the job ingestion/provider/search/schema modules. Do not force public and authenticated pages into one large component.
+- The `src/thungatha-features/job-discovery/` feature contains the shared discovery screen/controller used by both public `/` and authenticated `/jobs` entry points, plus job ingestion/provider/search/schema modules. Keep route/layout shells thin and share discovery UI, state, feed, filtering, pagination, selection, and detail logic; do not duplicate the feature into separate public and authenticated implementations or force it into one oversized component.
 - Public discovery can browse/search/inspect jobs. User-owned saved/dismissed state, activity, and job tracking remain authenticated and server-authorized.
 - Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
 - The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.

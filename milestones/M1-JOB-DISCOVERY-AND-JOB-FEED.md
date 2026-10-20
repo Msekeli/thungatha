@@ -458,3 +458,32 @@ The workflow does not run `npm run test:e2e`. The current Playwright tests cover
 ### Audit decision
 
 The repository and latest CI run are in a better state, but **M1 is not accepted**. No deployment or merge to `main` was performed. The next action is to resolve source approval and the C05 decision, then complete the hosted-data/RLS and browser checks with evidence.
+
+---
+
+## M1-C07 shared public/authenticated discovery implementation — 2026-10-20
+
+**Status: Implemented in the current working tree; not accepted.**
+
+### Changes
+
+- `/` and `/jobs` now use the same `JobsDiscovery` entry point, state/controller, search and filter controls, feed/data hooks, pagination, selection, and authenticated workspace/results/detail components. The signed-in `/` redirect to `/jobs?welcome=1` remains.
+- Public-only discovery screen, feed/filter/detail hooks, result components, and stylesheet were removed after verifying no remaining source callers. `PublicAuthPrompt` remains and is used by the shared `ProtectedDiscoveryAction` adapter.
+- Save, dismiss/restore, and CV tailoring actions show the login prompt when signed out and execute the existing behavior when signed in. External job links remain available publicly. Application activity sync and persistence run only for signed-in users; server-side authorization was not changed.
+- The shared `Job`/`JobSource` domain types are the source of truth for result and detail data. Publication-date sorting is shared in `ui/shared/sort-job-discoveries.ts`.
+- Updated the home Playwright assertions to check the common discovery screen.
+
+### Verification observed on 2026-10-20
+
+- `npx tsc --noEmit`: passed.
+- ESLint on changed TypeScript files: 0 errors and 0 warnings on the final run.
+- Discovery unit test: did not start; Vitest worker loading failed because CommonJS `html-encoding-sniffer` requires the ESM-only `@exodus/bytes/encoding-lite.js`.
+- Home Playwright test: did not start; sandbox denied binding the configured web server to `0.0.0.0:3000` (`EPERM`).
+- `npm run build`: failed before application compilation completed because `next/font` could not fetch Inter from Google Fonts in the network-restricted environment.
+- Hosted Supabase, browser accessibility/responsive behavior, protected action flows, and cross-user isolation were not verified.
+
+### Remaining acceptance work
+
+- Run unit and browser checks in an environment where the test worker, web-server port, and Google Fonts request are available or locally provisioned.
+- Verify public feed/detail access, authenticated saved/dismissed state and activity, cross-user isolation, and combined filter/pagination behavior against controlled data.
+- Complete keyboard, responsive, and user review. Keep C07 and M1 in review until required evidence is recorded and the user accepts the result.

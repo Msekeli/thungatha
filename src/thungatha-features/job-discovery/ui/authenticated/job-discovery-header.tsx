@@ -30,7 +30,8 @@ export function JobDiscoveryHeader({
   onCategoryChange: (key: string, label: string) => void;
 }) {
   const allCount = categories.find((item) => item.key === "all")?.count ?? 0;
-  const selectedType = draft.employmentType || (category === "new" ? "all" : category);
+  const selectedType =
+    draft.employmentType || (category === "new" ? "all" : category);
 
   return (
     <Box component="header" sx={{ width: "100%" }}>

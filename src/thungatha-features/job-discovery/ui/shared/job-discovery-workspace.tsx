@@ -1,9 +1,10 @@
 "use client";
 
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import Box from "@mui/material/Box";
-import { AuthenticatedJobResultsPanel } from "./job-results-panel";
-import { AuthenticatedJobDetailPanel } from "./job-detail-panel";
+import { AuthenticatedJobResultsPanel } from "../authenticated/job-results-panel";
+import { AuthenticatedJobDetailPanel } from "../authenticated/job-detail-panel";
+import { jobDiscoveryWorkspaceSx } from "./job-discovery-workspace-sx";
 import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
 
 type Props = {
@@ -35,26 +36,18 @@ type Props = {
   onSave: () => void;
   onDismiss: () => void;
   onRetryDetail: () => void;
+  configured: boolean;
+  leadingColumn?: ReactNode;
 };
 
-export function AuthenticatedJobWorkspace(props: Props) {
+export function JobDiscoveryWorkspace(props: Props) {
+  const hasLeadingColumn = Boolean(props.leadingColumn);
   return (
     <Box
       className="th-jobs-workspace th-jobs-redesign-workspace"
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "minmax(340px, 0.92fr) minmax(0, 1.08fr)",
-        gap: 2.25,
-        alignItems: "stretch",
-        minHeight: 0,
-        "& > *": { minWidth: 0 },
-        "@media (max-width: 1100px) and (min-width: 761px)": {
-          gridTemplateColumns: "minmax(280px, 0.9fr) minmax(0, 1.1fr)",
-          gap: 1.5,
-        },
-        "@media (max-width: 760px)": { display: "block", overflow: "visible" },
-      }}
+      sx={jobDiscoveryWorkspaceSx(hasLeadingColumn)}
     >
+      {props.leadingColumn}
       <AuthenticatedJobResultsPanel
         jobs={props.jobs}
         feed={props.feed}
@@ -69,8 +62,10 @@ export function AuthenticatedJobWorkspace(props: Props) {
         onRetry={props.onRetryFeed}
         onSelect={props.onSelect}
         onSave={props.onSaveJob}
+        configured={props.configured}
       />
       <AuthenticatedJobDetailPanel
+        configured={props.configured}
         job={props.selectedDetail}
         source={props.selectedSource}
         applicationDestination={props.applicationDestination}

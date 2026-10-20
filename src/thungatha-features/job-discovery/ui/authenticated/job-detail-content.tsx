@@ -11,6 +11,7 @@ import {
 import type { JobDetailContentProps } from "./job-detail-types";
 
 export function AuthenticatedJobDetailContent({
+  configured,
   job,
   source,
   applicationDestination,
@@ -54,7 +55,11 @@ export function AuthenticatedJobDetailContent({
           <Typography component="strong" sx={{ fontWeight: 700 }}>
             Not calculated
           </Typography>
-          <Button variant="text" size="small" onClick={(event) => onViewMatch(event.currentTarget)}>
+          <Button
+            variant="text"
+            size="small"
+            onClick={(event) => onViewMatch(event.currentTarget)}
+          >
             Why is this unavailable?
           </Button>
         </Stack>
@@ -62,6 +67,7 @@ export function AuthenticatedJobDetailContent({
       actions={
         <Stack spacing={1}>
           <JobDetailActions
+            configured={configured}
             job={job}
             applicationDestination={applicationDestination}
             applicationUrl={applicationUrl}

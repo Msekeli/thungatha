@@ -13,9 +13,7 @@ type Props = {
   draft: Filters;
   changeDraft: (key: keyof Filters, value: string) => void;
   clearFilters: () => void;
-  setFilters: Dispatch<SetStateAction<Filters>>;
-  setPage: Dispatch<SetStateAction<number>>;
-  setMobileDetail: Dispatch<SetStateAction<boolean>>;
+  applyFilters: () => void;
   setFiltersOpen: Dispatch<SetStateAction<boolean>>;
   profileSetupPrompt: boolean;
   setProfileSetupPrompt: Dispatch<SetStateAction<boolean>>;
@@ -45,9 +43,7 @@ export function JobDiscoveryDialogs(props: Props) {
         onChange={props.changeDraft}
         onReset={props.clearFilters}
         onApply={() => {
-          props.setFilters({ ...props.draft });
-          props.setPage(1);
-          props.setMobileDetail(false);
+          props.applyFilters();
           props.setFiltersOpen(false);
         }}
       />

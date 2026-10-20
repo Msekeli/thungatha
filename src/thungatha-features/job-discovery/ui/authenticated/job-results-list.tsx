@@ -4,6 +4,7 @@ import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
 import type { Job, JobSource } from "./job-results-types";
+import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 
 export function JobResultsList({
   jobs,
@@ -15,6 +16,7 @@ export function JobResultsList({
   formatDate,
   onSelect,
   onSave,
+  configured,
 }: {
   jobs: Job[];
   selectedId: string | null;
@@ -25,6 +27,7 @@ export function JobResultsList({
   formatDate: (value: string | null | undefined) => string | null;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
+  configured: boolean;
 }) {
   return (
     <>
@@ -42,18 +45,24 @@ export function JobResultsList({
           const fullJob = jobs.find((item) => item.id === job.id)!;
           const saved = fullJob.state === "saved";
           return (
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              aria-label={
-                saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
-              }
-              title={saved ? "Remove from saved jobs" : "Save job"}
-              onClick={() => onSave(fullJob)}
+            <ProtectedDiscoveryAction
+              configured={configured}
+              title="Save this opportunity"
+              description="Sign in or create a free account to save this job and return to it later."
+              onAction={() => onSave(fullJob)}
             >
-              <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                aria-label={
+                  saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
+                }
+                title={saved ? "Remove from saved jobs" : "Save job"}
+              >
+                <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
+              </Button>
+            </ProtectedDiscoveryAction>
           );
         }}
       />

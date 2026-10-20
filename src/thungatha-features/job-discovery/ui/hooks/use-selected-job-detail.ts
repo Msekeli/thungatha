@@ -1,9 +1,6 @@
 import { useCallback, useEffect } from "react";
 import type { Job } from "../job-discovery-utils";
-import {
-  JobDetailRequestError,
-  requestJobDetail,
-} from "../request-job-detail";
+import { JobDetailRequestError, requestJobDetail } from "../request-job-detail";
 
 export function useSelectedJobDetail(
   selectedId: string | null,

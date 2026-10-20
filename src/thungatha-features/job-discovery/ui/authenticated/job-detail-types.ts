@@ -1,6 +1,7 @@
 import type { Job, JobSource } from "./job-results-types";
 
 export type JobDetailContentProps = {
+  configured: boolean;
   job: Job | null;
   source: JobSource | null;
   applicationDestination: string | null;

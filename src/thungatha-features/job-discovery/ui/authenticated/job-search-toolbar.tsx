@@ -1,11 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { SlidersHorizontal } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
 import { JobLocationSelect } from "../shared/job-discovery-controls";
@@ -43,7 +39,15 @@ export function AuthenticatedJobSearchToolbar({
           onSubmit={onSubmit}
         />
       </Box>
-      <Box sx={{ minWidth: { xs: "100%", sm: 220 }, flex: { sm: "0 0 220px" } }}><JobLocationSelect value={location} onChange={onLocationChange} emptyMeansDefault /></Box>
+      <Box
+        sx={{ minWidth: { xs: "100%", sm: 220 }, flex: { sm: "0 0 220px" } }}
+      >
+        <JobLocationSelect
+          value={location}
+          onChange={onLocationChange}
+          emptyMeansDefault
+        />
+      </Box>
       <Button
         type="button"
         size="small"

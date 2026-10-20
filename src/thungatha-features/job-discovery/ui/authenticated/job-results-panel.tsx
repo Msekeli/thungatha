@@ -18,6 +18,7 @@ export function AuthenticatedJobResultsPanel({
   onRetry,
   onSelect,
   onSave,
+  configured,
 }: JobResultsPanelProps) {
   return (
     <Box
@@ -88,6 +89,7 @@ export function AuthenticatedJobResultsPanel({
           formatDate={formatDate}
           onSelect={onSelect}
           onSave={onSave}
+          configured={configured}
         />
       )}
     </Box>

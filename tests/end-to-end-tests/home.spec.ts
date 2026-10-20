@@ -2,20 +2,27 @@ import { expect, test } from "@playwright/test";
 
 test("home page loads successfully", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveURL(/\/$/);
   await expect(page).toHaveTitle(/Thungatha/i);
   await expect(
-    page.getByRole("banner").getByRole("link", { name: "THUNGATHA home" }),
+    page.getByRole("button", { name: "Sign in to save jobs" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Find your next move/i }),
+    page.getByRole("heading", { name: "Find your next opportunity" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Opportunities to explore/i }),
+    page.getByRole("complementary", { name: "Thungatha features" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", {
-      name: /Everything around the application, too/i,
+    page.getByRole("complementary", { name: "Main navigation" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("combobox", {
+      name: "Search roles, skills, or companies",
     }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Job search results" }),
   ).toBeVisible();
 });
 

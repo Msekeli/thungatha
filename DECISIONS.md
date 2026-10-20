@@ -215,3 +215,14 @@ When a decision is approved or changed:
 - **Consequences:** This is a naming and documentation decision, not a claim that all folders have already moved. Existing paths remain until each migration is inspected, implemented, and tested. Route groups must not create duplicate routes or alter public URLs.
 - **Known discrepancy:** Product architecture specifies `/job-tracking`, while the current placeholder page is at `/applications`. Resolve that product/URL discrepancy separately; do not silently change it during folder migration.
 - **Review trigger:** Reconsider a name only when a demonstrated product boundary or framework constraint requires it.
+
+### D-037 — One shared Job Discovery implementation
+
+- **Date:** 2026-10-20
+- **Status:** Confirmed
+- **Context:** Public and authenticated routes had separate discovery screens and duplicated state, feed, filtering, selection, and detail composition. The user requested reuse of the actual discovery implementation, with authentication handled at protected actions.
+- **Decision:** Public `/` and authenticated `/jobs` use the same `JobsDiscovery` screen/controller and shared discovery UI. Keep route and layout composition thin. Gate save, dismiss, CV tailoring, and other user-owned actions at the action boundary; keep server-side authorization and user-owned data access unchanged. Application activity synchronization runs only for signed-in users.
+- **Rationale:** One implementation prevents search, filters, results, pagination, and detail behavior from drifting while preserving public job exploration and protected user data.
+- **Consequences:** Remove the separate public discovery implementation and its exclusive components/hooks when no longer referenced. Public and authenticated data may still differ where identity legitimately affects saved/dismissed state.
+- **Verification:** Local TypeScript check and final ESLint run passed with no errors or warnings. Unit/E2E/build checks were blocked by the test dependency, sandbox port permission, and external font fetch respectively; see the M1-C07 record.
+- **Review trigger:** Revisit only if product requirements establish a public-only discovery workflow that cannot be composed around the shared screen.

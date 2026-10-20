@@ -87,7 +87,11 @@ export function PublicAuthPrompt({
             >
               <X size={16} />
             </IconButton>
-            <Typography id={`${promptId}-title`} variant="subtitle1" fontWeight={700}>
+            <Typography
+              id={`${promptId}-title`}
+              variant="subtitle1"
+              sx={{ fontWeight: 700 }}
+            >
               {title}
             </Typography>
             <Typography
@@ -98,26 +102,51 @@ export function PublicAuthPrompt({
             >
               {description}
             </Typography>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                flexWrap: "wrap",
+                marginTop: 16,
+              }}
+            >
               {configured ? (
                 <>
                   <SignInButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                    <Button size="small" variant="outlined" onClick={closePrompt}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={closePrompt}
+                    >
                       Sign in
                     </Button>
                   </SignInButton>
                   <SignUpButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                    <Button size="small" variant="contained" onClick={closePrompt}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={closePrompt}
+                    >
                       Create free account
                     </Button>
                   </SignUpButton>
                 </>
               ) : (
                 <>
-                  <Button component={Link} href="/sign-in" size="small" variant="outlined">
+                  <Button
+                    component={Link}
+                    href="/sign-in"
+                    size="small"
+                    variant="outlined"
+                  >
                     Sign in
                   </Button>
-                  <Button component={Link} href="/sign-up" size="small" variant="contained">
+                  <Button
+                    component={Link}
+                    href="/sign-up"
+                    size="small"
+                    variant="contained"
+                  >
                     Create free account
                   </Button>
                 </>

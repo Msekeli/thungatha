@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 type Props = {
   title: ReactNode;
   description: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
   id?: string;
 };
 

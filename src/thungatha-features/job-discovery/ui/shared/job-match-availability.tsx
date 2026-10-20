@@ -12,18 +12,22 @@ export function JobMatchAvailability({
   label: string;
   variant?: "text" | "outlined";
 }) {
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   return (
     <>
       <Button
         variant={variant}
         size="small"
-        onClick={() => setOpen(true)}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
         startIcon={<UserRoundSearch size={16} />}
       >
         {label}
       </Button>
-      <MatchBreakdownDialog open={open} onClose={() => setOpen(false)} />
+      <MatchBreakdownDialog
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+      />
     </>
   );
 }

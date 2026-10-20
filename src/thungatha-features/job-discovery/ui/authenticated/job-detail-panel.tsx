@@ -6,6 +6,7 @@ import type { JobDetailContentProps } from "./job-detail-types";
 type Props = JobDetailContentProps & { mobileDetail: boolean };
 
 export function AuthenticatedJobDetailPanel({
+  configured,
   job,
   source,
   applicationDestination,
@@ -70,6 +71,7 @@ export function AuthenticatedJobDetailPanel({
       }}
     >
       <AuthenticatedJobDetailContent
+        configured={configured}
         job={job}
         source={source}
         applicationDestination={applicationDestination}

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
 import "./workspace-shell.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
@@ -53,9 +54,9 @@ export function WorkspaceShell({
           {configured ? (
             <SignOutControl />
           ) : (
-            <a className="th-workspace-sign-in" href="/sign-in">
+            <Link className="th-workspace-sign-in" href="/sign-in">
               Sign in
-            </a>
+            </Link>
           )}
         </div>
       </aside>
