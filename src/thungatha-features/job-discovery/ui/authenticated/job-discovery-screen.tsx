@@ -99,11 +99,16 @@ export function JobDiscoveryScreen({
             s.setMobileDetail(true);
           }}
           onBack={() => s.setMobileDetail(false)}
-          onViewMatch={() => s.setMatchOpen(true)}
-          onApply={() =>
-            c.applicationDestination &&
-            c.openApplicationLink(c.selectedDetail!, c.applicationDestination)
-          }
+          onViewMatch={(anchorEl) => {
+            s.setMatchAnchorEl(anchorEl);
+            s.setMatchOpen(true);
+          }}
+          onApply={(anchorEl) => {
+            s.setApplicationPromptAnchorEl(anchorEl);
+            if (c.applicationDestination && c.selectedDetail) {
+              c.openApplicationLink(c.selectedDetail, c.applicationDestination);
+            }
+          }}
           onSave={() =>
             c.selectedDetail &&
             void c.updateJobState(
@@ -135,6 +140,8 @@ export function JobDiscoveryScreen({
           routerPushProfile={routerPushProfile}
           matchOpen={s.matchOpen}
           setMatchOpen={s.setMatchOpen}
+          matchAnchorEl={s.matchAnchorEl}
+          applicationPromptAnchorEl={s.applicationPromptAnchorEl}
           showApplicationPrompt={Boolean(
             c.selectedDetail &&
             (s.forceAppliedPrompt ||
