@@ -40,7 +40,7 @@ export function PublicAuthPrompt({
         onClick={(event) => {
           const target = event.currentTarget;
           setAnchorEl((current) => (current === target ? null : target));
-        }
+        }}
         style={{ display: "inline-flex" }}
       >
         {children}
