@@ -4,7 +4,9 @@ import { useState } from "react";
 
 export function usePublicJobDiscoveryFilters() {
   const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("Cape Town + 50 km");
+  // An empty location is the shared "Cape Town + 50 km" default display,
+  // and intentionally means no location constraint in the feed API.
+  const [location, setLocation] = useState("");
   const [typesSelected, setTypesSelected] = useState<string[]>([]);
   const [quickType, setQuickType] = useState("all");
   const [modesSelected, setModesSelected] = useState<string[]>([]);
@@ -15,7 +17,7 @@ export function usePublicJobDiscoveryFilters() {
 
   const hasActiveFilters = Boolean(
     query.trim() ||
-    location !== "Cape Town + 50 km" ||
+    location.trim() ||
     typesSelected.length ||
     quickType !== "all" ||
     modesSelected.length ||
@@ -31,29 +33,13 @@ export function usePublicJobDiscoveryFilters() {
     setSalary("any");
     setExperience("any");
     setPublishedWithin("30d");
-    setLocation("Cape Town + 50 km");
+    setLocation("");
   }
 
   return {
-    query,
-    setQuery,
-    location,
-    setLocation,
-    typesSelected,
-    setTypesSelected,
-    quickType,
-    setQuickType,
-    modesSelected,
-    setModesSelected,
-    sort,
-    setSort,
-    salary,
-    setSalary,
-    experience,
-    setExperience,
-    publishedWithin,
-    setPublishedWithin,
-    hasActiveFilters,
-    clearFilters,
+    query, setQuery, location, setLocation, typesSelected, setTypesSelected,
+    quickType, setQuickType, modesSelected, setModesSelected, sort, setSort,
+    salary, setSalary, experience, setExperience, publishedWithin,
+    setPublishedWithin, hasActiveFilters, clearFilters,
   };
 }
