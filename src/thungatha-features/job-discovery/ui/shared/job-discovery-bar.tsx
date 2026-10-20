@@ -60,7 +60,7 @@ export function JobDiscoveryBar({
       </Stack>
       <Box sx={{ mt: 1, display: "flex", justifyContent: "center" }}>
         <JobTypeChips activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
-          counts={{ all: total }} onSelect={onTypeChange} onClearTypes={undefined}
+          counts={{ all: total }} onSelect={(key, label) => { onTypeChange(key, label); onClearTypes?.(); }}
           showAllCount justifyContent="center" />
       </Box>
     </Box>
