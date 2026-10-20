@@ -17,11 +17,13 @@ export function JobLocationSelect({
   onChange,
   compact = false,
   emptyMeansDefault = false,
+  anywhereValue = "Anywhere",
 }: {
   value: string;
   onChange: (value: string) => void;
   compact?: boolean;
   emptyMeansDefault?: boolean;
+  anywhereValue?: string;
 }) {
   return (
     <FormControl size="small" sx={{ minWidth: 0, width: compact ? "100%" : { xs: "100%", sm: 220 }, flex: compact ? 1 : "0 0 auto" }}>
@@ -46,7 +48,7 @@ export function JobLocationSelect({
         <MenuItem value="Johannesburg">Johannesburg</MenuItem>
         <MenuItem value="Durban">Durban</MenuItem>
         <MenuItem value="Remote">Remote</MenuItem>
-        <MenuItem value="Anywhere">Anywhere</MenuItem>
+        <MenuItem value={anywhereValue}>Anywhere</MenuItem>
       </Select>
     </FormControl>
   );
