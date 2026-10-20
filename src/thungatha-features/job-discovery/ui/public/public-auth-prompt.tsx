@@ -37,10 +37,9 @@ export function PublicAuthPrompt({
   return (
     <>
       <span
-        onClick={(event) =>
-          setAnchorEl((current) =>
-            current === event.currentTarget ? null : event.currentTarget,
-          )
+        onClick={(event) => {
+          const target = event.currentTarget;
+          setAnchorEl((current) => (current === target ? null : target));
         }
         style={{ display: "inline-flex" }}
       >
