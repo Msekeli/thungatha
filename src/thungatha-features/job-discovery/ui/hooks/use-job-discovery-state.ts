@@ -47,6 +47,8 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(null);
   const [matchOpen, setMatchOpen] = useState(false);
+  const [matchAnchorEl, setMatchAnchorEl] = useState<HTMLElement | null>(null);
+  const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] = useState<HTMLElement | null>(null);
   const [sortOrder, setSortOrder] = useState("newest");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -105,6 +107,10 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     setFilterAnchorEl,
     matchOpen,
     setMatchOpen,
+    matchAnchorEl,
+    setMatchAnchorEl,
+    applicationPromptAnchorEl,
+    setApplicationPromptAnchorEl,
     sortOrder,
     setSortOrder,
     loadMoreRef,
