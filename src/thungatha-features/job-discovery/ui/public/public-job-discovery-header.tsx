@@ -6,7 +6,7 @@ import { Show, SignInButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
-type Props = { configured: boolean; onOpenFilters: () => void };
+type Props = { configured: boolean; onOpenFilters: (anchorEl: HTMLElement) => void };
 const navSx = {
   color: "text.secondary",
   textDecoration: "none",
@@ -105,7 +105,7 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
           variant="outlined"
           size="small"
           aria-label="Open filters"
-          onClick={onOpenFilters}
+          onClick={(event) => onOpenFilters(event.currentTarget)}
           sx={{
             minWidth: { xs: 34, md: 40 },
             width: { xs: 34, md: "auto" },
