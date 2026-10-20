@@ -394,3 +394,16 @@ No provider ingestion was re-run and no production database changes were made du
 **Verification:** Remote file/diff inspection confirms the six intended files are present on `dev`. This is repository inspection only, not a code execution check. A component test suite was added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and browser tests were not run through the remote-edit workflow. C06 authenticated Supabase smoke and cross-user isolation checks remain outstanding.
 
 **Next action:** Pull latest `origin/dev` locally without discarding work, inspect the diff, run all quality gates and responsive/keyboard browser checks, fix any observed defects, and return for user review. Do not merge to `main` or mark C07 Accepted without verification and explicit acceptance.
+
+
+## Employer discovery feeder direction — 2026-10-20
+
+**Status:** Design documented; implementation not started. This is not an M1 acceptance record.
+
+The agreed direction is to replace aggregator-based active vacancy ingestion with a small direct-employer feeder. See [Employer Discovery and Job Ingestion Pipeline](<Project Documentation/EMPLOYER-DISCOVERY-PIPELINE.md>) and decision D-037.
+
+The target comprises five responsibilities in one Azure Function App: Company Discovery, Company Verification, Careers Source Discovery, Job Discovery, and Job Verification/Catalogue Handoff. It will use temporary Azure processing storage, AI-assisted interpretation, deterministic policy checks, and a minimal protected `/admin` review interface. Manual company entry follows the same verification path. Only explicitly approved vacancies are written to the existing Supabase production jobs catalogue.
+
+The discovery window is six months of relevant historical recruitment evidence; the active-vacancy publication window remains 30 days. The initial geography is the Western Cape. Include eligible IT/software roles and internships/learnerships, including non-technical opportunities; exclude graduate programmes. Adzuna and Jooble are excluded from active ingestion and their listings must not appear in the feed.
+
+The delivery target is approximately 24 hours for a focused MVP, not a guarantee of broad source coverage or production readiness. Source-search method, source permissions, Azure storage configuration, AI provider, security, and end-to-end verification must be validated. Do not mark implementation or M1 acceptance complete based on this documentation update.
