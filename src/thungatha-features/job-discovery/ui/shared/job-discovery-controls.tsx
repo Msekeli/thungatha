@@ -3,21 +3,30 @@
 import { Chip, FormControl, MenuItem, Select, Stack } from "@mui/material";
 
 export const JOB_TYPE_OPTIONS = [
-  { key: "all", label: "All opportunities" },
-  { key: "full-time", label: "Full-time" },
-  { key: "part-time", label: "Part-time" },
-  { key: "contract", label: "Contract" },
-  { key: "internship", label: "Internships" },
-  { key: "learnership", label: "Learnerships" },
-  { key: "graduate", label: "Graduate programmes" },
+  { key: "all", label: "All opportunities", value: "" },
+  { key: "full-time", label: "Full-time", value: "full_time" },
+  { key: "part-time", label: "Part-time", value: "part_time" },
+  { key: "contract", label: "Contract", value: "contract" },
+  { key: "internship", label: "Internships", value: "internship" },
+  { key: "learnership", label: "Learnerships", value: "learnership" },
+  { key: "graduate", label: "Graduate programmes", value: "graduate" },
 ] as const;
+
+export function employmentTypeForJobType(key: string): string {
+  return JOB_TYPE_OPTIONS.find((item) => item.key === key)?.value ?? "";
+}
+
+export function jobTypeKeyForEmploymentType(value: string): string {
+  const normalized = value.toLowerCase().replace(/[ -]+/g, "_");
+  return JOB_TYPE_OPTIONS.find((item) => item.value === normalized)?.key ?? "all";
+}
 
 export function JobLocationSelect({
   value,
   onChange,
   compact = false,
-  emptyMeansDefault = false,
-  anywhereValue = "Anywhere",
+  emptyMeansDefault = true,
+  anywhereValue = "",
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -25,14 +34,15 @@ export function JobLocationSelect({
   emptyMeansDefault?: boolean;
   anywhereValue?: string;
 }) {
+  const displayedValue = value || (emptyMeansDefault ? "Cape Town + 50 km" : anywhereValue);
   return (
     <FormControl size="small" sx={{ minWidth: 0, width: compact ? "100%" : { xs: "100%", sm: 220 }, flex: compact ? 1 : "0 0 auto" }}>
       <Select
         displayEmpty
-        value={value || (emptyMeansDefault ? "Cape Town + 50 km" : value)}
+        value={displayedValue}
         onChange={(event) => {
-          const next = event.target.value;
-          onChange(emptyMeansDefault && next === "Cape Town + 50 km" ? "" : next);
+          const next = String(event.target.value);
+          onChange(next === "Anywhere" || next === anywhereValue || next === "Cape Town + 50 km" ? "" : next);
         }}
         inputProps={{ "aria-label": "Search location" }}
         sx={{
@@ -78,11 +88,7 @@ export function JobTypeChips({
       {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
         const count = counts[item.key];
-        const label = showAllCount && item.key === "all" && count != null
-          ? `${item.label} · ${count}`
-          : count != null
-            ? `${item.label} · ${count}`
-            : item.label;
+        const label = count != null ? `${item.label} · ${count}` : item.label;
         return (
           <Chip
             key={item.key}
