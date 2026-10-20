@@ -23,7 +23,7 @@ type Props = {
   onQuickTypeChange: (value: string) => void;
   onClearTypes: () => void;
   total: number;
-  onOpenFilters: () => void;
+  onOpenFilters: (anchorEl: HTMLElement) => void;
 };
 const jobTypes = [
   { label: "All opportunities", value: "all" },
@@ -125,7 +125,7 @@ export function PublicJobDiscoveryHero(props: Props) {
           <Button
             variant="contained"
             aria-label="Open filters"
-            onClick={onOpenFilters}
+            onClick={(event) => onOpenFilters(event.currentTarget)}
             startIcon={<SlidersHorizontal size={18} />}
             sx={{
               minWidth: { xs: 44, md: 116 },
