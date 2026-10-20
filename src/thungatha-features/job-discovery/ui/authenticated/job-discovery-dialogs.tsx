@@ -9,6 +9,7 @@ import type { Filters } from "../job-discovery-utils";
 
 type Props = {
   filtersOpen: boolean;
+  filterAnchorEl: HTMLElement | null;
   draft: Filters;
   changeDraft: (key: keyof Filters, value: string) => void;
   clearFilters: () => void;
@@ -34,6 +35,7 @@ export function JobDiscoveryDialogs(props: Props) {
     <>
       <JobFiltersDialog
         open={props.filtersOpen}
+        anchorEl={props.filterAnchorEl}
         draft={props.draft}
         onClose={() => props.setFiltersOpen(false)}
         onChange={props.changeDraft}
