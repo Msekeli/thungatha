@@ -27,11 +27,6 @@ export const PUBLISHED_WITHIN_OPTIONS = [
   { label: "Last 30 days", value: "30d" },
 ];
 
-export const SALARY_OPTIONS = [
-  { label: "Any salary", value: "any" },
-  { label: "Salary disclosed", value: "disclosed" },
-  { label: "R500,000+ per year", value: "above50" },
-];
 
 export const EXPERIENCE_OPTIONS = [
   { label: "Any level", value: "any" },
@@ -82,8 +77,6 @@ type Props = {
   onEmploymentTypeChange: (value: string) => void;
   publishedWithin?: string;
   onPublishedWithinChange?: (value: string) => void;
-  salary?: string;
-  onSalaryChange?: (value: string) => void;
   experience?: string;
   onExperienceChange?: (value: string) => void;
 };
@@ -122,11 +115,6 @@ export function JobFilterFields(props: Props) {
         <InlineFilterDropdown label="Posted within" value={props.publishedWithin}
           options={PUBLISHED_WITHIN_OPTIONS} onChange={props.onPublishedWithinChange}
           open={expandedDropdown === "publishedWithin"} onToggle={() => toggle("publishedWithin")} />
-      )}
-      {props.salary !== undefined && props.onSalaryChange && (
-        <InlineFilterDropdown label="Salary range" value={props.salary}
-          options={SALARY_OPTIONS} onChange={props.onSalaryChange}
-          open={expandedDropdown === "salary"} onToggle={() => toggle("salary")} />
       )}
       {props.experience !== undefined && props.onExperienceChange && (
         <InlineFilterDropdown label="Experience level" value={props.experience}
