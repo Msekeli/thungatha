@@ -52,10 +52,10 @@ export function AuthenticatedJobDetailContent({
         >
           <Typography variant="caption">Match</Typography>
           <Typography component="strong" sx={{ fontWeight: 700 }}>
-            —
+            Not calculated
           </Typography>
           <Button variant="text" size="small" onClick={onViewMatch}>
-            View breakdown
+            Why is this unavailable?
           </Button>
         </Stack>
       }

@@ -1,10 +1,8 @@
 "use client";
-import { useState } from "react";
-import { ExternalLink, UserRoundSearch } from "lucide-react";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { ExternalLink } from "lucide-react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { MatchBreakdownDialog } from "../authenticated/match-breakdown-dialog";
+import { JobMatchAvailability } from "../shared/job-match-availability";
 import { PublicJobDetailActions } from "./public-job-detail-actions";
 import { JobDetailPresentation } from "../shared/job-detail-presentation";
 import type { PublicJob } from "./public-job-types";
@@ -39,41 +37,12 @@ export function PublicJobDetailContent({
   onDismiss?: () => void;
   onRestore?: () => void;
 }) {
-  const [matchOpen, setMatchOpen] = useState(false);
   const source = Array.isArray(job.job_sources)
     ? job.job_sources[0]
     : job.job_sources;
   const matchAction = (
-    <Stack direction="row" spacing={1} alignItems="center">
-      {configured ? (
-        <>
-          <Show when="signed-in">
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setMatchOpen(true)}
-              startIcon={<UserRoundSearch size={16} />}
-            >
-              Profile match —
-            </Button>
-          </Show>
-          <Show when="signed-out">
-            <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<UserRoundSearch size={16} />}
-              >
-                Check profile match
-              </Button>
-            </SignInButton>
-          </Show>
-        </>
-      ) : (
-        <Button component="a" href={signInUrl} size="small" variant="outlined">
-          Check profile match
-        </Button>
-      )}
+    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+      <JobMatchAvailability label="Matching unavailable" variant="outlined" />
       <PublicJobDetailActions
         configured={configured}
         applyUrl={applyUrl}
@@ -117,10 +86,6 @@ export function PublicJobDetailContent({
             </Button>
           ) : null
         }
-      />
-      <MatchBreakdownDialog
-        open={matchOpen}
-        onClose={() => setMatchOpen(false)}
       />
     </>
   );

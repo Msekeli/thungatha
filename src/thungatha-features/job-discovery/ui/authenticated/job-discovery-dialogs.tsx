@@ -2,7 +2,7 @@
 
 import type { Dispatch, SetStateAction } from "react";
 import { ProfileSetupDialog } from "./profile-setup-dialog";
-import { MatchBreakdownDialog } from "./match-breakdown-dialog";
+import { MatchBreakdownDialog } from "../shared/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./application-confirmation-dialog";
 import { JobFiltersDialog } from "./job-filters-dialog";
 import type { Filters } from "../job-discovery-utils";

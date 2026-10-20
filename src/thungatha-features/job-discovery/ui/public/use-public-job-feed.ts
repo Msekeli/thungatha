@@ -2,14 +2,7 @@
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import type { PublicJob as PublicJobFeedItem } from "./public-job-types";
-
-type Feed = {
-  jobs: PublicJobFeedItem[];
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-};
+import { requestJobFeed } from "../request-job-feed";
 
 export function usePublicJobFeed(
   query: string,
@@ -36,21 +29,7 @@ export function usePublicJobFeed(
       if (location.trim() && location !== "Cape Town + 50 km")
         params.set("location", location.trim());
       try {
-        const response = await fetch("/api/jobs?" + params, {
-          signal: controller.signal,
-          cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
-        if (!response.ok) {
-          throw new Error(
-            response.status === 503
-              ? "Job Discovery is temporarily unavailable. Please try again shortly."
-              : "We couldn't load jobs right now. Please try again.",
-          );
-        }
-        const data = (await response.json()) as Feed;
-        if (!Array.isArray(data.jobs))
-          throw new Error("The jobs service returned an unexpected response.");
+        const data = await requestJobFeed(params.toString(), controller.signal);
         setJobs(data.jobs);
         setTotal(data.total);
         setSelectedId((current) =>

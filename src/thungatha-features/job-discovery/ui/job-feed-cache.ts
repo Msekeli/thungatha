@@ -1,4 +1,5 @@
 import type { Feed } from "./job-discovery-utils";
+import { requestJobFeed } from "./request-job-feed";
 
 type CachedFeed = { savedAt?: number; feed?: Feed };
 
@@ -50,11 +51,29 @@ export async function getReusablePublicFeed(
       states?: { job_id: string; state: "saved" | "dismissed" }[];
     };
     const states = payload.states ?? [];
-    if (states.some((item) => item.state === "dismissed")) return null;
+    const dismissed = states.filter((item) => item.state === "dismissed");
+    let dismissedCount = 0;
+    if (dismissed.length) {
+      const dismissedFeed = await requestJobFeed(
+        "state=dismissed&page=1&pageSize=1&publishedWithin=30d",
+        signal,
+      );
+      dismissedCount = dismissedFeed.total;
+      if (
+        cached.feed.jobs.some((job) =>
+          dismissed.some((item) => item.job_id === job.id),
+        )
+      )
+        return null;
+    }
 
     const stateById = new Map(states.map((item) => [item.job_id, item.state]));
     return {
       ...cached.feed,
+      total: Math.max(0, cached.feed.total - dismissedCount),
+      totalPages: Math.ceil(
+        Math.max(0, cached.feed.total - dismissedCount) / cached.feed.pageSize,
+      ),
       jobs: cached.feed.jobs.map((job) => ({
         ...job,
         state: stateById.get(job.id) ?? null,

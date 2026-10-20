@@ -33,8 +33,8 @@ export function MatchBreakdownDialog({ open, onClose }: Props) {
         <h3>Job matching is coming soon</h3>
         <p>
           Matching requires a completed profile with your skills and experience.
-          This placeholder does not calculate or imply a match score. Complete
-          your profile so it is ready when matching launches.
+          No score is calculated or implied. Complete your profile so it is
+          ready when matching launches.
         </p>
         <ul>
           <li>Confirmed — evidence from your profile</li>
