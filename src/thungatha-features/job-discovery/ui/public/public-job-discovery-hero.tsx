@@ -132,6 +132,7 @@ export function PublicJobDiscoveryHero(props: Props) {
               ?.scrollIntoView({ behavior: "smooth", block: "start" });
           }}
           showAllCount
+          justifyContent="center"
         />
       </Box>
     </JobDiscoveryHeroShell>
