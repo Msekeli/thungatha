@@ -30,10 +30,27 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
         bgcolor: "background.paper",
       }}
     >
-      <Link href="/" aria-label="Thungatha home" style={{ display: "flex", flexShrink: 0 }}>
-        <Image src="/brand/thungatha-logo.svg" alt="THUNGATHA" width={180} height={42} style={{ width: "clamp(112px, 34vw, 180px)", height: "auto" }} priority />
+      <Link
+        href="/"
+        aria-label="Thungatha home"
+        style={{ display: "flex", flexShrink: 0 }}
+      >
+        <Image
+          src="/brand/thungatha-logo.svg"
+          alt="THUNGATHA"
+          width={180}
+          height={42}
+          style={{ width: "clamp(112px, 34vw, 180px)", height: "auto" }}
+          priority
+        />
       </Link>
-      <Stack component="nav" direction="row" spacing={2.5} aria-label="Main navigation" sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
+      <Stack
+        component="nav"
+        direction="row"
+        spacing={2.5}
+        aria-label="Main navigation"
+        sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+      >
         <Box
           component={Link}
           href="#jobs"
@@ -72,10 +89,30 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
           </Show>
         )}
       </Stack>
-      <Stack direction="row" spacing={{ xs: 0.5, md: 1 }} sx={{ alignItems: "center", flexShrink: 0, minWidth: 0, "& > *": { flexShrink: 0 } }}>
+      <Stack
+        direction="row"
+        spacing={{ xs: 0.5, md: 1 }}
+        sx={{
+          alignItems: "center",
+          flexShrink: 0,
+          minWidth: 0,
+          "& > *": { flexShrink: 0 },
+        }}
+      >
         <ThemeToggle />
         <HomeAuthActions configured={configured} variant="nav" />
-        <Button variant="outlined" size="small" aria-label="Open filters" onClick={onOpenFilters} sx={{ minWidth: { xs: 34, md: 40 }, width: { xs: 34, md: "auto" }, px: { xs: 0.5, md: 1 }, display: { xs: "inline-flex", md: "none" } }}>
+        <Button
+          variant="outlined"
+          size="small"
+          aria-label="Open filters"
+          onClick={onOpenFilters}
+          sx={{
+            minWidth: { xs: 34, md: 40 },
+            width: { xs: 34, md: "auto" },
+            px: { xs: 0.5, md: 1 },
+            display: { xs: "inline-flex", md: "none" },
+          }}
+        >
           <Menu size={19} />
         </Button>
       </Stack>

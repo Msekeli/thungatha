@@ -40,7 +40,13 @@ export function JobDetailHeading({
           fontWeight: 700,
         }}
       >
-        {(employer?.trim() || title).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}
+        {(employer?.trim() || title)
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0])
+          .join("")
+          .toUpperCase()}
       </Avatar>
       <Box
         className="th-jobs-redesign-title"

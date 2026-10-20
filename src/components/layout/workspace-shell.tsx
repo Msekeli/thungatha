@@ -9,23 +9,54 @@ import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
 
 const pages: Record<string, { title: string; subtitle: string }> = {
-  "/jobs": { title: "Job Discovery", subtitle: "Explore real opportunities. Choose your next step." },
-  "/cv-studio": { title: "CV Studio", subtitle: "Build and tailor your CV with confidence." },
-  "/applications": { title: "Job Tracking", subtitle: "Keep your applications organised and moving forward." },
-  "/profile": { title: "Profile", subtitle: "Manage the professional information used across Thungatha." },
-  "/account": { title: "Account settings", subtitle: "Manage your preferences and account settings." },
+  "/jobs": {
+    title: "Job Discovery",
+    subtitle: "Explore real opportunities. Choose your next step.",
+  },
+  "/cv-studio": {
+    title: "CV Studio",
+    subtitle: "Build and tailor your CV with confidence.",
+  },
+  "/applications": {
+    title: "Job Tracking",
+    subtitle: "Keep your applications organised and moving forward.",
+  },
+  "/profile": {
+    title: "Profile",
+    subtitle: "Manage the professional information used across Thungatha.",
+  },
+  "/account": {
+    title: "Account settings",
+    subtitle: "Manage your preferences and account settings.",
+  },
 };
 
-export function WorkspaceShell({ active, configured, children }: { active: string; configured: boolean; children: ReactNode }) {
+export function WorkspaceShell({
+  active,
+  configured,
+  children,
+}: {
+  active: string;
+  configured: boolean;
+  children: ReactNode;
+}) {
   const page = pages[active] ?? pages["/jobs"];
   return (
     <div className="th-workspace-shell">
       <MobileWorkspaceNav configured={configured} />
       <aside className="th-workspace-sidebar" aria-label="Main navigation">
-        <div className="th-workspace-brand"><BrandMark /></div>
+        <div className="th-workspace-brand">
+          <BrandMark />
+        </div>
         <WorkspaceSidebarNav active={active} />
         <div className="th-workspace-sidebar-footer">
-          {configured ? <SignOutControl /> : <a className="th-workspace-sign-in" href="/sign-in">Sign in</a>}
+          {configured ? (
+            <SignOutControl />
+          ) : (
+            <a className="th-workspace-sign-in" href="/sign-in">
+              Sign in
+            </a>
+          )}
         </div>
       </aside>
       <div className="th-workspace-content">

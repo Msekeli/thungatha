@@ -27,11 +27,16 @@ export function JobMetadata({
           ? "Remote"
           : null;
   if (presentation === "card") {
-    const employmentLabel = employmentType?.replace(/[_-]+/g, " ") || "Opportunity";
+    const employmentLabel =
+      employmentType?.replace(/[_-]+/g, " ") || "Opportunity";
     const modeLabel = cardMode;
     return (
       <Stack spacing={0.45} sx={{ minWidth: 0, width: "100%" }}>
-        <Stack direction="row" alignItems="flex-start" sx={{ minWidth: 0, flexWrap: "wrap", columnGap: 0.8, rowGap: 0.35 }}>
+        <Stack
+          direction="row"
+          alignItems="flex-start"
+          sx={{ minWidth: 0, flexWrap: "wrap", columnGap: 0.8, rowGap: 0.35 }}
+        >
           <Typography
             variant="caption"
             color="text.secondary"
@@ -44,13 +49,25 @@ export function JobMetadata({
           <Chip
             size="small"
             label={employmentLabel}
-            sx={{ height: 20, borderRadius: 1, fontSize: "0.65rem", bgcolor: "action.hover", color: "text.secondary" }}
+            sx={{
+              height: 20,
+              borderRadius: 1,
+              fontSize: "0.65rem",
+              bgcolor: "action.hover",
+              color: "text.secondary",
+            }}
           />
           {modeLabel && (
             <Chip
               size="small"
               label={modeLabel}
-              sx={{ height: 20, borderRadius: 1, fontSize: "0.65rem", bgcolor: "action.hover", color: "text.secondary" }}
+              sx={{
+                height: 20,
+                borderRadius: 1,
+                fontSize: "0.65rem",
+                bgcolor: "action.hover",
+                color: "text.secondary",
+              }}
             />
           )}
         </Stack>

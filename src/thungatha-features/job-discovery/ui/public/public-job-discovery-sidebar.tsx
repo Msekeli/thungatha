@@ -23,7 +23,8 @@ const features = [
   },
   {
     title: "Saved Jobs",
-    description: "Keep interesting opportunities together and return to them when you are ready.",
+    description:
+      "Keep interesting opportunities together and return to them when you are ready.",
     note: "Build your shortlist",
     icon: Bookmark,
     color: "primary.main",

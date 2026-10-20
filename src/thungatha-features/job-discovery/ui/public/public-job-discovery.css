@@ -1,130 +1,380 @@
 @layer components {
   .th-discovery-shell {
-    display:flex; flex-direction:column; height:100dvh; min-height:0!important;
-    overflow:hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 0 !important;
+    overflow: hidden;
   }
-  .th-discovery-shell>header,.th-discovery-shell>.th-discovery-hero { flex:0 0 auto; }
-  .th-mobile-bottom-nav { display:none; }
-  .th-discovery-shell>.th-discovery-hero { padding:8px 16px 10px; text-align:center; }
-  .th-discovery-shell .th-discovery-hero h1 { font-size:clamp(30px,2.8vw,42px); }
-  .th-discovery-shell .th-discovery-hero p { max-width:none; margin:4px auto 12px; }
-    .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { width:min(100%,1010px); margin-inline:auto; }
+  .th-discovery-shell > header,
+  .th-discovery-shell > .th-discovery-hero {
+    flex: 0 0 auto;
+  }
+  .th-mobile-bottom-nav {
+    display: none;
+  }
+  .th-discovery-shell > .th-discovery-hero {
+    padding: 8px 16px 10px;
+    text-align: center;
+  }
+  .th-discovery-shell .th-discovery-hero h1 {
+    font-size: clamp(30px, 2.8vw, 42px);
+  }
+  .th-discovery-shell .th-discovery-hero p {
+    max-width: none;
+    margin: 4px auto 12px;
+  }
+  .th-discovery-shell > .th-discovery-hero > .MuiStack-root:first-of-type {
+    width: min(100%, 1010px);
+    margin-inline: auto;
+  }
   .th-discovery-workspace {
-    flex:1 1 auto; min-height:0; overflow:hidden; align-items:stretch!important;
-    padding:0 16px 12px; gap:10px;
-    grid-template-columns:250px minmax(0,.95fr) minmax(0,1.12fr)!important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch !important;
+    padding: 0 16px 12px;
+    gap: 10px;
+    grid-template-columns: 250px minmax(0, 0.95fr) minmax(0, 1.12fr) !important;
   }
-  .th-discovery-workspace>* { min-width:0; min-height:0; }
-    .th-discovery-results {
-    position:relative; display:flex; flex-direction:column; height:100%;
-    min-height:0; overflow:hidden; border:1px solid var(--th-line);
-    border-radius:12px; padding:0 10px 8px;
+  .th-discovery-workspace > * {
+    min-width: 0;
+    min-height: 0;
   }
-    .th-discovery-results .th-results-toolbar {
-    position:absolute; z-index:2; top:6px; right:12px; margin:0;
+  .th-discovery-results {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--th-line);
+    border-radius: 12px;
+    padding: 0 10px 8px;
   }
-    .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:145px!important; }
-  .th-discovery-results .th-mobile-search { display:none; }
-  .th-discovery-results .th-results-toolbar { left:auto; }
+  .th-discovery-results .th-results-toolbar {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    right: 12px;
+    margin: 0;
+  }
+  .th-discovery-results .th-results-toolbar .MuiFormControl-root {
+    min-width: 145px !important;
+  }
+  .th-discovery-results .th-mobile-search {
+    display: none;
+  }
+  .th-discovery-results .th-results-toolbar {
+    left: auto;
+  }
   .th-discovery-job-list {
-    flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
-  .th-discovery-job-list> .MuiStack-root { gap:4px; }
+  .th-discovery-job-list > .MuiStack-root {
+    gap: 4px;
+  }
   .th-discovery-job-list .th-job-card-actions button,
   .th-discovery-job-list .th-job-card-actions a {
-    display:grid; place-items:center; width:28px; height:28px;
-    min-width:28px; padding:5px; border-radius:8px;
-    color:var(--th-fg-muted); background:var(--th-surface, transparent);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 5px;
+    border-radius: 8px;
+    color: var(--th-fg-muted);
+    background: var(--th-surface, transparent);
   }
   .th-discovery-job-list .th-job-card-actions button:hover,
   .th-discovery-job-list .th-job-card-actions a:hover {
-    color:var(--th-accent-text); background:var(--th-accent-bg);
+    color: var(--th-accent-text);
+    background: var(--th-accent-bg);
   }
   .th-discovery-detail {
-    display:flex; flex-direction:column; height:100%; min-height:0;
-    overflow:hidden; overscroll-behavior:contain; border-radius:12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    border-radius: 12px;
   }
   .th-discovery-detail .th-jobs-detail-content {
-    display:flex; flex:1 1 auto; flex-direction:column; gap:8px;
-    min-height:0; overflow:hidden;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
   }
-  .th-discovery-detail .th-jobs-detail-content > :not(style) { margin:0!important; }
-  .th-discovery-detail .th-jobs-redesign-job-head { flex:0 0 auto; }
+  .th-discovery-detail .th-jobs-detail-content > :not(style) {
+    margin: 0 !important;
+  }
+  .th-discovery-detail .th-jobs-redesign-job-head {
+    flex: 0 0 auto;
+  }
   .th-discovery-detail .th-jobs-detail-content > .th-job-description-panel {
-    display:flex; flex:1 1 auto; flex-direction:column; min-height:0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
   }
-  .th-discovery-detail .th-job-description-panel > .MuiTabs-root { flex:0 0 auto; }
-  .th-discovery-detail .th-job-description-body { flex:1 1 auto; min-height:0; overflow-y:auto; }
-  .th-discovery-detail .th-jobs-detail-header-actions { flex-wrap:nowrap; align-items:center; }
-  .th-discovery-detail .th-jobs-detail-header-actions .MuiButton-root { min-height:36px; padding:6px 10px; white-space:nowrap; }
-  .th-discovery-detail .th-jobs-detail-header-actions .th-restricted-action { width:auto; min-width:0; }
+  .th-discovery-detail .th-job-description-panel > .MuiTabs-root {
+    flex: 0 0 auto;
+  }
+  .th-discovery-detail .th-job-description-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .th-discovery-detail .th-jobs-detail-header-actions {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .th-discovery-detail .th-jobs-detail-header-actions .MuiButton-root {
+    min-height: 36px;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+  .th-discovery-detail .th-jobs-detail-header-actions .th-restricted-action {
+    width: auto;
+    min-width: 0;
+  }
   .th-discovery-detail .th-jobs-detail-actions {
-    display:grid!important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px!important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
   }
-  .th-discovery-detail .th-jobs-detail-actions>* { min-width:0; }
-  .th-discovery-detail .th-jobs-detail-actions .MuiButton-root { min-height:40px; height:40px; padding:6px 10px; box-sizing:border-box; }
-  .th-discovery-detail .th-jobs-detail-content .th-jobs-redesign-job-head { padding-bottom:8px; }
-  .th-discovery-detail .th-jobs-detail-content > .MuiStack-root { gap:8px; }
-    @media (max-width:1199px) {
-    .th-discovery-workspace { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)!important; }
-    .th-discovery-workspace>aside[aria-label="Thungatha features"] { display:none; }
+  .th-discovery-detail .th-jobs-detail-actions > * {
+    min-width: 0;
   }
-  @media (max-width:760px) {
+  .th-discovery-detail .th-jobs-detail-actions .MuiButton-root {
+    min-height: 40px;
+    height: 40px;
+    padding: 6px 10px;
+    box-sizing: border-box;
+  }
+  .th-discovery-detail .th-jobs-detail-content .th-jobs-redesign-job-head {
+    padding-bottom: 8px;
+  }
+  .th-discovery-detail .th-jobs-detail-content > .MuiStack-root {
+    gap: 8px;
+  }
+  @media (max-width: 1199px) {
+    .th-discovery-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) !important;
+    }
+    .th-discovery-workspace > aside[aria-label="Thungatha features"] {
+      display: none;
+    }
+  }
+  @media (max-width: 760px) {
     .th-mobile-bottom-nav {
-      position:fixed!important; left:0; right:0; bottom:0; top:auto;
-      z-index:1300; display:grid!important;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      width:100vw; min-height:calc(56px + env(safe-area-inset-bottom));
-      padding:6px 8px max(6px,env(safe-area-inset-bottom));
-      margin:0; border:0; border-top:1px solid var(--th-line);
-      background:var(--th-panel); box-sizing:border-box;
-      visibility:visible; opacity:1; transform:none;
+      position: fixed !important;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: auto;
+      z-index: 1300;
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: 100vw;
+      min-height: calc(56px + env(safe-area-inset-bottom));
+      padding: 6px 8px max(6px, env(safe-area-inset-bottom));
+      margin: 0;
+      border: 0;
+      border-top: 1px solid var(--th-line);
+      background: var(--th-panel);
+      box-sizing: border-box;
+      visibility: visible;
+      opacity: 1;
+      transform: none;
     }
-    .th-mobile-bottom-nav>a {
-      display:flex; min-width:0; flex-direction:column; align-items:center;
-      justify-content:center; gap:3px; padding:4px 2px;
-      border-radius:8px; color:var(--th-fg-muted); text-decoration:none;
-      font-size:11px; line-height:1.2; white-space:nowrap;
+    .th-mobile-bottom-nav > a {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 4px 2px;
+      border-radius: 8px;
+      color: var(--th-fg-muted);
+      text-decoration: none;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: nowrap;
     }
-    .th-mobile-bottom-nav>a[data-active="true"] {
-      color:var(--th-accent-text); background:var(--th-accent-bg);
+    .th-mobile-bottom-nav > a[data-active="true"] {
+      color: var(--th-accent-text);
+      background: var(--th-accent-bg);
     }
-    .th-mobile-bottom-nav>a svg { flex:0 0 auto; }
-    .th-discovery-shell { padding-bottom:calc(56px + env(safe-area-inset-bottom)); height:100dvh; min-height:0; }
-    .th-mobile-bottom-nav * { visibility:visible; }
-    .th-discovery-shell>header { min-height:58px; padding:6px 10px; gap:6px; }
-    .th-discovery-shell>header img { width:148px; height:auto; }
-    .th-discovery-shell>.th-discovery-hero { padding:6px 12px 8px; }
+    .th-mobile-bottom-nav > a svg {
+      flex: 0 0 auto;
+    }
+    .th-discovery-shell {
+      padding-bottom: calc(56px + env(safe-area-inset-bottom));
+      height: 100dvh;
+      min-height: 0;
+    }
+    .th-mobile-bottom-nav * {
+      visibility: visible;
+    }
+    .th-discovery-shell > header {
+      min-height: 58px;
+      padding: 6px 10px;
+      gap: 6px;
+    }
+    .th-discovery-shell > header img {
+      width: 148px;
+      height: auto;
+    }
+    .th-discovery-shell > .th-discovery-hero {
+      padding: 6px 12px 8px;
+    }
     .th-discovery-shell .th-discovery-hero h1,
-    .th-discovery-shell>.th-discovery-hero>p { display:none; }
-    .th-discovery-shell>.th-discovery-hero>.MuiStack-root:first-of-type { flex-direction:column; gap:8px; }
-    .th-discovery-shell .th-discovery-hero .MuiOutlinedInput-root { min-height:44px!important; }
-    .th-discovery-shell .th-discovery-hero .MuiChip-root { height:34px; flex:0 0 auto; }
-    .th-discovery-shell>.th-discovery-hero>.MuiStack-root:last-child { display:none; }
-    .th-discovery-workspace { display:block!important; position:relative; flex:1 1 auto; min-height:0; padding:0 12px 0; }
-    .th-discovery-results { display:flex; height:100%; border:0; padding:0; overflow:hidden; }
-    .th-discovery-results>.MuiStack-root:first-child { flex:0 0 auto; }
-    .th-discovery-results .th-results-toolbar { position:static; flex:0 0 auto; flex-wrap:nowrap; justify-content:flex-end; padding:0 0 8px; }
-    .th-discovery-results .th-results-toolbar>button { display:inline-flex; }
-    .th-discovery-results .th-mobile-search { display:none!important; }
-    .th-discovery-results .th-results-toolbar .MuiFormControl-root { min-width:130px!important; }
-    .th-discovery-job-list { flex:1 1 auto; min-height:0; height:auto; overflow-y:auto; padding-bottom:8px; }
-    .th-discovery-detail {
-      display:none; position:absolute; inset:8px 8px 68px; z-index:4;
-      background:var(--th-page); height:auto;
+    .th-discovery-shell > .th-discovery-hero > p {
+      display: none;
     }
-    .th-discovery-detail.th-detail-mobile-open { display:flex; overflow:hidden!important; }
-    .th-discovery-detail .th-job-description-body { overflow-y:auto; }
-    .th-discovery-detail .th-jobs-detail-actions { grid-template-columns:1fr; }
+    .th-discovery-shell > .th-discovery-hero > .MuiStack-root:first-of-type {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .th-discovery-shell .th-discovery-hero .MuiOutlinedInput-root {
+      min-height: 44px !important;
+    }
+    .th-discovery-shell .th-discovery-hero .MuiChip-root {
+      height: 34px;
+      flex: 0 0 auto;
+    }
+    .th-discovery-shell > .th-discovery-hero > .MuiStack-root:last-child {
+      display: none;
+    }
+    .th-discovery-workspace {
+      display: block !important;
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 0 12px 0;
+    }
+    .th-discovery-results {
+      display: flex;
+      height: 100%;
+      border: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .th-discovery-results > .MuiStack-root:first-child {
+      flex: 0 0 auto;
+    }
+    .th-discovery-results .th-results-toolbar {
+      position: static;
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      padding: 0 0 8px;
+    }
+    .th-discovery-results .th-results-toolbar > button {
+      display: inline-flex;
+    }
+    .th-discovery-results .th-mobile-search {
+      display: none !important;
+    }
+    .th-discovery-results .th-results-toolbar .MuiFormControl-root {
+      min-width: 130px !important;
+    }
+    .th-discovery-job-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      overflow-y: auto;
+      padding-bottom: 8px;
+    }
+    .th-discovery-detail {
+      display: none;
+      position: absolute;
+      inset: 8px 8px 68px;
+      z-index: 4;
+      background: var(--th-page);
+      height: auto;
+    }
+    .th-discovery-detail.th-detail-mobile-open {
+      display: flex;
+      overflow: hidden !important;
+    }
+    .th-discovery-detail .th-job-description-body {
+      overflow-y: auto;
+    }
+    .th-discovery-detail .th-jobs-detail-actions {
+      grid-template-columns: 1fr;
+    }
   }
 }
 @layer components {
-  .th-mobile-filter-backdrop { position:fixed; inset:0; z-index:200; display:flex; align-items:flex-end; background:color-mix(in srgb,var(--th-nav) 64%,transparent); }
-  .th-mobile-filter-sheet { display:flex; flex-direction:column; width:100%; max-height:min(88dvh,760px); overflow:hidden; border:1px solid var(--th-line); border-radius:18px 18px 0 0; background:var(--th-panel); color:var(--th-fg); box-shadow:0 -16px 48px color-mix(in srgb,var(--th-nav) 24%,transparent); }
-  .th-mobile-filter-sheet-head { display:flex; align-items:center; justify-content:space-between; flex:0 0 auto; min-height:56px; padding:8px 16px; border-bottom:1px solid var(--th-line); }
-  .th-mobile-filter-sheet .th-filter-content { min-height:0; overflow-y:auto; padding:14px 16px max(16px,env(safe-area-inset-bottom)); }
-  .th-mobile-filter-sheet .th-filter-group { padding:10px 0; border-bottom:1px solid var(--th-line); }
-  .th-mobile-filter-sheet .th-mobile-filter-actions { position:sticky; bottom:0; flex-direction:row; justify-content:space-between; align-items:center; padding-top:12px; background:var(--th-panel); }
-  .th-mobile-filter-sheet .th-mobile-apply-filters { flex:1; }
-  @media (min-width:761px) { .th-mobile-filter-backdrop { align-items:center; justify-content:center; padding:24px; } .th-mobile-filter-sheet { width:min(100%,560px); max-height:85dvh; border-radius:var(--th-radius-panel); } }
+  .th-mobile-filter-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    background: color-mix(in srgb, var(--th-nav) 64%, transparent);
+  }
+  .th-mobile-filter-sheet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: min(88dvh, 760px);
+    overflow: hidden;
+    border: 1px solid var(--th-line);
+    border-radius: 18px 18px 0 0;
+    background: var(--th-panel);
+    color: var(--th-fg);
+    box-shadow: 0 -16px 48px color-mix(in srgb, var(--th-nav) 24%, transparent);
+  }
+  .th-mobile-filter-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    min-height: 56px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--th-line);
+  }
+  .th-mobile-filter-sheet .th-filter-content {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px 16px max(16px, env(safe-area-inset-bottom));
+  }
+  .th-mobile-filter-sheet .th-filter-group {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--th-line);
+  }
+  .th-mobile-filter-sheet .th-mobile-filter-actions {
+    position: sticky;
+    bottom: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    background: var(--th-panel);
+  }
+  .th-mobile-filter-sheet .th-mobile-apply-filters {
+    flex: 1;
+  }
+  @media (min-width: 761px) {
+    .th-mobile-filter-backdrop {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .th-mobile-filter-sheet {
+      width: min(100%, 560px);
+      max-height: 85dvh;
+      border-radius: var(--th-radius-panel);
+    }
+  }
 }

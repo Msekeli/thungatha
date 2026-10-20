@@ -532,7 +532,8 @@
     color: var(--th-accent-text);
   }
   @media (min-width: 761px) {
-    .th-mobile-bottom-nav { display: none !important; }
+    .th-mobile-bottom-nav {
+      display: none !important;
+    }
   }
-
 }

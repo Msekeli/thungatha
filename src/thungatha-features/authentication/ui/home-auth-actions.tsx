@@ -19,8 +19,18 @@ export function HomeAuthActions({
 
   if (!configured) {
     return (
-      <div className={variant === "nav" ? "flex items-center gap-1" : "flex flex-col gap-3"}>
-        <div className={variant === "nav" ? "flex flex-nowrap items-center gap-1" : "flex flex-wrap gap-2"}>
+      <div
+        className={
+          variant === "nav" ? "flex items-center gap-1" : "flex flex-col gap-3"
+        }
+      >
+        <div
+          className={
+            variant === "nav"
+              ? "flex flex-nowrap items-center gap-1"
+              : "flex flex-wrap gap-2"
+          }
+        >
           <ButtonLink href="/sign-up" variant="primary" size={size}>
             {signUpLabel}
           </ButtonLink>
@@ -41,7 +51,9 @@ export function HomeAuthActions({
   }
 
   return (
-    <div className={`flex items-center ${variant === "nav" ? "flex-nowrap gap-1" : "flex-wrap gap-2"}`}>
+    <div
+      className={`flex items-center ${variant === "nav" ? "flex-nowrap gap-1" : "flex-wrap gap-2"}`}
+    >
       <Show when="signed-out">
         <SignUpButton mode="modal">
           <Button variant="primary" size={size}>

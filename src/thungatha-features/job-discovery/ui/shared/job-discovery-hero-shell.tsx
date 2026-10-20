@@ -39,7 +39,10 @@ export function JobDiscoveryHeroShell({
       >
         {title}
       </Typography>
-      <Typography color="text.secondary" sx={{ mt: 0.5, mb: 1.5, maxWidth: 680 }}>
+      <Typography
+        color="text.secondary"
+        sx={{ mt: 0.5, mb: 1.5, maxWidth: 680 }}
+      >
         {description}
       </Typography>
       {children}

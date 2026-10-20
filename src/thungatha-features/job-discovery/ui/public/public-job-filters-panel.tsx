@@ -170,7 +170,9 @@ export function PublicJobFiltersPanel({
         </Select>
       </FormControl>
       <Stack direction="row" className="th-mobile-filter-actions">
-        <Button variant="text" onClick={onClear}>Reset</Button>
+        <Button variant="text" onClick={onClear}>
+          Reset
+        </Button>
         <Button
           className="th-mobile-apply-filters"
           variant="contained"
