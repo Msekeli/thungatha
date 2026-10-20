@@ -65,7 +65,7 @@ export function AuthenticatedJobSearchToolbar({
         type="button"
         size="small"
         variant="outlined"
-        onClick={onToggleFilters}
+        onClick={(event) => onToggleFilters(event.currentTarget)}
         aria-expanded={filtersOpen}
         startIcon={<SlidersHorizontal size={15} />}
         sx={{ height: 40, minWidth: 92, px: 1.5, whiteSpace: "nowrap" }}
