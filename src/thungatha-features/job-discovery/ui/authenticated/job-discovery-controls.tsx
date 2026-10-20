@@ -24,7 +24,7 @@ type Props = {
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onToggleFilters: () => void;
+  onToggleFilters: (anchorEl: HTMLElement) => void;
   onSortChange: (value: string) => void;
   onCategoryChange: (key: string, label: string) => void;
   undoAction: UndoAction;
