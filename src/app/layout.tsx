@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
-import { AuthProviders } from "@/components/auth/auth-providers";
-import { hasClerkConfiguration } from "@/lib/auth/identity";
+import { AuthProviders } from "@/thungatha-features/authentication/ui/auth-providers";
+import { hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import { themeInitScript } from "@/lib/theme";
+import { AppThemeProvider } from "@/components/theme/app-theme-provider";
+import { MobileAppShell } from "@/components/layout/mobile-app-shell";
 import "./globals.css";
 
 // Inter powers the design system through the --font-inter variable.
@@ -31,9 +33,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <AuthProviders configured={hasClerkConfiguration()}>
-          {children}
-        </AuthProviders>
+        <AppThemeProvider>
+          <AuthProviders configured={hasClerkConfiguration()}>
+            <MobileAppShell configured={hasClerkConfiguration()} />
+            {children}
+          </AuthProviders>
+        </AppThemeProvider>
       </body>
     </html>
   );

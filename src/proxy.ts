@@ -29,7 +29,7 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const path = request.nextUrl.pathname;
   const configured = Boolean(
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-      process.env.CLERK_SECRET_KEY,
+    process.env.CLERK_SECRET_KEY,
   );
 
   if (configured === false) {
@@ -44,6 +44,7 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
+    "/",
     "/jobs/:path*",
     "/cv-studio/:path*",
     "/applications/:path*",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Button } from "@/components/ui/button";
+import Switch from "@mui/material/Switch";
 import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
 function subscribe(onChange: () => void) {
@@ -10,14 +10,12 @@ function subscribe(onChange: () => void) {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
-  // Keep other open tabs in step when the theme is changed in one of them.
   const onStorage = (event: StorageEvent) => {
-    if (event.key === THEME_STORAGE_KEY) {
+    if (event.key === THEME_STORAGE_KEY)
       document.documentElement.setAttribute(
         "data-theme",
         event.newValue === "light" ? "light" : "dark",
       );
-    }
   };
   window.addEventListener("storage", onStorage);
   return () => {
@@ -26,7 +24,7 @@ function subscribe(onChange: () => void) {
   };
 }
 
-const getSnapshot = (): Theme | null =>
+const getSnapshot = (): Theme =>
   document.documentElement.getAttribute("data-theme") === "light"
     ? "light"
     : "dark";
@@ -34,60 +32,76 @@ const getServerSnapshot = (): Theme | null => null;
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isDark = theme !== "light";
+  const label = `Switch to ${isDark ? "light" : "dark"} mode`;
 
   function toggle() {
-    const next: Theme = theme === "light" ? "dark" : "light";
+    const next: Theme = isDark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
-      // Storage can be blocked; the theme still changes for this visit.
+      /* Theme still changes for this visit. */
     }
   }
 
-  const label = theme
-    ? `Switch to ${theme === "dark" ? "light" : "dark"} mode`
-    : "Switch colour theme";
-
   return (
-    <Button
-      variant="ghost"
-      size="md"
-      aria-label={label}
-      title={label}
-      onClick={toggle}
-      className={`w-9 px-0 ${className}`}
-    >
-      {/* Sun shows in dark mode (switch to light), moon shows in light mode. */}
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="hidden dark:block"
-      >
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-      </svg>
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="block dark:hidden"
-      >
-        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-      </svg>
-    </Button>
+    <Switch
+      checked={isDark}
+      onChange={toggle}
+      inputProps={{ "aria-label": label, title: label }}
+      className={className}
+      icon={
+        <span className="th-theme-switch-moon" aria-hidden="true">
+          ☾
+        </span>
+      }
+      checkedIcon={
+        <span className="th-theme-switch-sun" aria-hidden="true">
+          ☼
+        </span>
+      }
+      sx={{
+        width: 98,
+        height: 44,
+        p: "5px",
+        overflow: "visible",
+        "& .MuiSwitch-switchBase": {
+          p: "5px",
+          color: "var(--th-success)",
+          transitionDuration: "180ms",
+        },
+        "& .MuiSwitch-switchBase.Mui-checked": {
+          transform: "translateX(54px)",
+          color: "var(--th-success)",
+        },
+        "& .MuiSwitch-thumb": {
+          width: 32,
+          height: 32,
+          backgroundColor: "var(--th-success)",
+          boxShadow:
+            "0 0 0 2px var(--th-line), 0 0 12px color-mix(in srgb, var(--th-success) 55%, transparent)",
+        },
+        "& .MuiSwitch-track": {
+          border: "1px solid var(--th-success)",
+          borderRadius: 24,
+          opacity: 1,
+          backgroundColor: "var(--th-panel)",
+        },
+        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+          backgroundColor: "var(--th-panel)",
+          opacity: 1,
+        },
+        "& .th-theme-switch-sun, & .th-theme-switch-moon": {
+          display: "grid",
+          placeItems: "center",
+          width: 28,
+          height: 28,
+          color: "var(--th-success)",
+          fontSize: 25,
+          lineHeight: 1,
+        },
+      }}
+    />
   );
 }

@@ -45,7 +45,7 @@ The product specification and architecture document will define these experience
 | Milestone | Name | Status |
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
-| M1 | Job Discovery and Job Feed | In progress — C05 under investigation; C06 locally verified, cloud acceptance gates outstanding |
+| M1 | Job Discovery and Job Feed | In progress — C05 decision open; C06 cloud/RLS gates outstanding; C07/C08 in review; C09 audit underway |
 | M2 | Profile and CV Import | Not started |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
@@ -64,9 +64,26 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 is the current implementation milestone. C04's database-side ingestion reliability work has been verified within the recorded scope. C05 remains under investigation; its AI-extraction decision and implementation scope are unresolved. C06's API implementation passed reported local type-checking, lint, unit tests and production build, but authenticated Supabase smoke testing and cross-user/RLS isolation remain unverified. C07's persisted-data Job Discovery UI is implemented on dev and remains in review: on 2026-10-16, local verification passed `npx tsc --noEmit`, `npm run lint` (0 errors; 3 unused-variable warnings in the test mock), `npm test` (14 files, 94 tests passed), `npm run build`, and `npm run test:e2e` (2 tests passed). The GitHub Actions run on the previous commit failed on the now-fixed duplicate `Greenhouse` text assertion; a run for the latest fix is not yet confirmed green. C07 still needs the remaining browser/responsive and authenticated Supabase verification plus explicit user acceptance. C05 remains open and must be resolved before M1 acceptance.
+M1 remains in progress. C04's database-side ingestion reliability path passed its scoped smoke test (see the dated record below). C05 remains open: the current provider adapters consume structured provider responses and normalize deterministically, and the repository does not yet establish a concrete need for AI extraction in M1. Record an explicit decision to omit AI extraction from M1 unless testing a permitted source reveals a specific gap. C06 authenticated Supabase smoke tests and real cross-user/RLS isolation are not evidenced. C07 remains in review pending hosted-data filter/pagination validation, responsive and keyboard/browser review, and user acceptance.
+
+C08's application-activity migration `20261017000100_job_application_activity.sql` was applied by the user to hosted Supabase after a dry run showed only that migration pending. The user confirmed the persisted application reminder now works. GitHub Actions passed on `1687578a69734aaa85ed626ed5077cb7fef2fbfe`: TypeScript check, lint, 15 unit-test files / 105 tests, and production build. The workflow does not run Playwright. The current Playwright suite covers the landing page and authentication redirects, not the end-to-end Job Discovery journey.
+
+Source approval remains unresolved. The decision log says Adzuna is excluded unless the user explicitly reopens that decision; the repository does not yet evidence final source-term and operational approval for the enabled Jooble/Greenhouse integrations. C09 audit is in progress. Do not accept M1 until the remaining source, cloud/RLS, browser, and user-review gates are resolved.
 
 No future milestone or checkpoint may be marked complete without the required verification evidence and review.
+
+## Architecture and Jobs refactor (separate from milestone acceptance)
+
+The feature-based target structure is recorded in `Project Documentation/ARCHITECTURE.md` and `folder-structure.txt`, with the decision in `DECISIONS.md` (D-035). This documentation update does not change M1 scope, checkpoint status, or acceptance criteria and does not move application code.
+
+The first structural work should focus on the Jobs feature only:
+1. audit the public `/` and authenticated `/jobs` experiences, current API contracts, and tests;
+2. identify shared types and pure utilities before extracting components;
+3. preserve two separate discovery experiences and their different authentication capabilities;
+4. migrate in small steps, preserving existing routes, response shapes, filtering, saved/dismissed state and activity behavior;
+5. run the available quality gates and record actual evidence before proceeding.
+
+This refactor is an implementation/maintainability task, not evidence that M1 is accepted. Do not mark any milestone checkpoint complete solely because files were reorganized.
 
 ## 4. Milestone Roadmap
 
@@ -92,12 +109,14 @@ Scope includes:
 - Establishing a normalized job data model and persistence.
 - Building reliable source ingestion, refresh and deduplication.
 - Providing job feeds, details, search and filters.
-- Supporting save and dismiss actions with appropriate persistence.
+- Supporting save and dismiss actions with appropriate persistence and a short-lived, bottom-positioned Undo snackbar.
+- Recording when a user opens an external application destination without treating the click as submission.
+- Prompting users to confirm whether they applied when a previously opened role reappears, and persisting their explicit confirmation.
 - Distinguishing the discovery source from the destination where a user applies.
 - Handling unavailable sources, incomplete listings and errors honestly.
 - Verifying security, reliability, accessibility and the end-to-end experience.
 
-M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. Job Discovery must not imply that opening an external application page submits an application.
+M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
 
 **Dependency:** M0.
 
@@ -301,8 +320,8 @@ Thungatha is ready for final release only when:
 | Document | Responsibility |
 |---|---|
 | `IMPLEMENTATION-PLAN.md` | Overall roadmap, milestone summaries, dependencies and status |
-| `docs/PRODUCT-SPECIFICATION.md` | Product behaviour, features and user workflows |
-| `docs/ARCHITECTURE.md` | Application structure, technology choices, security and data access |
+| `Project Documentation/PRODUCT-SPECIFICATION.md` | Product behaviour, features and user workflows |
+| `Project Documentation/ARCHITECTURE.md` | Application structure, technology choices, security and data access |
 | `DECISIONS.md` | Approved decisions and their rationale |
 | `AGENTS.md` | Instructions for AI coding agents |
 | `milestones/Mx-.../` | Detailed milestone scope, checkpoints, evidence and acceptance |

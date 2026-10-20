@@ -24,7 +24,9 @@ These capabilities are delivered incrementally through the project's milestone p
 
 ## Architecture Overview
 
-Thungatha uses a single-repository modular-monolith architecture. Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
+Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/features/`; generic shared UI stays under `src/components/`; and existing shared helpers/infrastructure remain under `src/lib/` unless a concrete, reviewed refactor warrants moving them. The agreed target is documented in [`folder-structure.txt`](folder-structure.txt) and [`Project Documentation/ARCHITECTURE.md`](<Project Documentation/ARCHITECTURE.md>). This target is being adopted incrementally; it does not imply all files have already moved.
+
+For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. We will extract only code that is genuinely shared and preserve existing behavior and API contracts. Job Tracking is authenticated; CV Studio can expose public introductory content while authoring remains authenticated. Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
 
 ## Getting Started
 
@@ -53,24 +55,45 @@ The endpoint returns per-provider received/inserted/updated/skipped counts. HTTP
 
 See [Local Development](#local-development) below for the database and verification commands.
 
-### Local Development
+### Local Development (using the cloud Supabase project)
 
-Start the local Supabase stack and apply migrations with Docker running:
+Thungatha uses the configured cloud Supabase project for this workflow; you do not need to start a local Supabase stack or Docker.
 
-```bash
-npx supabase start
-npx supabase db reset
-```
+1. Install dependencies and configure `.env.local` using `.env.example`. Keep your existing Clerk and Supabase values; never commit secrets.
+2. Sign in to the Supabase CLI and link this repository to the same project referenced by `NEXT_PUBLIC_SUPABASE_URL`:
 
-Run the application in another terminal:
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref YOUR_SUPABASE_PROJECT_REF
+   ```
 
-```bash
-npm run dev
-```
+   The project ref is the identifier in your Supabase dashboard URL: `https://supabase.com/dashboard/project/YOUR_SUPABASE_PROJECT_REF`.
 
-Open [http://localhost:3000](http://localhost:3000).
+3. Check migration history and preview pending changes before applying anything:
 
-Run the project's checks with the commands documented in the development guide. See the [README's development instructions](#local-development) and the implementation plan for the current verification requirements.
+   ```bash
+   npx supabase migration list --linked
+   npx supabase db push --dry-run
+   ```
+
+   Confirm the preview targets the intended project and includes the new `20261017000100_job_application_activity.sql` migration. If it lists unrelated pending migrations, review them before proceeding. Then apply the reviewed pending migrations:
+
+   ```bash
+   npx supabase db push
+   ```
+
+4. Run the app and checks:
+
+   ```bash
+   npm run dev
+   npm test
+   npm run lint
+   npm run build
+   ```
+
+Open [http://localhost:3000](http://localhost:3000), sign in through Clerk, and test with a job that has an active application URL. The activity API uses the signed-in user's Clerk token and Supabase RLS; do not substitute a service-role key for normal user requests.
+
+If the migration preview or application fails, stop and inspect the error rather than manually changing the hosted schema.
 
 ## Project Status
 
@@ -78,9 +101,11 @@ Development follows six planned milestones, from job discovery through profile a
 
 ## Documentation
 
-- **[Project Context](PROJECT-CONTEXT.md):** Concise working context, conventions, and current implementation state.
-- **[Master Product Specification](THUNGATHA-MASTER-PRODUCT-SPECIFICATION.md):** Authoritative product requirements, workflows, and rules.
-- **[Architecture](docs/ARCHITECTURE.md):** Application structure, module boundaries, request flows, authentication, and data access.
+- **[Folder Structure](folder-structure.txt):** Agreed target structure and incremental migration boundaries.
+- **[Product Specification](<Project Documentation/PRODUCT-SPECIFICATION.md>):** Authoritative product requirements, workflows, and rules.
+- **[Architecture](<Project Documentation/ARCHITECTURE.md>):** Application structure, module boundaries, request flows, authentication, and data access.
+- **[Folder Naming and API Route Map](<Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md>):** Naming conventions, current API inventory, and URL-preserving route organisation.
+- **[Public Job Discovery Plan](<Project Documentation/PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md>):** Existing public discovery implementation scope and verification record.
 - **[Technical Decisions](DECISIONS.md):** Confirmed decisions, provisional choices, and unresolved questions.
 - **[Implementation Plan](IMPLEMENTATION-PLAN.md):** Milestones, checkpoints, acceptance criteria, and progress.
 - **[Agent Instructions](AGENTS.md):** Development rules and guidance for AI coding assistants.

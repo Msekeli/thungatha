@@ -2,22 +2,34 @@
 
 import type { ReactNode } from "react";
 import "./workspace-shell.css";
-import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
-import { SignOutControl } from "@/components/auth/sign-out-control";
+import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { ButtonLink } from "@/components/ui/button";
+import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
+import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
 
-type Destination = { href: string; label: string; icon: string };
-const workspace: Destination[] = [
-  { href: "/jobs", label: "Job Discovery", icon: "⌕" },
-  { href: "/cv-studio", label: "CV Studio", icon: "▤" },
-  { href: "/applications", label: "Job Tracking", icon: "☑" },
-];
-const personal: Destination[] = [
-  { href: "/profile", label: "Profile", icon: "♙" },
-  { href: "/account", label: "Account", icon: "⚙" },
-];
+const pages: Record<string, { title: string; subtitle: string }> = {
+  "/jobs": {
+    title: "Job Discovery",
+    subtitle: "Explore real opportunities. Choose your next step.",
+  },
+  "/cv-studio": {
+    title: "CV Studio",
+    subtitle: "Build and tailor your CV with confidence.",
+  },
+  "/applications": {
+    title: "Job Tracking",
+    subtitle: "Keep your applications organised and moving forward.",
+  },
+  "/profile": {
+    title: "Profile",
+    subtitle: "Manage the professional information used across Thungatha.",
+  },
+  "/account": {
+    title: "Account settings",
+    subtitle: "Manage your preferences and account settings.",
+  },
+};
 
 export function WorkspaceShell({
   active,
@@ -28,31 +40,35 @@ export function WorkspaceShell({
   configured: boolean;
   children: ReactNode;
 }) {
+  const page = pages[active] ?? pages["/jobs"];
   return (
     <div className="th-workspace-shell">
+      <MobileWorkspaceNav configured={configured} />
       <aside className="th-workspace-sidebar" aria-label="Main navigation">
-        <div className="th-workspace-brand"><BrandMark /></div>
-        <nav className="th-workspace-nav" aria-label="Workspace">
-          <p className="th-workspace-nav-label">Workspace</p>
-          {workspace.map((item) => (
-            <Link key={item.href} href={item.href} className="th-workspace-nav-link" data-active={active === item.href}>
-              <span className="th-workspace-nav-icon" aria-hidden="true">{item.icon}</span>{item.label}
-            </Link>
-          ))}
-          <p className="th-workspace-nav-label th-workspace-you-label">You</p>
-          {personal.map((item) => (
-            <Link key={item.href} href={item.href} className="th-workspace-nav-link" data-active={active === item.href}>
-              <span className="th-workspace-nav-icon" aria-hidden="true">{item.icon}</span>{item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="th-workspace-brand">
+          <BrandMark />
+        </div>
+        <WorkspaceSidebarNav active={active} />
         <div className="th-workspace-sidebar-footer">
-          <Link href="/" className="th-workspace-home-link">← Home</Link>
-          <ThemeToggle />
-          {configured ? <SignOutControl /> : <ButtonLink href="/sign-in" variant="secondary" size="md">Sign in</ButtonLink>}
+          {configured ? (
+            <SignOutControl />
+          ) : (
+            <a className="th-workspace-sign-in" href="/sign-in">
+              Sign in
+            </a>
+          )}
         </div>
       </aside>
-      <div className="th-workspace-content">{children}</div>
+      <div className="th-workspace-content">
+        <header className="th-workspace-header">
+          <div className="th-workspace-heading">
+            <h1>{page.title}</h1>
+            <p>{page.subtitle}</p>
+          </div>
+          <ThemeToggle className="th-workspace-theme-toggle" />
+        </header>
+        <main className="th-workspace-page-content">{children}</main>
+      </div>
     </div>
   );
 }

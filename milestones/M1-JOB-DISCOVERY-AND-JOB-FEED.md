@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 scoped database path verified; C05 under investigation; C06 locally verified; C07 UI in review  
+**Status:** In progress — C04 scoped database path verified; C05 decision open; C06 cloud/RLS acceptance gates outstanding; C07 UI in review; C08 implementation and user-tested application reminder in review; C09 audit in progress  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -115,7 +115,6 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - **Tests actually run:** none from the remote GitHub connector. Local unit tests, typecheck, lint, build, and migration execution remain pending.
 - **User review:** pending local pull and verification.
 
-
 **Work**
 
 - Normalize fields without inventing unknown values.
@@ -169,16 +168,17 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - There is no Discovery “Add job” path.
 - External navigation alone never creates or confirms an application.
 
-
 **Implementation status: In progress (backend/API only).** Feed, detail, and user-state API handlers are implemented on `dev`. The authenticated routes call Next.js `connection()` so Clerk/request-header access occurs at request time under Cache Components. Route unit tests mock `connection()` because they invoke handlers outside Next's request context. C06 is not accepted until authenticated cloud behaviour and the remaining data-access checks are verified.
 
 Initial API contract:
+
 - `GET /api/jobs`: persisted catalogue feed with validated query, location, country, work-mode and employment-type filters; page/pageSize pagination; active source records; optional `state=all|saved|dismissed`. The default feed excludes dismissed jobs.
 - `GET /api/jobs/{id}`: retrieve an active persisted listing and the signed-in user's state.
 - `PUT /api/jobs/{id}/state`: set only `saved` or `dismissed`, using server-resolved identity. Updates are limited to active listings.
 - `DELETE /api/jobs/{id}/state`: clear only the signed-in user's state for that job.
 
 Security and lifecycle boundaries:
+
 - Handlers require configured Clerk authentication and use the authenticated Supabase client. User-state queries/writes are scoped by the server-derived user ID and subject to database RLS.
 - The state API rejects `applied`; opening an external application URL is not an application submission. Creating an M5 application record is not included because the M5 application-tracking contract is not yet available.
 - Added endpoint tests for successful feed responses, pagination/filter query construction, per-user state, detail success/not-found/error cases, save/dismiss persistence, invalid JSON/state, inactive listings, and user-scoped deletion.
@@ -208,21 +208,26 @@ Security and lifecycle boundaries:
 
 ### M1-C08 — Save, dismiss, undo and application-state integration
 
-**Goal:** persist discovery decisions and prevent misleading application status.
+**Goal:** persist discovery decisions, capture external application-link activity, and let users explicitly record an application without mistaking a click for a submission.
 
 **Work**
 
 - Implement save/dismiss and undo according to the approved UX.
-- Ensure private actions are isolated per user and survive refresh.
-- Define feed resurfacing rules for saved, dismissed, previously seen and applied jobs.
-- Link to M5 records when an application exists; do not duplicate the application lifecycle in M1.
+- Replace the persistent undo notice with an accessible bottom snackbar that disappears after 10 seconds; Undo restores the exact prior saved/dismissed state.
+- Ensure private actions and activity are isolated per user and survive refresh.
+- Record the timestamp when a user opens an external application destination. Opening the link is evidence of a visit only, never evidence of submission.
+- When a role whose application link was previously opened appears again and has no applied confirmation, show a compact, non-blocking prompt: “Did you apply for this role?”
+- “Yes, I applied” records an explicit, persisted applied confirmation for that user and job; it must be idempotent and must not create duplicate records. “No, not yet” dismisses the prompt for that occurrence only; the prompt may appear again if the role reappears later.
+- Do not prompt again once the role is confirmed applied. Keep the application confirmation distinct from saved/dismissed discovery state.
 - Preserve state if a listing later becomes unavailable.
+- M5 extends this minimal job-linked confirmation into the full application record, submitted-material snapshot, lifecycle/status history and follow-up workflow.
 
 **Exit criteria**
 
-- State transitions and undo are tested.
-- Cross-user isolation is verified.
-- Applied indicators link to the correct application record.
+- Save/dismiss state, application-link-open activity and applied confirmation persist per user and survive refresh.
+- External-link opening alone never marks a job applied.
+- Repeat-visit prompt behaviour and both user choices are tested, including duplicate prevention and per-user isolation.
+- Undo appears at the bottom for 10 seconds, then disappears; it restores the exact previous state when used in time.
 - Source disappearance does not destroy the user's history.
 
 ### M1-C09 — End-to-end verification and acceptance
@@ -244,7 +249,6 @@ Security and lifecycle boundaries:
 - No critical security, data-loss or core-journey defect remains.
 - Evidence is recorded and the user explicitly accepts M1.
 
-
 ---
 
 ## M1-C04 completion record — 2026-10-16
@@ -261,13 +265,11 @@ This is evidence for the tested RPC/database path, not a claim that every live p
 
 **Next checkpoint: M1-C05 — AI boundary and optional extraction.** Keep AI extraction optional; deterministic validation, normalization, deduplication, and persistence remain authoritative.
 
-
 ## C05 investigation and sequencing decision — 2026-10-16
 
 C05 is explicitly **under investigation**, not accepted. The remaining decision is whether the source/content audit reveals a concrete extraction gap that warrants optional AI. No AI feature should be added speculatively. If no concrete need is established, document the rationale and complete the C05 exit criteria accordingly.
 
 Proceed with C06 — Discovery query and action contracts — as the next active checkpoint. Keep C05 open and preserve the requirement that feed, ingestion, search, save and dismiss continue to work with AI disabled. C06 must not add a Discovery “Add job” path or treat opening an external application page as an application submission.
-
 
 ---
 
@@ -282,7 +284,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - **Filter follow-up (2026-10-16):** Investigated the reported filter failure after live jobs loaded. The API used `.or()` for keyword matching and could call `.or()` again for employment-type aliases; PostgREST query builders can overwrite the same `or` parameter, causing combined filters to interfere. Employment-type filtering now normalizes human-readable separators such as `Full-time` to provider values such as `full_time`, without a second `.or()` call. The API test assertion was updated. This is a targeted fix, not yet locally executed or verified against the hosted database.
 - **Outstanding dependency:** C06 authenticated Supabase smoke testing and cross-user/RLS isolation checks remain outstanding.
 - **Next action:** Pull `origin/dev` into the local checkout without discarding local work, inspect the diff, run type-check/lint/unit tests/production build and responsive keyboard/browser checks, resolve any observed issues, then request user review. Do not merge to `main` or mark C07 Accepted without evidence and explicit user acceptance.
-
 
 ## C07 implementation follow-up — filter audit (2026-10-16)
 
@@ -314,13 +315,11 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 5. Resolve the local CSS build error by comparing the local file with the committed file and locating the exact PostCSS parse failure; do not edit shared styles without a proven defect.
 6. Keep C07 In review until the evidence is recorded and user review is complete.
 
-
 ### Follow-up hardening
 
 - The feed client now validates page, page size, total, total-pages consistency, and minimum job identity fields before rendering an API response. Malformed responses produce the existing retryable service error rather than being trusted as valid feed data.
 - Added component coverage for inconsistent feed pagination metadata.
 - The API sanitization test and component test mock fix are committed. These changes have not yet been run in a local checkout during this session. GitHub returned no status checks for the latest commit, so there is no CI result to treat as a pass.
-
 
 ### C07 external destination hardening — 2026-10-16
 
@@ -328,7 +327,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Added a component regression test for `javascript:` and `data:` destinations.
 - This is client-side presentation hardening, not a replacement for validating URLs at ingestion and does not change RLS or API access controls.
 - Verification remains pending: the remote GitHub editing tools do not execute the repository's test/build workflow, and no workflow run was reported for the follow-up commit. Keep C07 in review until the local quality suite and browser acceptance checks pass.
-
 
 ### C07 publication recency filter — 2026-10-16
 
@@ -338,7 +336,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Save/dismiss/undo remain out of C07 and are not being added to this screen; those actions stay in C08.
 - **Verification remains pending.** The changes were committed to `dev` through the remote repository workflow; automated tests, type-check, lint, build, and browser checks have not been run in this session. Confirm the Supabase relation filter/order behaviour with the repository's installed Supabase client and a controlled authenticated data set before accepting C07.
 
-
 ### C07 final implementation review — 2026-10-16
 
 - Added a validated `publishedWithin` API parameter (`24h`, `7d`, `14d`, `30d`; default `30d`) and a matching UI selector. The 30-day default is also used when clearing filters.
@@ -347,7 +344,6 @@ Proceed with C06 — Discovery query and action contracts — as the next active
 - Clarified the employment type placeholder so it no longer implies comma-separated multi-value search.
 - C08 save/dismiss/undo is intentionally excluded.
 - **C07 remains In review.** Remote file edits are not a substitute for running the repository. No tests, type-check, lint, production build, or browser tests were run in this session. Before user testing, run the full quality suite locally and verify the nested relation filter against an authenticated Supabase dataset; investigate any remaining local CSS parse error without changing shared CSS speculatively.
-
 
 ### C07 local verification update — 2026-10-16
 
@@ -372,3 +368,93 @@ The earlier unit-test failure was caused by `getByText("Greenhouse")` matching b
 5. Record user review and explicit acceptance before changing C07 to **Accepted**.
 
 C07 remains **In review**. These local results are meaningful quality evidence, but they do not complete the cloud, browser, security, or user-acceptance gates. C08 save/dismiss/undo remains separate and out of C07 scope.
+
+---
+
+## M1-C08 implementation record — 2026-10-17
+
+**Status: In review — the expanded C08 implementation is committed to `dev` and GitHub Actions quality checks passed; migration application, local browser checks, authenticated Supabase/RLS verification, and user review remain outstanding.**
+
+### Changes made
+
+- Replaced the disabled Save and Dismiss controls with authenticated API actions using the existing `PUT /api/jobs/{id}/state` and `DELETE /api/jobs/{id}/state` contracts.
+- Save and dismissal state are reflected in the selected details and feed cards. The feed refreshes after a successful change, so the Saved, New, and Dismissed categories reflect server-persisted state.
+- Added an Undo notice that remains available while switching feed categories. Undo restores the exact previous state, including replacing a previous Saved state after a dismissal. This original notice is to be replaced by the agreed 10-second bottom snackbar.
+- Added visible, accessible status and error feedback, busy-state protection, and a way to close the undo notice.
+- Follow-up scope approved and implemented on `dev` on 2026-10-17: persist application-link-open timestamps in `user_job_activity`; show a non-blocking “Did you apply for this role?” prompt when a previously opened role is revisited; persist explicit confirmation in `applied_at`; let “No, not yet” dismiss only the current visit's prompt; and automatically remove the bottom Undo snackbar after 10 seconds.
+- Added authenticated `GET/POST /api/jobs/{id}/activity` handling and migration `20261017000100_job_application_activity.sql`, with per-user RLS policies. The existing saved/dismissed state API remains separate. The “I applied” action is an idempotent, minimal job-linked confirmation; M5 will expand it into the full application lifecycle.
+- Added component tests for saving and undoing, and for keeping dismissal undo available across category navigation.
+- No schema or migration change was needed. Existing state writes remain scoped to the authenticated server-resolved user; the state API still accepts only `saved` or `dismissed`.
+
+### Verification actually run
+
+GitHub Actions Quality checks for commit `26a08df58614c27ef83c6d0d83e0fd548870b9b1` passed: TypeScript check, lint, unit tests (14 test files, 96 tests), and production build. Run: https://github.com/Msekeli/thungatha/actions/runs/38986812290
+
+### Remaining limitations and next actions
+
+- The external-link visit and explicit applied-confirmation workflow is now part of C08, not deferred wholesale to M5. M5 remains responsible for the full application lifecycle and submitted materials.
+- The new migration has been committed but has not been applied or verified against the hosted Supabase project in this work session.
+- Component tests were added for link-open tracking, the repeat-visit prompt, explicit confirmation, and dismissing/reopening the prompt. GitHub Actions Quality checks passed for commit `580253a9e7d383ae6e87213b9750d8f2339c25ef`: TypeScript check, lint, unit tests (15 files, 103 tests), and production build. Run: https://github.com/Msekeli/thungatha/actions/runs/38989215975. These automated checks do not replace authenticated Supabase/RLS and browser acceptance checks.
+- Verify Save, Dismiss, the 10-second bottom Undo snackbar, exact prior-state restoration, external-link-open timestamps, the repeat-visit prompt, Yes/No behaviour, refresh persistence, duplicate prevention, and per-user isolation. Apply the migration through the project's normal migration workflow and test with isolated users/data.
+- C08 remains **In review**, not Accepted, until migration, automated/local verification, authenticated RLS checks, and user review are complete.
+
+---
+
+## M1-C08 execution record — 2026-10-17
+
+**Status: In review — the application reminder is user-verified; the full C08 acceptance criteria are not yet evidenced.**
+
+### Changes and evidence
+
+- Added `public.user_job_activity` through migration `supabase/migrations/20261017000100_job_application_activity.sql`, with per-user row ownership enforced by RLS. The user ran the linked migration workflow: the dry run listed only this migration, then the migration was applied to hosted Supabase. The user confirmed the reminder works correctly after the migration.
+- Added authenticated `GET/POST /api/jobs/[id]/activity` handlers for loading per-user application activity, recording an external application-link visit, and persisting explicit applied confirmation. A link visit does not itself mark a job applied.
+- Updated Job Discovery to restore pending reminders from persisted activity and support the source-listing fallback when no separate application URL is available.
+- Added/updated activity API and component tests. These use mocked Supabase/query responses and do not prove live RLS enforcement or cross-user isolation.
+- Files changed for the application reminder work: `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/app/api/jobs/[id]/activity/route.ts`, `src/app/api/jobs/[id]/activity/route.test.ts`, and `supabase/migrations/20261017000100_job_application_activity.sql`.
+
+### Automated verification actually observed
+
+GitHub Actions Quality run [38994227871](https://github.com/Msekeli/thungatha/actions/runs/38994227871) passed on commit `1687578a69734aaa85ed626ed5077cb7fef2fbfe`:
+
+- `npx tsc --noEmit`: passed.
+- `npm run lint`: passed.
+- `npm test`: passed — 15 test files, 105 tests.
+- `npm run build`: passed.
+
+The workflow does not run `npm run test:e2e`. The current Playwright tests cover the home page and protected-route redirects, not the complete Job Discovery journey.
+
+### Remaining C08/C09 verification
+
+- Run an authenticated smoke test against hosted Supabase for activity GET/POST and save/dismiss/undo.
+- Verify per-user isolation with two authenticated users and the actual RLS policies; mocked route tests are insufficient evidence.
+- Exercise the application reminder, source-listing fallback, explicit applied confirmation, and saved/dismissed undo flow in a browser, including refresh and return navigation.
+- Verify the 10-second Undo snackbar and restoration of the exact prior state.
+- Keep C08 **In review** until the above evidence and user review are recorded.
+
+**User review:** The user confirmed the application reminder works after the migration was applied. Full C08 acceptance: pending.
+
+---
+
+## M1-C09 audit record — 2026-10-17
+
+**Status: In review — repository/CI audit completed; end-to-end and hosted acceptance remain open.**
+
+### Repository and CI findings
+
+- Audited `dev` at `1687578a69734aaa85ed626ed5077cb7fef2fbfe`; `main` was not changed.
+- The latest Quality workflow passed TypeScript, lint, 15 unit-test files / 105 tests, and production build.
+- Playwright currently has two tests: the landing page and protected-route authentication redirects. It does not test the Job Discovery user journey.
+- Existing API and ingestion tests cover many deterministic contracts, malformed data, provider failure, state writes, and activity actions. Their mocked database clients do not establish real hosted PostgREST filtering behaviour or actual RLS isolation.
+
+### Outstanding acceptance gates
+
+1. **C03/source approval:** Adzuna is implemented but the decision log explicitly excludes it from the approved integration plan unless the user reopens that decision. Jooble and Greenhouse are also present in the provider registry, but the repository does not contain complete source-specific approval evidence for terms, intended use, attribution, quotas/costs, and operational limits. Do not treat the current adapters as approved production sources solely because they work technically.
+2. **C05/AI boundary:** Current adapters consume structured JSON and use deterministic normalization. No concrete M1 AI-extraction requirement is evidenced in the current implementation. Record a decision to omit AI extraction from M1 unless a permitted source audit demonstrates a specific gap; C05 is not marked accepted by this audit alone.
+3. **C06/cloud security:** Authenticated feed/detail/state/activity behaviour against hosted records, plus cross-user RLS isolation, remains unverified in the recorded evidence.
+4. **C07/browser/data:** Verify combined filters, publication-age filtering, pagination and result counts against controlled hosted data. Complete responsive, keyboard and browser-console checks.
+5. **C08/browser lifecycle:** The user verified that the application reminder works after applying the migration. The complete save/dismiss/undo and activity journeys, cross-user isolation, and 10-second Undo behaviour still need recorded acceptance evidence.
+6. **C09 final review:** Record the above results, document approved source limitations, and obtain the user's explicit M1 acceptance only after critical gates pass.
+
+### Audit decision
+
+The repository and latest CI run are in a better state, but **M1 is not accepted**. No deployment or merge to `main` was performed. The next action is to resolve source approval and the C05 decision, then complete the hosted-data/RLS and browser checks with evidence.
