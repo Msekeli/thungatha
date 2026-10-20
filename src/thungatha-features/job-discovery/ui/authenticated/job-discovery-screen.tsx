@@ -65,6 +65,7 @@ export function JobDiscoveryScreen({
           categories={c.categories}
           category={s.filters.employmentType || s.category}
           sortOrder={s.sortOrder}
+          jobs={c.visibleJobs}
           onQueryChange={(v) => c.changeDraft("query", v)}
           onLocationChange={(v) => c.changeDraft("location", v)}
           onSubmit={c.submitFilters}
