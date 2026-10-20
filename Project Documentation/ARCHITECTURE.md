@@ -38,7 +38,26 @@ The architecture must deliver the approved product specification and milestones 
 
 Verify current platform limits and integration guidance before relying on function duration, scheduling, payload size, database connection, or provider quotas. Keep local, preview, and production secrets separate.
 
-## 3. System context and trust boundaries
+## 3. Auxiliary employer-discovery feeder (planned)
+
+The Next.js application remains the user-facing Thungatha product and the owner of the existing production jobs catalogue. Employer discovery is a small auxiliary ingestion pipeline, not a second user-facing application.
+
+The planned feeder is one Azure Function App containing five independently testable functions:
+1. Company Discovery — find employers from relevant recruitment evidence within the preceding six months.
+2. Company Verification — validate employer identity and historical evidence.
+3. Careers Source Discovery — identify and validate official careers pages or permitted employer-authorized ATS sources.
+4. Job Discovery — retrieve candidate vacancies from approved employer sources.
+5. Job Verification/Catalogue Handoff — enforce eligibility and place qualifying candidates in the private human-review queue; publish only after explicit administrator approval.
+
+Use a shared durable Azure temporary-processing store for unapproved candidates and workflow status. Use Blob Storage only for larger evidence snapshots where necessary. Never depend on a function's local filesystem for durable shared state. Supabase remains the application database: verified companies may be retained in a company directory, while the production jobs catalogue receives only vacancies that pass deterministic checks and receive explicit human approval.
+
+A protected `/admin` route in the existing Next.js application provides a minimal Overview, Review Queue, and Settings. Manual company entry must use the same verification process as automated discovery. All approval actions are authorized and enforced server-side.
+
+AI is an interpretation assistant, not a source of truth. It may classify roles, interpret evidence, extract candidate fields, and explain warnings. Application code enforces publication dates, geography, categories, deduplication, source restrictions, authorization, and state transitions. Aggregator listings must never be published; aggregators may only serve as optional research leads to identify employers.
+
+This is the agreed target, not evidence of an existing implementation. Search method, source permissions, exact Azure Storage records, and AI provider remain implementation-time validation items. Keep the initial version small: one Function App, one temporary storage boundary, the existing Supabase catalogue, and a minimal admin UI. See [Employer Discovery and Job Ingestion Pipeline](EMPLOYER-DISCOVERY-PIPELINE.md).
+
+## 4. System context and trust boundaries
 
 ```mermaid
 flowchart TD
@@ -60,7 +79,7 @@ Trust boundaries:
 - Privileged database credentials and provider keys remain server-side.
 - Logs must not contain secrets, raw CVs, full job descriptions, or unnecessary personal information.
 
-## 4. Logical layers and dependency rules
+## 10. Logical layers and dependency rules
 
 The app can organize code by feature and responsibility inside the existing `src/` tree. Do not create a separate package/class/folder for every box in a diagram.
 
