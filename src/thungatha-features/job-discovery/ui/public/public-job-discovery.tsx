@@ -58,8 +58,6 @@ export default function PublicJobDiscovery({
     setModesSelected,
     sort,
     setSort,
-    salary,
-    setSalary,
     experience,
     setExperience,
     publishedWithin,
@@ -113,12 +111,11 @@ export default function PublicJobDiscovery({
         typesSelected,
         quickType,
         modesSelected,
-        salary,
         publishedWithin,
         experience,
         sort,
       }),
-    [jobs, typesSelected, quickType, modesSelected, salary, publishedWithin, experience, sort],
+    [jobs, typesSelected, quickType, modesSelected, publishedWithin, experience, sort],
   );
   const selected = useMemo(() => {
     const source = showDismissed ? dismissedJobs : filteredJobs;
@@ -160,8 +157,6 @@ export default function PublicJobDiscovery({
     <PublicJobFiltersPanel
       modesSelected={modesSelected}
       setModesSelected={setModesSelected}
-      salary={salary}
-      setSalary={setSalary}
       experience={experience}
       setExperience={setExperience}
       employmentType={quickType}
