@@ -5,6 +5,7 @@ type Filters = {
   quickType: string;
   modesSelected: string[];
   salary: string;
+  publishedWithin: string;
   sort: string;
 };
 
@@ -17,6 +18,13 @@ export function filterPublicJobDiscoveries(
       .toLowerCase()
       .replace(/[ -]+/g, "_");
     const mode = (job.work_mode || "").toLowerCase();
+    const postedAt = sourceDate(job) || job.updated_at;
+    const ageMs = postedAt ? Date.now() - new Date(postedAt).getTime() : null;
+    const maxAgeMs = filters.publishedWithin === "24h" ? 24 * 60 * 60 * 1000
+      : filters.publishedWithin === "7d" ? 7 * 24 * 60 * 60 * 1000
+      : filters.publishedWithin === "14d" ? 14 * 24 * 60 * 60 * 1000
+      : 30 * 24 * 60 * 60 * 1000;
+    const publishedMatch = ageMs === null || !Number.isFinite(ageMs) || ageMs <= maxAgeMs;
     const salaryMatch =
       filters.salary === "any" ||
       (filters.salary === "disclosed"
@@ -34,7 +42,8 @@ export function filterPublicJobDiscoveries(
           type.includes(filters.quickType))) &&
       (filters.modesSelected.length === 0 ||
         filters.modesSelected.includes(mode)) &&
-      salaryMatch
+      salaryMatch &&
+      publishedMatch
     );
   });
   if (filters.sort === "newest")
