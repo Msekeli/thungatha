@@ -34,7 +34,7 @@ export function JobLocationSelect({
   emptyMeansDefault?: boolean;
   anywhereValue?: string;
 }) {
-  const displayedValue = value || (emptyMeansDefault ? "Cape Town + 50 km" : anywhereValue);
+  const displayedValue = value || (emptyMeansDefault ? "Cape Town" : anywhereValue);
   return (
     <FormControl size="small" sx={{ minWidth: 0, width: compact ? "100%" : { xs: "100%", sm: 220 }, flex: compact ? 1 : "0 0 auto" }}>
       <Select
@@ -42,7 +42,7 @@ export function JobLocationSelect({
         value={displayedValue}
         onChange={(event) => {
           const next = String(event.target.value);
-          onChange(next === "Anywhere" || next === anywhereValue || next === "Cape Town + 50 km" ? "" : next);
+          onChange(next === "Anywhere" || next === anywhereValue ? "" : next);
         }}
         inputProps={{ "aria-label": "Search location" }}
         sx={{
@@ -53,7 +53,6 @@ export function JobLocationSelect({
           "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
         }}
       >
-        <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
         <MenuItem value="Cape Town">Cape Town</MenuItem>
         <MenuItem value="Johannesburg">Johannesburg</MenuItem>
         <MenuItem value="Durban">Durban</MenuItem>
