@@ -29,7 +29,7 @@ export function JobCategoryStrip({
       sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}
     >
       <JobTypeChips
-        activeKey={category === "new" ? "all" : category}
+        activeKey={categories.find((item) => item.label.toLowerCase() === category.toLowerCase())?.key ?? (category === "new" ? "all" : category)}
         counts={Object.fromEntries(categories.map((item) => [item.key, item.count]))}
         onSelect={(key, label) => onCategoryChange(key, label)}
       />
