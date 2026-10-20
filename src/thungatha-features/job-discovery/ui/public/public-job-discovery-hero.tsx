@@ -135,7 +135,7 @@ export function PublicJobDiscoveryHero(props: Props) {
               borderRadius: "12px",
               fontWeight: 700,
               boxShadow: "none",
-              "& .MuiButton-startIcon": { mx: { xs: 0, md: -0.5 } },
+              "& .MuiButton-startIcon": { ml: 0, mr: { xs: 0, md: 1 } },
             }}
           >
             <Box
