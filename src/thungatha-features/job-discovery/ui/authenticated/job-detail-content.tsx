@@ -54,7 +54,7 @@ export function AuthenticatedJobDetailContent({
           <Typography component="strong" sx={{ fontWeight: 700 }}>
             Not calculated
           </Typography>
-          <Button variant="text" size="small" onClick={onViewMatch}>
+          <Button variant="text" size="small" onClick={(event) => onViewMatch(event.currentTarget)}>
             Why is this unavailable?
           </Button>
         </Stack>
