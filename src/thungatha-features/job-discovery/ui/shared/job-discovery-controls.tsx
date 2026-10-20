@@ -59,11 +59,13 @@ export function JobTypeChips({
   onSelect,
   counts = {},
   showAllCount = false,
+  justifyContent = "flex-start",
 }: {
   activeKey: string;
   onSelect: (key: string, label: string) => void;
   counts?: Record<string, number | null>;
   showAllCount?: boolean;
+  justifyContent?: "flex-start" | "center";
 }) {
   return (
     <Stack
@@ -71,7 +73,7 @@ export function JobTypeChips({
       spacing={1}
       role="group"
       aria-label="Job types"
-      sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}
+      sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent, gap: 1 }}
     >
       {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
