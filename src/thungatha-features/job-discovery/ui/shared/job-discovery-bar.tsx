@@ -32,7 +32,7 @@ export function JobDiscoveryBar({
   query, onQueryChange, location, onLocationChange, jobs, selectedType,
   total, onTypeChange, onClearTypes, onOpenFilters, onSubmit,
 }: Props) {
-  const suggestions = jobs.flatMap((job) => [job.title, job.employer_name ?? ""]);
+  const suggestions = (jobs ?? []).flatMap((job) => [job.title, job.employer_name ?? ""]);
   return (
     <Box sx={{ width: "100%" }}>
       <Stack direction={{ xs: "column", md: "row" }} spacing={1}
