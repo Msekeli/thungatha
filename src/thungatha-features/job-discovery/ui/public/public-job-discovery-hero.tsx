@@ -2,14 +2,11 @@
 import {
   Box,
   Button,
-  Chip,
-  FormControl,
-  MenuItem,
-  Select,
   Stack,
 } from "@mui/material";
 import { SlidersHorizontal } from "lucide-react";
 import { JobSearchBar } from "../shared/job-search-bar";
+import { JobLocationSelect, JobTypeChips } from "../shared/job-discovery-controls";
 import { JobDiscoveryHeroShell } from "../shared/job-discovery-hero-shell";
 
 type JobSuggestion = { title: string; employer_name: string | null };
@@ -25,25 +22,24 @@ type Props = {
   total: number;
   onOpenFilters: (anchorEl: HTMLElement) => void;
 };
-const jobTypes = [
-  { label: "All opportunities", value: "all" },
-  { label: "Full-time", value: "full_time" },
-  { label: "Part-time", value: "part_time" },
-  { label: "Contract", value: "contract" },
-  { label: "Internships", value: "internship" },
-  { label: "Learnerships", value: "learnership" },
-  { label: "Graduate programmes", value: "graduate" },
-];
-const pillSx = (active: boolean) => ({
-  height: 30,
-  borderRadius: "999px",
-  px: 1.1,
-  fontWeight: 600,
-  borderColor: active ? "primary.main" : "divider",
-  color: active ? "primary.main" : "text.primary",
-  backgroundColor: active ? "rgba(0,188,242,.12)" : "transparent",
-  "& .MuiChip-label": { px: 1.1 },
-});
+const publicTypeKey: Record<string, string> = {
+  all: "all",
+  full_time: "full-time",
+  part_time: "part-time",
+  contract: "contract",
+  internship: "internship",
+  learnership: "learnership",
+  graduate: "graduate",
+};
+const publicTypeValue: Record<string, string> = {
+  all: "all",
+  "full-time": "full_time",
+  "part-time": "part_time",
+  contract: "contract",
+  internship: "internship",
+  learnership: "learnership",
+  graduate: "graduate",
+};
 export function PublicJobDiscoveryHero(props: Props) {
   const {
     query,
@@ -96,32 +92,9 @@ export function PublicJobDiscoveryHero(props: Props) {
           spacing={1}
           sx={{ minWidth: 0, flex: { md: "0 0 auto" } }}
         >
-          <FormControl
-            size="small"
-            sx={{ flex: 1, minWidth: 0, width: { md: 290 } }}
-          >
-            <Select
-              value={location}
-              onChange={(event) => onLocationChange(event.target.value)}
-              inputProps={{ "aria-label": "Search location" }}
-              sx={{
-                height: 44,
-                borderRadius: "12px",
-                backgroundColor: "background.paper",
-                fontSize: 15,
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-              }}
-            >
-              <MenuItem value="Cape Town + 50 km">Cape Town + 50 km</MenuItem>
-              <MenuItem value="Cape Town">Cape Town</MenuItem>
-              <MenuItem value="Johannesburg">Johannesburg</MenuItem>
-              <MenuItem value="Durban">Durban</MenuItem>
-              <MenuItem value="Remote">Remote</MenuItem>
-              <MenuItem value="">Anywhere</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ flex: 1, minWidth: 0, width: { md: 290 } }}>
+            <JobLocationSelect value={location} onChange={onLocationChange} />
+          </Box>
           <Button
             variant="contained"
             aria-label="Open filters"
@@ -147,37 +120,20 @@ export function PublicJobDiscoveryHero(props: Props) {
           </Button>
         </Stack>
       </Stack>
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          mt: 1,
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1,
-          justifyContent: "center",
-        }}
-      >
-        {jobTypes.map((item) => (
-          <Chip
-            key={item.value}
-            clickable
-            label={
-              item.value === "all" ? `${item.label} · ${total}` : item.label
-            }
-            color={quickType === item.value ? "primary" : "default"}
-            variant={quickType === item.value ? "filled" : "outlined"}
-            sx={pillSx(quickType === item.value)}
-            onClick={() => {
-              onQuickTypeChange(item.value);
-              onClearTypes();
-              document
-                .getElementById("jobs")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          />
-        ))}
-      </Stack>
+      <Box sx={{ mt: 1, display: "flex", justifyContent: "center" }}>
+        <JobTypeChips
+          activeKey={publicTypeKey[quickType] ?? "all"}
+          counts={{ all: total }}
+          onSelect={(key) => {
+            onQuickTypeChange(publicTypeValue[key] ?? "all");
+            onClearTypes();
+            document
+              .getElementById("jobs")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          showAllCount
+        />
+      </Box>
     </JobDiscoveryHeroShell>
   );
 }
