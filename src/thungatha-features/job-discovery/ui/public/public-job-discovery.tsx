@@ -154,12 +154,6 @@ export default function PublicJobDiscovery({
       );
   const filterPanel = (
     <PublicJobFiltersPanel
-      query={query}
-      setQuery={setQuery}
-      location={location}
-      setLocation={setLocation}
-      typesSelected={typesSelected}
-      setTypesSelected={setTypesSelected}
       modesSelected={modesSelected}
       setModesSelected={setModesSelected}
       salary={salary}
