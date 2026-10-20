@@ -4,7 +4,12 @@ import Paper from "@mui/material/Paper";
 import Snackbar from "@mui/material/Snackbar";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { UndoAction } from "./job-undo-types";
+export type UndoAction = {
+  jobId: string;
+  title: string;
+  previousState: "saved" | "dismissed" | null;
+  nextState: "saved" | "dismissed" | null;
+};
 
 export function JobUndoNotice({
   action,
