@@ -28,7 +28,10 @@ const employmentTypes = ["Full-time", "Part-time", "Contract", "Internships", "L
 export function JobFiltersDialog({ open, anchorEl, draft, onClose, onChange, onReset, onApply }: Props) {
   return (
     <Popper open={open && Boolean(anchorEl)} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 1300, maxWidth: "calc(100vw - 24px)" }} modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}>
-      <ClickAwayListener onClickAway={onClose}>
+      <ClickAwayListener onClickAway={(event) => {
+        if (anchorEl?.contains(event.target as Node)) return;
+        onClose();
+      }}>
         <Paper
           className="th-jobs-popover th-jobs-filter-popover th-jobs-filter-dialog"
           role="dialog"
