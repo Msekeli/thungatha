@@ -79,7 +79,7 @@ Trust boundaries:
 - Privileged database credentials and provider keys remain server-side.
 - Logs must not contain secrets, raw CVs, full job descriptions, or unnecessary personal information.
 
-## 10. Logical layers and dependency rules
+## 5. Logical layers and dependency rules
 
 The app can organize code by feature and responsibility inside the existing `src/` tree. Do not create a separate package/class/folder for every box in a diagram.
 
@@ -97,7 +97,7 @@ Dependency rules:
 5. Keep module dependencies directional and avoid circular dependencies.
 6. Reuse existing code after inspection; do not rebuild working authentication/profile foundation code just to fit a theoretical structure.
 
-## 5. Agreed repository structure
+## 6. Agreed repository structure
 
 The agreed target is a **feature-based modular monolith**. Keep Next.js routes and HTTP Route Handlers under `src/app/`; group feature-specific UI, browser-side code, types, utilities, and server-side business logic under `src/thungatha-features/<descriptive-feature-name>/`. Use explicit names such as `job-discovery`, `authentication`, `user-profile`, `user-account`, `cv-studio`, and `job-tracking`. Job listings are catalogue/domain data owned by Job Discovery, not a separate top-level feature by default. Keep truly cross-feature UI under `src/components/` and shared infrastructure under `src/lib/` unless an evidenced reason supports a move. Do not create two shared infrastructure locations for the same responsibility.
 
@@ -187,7 +187,7 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 - Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
 - The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.
 
-## 6. File and folder guide
+## 7. File and folder guide
 
 | Path | Responsibility |
 |---|---|
@@ -211,7 +211,7 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 
 Feature-specific business rules must not drift into generic shared utilities. Avoid maintaining two competing locations for the same implementation.
  
-## 7. Product module boundaries
+## 8. Product module boundaries
 
 | Module/experience | Owns | Does not own |
 |---|---|---|
@@ -224,7 +224,7 @@ Feature-specific business rules must not drift into generic shared utilities. Av
 
 Job Tracking links to the exact CV version or submitted-material snapshot used for an application. CV Studio remains the owner of CV versions. A user can record an externally sourced application in Job Tracking without first creating a Job Discovery catalogue record.
 
-## 8. Data access, authentication, and ownership
+## 9. Data access, authentication, and ownership
 
 - Resolve the authenticated user on the server through Clerk integration.
 - Treat identity and record authorization as separate checks.
@@ -238,7 +238,7 @@ Job Tracking links to the exact CV version or submitted-material snapshot used f
 
 The existing profile API/repository/migration provide a starting example. Inspect their implementation before copying the pattern to other features.
 
-## 9. Job-source integrations
+## 10. Job-source integrations
 
 Each approved job source should sit behind a small server-side adapter with a normalized internal output. Source adapters should:
 - preserve source-specific identifiers and original discovery/application URLs;
@@ -251,7 +251,7 @@ Each approved job source should sit behind a small server-side adapter with a no
 
 A source list found in research is not automatically approved. Confirm source-specific requirements during the appropriate M1 checkpoint. Do not add an unapproved source simply because it is technically convenient.
 
-## 10. AI provider boundary
+## 11. AI provider boundary
 
 Use a provider-independent server-side interface only for concrete tasks that need AI. Gemini is the initial primary option; Groq is an alternative for supported tasks. Camber and Ollama remain optional experiments, not required runtime dependencies.
 
@@ -263,11 +263,11 @@ Use a provider-independent server-side interface only for concrete tasks that ne
 - Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled.
 - Do not build a generic agent framework for the MVP.
 
-## 11. CV files and storage
+## 12. CV files and storage
 
 When CV upload and export are implemented, use durable object storage approved for the project, such as Supabase Storage if suitable. Decide file type/size limits, access policies, signed URLs, retention, deletion, and privacy behaviour before release. Do not rely on the function's local filesystem for durable storage.
 
-## 12. UI and navigation architecture
+## 13. UI and navigation architecture
 
 - `/` is the public landing page.
 - `/jobs`, `/cv-studio`, and `/job-tracking` are the three primary authenticated experiences.
@@ -285,7 +285,7 @@ When CV upload and export are implemented, use durable object storage approved f
 - When extracting shared UI, migrate styles toward MUI/Tailwind as part of the extraction instead of merely moving legacy CSS into smaller files. Remove old CSS only after confirming both public and authenticated experiences retain their intended light/dark and responsive appearance.
 - Inspect existing dashboard/auth-shell references before removal or migration.
 
-## 13. Testing and operational visibility
+## 14. Testing and operational visibility
 
 For each checkpoint, select tests under `tests/` that prove the changed behaviour:
 - unit tests for deterministic rules and state transitions;
@@ -297,7 +297,7 @@ Before and after each meaningful coding change, check line counts for changed ha
 
 At release, run the available formatting, lint, type-check, test, build, browser, accessibility, privacy/security, and performance checks. Record actual results; never fabricate a passing check. Avoid adding telemetry that records raw CV content or unnecessary personal information.
 
-## 14. How to change this architecture
+## 15. How to change this architecture
 
 Change the architecture when there is a demonstrated technical need, a product requirement that cannot be met with the current design, or an external constraint that invalidates an assumption.
 
@@ -310,7 +310,7 @@ Before making a structural change:
 
 Routine implementation details can evolve within these boundaries, but do not silently alter the approved roadmap or convert an open decision into a settled one.
 
-## 15. Relationship to other documents
+## 16. Relationship to other documents
 
 - `PRODUCT-SPECIFICATION.md` defines what the product must do and the user-facing rules.
 - `IMPLEMENTATION-PLAN.md` defines the cross-milestone sequence, dependencies, progress, and overall acceptance.
