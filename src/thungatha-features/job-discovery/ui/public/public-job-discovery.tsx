@@ -91,6 +91,7 @@ export default function PublicJobDiscovery({
   }
   function restoreJob(jobId: string) {
     setDismissedJobs((current) => current.filter((item) => item.id !== jobId));
+    setUndoJob((current) => (current?.id === jobId ? null : current));
     setSelectedId((current) => (current === jobId ? null : current));
   }
   function toggleFilters(anchorEl: HTMLElement) {
@@ -197,7 +198,7 @@ export default function PublicJobDiscovery({
         onQuickTypeChange={setQuickType}
         onClearTypes={() => setTypesSelected([])}
         total={total}
-        onOpenFilters={() => setMobileFiltersOpen(true)}
+        onOpenFilters={toggleFilters}
       />
       <Box
         component="main"
@@ -237,7 +238,7 @@ export default function PublicJobDiscovery({
           onClearFilters={clearFilters}
           onSortChange={setSort}
           onQueryChange={setQuery}
-          onOpenFilters={() => setMobileFiltersOpen(true)}
+          onOpenFilters={toggleFilters}
           onRetry={() => setRetry((value) => value + 1)}
           onDismiss={dismissJob}
           onRestore={restoreJob}
