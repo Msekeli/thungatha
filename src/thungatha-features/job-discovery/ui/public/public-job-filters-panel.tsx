@@ -9,40 +9,17 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 
-type FilterOption = { label: string; value: string; count?: number };
-const types: FilterOption[] = [
-  { label: "Full-time", value: "full_time" },
-  { label: "Part-time", value: "part_time" },
-  { label: "Contract", value: "contract" },
-  { label: "Internships", value: "internship" },
-  { label: "Learnerships", value: "learnership" },
-  { label: "Graduate programmes", value: "graduate" },
-];
+type FilterOption = { label: string; value: string };
 const modes: FilterOption[] = [
   { label: "Remote", value: "remote" },
   { label: "Hybrid", value: "hybrid" },
   { label: "On-site", value: "onsite" },
 ];
-const locations = [
-  "Cape Town + 50 km",
-  "Cape Town",
-  "Johannesburg",
-  "Durban",
-  "Remote",
-  "",
-];
 
 export function PublicJobFiltersPanel({
-  query,
-  setQuery,
-  location,
-  setLocation,
-  typesSelected,
-  setTypesSelected,
   modesSelected,
   setModesSelected,
   salary,
@@ -52,12 +29,6 @@ export function PublicJobFiltersPanel({
   onClose,
   onClear,
 }: {
-  query: string;
-  setQuery: (value: string) => void;
-  location: string;
-  setLocation: (value: string) => void;
-  typesSelected: string[];
-  setTypesSelected: (value: string[]) => void;
   modesSelected: string[];
   setModesSelected: (value: string[]) => void;
   salary: string;
@@ -77,54 +48,12 @@ export function PublicJobFiltersPanel({
         ? values.filter((item) => item !== value)
         : [...values, value],
     );
+
   return (
-    <Stack spacing={2} className="th-filter-content">
-      <TextField
-        label="Search"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Job title, skills or company..."
-        fullWidth
-        size="small"
-      />
-      <FormControl fullWidth size="small">
-        <InputLabel id="th-location-label">Location</InputLabel>
-        <Select
-          labelId="th-location-label"
-          label="Location"
-          value={location}
-          onChange={(event) => setLocation(event.target.value)}
-        >
-          {locations.map((value) => (
-            <MenuItem key={value || "anywhere"} value={value}>
-              {value || "Anywhere"}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <Stack spacing={1.25} className="th-filter-content">
       <Stack spacing={0.25} className="th-filter-group">
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          Job type
-        </Typography>
-        {types.map((item) => (
-          <FormControlLabel
-            key={item.value}
-            control={
-              <Checkbox
-                size="small"
-                checked={typesSelected.includes(item.value)}
-                onChange={() =>
-                  toggle(typesSelected, item.value, setTypesSelected)
-                }
-              />
-            }
-            label={item.label}
-          />
-        ))}
-      </Stack>
-      <Stack spacing={0.25} className="th-filter-group">
-        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          Remote options
+          Work arrangement
         </Typography>
         {modes.map((item) => (
           <FormControlLabel
@@ -169,16 +98,12 @@ export function PublicJobFiltersPanel({
           <MenuItem value="senior">Senior</MenuItem>
         </Select>
       </FormControl>
-      <Stack direction="row" className="th-mobile-filter-actions">
-        <Button variant="text" onClick={onClear}>
+      <Stack direction="row" justifyContent="space-between" sx={{ pt: 0.5 }}>
+        <Button variant="text" size="small" onClick={onClear}>
           Reset
         </Button>
-        <Button
-          className="th-mobile-apply-filters"
-          variant="contained"
-          onClick={onClose}
-        >
-          Apply filters
+        <Button variant="contained" size="small" onClick={onClose}>
+          Done
         </Button>
       </Stack>
     </Stack>
