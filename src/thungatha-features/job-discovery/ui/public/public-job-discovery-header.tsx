@@ -2,10 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Box, Button, Stack } from "@mui/material";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { Show } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
+import { PublicAuthPrompt } from "./public-auth-prompt";
 type Props = { configured: boolean; onOpenFilters: (anchorEl: HTMLElement) => void };
 const navSx = {
   color: "text.secondary",
@@ -71,23 +72,22 @@ export function PublicJobDiscoveryHeader({ configured, onOpenFilters }: Props) {
             </Box>
           </Show>
         )}
-        {configured && (
-          <Show when="signed-out">
-            {["Tailor Your CV", "Track Applications", "Saved Jobs"].map(
-              (label) => (
-                <SignInButton
-                  key={label}
-                  mode="modal"
-                  fallbackRedirectUrl="/jobs?welcome=1"
-                >
-                  <Button variant="text" size="small">
-                    {label}
-                  </Button>
-                </SignInButton>
-              ),
-            )}
-          </Show>
-        )}
+        <Show when="signed-out">
+          {["Tailor Your CV", "Track Applications", "Saved Jobs"].map(
+            (label) => (
+              <PublicAuthPrompt
+                key={label}
+                configured={configured}
+                title={label}
+                description={`Sign in or create a free account to use ${label.toLowerCase()} and keep your job search organised.`}
+              >
+                <Button variant="text" size="small">
+                  {label}
+                </Button>
+              </PublicAuthPrompt>
+            ),
+          )}
+        </Show>
       </Stack>
       <Stack
         direction="row"
