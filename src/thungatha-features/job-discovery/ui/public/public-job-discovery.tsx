@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import { PublicJobDetailPanel } from "./public-job-detail-panel";
 import { PublicJobPromo } from "./public-job-promo";
-import { PublicJobMobileFilters } from "./public-job-mobile-filters";
+import { PublicJobFiltersPopover } from "./public-job-filters-popover";
+import { PublicJobUndoNotice } from "./public-job-undo-notice";
 import { PublicJobFiltersPanel } from "./public-job-filters-panel";
 import { PublicJobDiscoveryHeader } from "./public-job-discovery-header";
 import { PublicJobDiscoverySidebar } from "./public-job-discovery-sidebar";
@@ -67,7 +68,8 @@ export default function PublicJobDiscovery({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [promoVisible, setPromoVisible] = useState(false);
   const [retry, setRetry] = useState(0);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(null);
+  const [undoJob, setUndoJob] = useState<Job | null>(null);
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const { dismissedJobs, setDismissedJobs } = usePublicDismissedJobs();
   const [showDismissed, setShowDismissed] = useState(false);
@@ -84,11 +86,23 @@ export default function PublicJobDiscovery({
       job,
       ...current.filter((item) => item.id !== jobId),
     ]);
+    setUndoJob(job);
     setSelectedId((current) => (current === jobId ? null : current));
   }
   function restoreJob(jobId: string) {
     setDismissedJobs((current) => current.filter((item) => item.id !== jobId));
     setSelectedId((current) => (current === jobId ? null : current));
+  }
+  function toggleFilters(anchorEl: HTMLElement) {
+    setFilterAnchorEl((current) => (current === anchorEl ? null : anchorEl));
+  }
+  function undoDismissal() {
+    if (undoJob) {
+      setDismissedJobs((current) =>
+        current.filter((item) => item.id !== undoJob.id),
+      );
+    }
+    setUndoJob(null);
   }
   const filteredJobs = useMemo(
     () =>
@@ -151,7 +165,7 @@ export default function PublicJobDiscovery({
       setSalary={setSalary}
       experience={experience}
       setExperience={setExperience}
-      onClose={() => setMobileFiltersOpen(false)}
+      onClose={() => setFilterAnchorEl(null)}
       onClear={clearFilters}
     />
   );
@@ -171,7 +185,7 @@ export default function PublicJobDiscovery({
     >
       <PublicJobDiscoveryHeader
         configured={configured}
-        onOpenFilters={() => setMobileFiltersOpen(true)}
+        onOpenFilters={toggleFilters}
       />
       <PublicJobDiscoveryHero
         query={query}
@@ -252,10 +266,19 @@ export default function PublicJobDiscovery({
           onDismiss={dismissPromo}
         />
       )}
-      {mobileFiltersOpen && (
-        <PublicJobMobileFilters onClose={() => setMobileFiltersOpen(false)}>
-          {filterPanel}
-        </PublicJobMobileFilters>
+      <PublicJobFiltersPopover
+        anchorEl={filterAnchorEl}
+        onClose={() => setFilterAnchorEl(null)}
+      >
+        {filterPanel}
+      </PublicJobFiltersPopover>
+      {undoJob && (
+        <PublicJobUndoNotice
+          key={undoJob.id}
+          title={undoJob.title}
+          onUndo={undoDismissal}
+          onDismiss={() => setUndoJob(null)}
+        />
       )}
     </Box>
   );
