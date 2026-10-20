@@ -1,7 +1,7 @@
 import Dialog from "@mui/material/Dialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BriefcaseBusiness } from "lucide-react";
+import { BriefcaseBusiness, X } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -30,6 +30,41 @@ export function ApplicationConfirmationDialog({
       slotProps={{
         paper: {
           className: "th-jobs-popover th-jobs-apply-popover th-jobs-mui-dialog",
+          sx: {
+            m: 1,
+            width: "calc(100% - 16px)",
+            maxHeight: "min(84dvh, 720px)",
+            overflowY: "auto",
+            border: "1px solid var(--th-line)",
+            borderRadius: 3,
+            bgcolor: "var(--th-panel)",
+            color: "var(--th-fg)",
+            boxShadow: "0 24px 64px rgba(0,0,0,.24)",
+            "& > header": {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 2,
+              px: { xs: 2, sm: 3 },
+              py: 1.75,
+              borderBottom: "1px solid var(--th-line)",
+            },
+            "& .th-jobs-apply-confirm": {
+              p: { xs: 2, sm: 3 },
+              "& h3": { mt: 0, mb: 1, fontSize: "1.1rem", fontWeight: 700 },
+              "& p": { mt: 0, mb: 2, color: "var(--th-fg-muted)", lineHeight: 1.7 },
+              "& > div": { display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: 1 },
+              "& aside": {
+                mt: 2.5,
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: "var(--th-tag-bg)",
+                color: "var(--th-fg-muted)",
+                fontSize: 13,
+                lineHeight: 1.6,
+              },
+            },
+          },
         },
       }}
     >
@@ -43,7 +78,7 @@ export function ApplicationConfirmationDialog({
           aria-label="Close application confirmation"
           onClick={onClose}
         >
-          ×
+          <X size={16} />
         </Button>
       </header>
       <div className="th-jobs-apply-confirm">
