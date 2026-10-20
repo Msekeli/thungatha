@@ -19,6 +19,8 @@ type Props = {
   setFiltersOpen: Dispatch<SetStateAction<boolean>>;
   profileSetupPrompt: boolean;
   setProfileSetupPrompt: Dispatch<SetStateAction<boolean>>;
+  profileSetupAnchorEl: HTMLElement | null;
+  setProfileSetupAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
   routerPushProfile: () => void;
   matchOpen: boolean;
   setMatchOpen: Dispatch<SetStateAction<boolean>>;
@@ -51,8 +53,16 @@ export function JobDiscoveryDialogs(props: Props) {
       />
       <ProfileSetupDialog
         open={props.profileSetupPrompt}
-        onClose={() => props.setProfileSetupPrompt(false)}
-        onCreateProfile={props.routerPushProfile}
+        anchorEl={props.profileSetupAnchorEl}
+        onClose={() => {
+          props.setProfileSetupPrompt(false);
+          props.setProfileSetupAnchorEl(null);
+        }}
+        onCreateProfile={() => {
+          props.setProfileSetupPrompt(false);
+          props.setProfileSetupAnchorEl(null);
+          props.routerPushProfile();
+        }}
       />
       <MatchBreakdownDialog
         open={props.matchOpen}
