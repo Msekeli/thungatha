@@ -36,6 +36,15 @@ export function JobDiscoveryScreen({
     if (anchor) s.setApplicationPromptAnchorEl(anchor);
   }, [showApplicationPrompt, s.applicationPromptAnchorEl, s.selectedId, s.setApplicationPromptAnchorEl]);
 
+  useEffect(() => {
+    if (!s.profileSetupPrompt || s.profileSetupAnchorEl?.isConnected) return;
+    const candidates = Array.from(document.querySelectorAll<HTMLElement>(
+      '.th-workspace-sidebar a[href="/profile"], .th-mobile-workspace-header-actions button[aria-controls="th-mobile-workspace-menu"]',
+    ));
+    const anchor = candidates.find((element) => element.getClientRects().length > 0);
+    if (anchor) s.setProfileSetupAnchorEl(anchor);
+  }, [s.profileSetupPrompt, s.profileSetupAnchorEl, s.setProfileSetupAnchorEl]);
+
   return (
     <WorkspaceShell active="/jobs" configured={configured}>
       <Box
