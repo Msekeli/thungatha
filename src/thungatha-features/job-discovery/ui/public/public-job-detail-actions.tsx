@@ -1,8 +1,10 @@
+"use client";
 import { Bookmark, ExternalLink, EyeOff, PanelsTopLeft } from "lucide-react";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { Show } from "@clerk/nextjs";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { PublicAuthPrompt } from "./public-auth-prompt";
 
 type Props = {
   configured: boolean;
@@ -15,31 +17,25 @@ type Props = {
 };
 function RestrictedAction({
   configured,
-  href,
   children,
+  title,
+  description,
 }: {
   configured: boolean;
-  href: string;
   children: React.ReactNode;
+  title: string;
+  description: string;
 }) {
-  const button = (
-    <Button variant="outlined" className="th-restricted-action">
-      {children}
-    </Button>
-  );
-  return configured ? (
-    <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
-      {button}
-    </SignInButton>
-  ) : (
-    <Button component="a" href={href} variant="outlined" fullWidth>
-      {children}
-    </Button>
+  return (
+    <PublicAuthPrompt configured={configured} title={title} description={description}>
+      <Button variant="outlined" className="th-restricted-action">
+        {children}
+      </Button>
+    </PublicAuthPrompt>
   );
 }
 function DismissAction({
   configured,
-  signInUrl,
   dismissed,
   onDismiss,
   onRestore,
@@ -52,9 +48,15 @@ function DismissAction({
     );
   if (!configured)
     return (
-      <Button component="a" href={signInUrl} variant="outlined" color="warning">
-        <EyeOff size={14} /> Dismiss
-      </Button>
+      <PublicAuthPrompt
+        configured={false}
+        title="Personalise your job feed"
+        description="Sign in or create a free account to dismiss jobs you are not interested in."
+      >
+        <Button variant="outlined" color="warning">
+          <EyeOff size={14} /> Dismiss
+        </Button>
+      </PublicAuthPrompt>
     );
   return (
     <>
@@ -64,17 +66,21 @@ function DismissAction({
         </Button>
       </Show>
       <Show when="signed-out">
-        <SignInButton mode="modal" fallbackRedirectUrl="/jobs?welcome=1">
+        <PublicAuthPrompt
+          configured
+          title="Personalise your job feed"
+          description="Sign in or create a free account to dismiss jobs you are not interested in."
+        >
           <Button variant="outlined" color="warning">
             <EyeOff size={14} /> Dismiss
           </Button>
-        </SignInButton>
+        </PublicAuthPrompt>
       </Show>
     </>
   );
 }
 export function PublicJobDetailActions(props: Props) {
-  const { configured, applyUrl, signInUrl, placement = "primary" } = props;
+  const { configured, applyUrl, placement = "primary" } = props;
   if (placement === "header")
     return (
       <Stack
@@ -82,7 +88,11 @@ export function PublicJobDetailActions(props: Props) {
         spacing={1}
         className="th-jobs-detail-header-actions"
       >
-        <RestrictedAction configured={configured} href={signInUrl}>
+        <RestrictedAction
+          configured={configured}
+          title="Save this opportunity"
+          description="Sign in or create a free account to save this job and return to it later."
+        >
           <Bookmark size={15} /> Save
         </RestrictedAction>
         <DismissAction {...props} />
@@ -108,7 +118,11 @@ export function PublicJobDetailActions(props: Props) {
           An application link is not available for this listing yet.
         </Typography>
       )}
-      <RestrictedAction configured={configured} href={signInUrl}>
+      <RestrictedAction
+        configured={configured}
+        title="Tailor your CV"
+        description="Sign in or create a free account to tailor your CV to this opportunity."
+      >
         <PanelsTopLeft size={14} /> Tailor my CV
       </RestrictedAction>
     </Stack>
