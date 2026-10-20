@@ -30,7 +30,8 @@ export function JobCategoryStrip({
     >
       <JobTypeChips
         activeKey={categories.find((item) => item.label.toLowerCase() === category.toLowerCase())?.key ?? (category === "new" ? "all" : jobTypeKeyForEmploymentType(category))}
-        counts={Object.fromEntries(categories.map((item) => [item.key, item.count]))}
+        counts={{ all: categories.find((item) => item.key === "all")?.count ?? null }}
+        showAllCount
         onSelect={(key, label) => onCategoryChange(key, label)}
       />
       <Stack
