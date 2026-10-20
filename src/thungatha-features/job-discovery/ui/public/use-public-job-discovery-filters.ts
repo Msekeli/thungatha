@@ -11,6 +11,7 @@ export function usePublicJobDiscoveryFilters() {
   const [sort, setSort] = useState("relevant");
   const [salary, setSalary] = useState("any");
   const [experience, setExperience] = useState("any");
+  const [publishedWithin, setPublishedWithin] = useState("30d");
 
   const hasActiveFilters = Boolean(
     query.trim() ||
@@ -19,7 +20,8 @@ export function usePublicJobDiscoveryFilters() {
     quickType !== "all" ||
     modesSelected.length ||
     salary !== "any" ||
-    experience !== "any",
+    experience !== "any" ||
+    publishedWithin !== "30d",
   );
   function clearFilters() {
     setQuery("");
@@ -28,6 +30,7 @@ export function usePublicJobDiscoveryFilters() {
     setModesSelected([]);
     setSalary("any");
     setExperience("any");
+    setPublishedWithin("30d");
     setLocation("Cape Town + 50 km");
   }
 
@@ -48,6 +51,8 @@ export function usePublicJobDiscoveryFilters() {
     setSalary,
     experience,
     setExperience,
+    publishedWithin,
+    setPublishedWithin,
     hasActiveFilters,
     clearFilters,
   };
