@@ -22,6 +22,8 @@ type Props = {
   routerPushProfile: () => void;
   matchOpen: boolean;
   setMatchOpen: Dispatch<SetStateAction<boolean>>;
+  matchAnchorEl: HTMLElement | null;
+  applicationPromptAnchorEl: HTMLElement | null;
   showApplicationPrompt: boolean;
   stateBusy: boolean;
   jobTitle: string;
@@ -54,10 +56,12 @@ export function JobDiscoveryDialogs(props: Props) {
       />
       <MatchBreakdownDialog
         open={props.matchOpen}
+        anchorEl={props.matchAnchorEl}
         onClose={() => props.setMatchOpen(false)}
       />
       <ApplicationConfirmationDialog
         open={props.showApplicationPrompt}
+        anchorEl={props.applicationPromptAnchorEl}
         busy={props.stateBusy}
         jobTitle={props.jobTitle}
         employer={props.employer}
