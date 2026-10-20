@@ -458,3 +458,16 @@ The workflow does not run `npm run test:e2e`. The current Playwright tests cover
 ### Audit decision
 
 The repository and latest CI run are in a better state, but **M1 is not accepted**. No deployment or merge to `main` was performed. The next action is to resolve source approval and the C05 decision, then complete the hosted-data/RLS and browser checks with evidence.
+
+
+## Source strategy update — 2026-10-20
+
+**Status:** Agreed target documented; implementation not started or accepted.
+
+The user has confirmed that Adzuna and Jooble must be removed from active vacancy ingestion. Their listings must never appear in the Thungatha job feed. Aggregators may be used only as optional research leads to identify potential employers; any employer and vacancy must be independently verified through official employer pages or permitted employer-authorized ATS sources.
+
+The target feeder is described in [Employer Discovery and Job Ingestion Pipeline](../Project%20Documentation/EMPLOYER-DISCOVERY-PIPELINE.md). It separates company discovery, company verification, careers-source discovery, job discovery, and job verification/catalogue handoff into five functions within one Azure Function App. It uses temporary Azure processing storage for unapproved records, AI-assisted interpretation with deterministic rules, and a private admin review queue. Explicit human approval is required before a vacancy enters the existing Supabase production catalogue.
+
+Employer discovery uses evidence of relevant recruitment activity in the preceding six months; this does not limit how long verified companies remain in the directory. Active vacancies must have a verifiable publication date within 30 days and meet the agreed Western Cape and role-category rules.
+
+This update records the new source strategy and target architecture. It does not mean that legacy adapters have been removed, Azure Functions have been implemented, sources have been approved, or M1 has been accepted. Preserve historical checkpoint records and update implementation status only when code and verification evidence exist.
