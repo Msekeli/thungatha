@@ -98,7 +98,10 @@ export function MobileWorkspaceBottomNav({
     </Link>
   );
   return (
-    <nav className={`th-mobile-bottom-nav ${publicMode ? "th-mobile-bottom-nav--public" : "th-mobile-bottom-nav--workspace"}`} aria-label="Primary navigation">
+    <nav
+      className={`th-mobile-bottom-nav ${publicMode ? "th-mobile-bottom-nav--public" : "th-mobile-bottom-nav--workspace"}`}
+      aria-label="Primary navigation"
+    >
       {publicMode && configured && isLoaded && !isSignedIn ? (
         <>
           {link(items[0])}
