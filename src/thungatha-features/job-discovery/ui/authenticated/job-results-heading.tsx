@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { ChevronDown, ArrowDownWideNarrow } from "lucide-react";
 
 export function JobResultsHeading({
   loading,
@@ -40,15 +41,28 @@ export function JobResultsHeading({
       <Typography variant="body2" color="text.secondary" aria-live="polite">
         {label}
       </Typography>
-      <select
-        aria-label="Sort opportunities"
-        value={sortOrder}
-        onChange={(event) => onSortChange(event.target.value)}
-        className="h-9 w-36 shrink-0 rounded-full border border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-sm text-[var(--th-fg)] outline-none focus-visible:border-[var(--th-accent)]"
-      >
-        <option value="newest">Sort: Newest</option>
-        <option value="oldest">Sort: Oldest</option>
-      </select>
+      <div className="relative inline-flex shrink-0 items-center">
+        <ArrowDownWideNarrow
+          size={15}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 text-[var(--th-muted)]"
+        />
+        <select
+          aria-label="Sort opportunities"
+          value={sortOrder}
+          onChange={(event) => onSortChange(event.target.value)}
+          className="h-9 w-40 appearance-none rounded-lg border border-[var(--th-line)] bg-[var(--th-panel)] pl-8 pr-9 text-sm font-medium text-[var(--th-fg)] shadow-sm outline-none transition-colors hover:border-[var(--th-accent)] focus-visible:border-[var(--th-accent)] focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/25"
+        >
+          <option value="relevance">Relevance</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+        </select>
+        <ChevronDown
+          size={15}
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 text-[var(--th-muted)]"
+        />
+      </div>
     </Stack>
   );
 }
