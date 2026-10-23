@@ -89,4 +89,67 @@
       max-width: 42%;
     }
   }
+
+  .th-job-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding-block: 2px;
+  }
+
+  .th-job-detail-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    min-width: 0;
+    padding: 5px 9px;
+    border: 1px solid var(--th-line);
+    border-radius: 999px;
+    color: var(--th-fg-muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .th-job-detail-meta-item svg {
+    flex: 0 0 auto;
+    color: var(--th-fg-muted);
+  }
+
+  .th-job-detail-meta-item > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .th-job-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .th-job-detail-action-button {
+    gap: 8px;
+  }
+
+  .th-job-detail-action-button svg {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 600px) {
+    .th-job-detail-meta {
+      gap: 6px;
+    }
+
+    .th-job-detail-meta-item {
+      padding: 5px 8px;
+    }
+
+    .th-job-detail-actions {
+      align-items: stretch;
+    }
+  }
+
 }
