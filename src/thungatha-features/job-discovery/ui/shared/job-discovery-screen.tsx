@@ -87,7 +87,6 @@ export function JobDiscoveryScreen({
           onRetryFeed={c.workspaceActions.retryFeed}
           onSaveJob={c.workspaceActions.saveJob}
           onSelect={c.workspaceActions.selectJob}
-          onSaveJob={c.workspaceActions.saveJob}
           onBack={c.workspaceActions.showResults}
           onViewMatch={c.workspaceActions.viewMatch}
           onApply={c.workspaceActions.applySelectedJob}
