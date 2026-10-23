@@ -12,6 +12,7 @@ import {
   MobileWorkspaceBottomNav,
 } from "@/components/layout/mobile-workspace-menu";
 import "./mobile-workspace-nav.css";
+import "./mobile-workspace-overlays.css";
 
 export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
   const pathname = usePathname();
