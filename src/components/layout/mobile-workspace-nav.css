@@ -1,6 +1,6 @@
 .th-mobile-workspace-header,
 .th-mobile-workspace-menu,
-.th-mobile-bottom-nav--workspace {
+.th-mobile-bottom-nav.th-mobile-bottom-nav--workspace {
   display: none;
 }
 
