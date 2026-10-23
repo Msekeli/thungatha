@@ -1,5 +1,3 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import JobsDiscovery from "../jobs-discovery";
 import { PublicDiscoveryShell } from "../shared/public-discovery-shell";
 import { PublicJobDiscoveryPromoSidebar } from "./public-job-discovery-promo-sidebar";
@@ -11,61 +9,25 @@ export function PublicJobDiscoveryPage({
 }) {
   return (
     <PublicDiscoveryShell configured={configured}>
-      <Box
-        component="main"
-        className="th-jobs-page th-jobs-redesign"
-        sx={{
-          display: "flex",
-          flex: "1 1 auto",
-          flexDirection: "column",
-          width: "100%",
-          minWidth: 0,
-          minHeight: 0,
-          maxWidth: "100%",
-          boxSizing: "border-box",
-          pt: { xs: 2, md: 2.5 },
-          pb: 2,
-          px: { xs: 1.5, md: 2.5 },
-          "@media (max-width: 760px)": {
-            flex: "0 0 auto",
-            minHeight: "auto",
-            pb: 2,
-          },
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: 980,
-            mx: "auto",
-            mb: { xs: 2, md: 2.5 },
-            textAlign: "center",
-          }}
-        >
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ fontWeight: 800, letterSpacing: "-0.035em" }}
-          >
+      <main className="th-jobs-page th-jobs-redesign flex min-h-0 w-full max-w-full flex-1 flex-col box-border px-3 pb-4 pt-4 md:px-6 md:pt-5">
+        <section className="mx-auto mb-5 w-full max-w-5xl text-center">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Find your next opportunity
-          </Typography>
-          <Typography
-            color="text.secondary"
-            sx={{ mt: 0.75, maxWidth: 760, mx: "auto" }}
-          >
+          </h1>
+          <p className="mx-auto mt-2 max-w-3xl text-sm text-muted sm:text-base">
             Explore jobs across South Africa. Search by job title, skill, or
             company and discover your next move.
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 auto", minHeight: 0 }}>
+          </p>
+        </section>
+        <div className="min-h-0 flex-1">
           <JobsDiscovery
             configured={configured}
             workspaceLeadingColumn={
               <PublicJobDiscoveryPromoSidebar configured={configured} />
             }
           />
-        </Box>
-      </Box>
+        </div>
+      </main>
     </PublicDiscoveryShell>
   );
 }
