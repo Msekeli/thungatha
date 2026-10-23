@@ -64,7 +64,7 @@ export function JobDiscoveryScreen({
           stateError={s.stateError}
           onDismissError={() => s.setStateError(null)}
         />
-        <Box sx={{ pt: 2 }}>
+        <Box sx={{ marginTop: "24px !important" }}>
           <AuthenticatedJobWorkspace
             jobs={c.visibleJobs}
             feed={s.feed}
