@@ -1,6 +1,4 @@
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
+import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -12,15 +10,8 @@ type Props = {
   onRetry: () => void;
 };
 
-const stateSx = {
-  display: "flex",
-  flexDirection: "column" as const,
-  alignItems: "flex-start",
-  gap: 1.25,
-  p: "28px 8px",
-  color: "text.secondary",
-  fontSize: 12,
-};
+const stateClass =
+  "flex flex-col items-start gap-3 px-2 py-7 text-xs text-fg-muted";
 
 export function JobResultsState({
   loading,
@@ -32,45 +23,34 @@ export function JobResultsState({
 }: Props) {
   if (loading && !hasFeed)
     return (
-      <Box role="status" sx={stateSx}>
-        <CircularProgress size={20} aria-label="Loading opportunities" />
-        <Typography
-          component="strong"
-          sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}
-        >
+      <div role="status" className={stateClass}>
+        <LoaderCircle size={20} className="animate-spin" aria-label="Loading opportunities" />
+        <strong className="text-sm font-semibold text-fg">
           Loading opportunities
-        </Typography>
-      </Box>
+        </strong>
+      </div>
     );
   if (error)
     return (
-      <Box role="alert" sx={stateSx}>
-        <Typography
-          component="strong"
-          sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}
-        >
+      <div role="alert" className={stateClass}>
+        <strong className="text-sm font-semibold text-fg">
           We couldn’t load opportunities
-        </Typography>
-        <Typography component="p" sx={{ m: 0, mb: 0.5, lineHeight: 1.6 }}>
-          {error}
-        </Typography>
-        <Button onClick={onRetry}>Retry</Button>
-      </Box>
+        </strong>
+        <p className="mb-1 m-0 leading-relaxed">{error}</p>
+        <Button onClick={onRetry} variant="outline">Retry</Button>
+      </div>
     );
   if (hasJobs) return null;
   return (
-    <Box sx={stateSx}>
-      <Typography
-        component="strong"
-        sx={{ color: "text.primary", fontSize: 13, fontWeight: 600 }}
-      >
+    <div className={stateClass}>
+      <strong className="text-sm font-semibold text-fg">
         {hasFilters
           ? "No opportunities match these filters"
           : "No active opportunities available"}
-      </Typography>
-      <Typography component="p" sx={{ m: 0, mb: 0.5, lineHeight: 1.6 }}>
+      </strong>
+      <p className="mb-1 m-0 leading-relaxed">
         Try changing your search or filters.
-      </Typography>
-    </Box>
+      </p>
+    </div>
   );
 }
