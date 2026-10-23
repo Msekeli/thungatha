@@ -1,10 +1,8 @@
 "use client";
 
 import type { ReactNode, RefObject } from "react";
-import Box from "@mui/material/Box";
 import { AuthenticatedJobResultsPanel } from "../authenticated/job-results-panel";
 import { AuthenticatedJobDetailPanel } from "../authenticated/job-detail-panel";
-import { jobDiscoveryWorkspaceSx } from "./job-discovery-workspace-sx";
 import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
 
 type Props = {
@@ -46,9 +44,13 @@ type Props = {
 export function JobDiscoveryWorkspace(props: Props) {
   const hasLeadingColumn = Boolean(props.leadingColumn);
   return (
-    <Box
-      className="th-jobs-workspace th-jobs-redesign-workspace"
-      sx={jobDiscoveryWorkspaceSx(hasLeadingColumn)}
+    <div
+      className={[
+        "th-jobs-workspace th-jobs-redesign-workspace grid min-h-0 w-full gap-4",
+        hasLeadingColumn
+          ? "h-full max-h-full grid-cols-[minmax(0,15%)_minmax(0,1fr)_minmax(0,1fr)] overflow-hidden"
+          : "h-[min(72dvh,900px)] max-h-[calc(100dvh-12rem)] grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]",
+      ].join(" ")}
     >
       {props.leadingColumn}
       <AuthenticatedJobResultsPanel
@@ -90,6 +92,6 @@ export function JobDiscoveryWorkspace(props: Props) {
         onDismiss={props.onDismiss}
         onRetry={props.onRetryDetail}
       />
-    </Box>
+    </div>
   );
 }
