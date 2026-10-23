@@ -14,8 +14,6 @@ type Props = {
   onLocationChange: (value: string) => void;
   selectedType: string;
   total: number;
-  sortOrder: string;
-  onSortChange: (value: string) => void;
   onTypeChange: (key: string, label: string) => void;
   onOpenFilters: (anchorEl: HTMLElement) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
@@ -52,9 +50,7 @@ export function JobDiscoverySearchFilters(props: Props) {
       <JobDiscoveryCategoryControls
         selectedType={props.selectedType}
         total={props.total}
-        sortOrder={props.sortOrder}
         onTypeChange={props.onTypeChange}
-        onSortChange={props.onSortChange}
       />
     </header>
   );
