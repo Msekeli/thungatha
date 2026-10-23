@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -22,7 +21,6 @@ export function AuthenticatedJobDetailContent({
   activityError,
   detailError,
   formatDate,
-  onBack,
   onViewMatch,
   onApply,
   onSave,
@@ -35,16 +33,6 @@ export function AuthenticatedJobDetailContent({
       job={job}
       postedAt={source?.published_at || null}
       formatDate={formatDate}
-      beforeContent={
-        <Button
-          variant="text"
-          size="small"
-          className="th-jobs-mobile-back"
-          onClick={onBack}
-        >
-          <ArrowLeft size={17} aria-hidden="true" /> Back to results
-        </Button>
-      }
       headingAction={
         <Stack
           className="th-jobs-match-scorebox"
