@@ -1,7 +1,7 @@
 "use client";
 
 import Box from "@mui/material/Box";
-import { JobDiscoveryBar } from "../shared/job-discovery-bar";
+import { JobDiscoverySearchFilters } from "../shared/job-discovery-search-filters";
 import type { Filters } from "../job-discovery-utils";
 import type { FormEvent } from "react";
 
@@ -12,22 +12,26 @@ export function JobDiscoveryHeader({
   draft,
   categories,
   category,
+  sortOrder,
   jobs,
   onQueryChange,
   onLocationChange,
   onSubmit,
   onToggleFilters,
   onCategoryChange,
+  onSortChange,
 }: {
   draft: Filters;
   categories: Category[];
   category: string;
+  sortOrder: string;
   jobs?: JobItem[];
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleFilters: (anchorEl: HTMLElement) => void;
   onCategoryChange: (key: string, label: string) => void;
+  onSortChange: (value: string) => void;
 }) {
   const allCount = categories.find((item) => item.key === "all")?.count ?? 0;
   const selectedType =
@@ -35,7 +39,7 @@ export function JobDiscoveryHeader({
 
   return (
     <Box component="header" sx={{ width: "100%" }}>
-      <JobDiscoveryBar
+      <JobDiscoverySearchFilters
         query={draft.query}
         onQueryChange={onQueryChange}
         location={draft.location}
@@ -43,6 +47,8 @@ export function JobDiscoveryHeader({
         jobs={jobs ?? []}
         selectedType={selectedType}
         total={allCount}
+        sortOrder={sortOrder}
+        onSortChange={onSortChange}
         onTypeChange={onCategoryChange}
         onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}

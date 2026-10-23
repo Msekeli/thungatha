@@ -1,5 +1,4 @@
 "use client";
-import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
 import { JobCardButton } from "./job-card-button";
 export type JobCardData = {
@@ -18,7 +17,7 @@ type Props = {
   onSelect: () => void;
   saveAction?: ReactNode;
 };
-export function JobCard({
+export function JobOpportunityCard({
   job,
   selected,
   postedLabel,
@@ -26,7 +25,7 @@ export function JobCard({
   saveAction,
 }: Props) {
   return (
-    <Box sx={{ position: "relative", width: "100%", minWidth: 0 }}>
+    <div className="relative w-full min-w-0">
       <JobCardButton
         job={job}
         selected={selected}
@@ -34,22 +33,10 @@ export function JobCard({
         onSelect={onSelect}
       />
       {saveAction && (
-        <Box
-          className="th-job-card-actions"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            right: 6,
-            transform: "translateY(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 0.25,
-          }}
-        >
+        <div className="th-job-card-actions absolute right-1.5 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1">
           {saveAction}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

@@ -487,3 +487,14 @@ The repository and latest CI run are in a better state, but **M1 is not accepted
 - Run unit and browser checks in an environment where the test worker, web-server port, and Google Fonts request are available or locally provisioned.
 - Verify public feed/detail access, authenticated saved/dismissed state and activity, cross-user isolation, and combined filter/pagination behavior against controlled data.
 - Complete keyboard, responsive, and user review. Keep C07 and M1 in review until required evidence is recorded and the user accepts the result.
+
+## M1 Job Discovery UI redesign components — 2026-10-23
+
+**Status: Implemented in the current working tree; visual/browser acceptance remains open.**
+
+- Created and wired `JobDiscoverySearchFilters`, `JobOpportunityCard`, and `JobOpportunityDetailPanel` in `ui/shared/`. Existing search, location, category, button, card, and authenticated detail behavior stays composed through their current controls and handlers.
+- Migrated the shared search field, location selector, category chips, card shell, and detail panel shell to Tailwind CSS v4. Reused the existing `src/components/ui/button.tsx` control; no shadcn package or dependency was added.
+- Recorded the user-approved incremental MUI to Tailwind/shadcn direction in D-035 and aligned the architecture, naming, and agent guidance. MUI remains in supporting and not-yet-migrated discovery elements.
+- `npx tsc --noEmit`: passed. ESLint on changed TypeScript files: passed with no output.
+- No tests or browser checks were run. Responsive, keyboard, theme, and visual comparison with the attached references still need browser review. This does not change C07 or M1 acceptance status.
+- A repeated-component audit removed the unused authenticated search toolbar, category strip, duplicate detail heading, and shared results toolbar. Sorting now flows through `JobDiscoverySearchFilters`; current filters, search, result summary, and shared detail content each have one active implementation. Removed the unreferenced `JobMatchAvailability` duplicate trigger. `JobFilters` and `JobPagination` remain exported but have no runtime call sites; they are dormant utilities with distinct behavior, so were not included in this focused cleanup.

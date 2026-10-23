@@ -101,9 +101,9 @@ Use a filename that identifies the responsibility, not merely the framework role
 
 ### UI styling priority
 
-- Material UI (MUI) components and built-in styling are the first choice for interface work.
-- Use Tailwind CSS v4 utilities for layout and straightforward styling where appropriate.
-- Add standalone CSS files or custom CSS only when MUI and Tailwind cannot reasonably meet the requirement or when a component needs scoped styles for a complex visual treatment.
+- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns for redesigned components, reusing existing shared controls where suitable. MUI remains in areas not yet migrated.
+- Use Tailwind CSS v4 utilities for layout and straightforward styling.
+- Add scoped CSS only when Tailwind cannot reasonably meet the requirement or a component needs a complex visual treatment.
 - Keep custom CSS small and scoped to the owning component/feature; do not create CSS files by default.
 
 ### Next.js reserved/conventional filenames

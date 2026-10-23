@@ -1,6 +1,6 @@
 "use client";
 
-import { JobCard, type JobCardData } from "./job-card";
+import { JobOpportunityCard, type JobCardData } from "./job-opportunity-card";
 import { JobEmptyState } from "./job-empty-state";
 import Stack from "@mui/material/Stack";
 import type { ReactNode } from "react";
@@ -34,7 +34,7 @@ export function JobList({
   return (
     <Stack spacing={1}>
       {jobs.map((job) => (
-        <JobCard
+        <JobOpportunityCard
           key={job.id}
           job={job}
           variant={variant}

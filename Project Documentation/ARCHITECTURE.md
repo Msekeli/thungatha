@@ -29,7 +29,7 @@ The architecture must deliver the approved product specification and milestones 
 - **Database:** PostgreSQL through Supabase, with version-controlled SQL migrations.
 - **Database access:** Supabase JavaScript client and SQL/migrations following the existing repository pattern. Do not introduce Prisma or Drizzle by default.
 - **Validation:** Zod for untrusted requests and structured external/AI output, consistent with existing code.
-- **UI:** Material UI (MUI) first, with Tailwind CSS v4 utilities where appropriate. Create standalone CSS/custom rules only when MUI and Tailwind cannot reasonably satisfy the requirement or scoped styling is needed for a complex component. Follow the existing theme and CSS-layer conventions.
+- **UI:** Incrementally move from MUI to Tailwind CSS v4 and shadcn/ui patterns as screens are redesigned. Reuse existing shared controls; do not add a component dependency solely to imitate shadcn/ui. Keep MUI on unmigrated screens and interactions. Create scoped CSS only when Tailwind cannot reasonably meet the requirement.
 - **Source-file size:** Keep handwritten source files at 100 physical lines or fewer; warn at 80. Count blank/comment lines. Generated files, dependency lockfiles, and vendored code are excluded. Refactor by cohesive responsibility, never by compressing code.
 - **Testing:** existing Vitest/React Testing Library and Playwright conventions, where present.
 - **File storage:** Supabase Storage or another approved object-storage service when CV uploads/generated files are implemented. Do not depend on Vercel function local disk for durable files.
@@ -166,7 +166,7 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 - The `src/thungatha-features/job-discovery/` feature contains the shared discovery screen/controller used by both public `/` and authenticated `/jobs` entry points, plus job ingestion/provider/search/schema modules. Keep route/layout shells thin and share discovery UI, state, feed, filtering, pagination, selection, and detail logic; do not duplicate the feature into separate public and authenticated implementations or force it into one oversized component.
 - Public discovery can browse/search/inspect jobs. User-owned saved/dismissed state, activity, and job tracking remain authenticated and server-authorized.
 - Job Tracking is a private feature. CV Studio may have a public introduction/preview and authenticated authoring, but this is a product access rule, not a requirement to duplicate its implementation.
-- The target uses the existing stack: Next.js App Router, React, TypeScript, Clerk, Supabase, MUI and Tailwind CSS v4. Do not add another UI framework or ORM as part of the folder migration.
+- The target uses the existing application stack: Next.js App Router, React, TypeScript, Clerk and Supabase, with the UI transition described by D-035. Do not add another UI framework or ORM as part of the folder migration.
 
 ## 6. File and folder guide
 
@@ -257,13 +257,13 @@ When CV upload and export are implemented, use durable object storage approved f
 - Each primary experience must handle direct entry and missing prerequisites gracefully.
 - Use the current shared theme and design tokens rather than creating feature-specific competing design systems.
 - Keep only one dominant glow/high-emphasis action per screen, consistent with the supplied design direction.
-- Use the existing MUI + Tailwind v4 approach consistently; do not introduce a second component system without approval.
-- Prefer Material UI components for interactive controls and overlays (dialogs, popovers, menus, tooltips, selects, checkboxes) when they meet the interaction needs; preserve Thungatha's visual design through the shared theme.
-- Prefer Tailwind CSS v4 utilities for routine layout, spacing, flex/grid, responsive behavior, and simple styling. Avoid adding standalone CSS for styles Tailwind can express clearly.
-- Keep standalone/scoped CSS for genuinely complex or distinctive presentation (for example, elaborate job-card treatments, animations, or interactions that are awkward in MUI/Tailwind). Consolidate selectors and avoid repeated override blocks.
+- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns for redesigned components, reusing existing shared controls where suitable. MUI remains in unmigrated areas during the gradual transition.
+- Prefer accessible native controls or existing shared controls for interactions; use established primitives for dialogs, popovers, menus, tooltips and other complex interactions.
+- Prefer Tailwind CSS v4 utilities for layout, spacing, flex/grid, responsive behavior and straightforward styling. Avoid standalone CSS for styles Tailwind can express clearly.
+- Keep standalone/scoped CSS for genuinely complex presentation or interactions that Tailwind cannot reasonably express. Consolidate selectors and avoid repeated override blocks.
 - Use the shared `src/theme/tokens.json` and generated `src/styles/tokens.css` as the source of truth for theme colors, surfaces, borders, text, accents, radii, and related design values. Do not add feature-specific competing palettes or edit generated token CSS by hand.
 - Use `lucide-react` for icons; do not introduce another icon library without approval.
-- When extracting shared UI, migrate styles toward MUI/Tailwind as part of the extraction instead of merely moving legacy CSS into smaller files. Remove old CSS only after confirming both public and authenticated experiences retain their intended light/dark and responsive appearance.
+- When extracting shared UI, migrate styles toward Tailwind and shadcn/ui patterns instead of merely moving legacy MUI styling into smaller files. Remove old CSS only after confirming public and authenticated experiences retain their intended light/dark and responsive appearance.
 - Inspect existing dashboard/auth-shell references before removal or migration.
 
 ## 13. Testing and operational visibility

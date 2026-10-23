@@ -2,9 +2,6 @@
 
 import type { FormEvent } from "react";
 import { Search } from "lucide-react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
 
 type JobSearchBarProps = {
   value: string;
@@ -33,58 +30,22 @@ export function JobSearchBar({
         onSubmit?.(event);
       }}
     >
-      <Autocomplete
-        freeSolo
-        fullWidth
-        options={options}
-        value={value}
-        inputValue={value}
-        forcePopupIcon={false}
-        clearOnEscape
-        onInputChange={(_, nextValue) => onChange(nextValue)}
-        onChange={(_, nextValue) =>
-          onChange(typeof nextValue === "string" ? nextValue : "")
-        }
-        noOptionsText="Keep typing to search jobs"
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            fullWidth
-            size="medium"
-            placeholder={placeholder}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                minHeight: 44,
-                height: 44,
-                borderRadius: "12px",
-                backgroundColor: "background.paper",
-                fontSize: 15,
-              },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-              "& .MuiInputAdornment-root": { color: "text.secondary" },
-              "& input": { py: 1 },
-            }}
-            slotProps={{
-              ...params.slotProps,
-              htmlInput: {
-                ...params.slotProps.htmlInput,
-                "aria-label": "Search roles, skills, or companies",
-              },
-              input: {
-                ...params.slotProps.input,
-                startAdornment: (
-                  <>
-                    <InputAdornment position="start">
-                      <Search size={18} aria-hidden="true" />
-                    </InputAdornment>
-                    {params.slotProps.input.startAdornment}
-                  </>
-                ),
-              },
-            }}
-          />
+      <label className="flex h-11 min-w-0 items-center gap-3 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)] focus-within:border-[var(--th-accent)]">
+        <Search size={18} aria-hidden="true" />
+        <input
+          aria-label="Search roles, skills, or companies"
+          list={options.length ? "job-search-suggestions" : undefined}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          className="h-full min-w-0 flex-1 bg-transparent text-sm text-[var(--th-fg)] outline-none placeholder:text-[var(--th-fg-muted)]"
+        />
+        {options.length > 0 && (
+          <datalist id="job-search-suggestions">
+            {options.map((option) => <option key={option} value={option} />)}
+          </datalist>
         )}
-      />
+      </label>
     </form>
   );
 }
