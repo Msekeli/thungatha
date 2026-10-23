@@ -13,7 +13,7 @@ export function PublicJobDiscoveryPage({
         <section className="mx-auto w-full max-w-5xl py-1 text-center">
           <h1 className="text-[1.7rem] font-extrabold leading-[1.1] tracking-tight md:text-[2rem]">
             Find your next{" "}
-            <span className="text-accent">opportunity</span>
+            <span className="text-[var(--th-accent)]">opportunity</span>
           </h1>
           <p className="mt-2 text-sm text-muted md:whitespace-nowrap md:text-base">
             Explore thousands of jobs in South Africa and beyond. Create an
