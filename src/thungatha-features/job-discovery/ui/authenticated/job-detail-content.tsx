@@ -1,4 +1,4 @@
-import Button from "@mui/material/Button";
+import { Button } from "@/components/ui/button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { JobDetailActions } from "./job-detail-actions";
@@ -44,8 +44,9 @@ export function AuthenticatedJobDetailContent({
             Not calculated
           </Typography>
           <Button
-            variant="text"
-            size="small"
+            variant="link"
+            size="sm"
+            className="h-auto px-0"
             onClick={(event) => onViewMatch(event.currentTarget)}
           >
             Why is this unavailable?
