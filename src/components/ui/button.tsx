@@ -9,12 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        primary: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
+        primary: "bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-[var(--th-line)] bg-[var(--th-panel)] text-[var(--th-fg)] hover:bg-[var(--th-panel-2)] hover:border-[var(--th-accent)]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "border-[color-mix(in_srgb,var(--th-fg)_24%,var(--th-line))] bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm hover:bg-[color-mix(in_srgb,var(--th-fg)_8%,var(--th-panel-2))]",
+        warning:
+          "border-[var(--th-warn)] bg-[var(--th-warn-bg)] text-[var(--th-warn)] hover:brightness-95",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:
