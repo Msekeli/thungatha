@@ -30,6 +30,7 @@ type Props = {
   onRetryFeed: () => void;
   onSelect: (job: Job) => void;
   onSaveJob: (job: Job) => void;
+  onDismissJob: (job: Job) => void;
   onBack: () => void;
   onViewMatch: (anchorEl: HTMLElement) => void;
   onApply: (anchorEl: HTMLElement) => void;
@@ -64,6 +65,7 @@ export function JobDiscoveryWorkspace(props: Props) {
         onRetry={props.onRetryFeed}
         onSelect={props.onSelect}
         onSave={props.onSaveJob}
+        onDismiss={props.onDismissJob}
         configured={props.configured}
         sortOrder={props.sortOrder}
         onSortChange={props.onSortChange}
