@@ -1,0 +1,83 @@
+@media (max-width: 1050px) {
+  .th-workspace-sidebar {
+    flex-basis: 218px;
+  }
+  .th-workspace-header {
+    padding-inline: 18px;
+  }
+  .th-workspace-page-content {
+    padding: 18px;
+  }
+}
+@media (max-width: 700px) {
+  .th-workspace-sidebar {
+    flex-basis: auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 12px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--th-line);
+  }
+  .th-workspace-brand {
+    padding: 0 4px 12px;
+  }
+  .th-workspace-brand .th-wordmark {
+    font-size: 16px;
+  }
+  .th-workspace-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .th-workspace-nav-label {
+    grid-column: 1/-1;
+    margin: 4px 4px 2px;
+  }
+  .th-workspace-you-label {
+    display: none;
+  }
+  .th-workspace-nav-link {
+    justify-content: center;
+    gap: 5px;
+    min-height: 40px;
+    padding: 7px 4px;
+    font-size: 11px;
+  }
+  .th-workspace-nav-icon {
+    width: auto;
+    flex-basis: auto;
+    font-size: 16px;
+  }
+  .th-workspace-sidebar-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--th-line);
+  }
+  .th-workspace-shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .th-workspace-content {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .th-workspace-page-content {
+    overflow: hidden;
+  }
+  .th-workspace-header {
+    min-height: 64px;
+    padding: 12px 14px;
+  }
+  .th-workspace-heading h1 {
+    font-size: 19px;
+  }
+  .th-workspace-heading p {
+    font-size: 12px;
+  }
+  .th-workspace-page-content {
+    padding: 14px;
+  }
+}
