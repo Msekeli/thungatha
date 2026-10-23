@@ -1,5 +1,7 @@
 "use client";
 
+import "./job-detail-heading.css";
+
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 
