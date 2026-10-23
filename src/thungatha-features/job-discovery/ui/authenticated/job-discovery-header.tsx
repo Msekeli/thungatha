@@ -1,6 +1,5 @@
 "use client";
 
-import Box from "@mui/material/Box";
 import { JobDiscoverySearchFilters } from "../shared/job-discovery-search-filters";
 import type { Filters } from "../job-discovery-utils";
 import type { FormEvent } from "react";
@@ -38,7 +37,7 @@ export function JobDiscoveryHeader({
     draft.employmentType || (category === "new" ? "all" : category);
 
   return (
-    <Box component="header" sx={{ width: "100%" }}>
+    <div className="w-full">
       <JobDiscoverySearchFilters
         query={draft.query}
         onQueryChange={onQueryChange}
@@ -53,6 +52,6 @@ export function JobDiscoveryHeader({
         onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}
       />
-    </Box>
+    </div>
   );
 }
