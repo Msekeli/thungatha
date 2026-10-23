@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -12,14 +13,32 @@ import {
   MobileWorkspaceMenu,
   MobileWorkspaceBottomNav,
 } from "@/components/layout/mobile-workspace-menu";
+
+const workspaceRoutes = [
+  "/jobs",
+  "/cv-studio",
+  "/applications",
+  "/profile",
+  "/account",
+];
+
 export function MobileAppShell({ configured }: { configured: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isPublicDiscovery = pathname === "/";
+  const isWorkspaceRoute = workspaceRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+
   const active = (href: string) =>
     typeof window !== "undefined" &&
     (window.location.pathname + window.location.search === href ||
       (href === "/" && window.location.pathname === "/"));
+
+  // WorkspaceShell owns navigation for authenticated workspace routes.
+  // Rendering the global app shell here duplicates its header and mobile nav.
+  if (isWorkspaceRoute) return null;
+
   return (
     <>
       {!isPublicDiscovery && (
