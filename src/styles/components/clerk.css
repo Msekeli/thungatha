@@ -1,0 +1,20 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  .th-clerk-card {
+    background: var(--th-panel);
+    border-radius: var(--th-radius-panel);
+    border: 1px solid color-mix(in srgb, var(--th-fg) 14%, var(--th-line));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #000 35%, transparent),
+      0 32px 80px color-mix(in srgb, #000 50%, transparent),
+      0 0 90px color-mix(in srgb, var(--th-accent) 12%, transparent);
+  }
+  :root[data-theme="light"] .th-clerk-card {
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--th-nav) 28%, transparent);
+  }
+  .th-clerk-footer {
+    background: var(--th-panel-2);
+    background-image: none;
+    border-top: 1px solid var(--th-line);
+  }
+}
