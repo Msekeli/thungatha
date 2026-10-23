@@ -35,16 +35,16 @@ export function JobDiscoverySearchFilters(props: Props) {
   return (
     <header className="w-full">
       <div className="flex w-full flex-col gap-3 lg:flex-row">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 lg:w-[min(48%,640px)] lg:flex-none">
           <JobSearchBar
             value={props.query}
             onChange={props.onQueryChange}
             onSubmit={props.onSubmit}
-            placeholder="Job title, skills or company..."
+            placeholder="Job title, skill, or company"
             suggestions={suggestions}
           />
         </div>
-        <div className="flex min-w-0 gap-3 lg:w-[min(42%,520px)]">
+        <div className="flex min-w-0 gap-3 lg:w-[min(36%,440px)]">
           <JobLocationSelect
             value={props.location}
             onChange={props.onLocationChange}
