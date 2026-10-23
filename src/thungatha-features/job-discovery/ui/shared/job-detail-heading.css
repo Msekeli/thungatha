@@ -1,0 +1,92 @@
+@layer components {
+  /* Job detail heading layout and typography stay within the job-discovery feature. */
+  .th-jobs-redesign-job-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .th-jobs-detail-logo {
+    display: grid;
+    flex: 0 0 48px;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--th-line);
+    border-radius: 12px;
+    background: var(--th-panel);
+    color: var(--th-fg);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .th-jobs-redesign-title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .th-jobs-redesign-title h2 {
+    margin: 0;
+    color: var(--th-fg);
+    font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .th-jobs-employer-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    color: var(--th-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .th-jobs-employer-label span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .th-jobs-external-mark {
+    flex: 0 0 auto;
+  }
+
+  .th-jobs-match-scorebox {
+    flex: 0 0 auto;
+    align-items: flex-start;
+    margin-left: auto;
+    padding-left: 12px;
+    color: var(--th-fg-muted);
+  }
+
+  .th-jobs-match-scorebox strong {
+    color: var(--th-fg);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 600px) {
+    .th-jobs-redesign-job-head {
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .th-jobs-detail-logo {
+      flex-basis: 40px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .th-jobs-redesign-title h2 {
+      font-size: 1.25rem;
+    }
+
+    .th-jobs-match-scorebox {
+      padding-left: 4px;
+      max-width: 42%;
+    }
+  }
+}
