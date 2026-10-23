@@ -45,7 +45,12 @@ export function JobDetailPresentation({
       className="th-jobs-detail-content"
       key={job.id}
       spacing={1.5}
-      sx={{ minWidth: 0 }}
+      sx={{
+        display: "flex",
+        flex: "1 1 0%",
+        minHeight: 0,
+        minWidth: 0,
+      }}
     >
       {beforeContent}
       <JobDetailHeading
