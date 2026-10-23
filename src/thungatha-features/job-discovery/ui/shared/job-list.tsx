@@ -2,7 +2,6 @@
 
 import { JobOpportunityCard, type JobCardData } from "./job-opportunity-card";
 import { JobEmptyState } from "./job-empty-state";
-import Stack from "@mui/material/Stack";
 import type { ReactNode } from "react";
 
 type JobListProps = {
@@ -32,7 +31,7 @@ export function JobList({
     return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   }
   return (
-    <Stack spacing={1}>
+    <div className="flex min-w-0 flex-col gap-2">
       {jobs.map((job) => (
         <JobOpportunityCard
           key={job.id}
@@ -51,6 +50,6 @@ export function JobList({
           }
         />
       ))}
-    </Stack>
+    </div>
   );
 }
