@@ -21,6 +21,7 @@ export type JobResultsPanelProps = {
   onRetry: () => void;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
+  onDismiss: (job: Job) => void;
   configured: boolean;
   sortOrder: string;
   onSortChange: (value: string) => void;
