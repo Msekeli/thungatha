@@ -30,7 +30,7 @@ export function JobDiscoveryScreen({
 
   return (
     <>
-      <div className={workspaceLeadingColumn ? "mx-auto w-full max-w-6xl" : undefined}>
+      <div className={workspaceLeadingColumn ? "mx-auto mb-4 w-full max-w-6xl" : undefined}>
         <JobDiscoveryControls
           isAuthenticated={s.isAuthenticated}
           draft={s.draft}
