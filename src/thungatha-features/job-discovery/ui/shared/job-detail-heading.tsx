@@ -1,8 +1,6 @@
+"use client";
+
 import { ExternalLink } from "lucide-react";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
 
 export function JobDetailHeading({
@@ -14,70 +12,37 @@ export function JobDetailHeading({
   employer: string | null;
   action?: ReactNode;
 }) {
+  const employerLabel = employer?.trim() || "Employer not listed";
+  const initials = (employer?.trim() || title)
+    .split(/\\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <Stack
-      direction="row"
-      spacing={1.25}
-      className="th-jobs-redesign-job-head"
-      sx={{
-        alignItems: "center",
-        minWidth: 0,
-        pb: 1,
-        borderBottom: 1,
-        borderColor: "divider",
-      }}
-    >
-      <Avatar
-        className="th-jobs-employer-mark th-jobs-detail-logo"
-        sx={{
-          width: 40,
-          height: 40,
-          flex: "0 0 40px",
-          borderRadius: 1.5,
-          bgcolor: "action.selected",
-          color: "primary.main",
-          fontSize: 1.125,
-          fontWeight: 700,
-        }}
+    <div className="th-jobs-redesign-job-head flex min-w-0 items-center gap-3 border-b border-[var(--th-line)] pb-3">
+      <div
+        aria-hidden="true"
+        className="th-jobs-employer-mark th-jobs-detail-logo flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--th-panel-muted)] text-base font-bold text-[var(--th-accent)]"
       >
-        {(employer?.trim() || title)
-          .split(/\s+/)
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((part) => part[0])
-          .join("")
-          .toUpperCase()}
-      </Avatar>
-      <Box
-        className="th-jobs-redesign-title"
-        sx={{
-          flex: 1,
-          minWidth: 0,
-          "& h2": {
-            mt: 0,
-            mb: 0,
-            fontSize: { xs: "1.0625rem", sm: "1.1875rem" },
-            lineHeight: 1.25,
-            overflowWrap: "anywhere",
-          },
-          "& p": { m: 0, fontSize: "0.75rem" },
-        }}
-      >
-        <Typography variant="h5" component="h2">
+        {initials}
+      </div>
+      <div className="th-jobs-redesign-title min-w-0 flex-1">
+        <h2 className="m-0 break-words text-[1.0625rem] font-semibold leading-tight sm:text-[1.1875rem]">
           {title}
-        </Typography>
-        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
-          <Typography color="text.secondary">
-            {employer?.trim() || "Employer not listed"}
-          </Typography>
+        </h2>
+        <div className="mt-1 flex min-w-0 items-center gap-1 text-xs text-muted">
+          <span className="truncate">{employerLabel}</span>
           <ExternalLink
-            className="th-jobs-external-mark"
+            className="th-jobs-external-mark shrink-0"
             size={13}
             aria-label="External employer link"
           />
-        </Stack>
-      </Box>
+        </div>
+      </div>
       {action}
-    </Stack>
+    </div>
   );
 }
