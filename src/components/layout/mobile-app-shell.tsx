@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { IconButton } from "@mui/material";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "./mobile-app-shell.module.css";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
@@ -32,14 +32,17 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
         <div className={styles.actions}>
           <ThemeToggle />
           <HomeAuthActions configured={configured} variant="nav" />
-          <IconButton
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 border border-line text-fg"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="th-mobile-workspace-menu"
             onClick={() => setOpen((v) => !v)}
-            size="small"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
-          </IconButton>
+          </Button>
         </div>
       </header>
       {open && (

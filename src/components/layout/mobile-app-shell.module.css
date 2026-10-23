@@ -32,10 +32,4 @@
     gap: 4px;
     flex-wrap: nowrap;
   }
-
-  .actions :global(.MuiIconButton-root) {
-    flex: 0 0 auto;
-    color: var(--th-fg);
-    border: 1px solid var(--th-line);
-  }
 }

@@ -1,7 +1,5 @@
 import Box from "@mui/material/Box";
 import JobsDiscovery from "../jobs-discovery";
-import { PublicJobDiscoveryPromoSidebar } from "./public-job-discovery-promo-sidebar";
-import { JobDiscoveryHeroShell } from "../shared/job-discovery-hero-shell";
 import { PublicDiscoveryShell } from "../shared/public-discovery-shell";
 
 export function PublicJobDiscoveryPage({
@@ -11,17 +9,6 @@ export function PublicJobDiscoveryPage({
 }) {
   return (
     <PublicDiscoveryShell configured={configured}>
-      <JobDiscoveryHeroShell
-        title={
-          <>
-            Find your next{" "}
-            <Box component="span" sx={{ color: "primary.main" }}>
-              opportunity
-            </Box>
-          </>
-        }
-        description="Explore thousands of jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track your applications."
-      />
       <Box
         component="main"
         className="th-jobs-page th-jobs-redesign"
@@ -44,12 +31,7 @@ export function PublicJobDiscoveryPage({
           },
         }}
       >
-        <JobsDiscovery
-          configured={configured}
-          workspaceLeadingColumn={
-            <PublicJobDiscoveryPromoSidebar configured={configured} />
-          }
-        />
+        <JobsDiscovery configured={configured} />
       </Box>
     </PublicDiscoveryShell>
   );
