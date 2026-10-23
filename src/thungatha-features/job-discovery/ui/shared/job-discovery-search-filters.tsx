@@ -51,7 +51,7 @@ export function JobDiscoverySearchFilters(props: Props) {
           />
           <Button
             variant="primary"
-            className="h-11 shrink-0 gap-2 px-4"
+            className="h-11 shrink-0 gap-2 border-0 bg-[var(--th-btn)] px-4 text-[var(--th-btn-fg)] hover:brightness-110"
             aria-label="Open filters"
             onClick={(event) => props.onOpenFilters(event.currentTarget)}
           >
