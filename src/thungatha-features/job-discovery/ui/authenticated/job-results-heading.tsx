@@ -1,5 +1,3 @@
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { ChevronDown, ArrowDownWideNarrow } from "lucide-react";
 
 export function JobResultsHeading({
@@ -22,25 +20,10 @@ export function JobResultsHeading({
       : `1–${Math.min(count, total).toLocaleString()} of ${total.toLocaleString()} opportunities`;
 
   return (
-    <Stack
-      component="div"
-      direction="row"
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 1,
-        px: 2,
-        py: 1.5,
-        borderBottom: 1,
-        borderColor: "divider",
-      }}
-    >
-      <Typography variant="body2" color="text.secondary" aria-live="polite">
+    <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+      <p className="text-sm text-fg-muted" aria-live="polite">
         {label}
-      </Typography>
+      </p>
       <div className="relative inline-flex shrink-0 items-center">
         <ArrowDownWideNarrow
           size={15}
@@ -63,6 +46,6 @@ export function JobResultsHeading({
           className="pointer-events-none absolute right-3 text-[var(--th-muted)]"
         />
       </div>
-    </Stack>
+    </div>
   );
 }
