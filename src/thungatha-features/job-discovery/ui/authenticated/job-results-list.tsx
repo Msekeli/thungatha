@@ -1,5 +1,4 @@
 import type { RefObject } from "react";
-import Box from "@mui/material/Box";
 import { Bookmark, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
@@ -87,20 +86,15 @@ export function JobResultsList({
         }}
       />
       {feed && feed.page < feed.totalPages && (
-        <Box
+        <div
           ref={loadMoreRef}
           aria-live="polite"
-          sx={{
-            p: "16px 8px",
-            textAlign: "center",
-            color: "text.secondary",
-            fontSize: 12,
-          }}
+          className="px-2 py-4 text-center text-xs text-fg-muted"
         >
           {loading
             ? "Loading more opportunities…"
             : "Scroll to load more opportunities"}
-        </Box>
+        </div>
       )}
     </>
   );
