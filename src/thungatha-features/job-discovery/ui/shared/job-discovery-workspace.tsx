@@ -37,6 +37,8 @@ type Props = {
   onDismiss: () => void;
   onRetryDetail: () => void;
   configured: boolean;
+  sortOrder: string;
+  onSortChange: (value: string) => void;
   leadingColumn?: ReactNode;
 };
 
@@ -63,6 +65,8 @@ export function JobDiscoveryWorkspace(props: Props) {
         onSelect={props.onSelect}
         onSave={props.onSaveJob}
         configured={props.configured}
+        sortOrder={props.sortOrder}
+        onSortChange={props.onSortChange}
       />
       <AuthenticatedJobDetailPanel
         configured={props.configured}
