@@ -19,6 +19,8 @@ export function AuthenticatedJobResultsPanel({
   onSelect,
   onSave,
   configured,
+  sortOrder,
+  onSortChange,
 }: JobResultsPanelProps) {
   return (
     <Box
@@ -69,6 +71,8 @@ export function AuthenticatedJobResultsPanel({
         loading={loading}
         count={jobs.length}
         total={feed?.total ?? jobs.length}
+        sortOrder={sortOrder}
+        onSortChange={onSortChange}
       />
       <JobResultsState
         loading={loading}
