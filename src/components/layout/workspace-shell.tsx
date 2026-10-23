@@ -3,6 +3,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import "./workspace-shell.css";
+import "./workspace-sidebar-nav.css";
+import "./workspace-content.css";
+import "./workspace-responsive.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
