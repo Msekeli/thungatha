@@ -35,11 +35,11 @@
 @custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
 @layer components {
-  .th-mobile-bottom-nav {
+  .th-mobile-bottom-nav--public {
     display: none;
   }
   @media (max-width: 760px) {
-    .th-mobile-bottom-nav {
+    .th-mobile-bottom-nav--public {
       position: fixed !important;
       inset: auto 0 0;
       z-index: 1300;
@@ -57,7 +57,8 @@
       opacity: 1;
       transform: none;
     }
-    .th-mobile-bottom-nav > a {
+    .th-mobile-bottom-nav--public > a,
+    .th-mobile-bottom-nav--public > * > a {
       display: flex;
       min-width: 0;
       flex-direction: column;
@@ -72,14 +73,15 @@
       line-height: 1.2;
       white-space: nowrap;
     }
-    .th-mobile-bottom-nav > a[data-active="true"] {
+    .th-mobile-bottom-nav--public > a[data-active="true"],
+    .th-mobile-bottom-nav--public > * > a[data-active="true"] {
       color: var(--th-accent-text);
       background: var(--th-accent-bg);
     }
-    .th-mobile-bottom-nav > a svg {
+    .th-mobile-bottom-nav--public svg {
       flex: 0 0 auto;
     }
-    .th-mobile-bottom-nav a span {
+    .th-mobile-bottom-nav--public span {
       display: block;
     }
   }
