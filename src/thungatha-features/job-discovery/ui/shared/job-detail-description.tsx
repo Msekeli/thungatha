@@ -30,22 +30,41 @@ export function JobDetailDescription({ description }: Props) {
     <Box
       className="th-job-description-panel"
       sx={{
+        display: "flex",
+        flex: "1 1 0%",
+        flexDirection: "column",
+        minHeight: 0,
+        minWidth: 0,
         border: 1,
         borderColor: "divider",
         borderRadius: 2,
         overflow: "hidden",
       }}
     >
-      <JobDetailTabs value={activeTab} onChange={setActiveTab} />
+      <Box sx={{ flex: "0 0 auto", minWidth: 0 }}>
+        <JobDetailTabs value={activeTab} onChange={setActiveTab} />
+      </Box>
       <Stack
         className="th-job-description-body"
         spacing={1.25}
-        sx={{ p: { xs: 1.5, sm: 2 } }}
+        sx={{
+          flex: "1 1 0%",
+          minHeight: 0,
+          minWidth: 0,
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+          p: { xs: 1.5, sm: 2 },
+        }}
       >
         {activeTab === "description" ? (
           <Typography
             variant="body2"
-            sx={{ whiteSpace: "pre-line", overflowWrap: "anywhere" }}
+            sx={{
+              whiteSpace: "pre-wrap",
+              overflowWrap: "anywhere",
+              flex: "0 0 auto",
+              lineHeight: 1.65,
+            }}
           >
             {description?.trim() ||
               "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
