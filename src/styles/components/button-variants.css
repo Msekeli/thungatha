@@ -1,0 +1,36 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  /* Secondary: a filled surface with a clearly visible edge, so it reads as a button */
+  .th-btn-secondary {
+    background: var(--th-panel-2);
+    color: var(--th-fg);
+    border-color: color-mix(in srgb, var(--th-fg) 24%, var(--th-line));
+    box-shadow:
+      0 1px 2px color-mix(in srgb, #000 25%, transparent),
+      inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+  }
+  .th-btn-secondary:hover {
+    background: color-mix(in srgb, var(--th-fg) 8%, var(--th-panel-2));
+    border-color: color-mix(in srgb, var(--th-fg) 38%, var(--th-line));
+  }
+
+  .th-btn-ghost {
+    background: transparent;
+    color: var(--th-fg-muted);
+  }
+  .th-btn-ghost:hover {
+    background: var(--th-tag-bg);
+    color: var(--th-fg);
+  }
+
+  /* Warning: clear orange outline for destructive or cautionary actions */
+  .th-btn-warning {
+    background: transparent;
+    color: var(--th-warn);
+    border-color: var(--th-warn);
+  }
+  .th-btn-warning:hover {
+    background: var(--th-warn-bg);
+    border-color: var(--th-warn);
+  }
+}

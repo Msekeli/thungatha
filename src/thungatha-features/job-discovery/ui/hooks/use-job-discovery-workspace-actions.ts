@@ -29,16 +29,16 @@ export function useJobDiscoveryWorkspaceActions(
     void updateJobState(job, job.state === "saved" ? null : "saved");
   }
 
+  function dismissJob(job: Job) {
+    void updateJobState(job, job.state === "dismissed" ? null : "dismissed");
+  }
+
   function saveSelectedJob() {
     if (selectedJob) saveJob(selectedJob);
   }
 
   function dismissSelectedJob() {
-    if (selectedJob)
-      void updateJobState(
-        selectedJob,
-        selectedJob.state === "dismissed" ? null : "dismissed",
-      );
+    if (selectedJob) dismissJob(selectedJob);
   }
 
   function applySelectedJob(anchorEl: HTMLElement) {
@@ -57,6 +57,7 @@ export function useJobDiscoveryWorkspaceActions(
     retryDetail: () => state.setRetryDetail((value) => value + 1),
     selectJob,
     saveJob,
+    dismissJob,
     showResults: () => state.setMobileDetail(false),
     viewMatch: (anchorEl: HTMLElement) => {
       state.setMatchAnchorEl(anchorEl);

@@ -5,7 +5,7 @@ import { BrandMark } from "@/components/brand-mark";
 // Shared frame for /sign-in and /sign-up. Clerk's own card goes in `children`.
 export function AuthPageShell({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-screen flex-1 lg:grid-cols-[5fr_6fr]">
+    <div className="grid w-full lg:min-h-screen lg:flex-1 lg:grid-cols-[5fr_6fr]">
       <aside
         aria-label="About Thungatha"
         className="th-brand-panel relative hidden flex-col justify-between overflow-hidden p-12 text-brand lg:flex"
@@ -32,7 +32,7 @@ export function AuthPageShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </aside>
-      <main className="th-auth-glow relative flex flex-col items-center justify-center gap-5 px-6 py-16">
+      <main className="th-auth-glow relative flex flex-col items-center justify-center gap-5 px-6 py-10 md:py-16 max-[760px]:gap-4 max-[760px]:pt-14">
         <Link
           href="/"
           className="absolute left-6 top-6 inline-flex items-center gap-1.5 text-detail text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text"

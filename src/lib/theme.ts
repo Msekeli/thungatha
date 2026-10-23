@@ -1,7 +1,7 @@
 /*
  * Theme settings shared by the layout (pre-paint script) and the toggle.
  * The theme lives in <html data-theme="dark|light">, which tokens.css,
- * Tailwind's dark:/light: variants, Clerk (via var()) and MUI all follow.
+ * Tailwind's dark:/light: variants and Clerk (via var()) follow.
  * To follow the visitor's operating system on a first visit instead of dark,
  * change DEFAULT_THEME handling in themeInitScript below.
  */

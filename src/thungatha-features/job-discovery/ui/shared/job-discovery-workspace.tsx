@@ -1,51 +1,19 @@
 "use client";
 
-import type { ReactNode, RefObject } from "react";
-import Box from "@mui/material/Box";
 import { AuthenticatedJobResultsPanel } from "../authenticated/job-results-panel";
 import { AuthenticatedJobDetailPanel } from "../authenticated/job-detail-panel";
-import { jobDiscoveryWorkspaceSx } from "./job-discovery-workspace-sx";
-import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
+import type { JobDiscoveryWorkspaceProps } from "./job-discovery-workspace-types";
 
-type Props = {
-  jobs: Job[];
-  feed: Feed | null;
-  loading: boolean;
-  error: string | null;
-  hasFilters: boolean;
-  mobileDetail: boolean;
-  selectedId: string | null;
-  loadMoreRef: RefObject<HTMLDivElement | null>;
-  selectedDetail: Job | null;
-  selectedSource: ReturnType<typeof sourceFor>;
-  applicationDestination: string | null;
-  applicationUrl: string | null;
-  jobSourceUrl: string | null;
-  busy: boolean;
-  detailLoading: boolean;
-  activityError: string | null;
-  detailError: string | null;
-  sourceFor: typeof sourceFor;
-  formatDate: (value: string | null | undefined) => string | null;
-  onRetryFeed: () => void;
-  onSelect: (job: Job) => void;
-  onSaveJob: (job: Job) => void;
-  onBack: () => void;
-  onViewMatch: (anchorEl: HTMLElement) => void;
-  onApply: (anchorEl: HTMLElement) => void;
-  onSave: () => void;
-  onDismiss: () => void;
-  onRetryDetail: () => void;
-  configured: boolean;
-  leadingColumn?: ReactNode;
-};
-
-export function JobDiscoveryWorkspace(props: Props) {
+export function JobDiscoveryWorkspace(props: JobDiscoveryWorkspaceProps) {
   const hasLeadingColumn = Boolean(props.leadingColumn);
   return (
-    <Box
-      className="th-jobs-workspace th-jobs-redesign-workspace"
-      sx={jobDiscoveryWorkspaceSx(hasLeadingColumn)}
+    <div
+      className={[
+        "th-jobs-workspace th-jobs-redesign-workspace grid h-[min(72dvh,900px)] max-h-[calc(100dvh-12rem)] min-h-0 w-full gap-4 max-[900px]:h-[calc(100dvh-11rem)] max-[900px]:max-h-none max-[900px]:gap-2 max-[900px]:flex max-[900px]:flex-col max-[900px]:overflow-visible max-[700px]:h-full max-[700px]:flex-1 max-[700px]:gap-0",
+        hasLeadingColumn
+          ? "grid-cols-[minmax(0,15%)_minmax(0,1fr)_minmax(0,1fr)] overflow-hidden max-[1199px]:h-[min(56dvh,700px)] max-[1199px]:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] max-[1199px]:overflow-hidden max-[700px]:h-full"
+          : "grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]",
+      ].join(" ")}
     >
       {props.leadingColumn}
       <AuthenticatedJobResultsPanel
@@ -62,6 +30,7 @@ export function JobDiscoveryWorkspace(props: Props) {
         onRetry={props.onRetryFeed}
         onSelect={props.onSelect}
         onSave={props.onSaveJob}
+        onDismiss={props.onDismissJob}
         configured={props.configured}
       />
       <AuthenticatedJobDetailPanel
@@ -84,6 +53,6 @@ export function JobDiscoveryWorkspace(props: Props) {
         onDismiss={props.onDismiss}
         onRetry={props.onRetryDetail}
       />
-    </Box>
+    </div>
   );
 }

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import Box from "@mui/material/Box";
 import { JobDiscoveryDialogs } from "../authenticated/job-discovery-dialogs";
-import { JobDiscoveryControls } from "../authenticated/job-discovery-controls";
 import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
+import { JobDiscoverySearchToolbar } from "./job-discovery-search-toolbar";
 import { useJobDiscoveryDialogAnchors } from "../hooks/use-job-discovery-dialog-anchors";
 import { useJobDiscoveryState } from "../hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "../hooks/use-job-discovery-controller";
@@ -30,38 +29,12 @@ export function JobDiscoveryScreen({
 
   return (
     <>
-      <JobDiscoveryControls
-        isAuthenticated={s.isAuthenticated}
-        draft={s.draft}
-        filtersOpen={s.filtersOpen}
-        categories={c.categories}
-        category={s.filters.employmentType || s.category}
-        sortOrder={s.sortOrder}
-        jobs={c.visibleJobs}
-        onQueryChange={(value) => c.changeDraft("query", value)}
-        onLocationChange={(value) => c.changeDraft("location", value)}
-        onSubmit={c.submitFilters}
-        onToggleFilters={(anchorEl) => {
-          s.setFilterAnchorEl(anchorEl);
-          s.setFiltersOpen((value) => !value);
-        }}
-        onSortChange={s.setSortOrder}
-        onCategoryChange={c.changeCategory}
-        undoAction={s.undoAction}
-        stateBusy={s.stateBusy}
-        onUndo={() => void c.undoLastStateChange()}
-        onDismissUndo={() => s.setUndoAction(null)}
-        stateMessage={s.stateMessage}
-        onDismissMessage={() => s.setStateMessage(null)}
-        stateError={s.stateError}
-        onDismissError={() => s.setStateError(null)}
+      <JobDiscoverySearchToolbar
+        state={s}
+        controller={c}
+        hasLeadingColumn={Boolean(workspaceLeadingColumn)}
       />
-      <Box
-        sx={{
-          flex: workspaceLeadingColumn ? "1 1 auto" : undefined,
-          minHeight: 0,
-        }}
-      >
+      <div className="min-h-0 flex-1 max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col">
         <JobDiscoveryWorkspace
           jobs={c.visibleJobs}
           feed={s.feed}
@@ -84,6 +57,7 @@ export function JobDiscoveryScreen({
           formatDate={c.formatDate}
           onRetryFeed={c.workspaceActions.retryFeed}
           onSaveJob={c.workspaceActions.saveJob}
+          onDismissJob={c.workspaceActions.dismissJob}
           onSelect={c.workspaceActions.selectJob}
           onBack={c.workspaceActions.showResults}
           onViewMatch={c.workspaceActions.viewMatch}
@@ -94,7 +68,7 @@ export function JobDiscoveryScreen({
           configured={configured}
           leadingColumn={workspaceLeadingColumn}
         />
-      </Box>
+      </div>
       <JobDiscoveryDialogs
         filtersOpen={s.filtersOpen}
         filterAnchorEl={s.filterAnchorEl}

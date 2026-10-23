@@ -1,0 +1,77 @@
+.th-workspace-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.th-workspace-nav-label {
+  margin: 0 10px 5px;
+  color: var(--th-nav-text);
+  font-size: 9px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.th-workspace-you-label {
+  margin-top: 17px;
+}
+.th-workspace-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  color: var(--th-nav-text);
+  font-size: 12px;
+  line-height: 18px;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.th-workspace-nav-link:hover {
+  background: var(--th-tag-bg);
+  color: var(--th-fg);
+}
+.th-workspace-nav-link[data-active="true"] {
+  background: var(--th-nav-active-bg);
+  color: var(--th-nav-active-fg);
+  font-weight: 600;
+}
+.th-workspace-nav-icon {
+  display: inline-grid;
+  width: 19px;
+  flex: 0 0 19px;
+  place-items: center;
+  font-size: 17px;
+  line-height: 20px;
+  color: currentColor;
+}
+.th-workspace-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+.th-workspace-sidebar-footer .th-btn,
+.th-workspace-sign-in {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--th-accent);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--th-accent-text);
+  font-size: 13px;
+  text-decoration: none;
+}
+.th-workspace-sidebar-footer .th-btn:hover,
+.th-workspace-sign-in:hover {
+  background: var(--th-accent-bg);
+}

@@ -1,70 +1,81 @@
-import Link from "next/link";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { cva, type VariantProps } from "class-variance-authority"
+import Link from "next/link"
+import type { ComponentProps } from "react"
+import { cn } from "@/lib/utils"
 
-/*
- * The one button for Thungatha's own UI. Styles live in components.css
- * (.th-btn*), so Clerk's buttons use the exact same classes via
- * src/theme/clerk-appearance.ts. Do not hand-write button classes elsewhere.
- */
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "warning";
-export type ButtonSize = "sm" | "md" | "lg";
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
+        primary: "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
+        outline:
+          "border-[var(--th-btn)] bg-[var(--th-panel)] text-[var(--th-fg)] shadow-sm hover:bg-[var(--th-panel-2)] hover:shadow-[var(--th-glow)]",
+        secondary:
+          "border-[var(--th-btn)]/60 bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm hover:border-[var(--th-btn)] hover:bg-[var(--th-panel)] hover:shadow-[var(--th-glow)]",
+        warning:
+          "border-[var(--th-warn)] bg-[var(--th-warn-bg)] text-[var(--th-warn)] hover:brightness-95",
+        ghost:
+          "border-transparent hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "border-transparent text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        md: "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        icon: "size-8",
+        "icon-xs":
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
 
-type Shared = {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  block?: boolean;
-  className?: string;
-  children?: ReactNode;
-};
-
-export function buttonClass({
-  variant = "secondary",
-  size = "md",
-  block = false,
-  className = "",
-}: Pick<Shared, "variant" | "size" | "block" | "className">) {
-  return [
-    "th-btn",
-    `th-btn-${variant}`,
-    `th-btn-${size}`,
-    block ? "th-btn-block" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
-
-// Renders a <button>. Extra props (onClick, disabled, ...) are passed through,
-// so it works as the single child of Clerk's SignInButton / SignUpButton.
-export function Button({
-  variant,
-  size,
-  block,
+function Button({
   className,
-  type = "button",
+  variant = "default",
+  size = "default",
   ...props
-}: Shared & ComponentPropsWithoutRef<"button">) {
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (
-    <button
-      type={type}
-      className={buttonClass({ variant, size, block, className })}
+    <ButtonPrimitive
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  );
+  )
 }
 
-// Same look, rendered as a Next.js <Link> for navigation.
-export function ButtonLink({
-  variant,
-  size,
-  block,
+type ButtonLinkProps = ComponentProps<typeof Link> &
+  VariantProps<typeof buttonVariants>
+
+function ButtonLink({
   className,
+  variant = "default",
+  size = "default",
   ...props
-}: Shared & ComponentPropsWithoutRef<typeof Link>) {
+}: ButtonLinkProps) {
   return (
     <Link
-      className={buttonClass({ variant, size, block, className })}
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  );
+  )
 }
+
+export { Button, ButtonLink, buttonVariants }

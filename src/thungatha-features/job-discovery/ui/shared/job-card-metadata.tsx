@@ -1,7 +1,4 @@
 import { CalendarDays, MapPin } from "lucide-react";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 
 export function JobCardMetadata({
   location,
@@ -25,48 +22,27 @@ export function JobCardMetadata({
           ? "Remote"
           : null;
   return (
-    <Stack spacing={0.45} sx={{ minWidth: 0, width: "100%" }}>
-      <Stack
-        direction="row"
-        sx={{
-          minWidth: 0,
-          flexWrap: "wrap",
-          alignItems: "flex-start",
-          columnGap: 0.8,
-          rowGap: 0.35,
-        }}
-      >
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          className="inline-flex items-center gap-1"
-          sx={{ minWidth: 0, lineHeight: 1.3, overflowWrap: "anywhere" }}
-        >
+    <div className="flex w-full min-w-0 flex-col gap-1">
+      <div className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
+        <span className="inline-flex min-w-0 items-center gap-1 break-words text-xs leading-tight text-fg-muted">
           <MapPin size={13} aria-hidden="true" />
           {location || "Location not specified"}
-        </Typography>
-        <Chip size="small" label={employmentLabel} sx={chipSx} />
-        {modeLabel && <Chip size="small" label={modeLabel} sx={chipSx} />}
-      </Stack>
+        </span>
+        <span className="rounded-md bg-[var(--th-tag-bg)] px-2 py-0.5 text-[0.65rem] text-fg-muted">
+          {employmentLabel}
+        </span>
+        {modeLabel && (
+          <span className="rounded-md bg-[var(--th-tag-bg)] px-2 py-0.5 text-[0.65rem] text-fg-muted">
+            {modeLabel}
+          </span>
+        )}
+      </div>
       {posted && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          className="inline-flex items-center gap-1"
-          sx={{ lineHeight: 1.3 }}
-        >
+        <span className="inline-flex items-center gap-1 text-xs leading-tight text-fg-muted">
           <CalendarDays size={13} aria-hidden="true" />
           {posted}
-        </Typography>
+        </span>
       )}
-    </Stack>
+    </div>
   );
 }
-
-const chipSx = {
-  height: 20,
-  borderRadius: 1,
-  fontSize: "0.65rem",
-  bgcolor: "action.hover",
-  color: "text.secondary",
-};

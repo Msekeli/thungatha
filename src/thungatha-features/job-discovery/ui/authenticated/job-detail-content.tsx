@@ -1,7 +1,4 @@
-import { ArrowLeft } from "lucide-react";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import { Button } from "@/components/ui/button";
 import { JobDetailActions } from "./job-detail-actions";
 import { JobDetailStatus } from "./job-detail-status";
 import {
@@ -9,6 +6,7 @@ import {
   JobDetailEmptyState,
 } from "../shared/job-detail-presentation";
 import type { JobDetailContentProps } from "./job-detail-types";
+import { JobDetailMatchSummary } from "./job-detail-match-summary";
 
 export function AuthenticatedJobDetailContent({
   configured,
@@ -22,7 +20,6 @@ export function AuthenticatedJobDetailContent({
   activityError,
   detailError,
   formatDate,
-  onBack,
   onViewMatch,
   onApply,
   onSave,
@@ -35,37 +32,9 @@ export function AuthenticatedJobDetailContent({
       job={job}
       postedAt={source?.published_at || null}
       formatDate={formatDate}
-      beforeContent={
-        <Button
-          variant="text"
-          size="small"
-          className="th-jobs-mobile-back"
-          onClick={onBack}
-        >
-          <ArrowLeft size={17} aria-hidden="true" /> Back to results
-        </Button>
-      }
-      headingAction={
-        <Stack
-          className="th-jobs-match-scorebox"
-          spacing={0.5}
-          sx={{ alignItems: "flex-start" }}
-        >
-          <Typography variant="caption">Match</Typography>
-          <Typography component="strong" sx={{ fontWeight: 700 }}>
-            Not calculated
-          </Typography>
-          <Button
-            variant="text"
-            size="small"
-            onClick={(event) => onViewMatch(event.currentTarget)}
-          >
-            Why is this unavailable?
-          </Button>
-        </Stack>
-      }
+      headingAction={<JobDetailMatchSummary onViewMatch={onViewMatch} />}
       actions={
-        <Stack spacing={1}>
+        <div className="flex flex-col gap-2">
           <JobDetailActions
             configured={configured}
             job={job}
@@ -84,7 +53,17 @@ export function AuthenticatedJobDetailContent({
             applicationUrl={applicationUrl}
             onRetry={onRetry}
           />
-        </Stack>
+        </div>
+      }
+      afterDescription={
+        <Button
+          variant="link"
+          size="sm"
+          className="h-auto self-start px-0 text-accent-text min-[601px]:hidden"
+          onClick={(event) => onViewMatch(event.currentTarget)}
+        >
+          About job matching
+        </Button>
       }
     />
   );

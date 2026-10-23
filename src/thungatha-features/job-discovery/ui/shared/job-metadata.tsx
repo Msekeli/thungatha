@@ -1,6 +1,4 @@
 import { CalendarDays, MapPin, BriefcaseBusiness } from "lucide-react";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { JobCardMetadata } from "./job-card-metadata";
 
 type Props = {
@@ -39,17 +37,12 @@ export function JobMetadata({
     ...(workMode ? [{ label: workMode, icon: MapPin }] : []),
   ];
   return (
-    <Stack direction="row" sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+    <div className="flex flex-wrap gap-x-3 gap-y-1.5">
       {items.map(({ label, icon: Icon }) => (
-        <Typography
-          key={label}
-          variant="caption"
-          color="text.secondary"
-          className="inline-flex items-center gap-1"
-        >
+        <span key={label} className="inline-flex items-center gap-1 text-xs text-fg-muted">
           <Icon size={13} aria-hidden="true" /> {label}
-        </Typography>
+        </span>
       ))}
-    </Stack>
+    </div>
   );
 }

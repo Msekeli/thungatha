@@ -3,6 +3,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import "./workspace-shell.css";
+import "./workspace-sidebar-nav.css";
+import "./workspace-content.css";
+import "./workspace-responsive.css";
+import "./workspace-mobile-shell.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -61,7 +65,9 @@ export function WorkspaceShell({
         </div>
       </aside>
       <div className="th-workspace-content">
-        <header className="th-workspace-header">
+        <header
+          className={`th-workspace-header ${active === "/jobs" ? "th-workspace-header--jobs" : ""}`}
+        >
           <div className="th-workspace-heading">
             <h1>{page.title}</h1>
             <p>{page.subtitle}</p>

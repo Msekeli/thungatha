@@ -9,6 +9,7 @@ This document records confirmed decisions, proposed directions, provisional choi
 - **Provisional** — a working direction requiring validation before production reliance.
 - **Open** — no final decision has been made.
 - **Rejected** — considered and explicitly not selected.
+- **Superseded** — retained as history after a later decision replaced it.
 
 When a decision changes, record the change and rationale. Do not erase meaningful decision history.
 
@@ -20,7 +21,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-002 | Next.js App Router, React, strict TypeScript, hosted on Vercel | Established application and hosting direction. | Confirmed |
 | D-003 | Clerk is the authentication baseline | Resolve identity server-side; authentication alone does not enforce record ownership. | Confirmed |
 | D-004 | Supabase PostgreSQL is the primary relational database | Schema changes must be repeatable and version-controlled. | Confirmed |
-| D-005 | MUI for reusable components and Tailwind CSS v4 for layout and utilities | Component styling and CSS-layer integration must remain consistent. | Confirmed |
+| D-005 | MUI for reusable components and Tailwind CSS v4 for layout and utilities | Previous UI direction; replaced by D-035. | Superseded |
 | D-006 | Docker is optional | Local development must not require a running Docker daemon as a universal prerequisite. | Confirmed |
 | D-007 | Do not introduce an ORM by default | Use the existing Supabase JS client and SQL migrations unless a documented need justifies a change. | Confirmed |
 | D-008 | The confirmed professional profile is the source of truth | Imported and AI-generated information remains a draft until reviewed and confirmed by the user. | Confirmed |
@@ -32,6 +33,13 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-014 | Source identity and application destination must remain distinct | A discovery provider is not necessarily the employer or the official destination for applying. Verification claims require evidence. | Confirmed |
 | D-015 | Preserve job and application history | Temporary provider failures must not erase stored jobs or falsely mark listings unavailable. Submitted application materials must be preserved as appropriate snapshots. | Confirmed |
 | D-016 | AI must not invent professional facts or silently overwrite confirmed information | User review and deterministic validation remain authoritative. | Confirmed |
+
+### D-035 — Tailwind CSS and shadcn/ui direction
+
+- **Status:** Confirmed
+- **Decision:** Use Tailwind CSS v4 and shadcn/ui patterns for the interface. MUI has been removed from the application.
+- **Rationale:** The user is redesigning the interface and selected Tailwind and shadcn/ui as the direction.
+- **Constraints:** Preserve existing shared controls where suitable. Do not recreate components or add a dependency solely to imitate shadcn/ui.
 
 ### D-034 — UI icon library
 
@@ -127,7 +135,7 @@ The project has discussed a broad source-coverage goal. The candidate inventory 
 
 | ID | Question | Required validation | Status |
 |---|---|---|---|
-| D-024 | Exact supported versions of Next.js, React, MUI, Tailwind CSS v4, Clerk, Supabase, and related libraries | Check official compatibility guidance and the installed repository versions; lock compatible dependencies. | Open |
+| D-024 | Exact supported versions of Next.js, React, Tailwind CSS v4, Clerk, Supabase, and related libraries | Check official compatibility guidance and the installed repository versions; lock compatible dependencies. | Open |
 | D-025 | Exact Clerk–Supabase authorization and Row Level Security design | Verify the supported integration and token/connection model; test cross-user isolation. | Open |
 | D-026 | CV/document storage, access, retention, export, deletion, and backup policy | Select compatible storage and define access-control and lifecycle requirements before production reliance. | Open |
 | D-027 | Job refresh and scheduled-work execution | Validate source terms, idempotency, refresh requirements, quotas, and current Vercel/runtime limits. | Open |

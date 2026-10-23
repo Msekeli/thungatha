@@ -7,19 +7,25 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
-import {
-  MobileWorkspaceMenu,
-  MobileWorkspaceBottomNav,
-} from "@/components/layout/mobile-workspace-menu";
+import { MobileWorkspaceMenu } from "@/components/layout/mobile-workspace-menu";
+import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 import "./mobile-workspace-nav.css";
+import "./mobile-workspace-overlays.css";
 
-export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
+export function MobileWorkspaceNav({
+  configured,
+  publicMode = false,
+}: {
+  configured: boolean;
+  publicMode?: boolean;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const jobStatus = searchParams.get("status");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isActiveHref = (hrefValue: string) => {
+    if (publicMode && pathname === "/" && hrefValue === "/") return true;
     const [href, query] = hrefValue.split("?");
     if (pathname !== href) return false;
     if (!query) return pathname !== "/jobs" || !jobStatus;
@@ -68,7 +74,11 @@ export function MobileWorkspaceNav({ configured }: { configured: boolean }) {
         isActive={isActiveHref}
         onClose={() => setMenuOpen(false)}
       />
-      <MobileWorkspaceBottomNav isActive={isActiveHref} />
+      <MobileWorkspaceBottomNav
+        isActive={isActiveHref}
+        publicMode={publicMode}
+        configured={configured}
+      />
     </>
   );
 }

@@ -1,176 +1,32 @@
 /*
  * Layer order must be the first statement. Clerk gets its own layer (see cssLayerName in
  * clerk-appearance.ts) so our classes in "components" beat Clerk without !important.
- * Also set, in src/app/layout.tsx:
- *   <InitColorSchemeScript attribute="data-theme" defaultMode="system" />
- *   <AppRouterCacheProvider options={{ enableCssLayer: true }}>
- *     <ThemeProvider theme={theme}> <CssBaseline /> {children} </ThemeProvider>
- *   </AppRouterCacheProvider>
- * and load Inter with next/font, exposing --font-inter on <html>.
+ * The persisted data-theme is initialized in src/app/layout.tsx.
+ * Inter is loaded with next/font and exposed as --font-inter on <html>.
  */
-@layer theme, base, mui, clerk, components, utilities;
+@layer theme, base, clerk, components, utilities;
 
 @import "tailwindcss";
+@import "../styles/base.css";
+@import "../styles/breakpoints.css";
 @import "../styles/tokens.css";
-@import "../styles/components.css";
+@import "../styles/components/badges.css";
+@import "../styles/components/requirements-status.css";
+@import "../styles/components/content-surfaces.css";
+@import "../styles/components/brand-auth.css";
+@import "../styles/components/motion.css";
+@import "../styles/components/buttons.css";
+@import "../styles/components/button-variants.css";
+@import "../styles/components/form-controls.css";
+@import "../styles/components/clerk.css";
+@import "../styles/components/navigation.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "../styles/shadcn-theme.css";
 
-/* Tailwind's dark: variant follows data-theme (the name MUI sets), not only the OS. */
+/* Tailwind's dark: variant follows the persisted data-theme, not only the OS. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 @custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
-@layer base {
-  html {
-    background: var(--th-page);
-  }
-
-  body {
-    background: var(--th-page);
-    color: var(--th-fg);
-    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-    font-size: 13px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--th-accent-text);
-    outline-offset: 2px;
-  }
-
-  ::selection {
-    background: var(--th-accent-bg);
-    color: var(--th-fg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-}
 @layer components {
-  .th-mobile-bottom-nav {
-    display: none;
-  }
-  @media (max-width: 760px) {
-    .th-mobile-bottom-nav {
-      position: fixed !important;
-      inset: auto 0 0;
-      z-index: 1300;
-      display: grid !important;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      width: 100%;
-      min-height: calc(56px + env(safe-area-inset-bottom));
-      padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-      margin: 0;
-      border: 0;
-      border-top: 1px solid var(--th-line);
-      background: var(--th-panel);
-      box-sizing: border-box;
-      visibility: visible;
-      opacity: 1;
-      transform: none;
-    }
-    .th-mobile-bottom-nav > a {
-      display: flex;
-      min-width: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 4px 2px;
-      border-radius: 8px;
-      color: var(--th-fg-muted);
-      text-decoration: none;
-      font-size: 11px;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-    .th-mobile-bottom-nav > a[data-active="true"] {
-      color: var(--th-accent-text);
-      background: var(--th-accent-bg);
-    }
-    .th-mobile-bottom-nav > a svg {
-      flex: 0 0 auto;
-    }
-    .th-mobile-bottom-nav a span {
-      display: block;
-    }
-  }
-}
-@layer components {
-  .th-mobile-app-header {
-    display: none;
-  }
-  @media (max-width: 760px) {
-    .th-mobile-app-header {
-      position: sticky;
-      top: 0;
-      z-index: 1200;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 56px;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--th-line);
-      background: var(--th-panel);
-    }
-    .th-mobile-app-header img {
-      display: block;
-      width: clamp(100px, 30vw, 142px);
-      height: auto;
-    }
-    .th-mobile-app-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      flex: 1;
-      min-width: 0;
-      gap: 4px;
-      flex-wrap: nowrap;
-    }
-    .th-mobile-app-actions .MuiIconButton-root {
-      flex: 0 0 auto;
-      color: var(--th-fg);
-      border: 1px solid var(--th-line);
-    }
-    .th-mobile-bottom-nav {
-      position: fixed !important;
-      inset: auto 0 0;
-      z-index: 1300;
-      display: grid !important;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      width: 100%;
-      min-height: calc(56px + env(safe-area-inset-bottom));
-      padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-      margin: 0;
-      border-top: 1px solid var(--th-line);
-      background: var(--th-panel);
-      box-sizing: border-box;
-    }
-    .th-mobile-bottom-nav > a {
-      display: flex;
-      min-width: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 4px 2px;
-      color: var(--th-fg-muted);
-      text-decoration: none;
-      font-size: 11px;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-    .th-mobile-bottom-nav > a[data-active="true"] {
-      color: var(--th-accent-text);
-      background: var(--th-accent-bg);
-    }
-  }
 }

@@ -1,8 +1,6 @@
-import Box from "@mui/material/Box";
 import JobsDiscovery from "../jobs-discovery";
-import { PublicJobDiscoveryPromoSidebar } from "./public-job-discovery-promo-sidebar";
-import { JobDiscoveryHeroShell } from "../shared/job-discovery-hero-shell";
 import { PublicDiscoveryShell } from "../shared/public-discovery-shell";
+import { PublicJobDiscoveryPromoSidebar } from "./public-job-discovery-promo-sidebar";
 
 export function PublicJobDiscoveryPage({
   configured,
@@ -11,46 +9,26 @@ export function PublicJobDiscoveryPage({
 }) {
   return (
     <PublicDiscoveryShell configured={configured}>
-      <JobDiscoveryHeroShell
-        title={
-          <>
+      <main className="th-jobs-page th-jobs-page--app th-jobs-redesign box-border flex min-h-0 w-full max-w-full flex-1 flex-col gap-4 px-3 pb-4 pt-4 md:gap-5 md:px-6 md:pt-5 max-[900px]:!px-0 max-[700px]:h-[calc(100dvh-116px-env(safe-area-inset-bottom))] max-[700px]:flex-none max-[700px]:gap-0 max-[700px]:overflow-hidden max-[700px]:p-0">
+        <section className="th-public-discovery-promo-heading mx-auto w-full max-w-5xl py-1 text-center max-[1199px]:hidden">
+          <h1 className="text-xl font-extrabold leading-[1.1] tracking-tight md:text-[2rem]">
             Find your next{" "}
-            <Box component="span" sx={{ color: "primary.main" }}>
-              opportunity
-            </Box>
-          </>
-        }
-        description="Explore thousands of jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track your applications."
-      />
-      <Box
-        component="main"
-        className="th-jobs-page th-jobs-redesign"
-        sx={{
-          display: "flex",
-          flex: "1 1 auto",
-          flexDirection: "column",
-          width: "100%",
-          minWidth: 0,
-          minHeight: 0,
-          maxWidth: "100%",
-          boxSizing: "border-box",
-          pt: 1,
-          pb: 2,
-          px: { xs: 1.5, md: 2 },
-          "@media (max-width: 760px)": {
-            flex: "0 0 auto",
-            minHeight: "auto",
-            pb: 2,
-          },
-        }}
-      >
-        <JobsDiscovery
-          configured={configured}
-          workspaceLeadingColumn={
-            <PublicJobDiscoveryPromoSidebar configured={configured} />
-          }
-        />
-      </Box>
+            <span className="text-[var(--th-accent)]">opportunity</span>
+          </h1>
+          <p className="mt-2 hidden text-sm text-fg-muted md:block md:whitespace-nowrap md:text-base">
+            Explore thousands of jobs in South Africa and beyond. Create an
+            account to tailor your CV, save jobs and track your applications.
+          </p>
+        </section>
+        <div className="min-h-0 flex-1 max-[700px]:flex max-[700px]:flex-col">
+          <JobsDiscovery
+            configured={configured}
+            workspaceLeadingColumn={
+              <PublicJobDiscoveryPromoSidebar configured={configured} />
+            }
+          />
+        </div>
+      </main>
     </PublicDiscoveryShell>
   );
 }

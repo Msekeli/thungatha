@@ -1,13 +1,11 @@
 export { JobSearchBar } from "./job-search-bar";
-export { JobTypeChips } from "./job-type-chips";
-export type { JobTypeOption } from "./job-type-chips";
-export { JobFilters } from "./job-filters";
-export type { JobFilterField, JobFilterOption } from "./job-filters";
-export { JobResultsToolbar } from "./job-results-toolbar";
+export { JobDiscoverySearchFilters } from "./job-discovery-search-filters";
+export { JobCategoryChips } from "./job-category-chips";
+export { JobLocationSelect } from "./job-location-select";
 export { JobList } from "./job-list";
-export { JobCard } from "./job-card";
-export type { JobCardData } from "./job-card";
-export { JobDetailPanel } from "./job-detail-panel";
+export { JobOpportunityCard } from "./job-opportunity-card";
+export type { JobCardData } from "./job-opportunity-card";
+export { JobOpportunityDetailPanel } from "./job-opportunity-detail-panel";
 export { JobDetailTabs } from "./job-detail-tabs";
 export type { JobDetailTab } from "./job-detail-tabs";
 export { JobEmptyState } from "./job-empty-state";
@@ -19,4 +17,3 @@ export {
   formatDate,
   titleCase,
 } from "./job-formatters";
-export { JobPagination } from "./job-pagination";

@@ -1,0 +1,35 @@
+.header {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 56px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--th-line);
+    background: var(--th-panel);
+  }
+
+  .header img {
+    display: block;
+    width: clamp(100px, 30vw, 142px);
+    height: auto;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+}

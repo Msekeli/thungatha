@@ -1,0 +1,36 @@
+import type { ReactNode, RefObject } from "react";
+import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
+
+export type JobDiscoveryWorkspaceProps = {
+  jobs: Job[];
+  feed: Feed | null;
+  loading: boolean;
+  error: string | null;
+  hasFilters: boolean;
+  mobileDetail: boolean;
+  selectedId: string | null;
+  loadMoreRef: RefObject<HTMLDivElement | null>;
+  selectedDetail: Job | null;
+  selectedSource: ReturnType<typeof sourceFor>;
+  applicationDestination: string | null;
+  applicationUrl: string | null;
+  jobSourceUrl: string | null;
+  busy: boolean;
+  detailLoading: boolean;
+  activityError: string | null;
+  detailError: string | null;
+  sourceFor: typeof sourceFor;
+  formatDate: (value: string | null | undefined) => string | null;
+  onRetryFeed: () => void;
+  onSelect: (job: Job) => void;
+  onSaveJob: (job: Job) => void;
+  onDismissJob: (job: Job) => void;
+  onBack: () => void;
+  onViewMatch: (anchorEl: HTMLElement) => void;
+  onApply: (anchorEl: HTMLElement) => void;
+  onSave: () => void;
+  onDismiss: () => void;
+  onRetryDetail: () => void;
+  configured: boolean;
+  leadingColumn?: ReactNode;
+};

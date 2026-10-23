@@ -1,7 +1,4 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import { Button } from "@/components/ui/button";
 
 export function JobDetailStatus({
   activityError,
@@ -17,36 +14,28 @@ export function JobDetailStatus({
   return (
     <>
       {activityError && (
-        <Typography color="error" variant="body2" role="status">
+        <p className="text-sm text-destructive" role="status">
           {activityError}
-        </Typography>
+        </p>
       )}
       {detailError && (
-        <Stack
-          direction="row"
-          spacing={1}
+        <div
+          className="flex items-center gap-2 text-sm text-destructive"
           role="status"
-          sx={{ alignItems: "center" }}
         >
-          <Typography color="error" variant="body2">
-            {detailError}
-          </Typography>
-          <Button variant="outlined" size="small" onClick={onRetry}>
+          <span>{detailError}</span>
+          <Button variant="outline" size="sm" onClick={onRetry}>
             Retry
           </Button>
-        </Stack>
+        </div>
       )}
-      <Box className="th-jobs-source-status">
-        <Typography
-          component="span"
-          variant="caption"
-          data-available={Boolean(applicationUrl)}
-        >
+      <div className="th-jobs-source-status">
+        <span data-available={Boolean(applicationUrl)}>
           {applicationUrl
             ? "✓ Application destination available"
             : "! Employer application link not verified"}
-        </Typography>
-      </Box>
+        </span>
+      </div>
     </>
   );
 }

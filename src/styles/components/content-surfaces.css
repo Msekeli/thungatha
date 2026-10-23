@@ -1,0 +1,94 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  /* Job and application rows */
+  .th-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--th-line);
+  }
+  .th-row:last-child {
+    border-bottom: 0;
+  }
+  .th-row[data-selected="true"] {
+    background: var(--th-selected);
+  }
+  .th-row[data-unavailable="true"] {
+    color: var(--th-fg-muted);
+  }
+
+  /* Panel with header strip */
+  .th-panel {
+    background: var(--th-panel);
+    border: 1px solid var(--th-line);
+    border-radius: var(--th-radius-panel);
+    overflow: hidden;
+  }
+  .th-panel__head {
+    background: var(--th-panel-2);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--th-line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .th-panel__body {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Status progress bar (application detail) */
+  .th-steps {
+    display: flex;
+    gap: 6px;
+  }
+  .th-steps > span {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--th-tag-bg);
+  }
+  .th-steps > span[data-done="true"] {
+    background: var(--th-btn);
+  }
+
+  /* CV preview stays paper-white in both themes */
+  .th-paper {
+    background: #fff;
+    color: #14202e;
+    border-radius: var(--th-radius-control);
+    padding: 28px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .th-paper h2 {
+    color: #0b1626;
+  }
+  .th-paper h3 {
+    color: #0b3a66;
+    border-bottom: 1px solid #c9d6e4;
+    padding-bottom: 3px;
+  }
+  .th-paper mark {
+    background: #bfe3fa;
+    color: #0b1626;
+  }
+
+  /* Uncertain imported field */
+  .th-uncertain {
+    background: var(--th-warn-bg);
+    color: var(--th-warn);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* Tailored CV before/after text */
+  .th-before {
+    color: var(--th-fg-muted);
+    text-decoration: line-through;
+  }
+}

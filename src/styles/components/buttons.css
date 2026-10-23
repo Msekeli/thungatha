@@ -1,0 +1,66 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  .th-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: var(--th-radius-control);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      filter 0.15s ease,
+      transform 0.15s ease;
+  }
+  .th-btn:focus-visible {
+    outline: 2px solid var(--th-accent-text);
+    outline-offset: 2px;
+  }
+  .th-btn:active {
+    transform: translateY(1px);
+  }
+  .th-btn:disabled,
+  .th-btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .th-btn-sm {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .th-btn-md {
+    height: 36px;
+    padding: 0 14px;
+  }
+  .th-btn-lg {
+    height: 44px;
+    padding: 0 18px;
+  }
+  .th-btn-block {
+    display: flex;
+    width: 100%;
+  }
+
+  .th-btn-primary {
+    background: var(--th-btn);
+    border-color: var(--th-btn);
+    color: var(--th-btn-fg);
+    box-shadow: var(--th-glow);
+  }
+  .th-btn-primary:hover {
+    filter: brightness(1.07);
+  }
+}
