@@ -7,17 +7,11 @@ import { JobDiscoveryCategoryControls } from "./job-discovery-category-controls"
 import { JobLocationSelect } from "./job-location-select";
 import { JobSearchBar } from "./job-search-bar";
 
-export type JobSearchSuggestion = {
-  title: string;
-  employer_name?: string | null;
-};
-
 type Props = {
   query: string;
   onQueryChange: (value: string) => void;
   location: string;
   onLocationChange: (value: string) => void;
-  jobs: JobSearchSuggestion[];
   selectedType: string;
   total: number;
   sortOrder: string;
@@ -28,10 +22,6 @@ type Props = {
 };
 
 export function JobDiscoverySearchFilters(props: Props) {
-  const suggestions = props.jobs.flatMap((job) => [
-    job.title,
-    job.employer_name ?? "",
-  ]);
   return (
     <header className="mx-auto w-full max-w-5xl">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:flex-row md:items-center">
@@ -41,7 +31,6 @@ export function JobDiscoverySearchFilters(props: Props) {
             onChange={props.onQueryChange}
             onSubmit={props.onSubmit}
             placeholder="Job title, skill, or company"
-            suggestions={suggestions}
           />
         </div>
         <div className="flex min-w-0 gap-3 md:w-[min(38%,400px)] md:flex-none">
