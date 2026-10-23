@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@mui/material";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Bookmark, Check, EyeOff, PanelsTopLeft } from "lucide-react";
 import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 
@@ -18,6 +18,8 @@ export function JobDetailProtectedActions({
   onSave: () => void;
   onDismiss: () => void;
 }) {
+  const actionClass = "th-job-detail-action-button";
+
   return (
     <>
       <ProtectedDiscoveryAction
@@ -25,14 +27,13 @@ export function JobDetailProtectedActions({
         title="Tailor your CV"
         description="Sign in or create a free account to tailor your CV to this opportunity."
       >
-        <Button
-          component={Link}
+        <Link
+          className={buttonVariants({ variant: "outline", className: actionClass })}
           href={`/cv-studio?jobId=${encodeURIComponent(job.id)}`}
-          variant="outlined"
-          startIcon={<PanelsTopLeft size={14} />}
         >
+          <PanelsTopLeft size={14} aria-hidden="true" />
           Tailor my CV
-        </Button>
+        </Link>
       </ProtectedDiscoveryAction>
       <ProtectedDiscoveryAction
         configured={configured}
@@ -40,8 +41,12 @@ export function JobDetailProtectedActions({
         description="Sign in or create a free account to save this job and return to it later."
         onAction={onSave}
       >
-        <Button variant="outlined" disabled={disabled}>
-          {job.state === "saved" ? <Check size={14} /> : <Bookmark size={14} />}
+        <Button variant="outline" className={actionClass} disabled={disabled}>
+          {job.state === "saved" ? (
+            <Check size={14} aria-hidden="true" />
+          ) : (
+            <Bookmark size={14} aria-hidden="true" />
+          )}
           {job.state === "saved" ? "Saved" : "Save"}
         </Button>
       </ProtectedDiscoveryAction>
@@ -51,8 +56,10 @@ export function JobDetailProtectedActions({
         description="Sign in or create a free account to dismiss jobs you are not interested in."
         onAction={onDismiss}
       >
-        <Button variant="outlined" color="warning" disabled={disabled}>
-          {job.state === "dismissed" ? null : <EyeOff size={14} />}
+        <Button variant="outline" className={actionClass} disabled={disabled}>
+          {job.state === "dismissed" ? null : (
+            <EyeOff size={14} aria-hidden="true" />
+          )}
           {job.state === "dismissed" ? "Restore" : "Dismiss"}
         </Button>
       </ProtectedDiscoveryAction>
