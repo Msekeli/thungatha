@@ -1,7 +1,39 @@
+/* Mobile navigation must never participate in the desktop workspace layout. */
 .th-mobile-workspace-header,
 .th-mobile-workspace-menu,
 .th-mobile-bottom-nav.th-mobile-bottom-nav--workspace {
-  display: none;
+  display: none !important;
+}
+
+@media (min-width: 701px) {
+  .th-mobile-workspace-header,
+  .th-mobile-workspace-menu,
+  .th-mobile-bottom-nav.th-mobile-bottom-nav--workspace {
+    display: none !important;
+  }
+
+  .th-workspace-shell {
+    display: flex;
+    flex-direction: row;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .th-workspace-sidebar {
+    display: flex;
+    flex: 0 0 218px;
+    height: 100dvh;
+  }
+
+  .th-workspace-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 700px) {
@@ -38,7 +70,7 @@
     position: sticky;
     z-index: 100;
     top: 0;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     min-height: 58px;
