@@ -16,13 +16,14 @@ export function PublicDiscoveryShell({
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100dvh",
-        minHeight: 0,
-        overflow: "hidden",
+        minHeight: "100dvh",
         bgcolor: "background.default",
+        "@media (min-width: 761px)": {
+          height: "100dvh",
+          overflow: "hidden",
+        },
         "@media (max-width: 760px)": {
           height: "auto",
-          minHeight: "calc(100dvh - 56px)",
           overflow: "visible",
           pb: 10,
         },
@@ -31,7 +32,7 @@ export function PublicDiscoveryShell({
       <Box
         component="header"
         sx={{
-          display: { xs: "none", md: "flex" },
+          display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 2,
