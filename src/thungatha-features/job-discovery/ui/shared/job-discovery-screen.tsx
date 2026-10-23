@@ -37,8 +37,6 @@ export function JobDiscoveryScreen({
           filtersOpen={s.filtersOpen}
           categories={c.categories}
           category={s.filters.employmentType || s.category}
-          sortOrder={s.sortOrder}
-          jobs={c.visibleJobs}
           onQueryChange={(value) => c.changeDraft("query", value)}
           onLocationChange={(value) => c.changeDraft("location", value)}
           onSubmit={c.submitFilters}
@@ -46,7 +44,6 @@ export function JobDiscoveryScreen({
             s.setFilterAnchorEl(anchorEl);
             s.setFiltersOpen((value) => !value);
           }}
-          onSortChange={s.setSortOrder}
           onCategoryChange={c.changeCategory}
           undoAction={s.undoAction}
           stateBusy={s.stateBusy}
@@ -94,6 +91,8 @@ export function JobDiscoveryScreen({
           onDismiss={c.workspaceActions.dismissSelectedJob}
           onRetryDetail={c.workspaceActions.retryDetail}
           configured={configured}
+          sortOrder={s.sortOrder}
+          onSortChange={s.setSortOrder}
           leadingColumn={workspaceLeadingColumn}
         />
       </Box>
