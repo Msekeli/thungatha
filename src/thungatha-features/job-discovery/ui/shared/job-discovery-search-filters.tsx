@@ -21,7 +21,7 @@ type Props = {
 
 export function JobDiscoverySearchFilters(props: Props) {
   return (
-    <header className="mx-auto w-full max-w-5xl">
+    <header className="mx-auto mb-6 w-full max-w-5xl">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:flex-row md:items-center">
         <div className="min-w-0 flex-1">
           <JobSearchBar
