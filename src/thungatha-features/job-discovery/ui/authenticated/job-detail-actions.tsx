@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { JobDetailProtectedActions } from "./job-detail-protected-actions";
 
