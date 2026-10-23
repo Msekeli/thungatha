@@ -30,32 +30,34 @@ export function JobDiscoveryScreen({
 
   return (
     <>
-      <JobDiscoveryControls
-        isAuthenticated={s.isAuthenticated}
-        draft={s.draft}
-        filtersOpen={s.filtersOpen}
-        categories={c.categories}
-        category={s.filters.employmentType || s.category}
-        sortOrder={s.sortOrder}
-        jobs={c.visibleJobs}
-        onQueryChange={(value) => c.changeDraft("query", value)}
-        onLocationChange={(value) => c.changeDraft("location", value)}
-        onSubmit={c.submitFilters}
-        onToggleFilters={(anchorEl) => {
-          s.setFilterAnchorEl(anchorEl);
-          s.setFiltersOpen((value) => !value);
-        }}
-        onSortChange={s.setSortOrder}
-        onCategoryChange={c.changeCategory}
-        undoAction={s.undoAction}
-        stateBusy={s.stateBusy}
-        onUndo={() => void c.undoLastStateChange()}
-        onDismissUndo={() => s.setUndoAction(null)}
-        stateMessage={s.stateMessage}
-        onDismissMessage={() => s.setStateMessage(null)}
-        stateError={s.stateError}
-        onDismissError={() => s.setStateError(null)}
-      />
+      <div className={workspaceLeadingColumn ? "mx-auto w-full max-w-6xl" : undefined}>
+        <JobDiscoveryControls
+          isAuthenticated={s.isAuthenticated}
+          draft={s.draft}
+          filtersOpen={s.filtersOpen}
+          categories={c.categories}
+          category={s.filters.employmentType || s.category}
+          sortOrder={s.sortOrder}
+          jobs={c.visibleJobs}
+          onQueryChange={(value) => c.changeDraft("query", value)}
+          onLocationChange={(value) => c.changeDraft("location", value)}
+          onSubmit={c.submitFilters}
+          onToggleFilters={(anchorEl) => {
+            s.setFilterAnchorEl(anchorEl);
+            s.setFiltersOpen((value) => !value);
+          }}
+          onSortChange={s.setSortOrder}
+          onCategoryChange={c.changeCategory}
+          undoAction={s.undoAction}
+          stateBusy={s.stateBusy}
+          onUndo={() => void c.undoLastStateChange()}
+          onDismissUndo={() => s.setUndoAction(null)}
+          stateMessage={s.stateMessage}
+          onDismissMessage={() => s.setStateMessage(null)}
+          stateError={s.stateError}
+          onDismissError={() => s.setStateError(null)}
+        />
+      </div>
       <Box
         sx={{
           flex: workspaceLeadingColumn ? "1 1 auto" : undefined,
@@ -85,6 +87,7 @@ export function JobDiscoveryScreen({
           onRetryFeed={c.workspaceActions.retryFeed}
           onSaveJob={c.workspaceActions.saveJob}
           onSelect={c.workspaceActions.selectJob}
+          onSaveJob={c.workspaceActions.saveJob}
           onBack={c.workspaceActions.showResults}
           onViewMatch={c.workspaceActions.viewMatch}
           onApply={c.workspaceActions.applySelectedJob}
