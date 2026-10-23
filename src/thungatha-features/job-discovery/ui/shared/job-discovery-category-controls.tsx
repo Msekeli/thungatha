@@ -15,19 +15,15 @@ const typeKeyByValue: Record<string, string> = {
 export function JobDiscoveryCategoryControls({
   selectedType,
   total,
-  sortOrder,
   onTypeChange,
-  onSortChange,
 }: {
   selectedType: string;
   total: number;
-  sortOrder: string;
   onTypeChange: (key: string, label: string) => void;
-  onSortChange: (value: string) => void;
 }) {
   return (
-    <div className="mt-3 flex min-w-0 items-center gap-3 pb-1">
-      <div className="min-w-0 flex-1 overflow-x-auto">
+    <div className="mt-3 min-w-0 pb-1">
+      <div className="min-w-0 overflow-x-auto">
         <JobCategoryChips
           activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
           counts={{ all: total }}
@@ -36,15 +32,6 @@ export function JobDiscoveryCategoryControls({
           onSelect={onTypeChange}
         />
       </div>
-      <select
-        aria-label="Sort opportunities"
-        value={sortOrder}
-        onChange={(event) => onSortChange(event.target.value)}
-        className="h-9 w-36 shrink-0 rounded-full border border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-sm text-[var(--th-fg)] outline-none focus-visible:border-[var(--th-accent)]"
-      >
-        <option value="newest">Sort: Newest</option>
-        <option value="oldest">Sort: Oldest</option>
-      </select>
     </div>
   );
 }
