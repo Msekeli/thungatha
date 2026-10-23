@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Stack } from "@mui/material";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { JobDetailProtectedActions } from "./job-detail-protected-actions";
 
@@ -37,21 +38,18 @@ export function JobDetailActions({
     : jobSourceUrl
       ? "Opens the available source listing; it may not be the employer application page"
       : "No job or application link is available";
+  const actionClass = "th-job-detail-action-button";
 
   return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      spacing={1}
-      sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
-    >
+    <div className="th-job-detail-actions">
       <Button
-        variant="contained"
+        className={actionClass}
         disabled={!applicationDestination || disabled}
         title={applyTitle}
         data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
-        startIcon={<ExternalLink size={14} />}
       >
+        <ExternalLink size={14} aria-hidden="true" />
         {applicationUrl ? "Apply on company site" : "Open job listing"}
       </Button>
       <JobDetailProtectedActions
@@ -61,6 +59,6 @@ export function JobDetailActions({
         onSave={onSave}
         onDismiss={onDismiss}
       />
-    </Stack>
+    </div>
   );
 }
