@@ -29,7 +29,7 @@ export function AuthenticatedJobResultsPanel({
       aria-label="Job search results"
       aria-busy={loading}
     >
-      <div className="sticky top-0 z-20 -mx-4 -mt-4 mb-3 shrink-0 border-b border-line bg-panel px-4 pb-3 pt-4 [background-color:var(--th-panel)] max-[760px]:-mx-3 max-[760px]:-mt-3 max-[760px]:mb-3 max-[760px]:px-3 max-[760px]:pt-3">
+      <div className="sticky top-0 z-30 isolate -mx-4 -mt-4 mb-3 shrink-0 border-b border-line px-4 pb-3 pt-4 max-[760px]:-mx-3 max-[760px]:-mt-3 max-[760px]:mb-3 max-[760px]:px-3 max-[760px]:pt-3" style={{ backgroundColor: "var(--th-panel)", backgroundImage: "none" }}>
         <JobResultsHeading
           loading={loading}
           count={jobs.length}
