@@ -83,6 +83,7 @@ export function JobDiscoveryScreen({
           formatDate={c.formatDate}
           onRetryFeed={c.workspaceActions.retryFeed}
           onSaveJob={c.workspaceActions.saveJob}
+          onDismissJob={c.workspaceActions.dismissJob}
           onSelect={c.workspaceActions.selectJob}
           onBack={c.workspaceActions.showResults}
           onViewMatch={c.workspaceActions.viewMatch}
