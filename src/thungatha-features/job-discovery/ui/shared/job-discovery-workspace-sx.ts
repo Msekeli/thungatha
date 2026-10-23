@@ -6,7 +6,7 @@ export function jobDiscoveryWorkspaceSx(
   return {
     display: "grid",
     gridTemplateColumns: hasLeadingColumn
-      ? "minmax(210px, 0.7fr) minmax(300px, 0.95fr) minmax(360px, 1.12fr)"
+      ? "minmax(0, 15%) minmax(0, 1fr) minmax(0, 1fr)"
       : "minmax(340px, 0.92fr) minmax(0, 1.08fr)",
     gap: 2.25,
     alignItems: "stretch",
