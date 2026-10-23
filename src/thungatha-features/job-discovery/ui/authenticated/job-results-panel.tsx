@@ -18,6 +18,7 @@ export function AuthenticatedJobResultsPanel({
   onRetry,
   onSelect,
   onSave,
+  onDismiss,
   configured,
   sortOrder,
   onSortChange,
@@ -31,8 +32,11 @@ export function AuthenticatedJobResultsPanel({
       sx={{
         minWidth: 0,
         minHeight: 0,
-        maxHeight: "none",
+        maxHeight: "100%",
+        overflowX: "hidden",
         overflowY: "auto",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
         p: 1.75,
         border: 1,
         borderColor: "divider",
@@ -57,7 +61,8 @@ export function AuthenticatedJobResultsPanel({
           borderRadius: 1.75,
           boxShadow: "none",
           "& .th-jobs-results-head": {
-            position: "static",
+            position: "sticky",
+            top: 0,
             mx: 0,
             mt: 0,
             mb: 1.25,
@@ -93,6 +98,7 @@ export function AuthenticatedJobResultsPanel({
           formatDate={formatDate}
           onSelect={onSelect}
           onSave={onSave}
+          onDismiss={onDismiss}
           configured={configured}
         />
       )}
