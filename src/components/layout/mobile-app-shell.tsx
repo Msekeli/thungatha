@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { IconButton } from "@mui/material";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import styles from "./mobile-app-shell.module.css";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import {
   MobileWorkspaceMenu,
@@ -18,7 +19,7 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
       (href === "/" && window.location.pathname === "/"));
   return (
     <>
-      <header className="th-mobile-app-header">
+      <header className={styles.header}>
         <Link href="/" aria-label="Thungatha home">
           <Image
             src="/brand/thungatha-logo.svg"
@@ -28,7 +29,7 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
             priority
           />
         </Link>
-        <div className="th-mobile-app-actions">
+        <div className={styles.actions}>
           <ThemeToggle />
           <HomeAuthActions configured={configured} variant="nav" />
           <IconButton
