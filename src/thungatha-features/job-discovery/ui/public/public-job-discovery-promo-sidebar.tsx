@@ -1,8 +1,5 @@
 "use client";
 
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { Bookmark, ChartNoAxesColumn, ClipboardList } from "lucide-react";
 import { PublicDiscoveryFeatureCard } from "./public-discovery-feature-card";
 
@@ -13,7 +10,7 @@ const features = [
       "Build your profile so we can match opportunities to your skills and experience.",
     note: "Personalised recommendations",
     icon: ClipboardList,
-    color: "secondary.main",
+    iconClass: "text-secondary",
     action: "Create your profile",
   },
   {
@@ -22,7 +19,7 @@ const features = [
       "Keep interesting opportunities together and return to them when you are ready.",
     note: "Build your shortlist",
     icon: Bookmark,
-    color: "primary.main",
+    iconClass: "text-accent",
     action: "Sign in to save jobs",
   },
   {
@@ -31,7 +28,7 @@ const features = [
       "Keep application status, follow-ups and next steps organised in one place.",
     note: "Stay on top of progress",
     icon: ChartNoAxesColumn,
-    color: "success.main",
+    iconClass: "text-success",
     action: "Sign in to track",
   },
 ];
@@ -42,21 +39,19 @@ export function PublicJobDiscoveryPromoSidebar({
   configured: boolean;
 }) {
   return (
-    <Stack
-      component="aside"
-      spacing={1.5}
+    <aside
       aria-label="Thungatha features"
-      sx={{ minWidth: 0, minHeight: 0, overflowY: "auto" }}
+      className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto"
     >
-      <Box>
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+      <div>
+        <h2 className="text-base font-bold leading-snug">
           Make more of your job search
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        </h2>
+        <p className="mt-1 text-sm text-muted">
           Find opportunities and use Thungatha tools to move forward with
           confidence.
-        </Typography>
-      </Box>
+        </p>
+      </div>
       {features.map((feature) => (
         <PublicDiscoveryFeatureCard
           key={feature.title}
@@ -64,6 +59,6 @@ export function PublicJobDiscoveryPromoSidebar({
           {...feature}
         />
       ))}
-    </Stack>
+    </aside>
   );
 }
