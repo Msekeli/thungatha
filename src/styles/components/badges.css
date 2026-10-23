@@ -1,0 +1,83 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  .th-glow {
+    box-shadow: var(--th-glow);
+  }
+
+  /* Match badge */
+  .th-match {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-match[data-tier="strong"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+    box-shadow: var(--th-glow);
+  }
+  .th-match[data-tier="fair"] {
+    background: var(--th-warn-bg);
+    color: var(--th-warn);
+  }
+  .th-match[data-tier="lower"] {
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-match[data-tier="stale"] {
+    background: transparent;
+    color: var(--th-fg-muted);
+    border: 1px dashed var(--th-fg-muted);
+  }
+
+  /* Tag */
+  .th-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: var(--th-radius-tag);
+    font-size: 11px;
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-tag[data-tone="accent"] {
+    background: var(--th-accent-bg);
+    color: var(--th-accent-text);
+  }
+  .th-tag[data-tone="success"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+  }
+  .th-tag[data-tone="warning"] {
+    background: var(--th-warn-bg);
+    color: var(--th-warn);
+  }
+
+  /* Verification badge: always render an icon and text with it */
+  .th-verify {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: var(--th-radius-tag);
+    font-size: 11px;
+    border: 1px solid var(--th-line);
+    color: var(--th-fg-muted);
+  }
+  .th-verify[data-state="found"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+    border-color: transparent;
+  }
+  .th-verify[data-state="checking"],
+  .th-verify[data-state="not-found"] {
+    background: transparent;
+  }
+}
