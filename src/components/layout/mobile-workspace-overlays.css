@@ -46,7 +46,7 @@
     justify-content: flex-start;
     min-height: 32px;
   }
-  .th-mobile-bottom-nav--workspace {
+  .th-mobile-bottom-nav.th-mobile-bottom-nav--workspace {
     position: fixed;
     z-index: 90;
     right: 0;
