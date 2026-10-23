@@ -23,6 +23,4 @@ export type JobResultsPanelProps = {
   onSave: (job: Job) => void;
   onDismiss: (job: Job) => void;
   configured: boolean;
-  sortOrder: string;
-  onSortChange: (value: string) => void;
 };

@@ -3,26 +3,19 @@
 import type { FormEvent } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { JobDiscoveryCategoryControls } from "./job-discovery-category-controls";
-import { JobLocationSelect } from "./job-location-select";
 import { JobSearchBar } from "./job-search-bar";
 
 type Props = {
   query: string;
   onQueryChange: (value: string) => void;
-  location: string;
-  onLocationChange: (value: string) => void;
-  selectedType: string;
-  total: number;
-  onTypeChange: (key: string, label: string) => void;
   onOpenFilters: (anchorEl: HTMLElement) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 };
 
 export function JobDiscoverySearchFilters(props: Props) {
   return (
-    <header className="mx-auto mb-6 w-full max-w-5xl">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:flex-row md:items-center">
+    <header className="mx-auto mb-6 w-full max-w-5xl max-[900px]:mx-0 max-[900px]:mb-2 max-[900px]:max-w-none">
+      <div className="mx-auto flex w-full max-w-4xl flex-row items-center gap-2 max-[900px]:max-w-none">
         <div className="min-w-0 flex-1">
           <JobSearchBar
             value={props.query}
@@ -31,14 +24,10 @@ export function JobDiscoverySearchFilters(props: Props) {
             placeholder="Job title, skill, or company"
           />
         </div>
-        <div className="flex min-w-0 gap-3 md:w-[min(38%,400px)] md:flex-none">
-          <JobLocationSelect
-            value={props.location}
-            onChange={props.onLocationChange}
-          />
+        <div className="flex shrink-0">
           <Button
             variant="primary"
-            className="h-11 shrink-0 gap-2 border-0 bg-[var(--th-btn)] px-4 text-[var(--th-btn-fg)] hover:brightness-110"
+            className="h-11 shrink-0 gap-2 border-0 bg-[var(--th-btn)] px-3 text-[var(--th-btn-fg)] hover:brightness-110 sm:px-4"
             aria-label="Open filters"
             onClick={(event) => props.onOpenFilters(event.currentTarget)}
           >
@@ -47,11 +36,6 @@ export function JobDiscoverySearchFilters(props: Props) {
           </Button>
         </div>
       </div>
-      <JobDiscoveryCategoryControls
-        selectedType={props.selectedType}
-        total={props.total}
-        onTypeChange={props.onTypeChange}
-      />
     </header>
   );
 }

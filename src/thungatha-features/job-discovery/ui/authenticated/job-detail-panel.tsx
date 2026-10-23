@@ -3,7 +3,9 @@
 import { AuthenticatedJobDetailContent } from "./job-detail-content";
 import type { JobDetailContentProps } from "./job-detail-types";
 import { JobOpportunityDetailPanel } from "../shared/job-opportunity-detail-panel";
-type Props = JobDetailContentProps & { mobileDetail: boolean };
+type Props = JobDetailContentProps & {
+  mobileDetail: boolean;
+};
 
 export function AuthenticatedJobDetailPanel({
   configured,
@@ -26,7 +28,11 @@ export function AuthenticatedJobDetailPanel({
   onRetry,
 }: Props) {
   return (
-    <JobOpportunityDetailPanel mobileDetail={mobileDetail} loading={detailLoading}>
+    <JobOpportunityDetailPanel
+      mobileDetail={mobileDetail}
+      onBack={onBack}
+      loading={detailLoading}
+    >
       <AuthenticatedJobDetailContent
         configured={configured}
         job={job}

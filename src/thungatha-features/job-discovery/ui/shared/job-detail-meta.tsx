@@ -1,4 +1,5 @@
-import { BriefcaseBusiness, CalendarDays, Clock3, MapPin } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, MapPin } from "lucide-react";
+import "./job-detail-meta.css";
 
 type Props = {
   location?: string | null;
@@ -7,10 +8,6 @@ type Props = {
   postedAt?: string | null;
   formatDate: (value: string | null | undefined) => string | null;
 };
-
-function shown(value?: string | null) {
-  return value?.trim() || "Not provided";
-}
 
 export function JobDetailMeta({
   location,
@@ -26,16 +23,18 @@ export function JobDetailMeta({
         ? "Hybrid"
         : workMode === "remote"
           ? "Remote"
-          : "Work mode not stated";
+          : null;
+  const postedDate = formatDate(postedAt);
   const items = [
-    { icon: MapPin, label: shown(location) },
-    { icon: BriefcaseBusiness, label: shown(employmentType) },
-    { icon: Clock3, label: mode },
-    {
-      icon: CalendarDays,
-      label: `Posted ${formatDate(postedAt) || "date unknown"}`,
-    },
-  ];
+    location?.trim() ? { icon: MapPin, label: location.trim() } : null,
+    employmentType?.trim()
+      ? { icon: BriefcaseBusiness, label: employmentType.trim() }
+      : null,
+    mode ? { icon: BriefcaseBusiness, label: mode } : null,
+    postedDate ? { icon: CalendarDays, label: `Posted ${postedDate}` } : null,
+  ].filter((item) => item !== null);
+
+  if (items.length === 0) return null;
 
   return (
     <div className="th-job-detail-meta" aria-label="Job metadata">

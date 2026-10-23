@@ -1,24 +1,16 @@
 "use client";
 import Link from "next/link";
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import {
-  Compass,
-  PanelsTopLeft,
-  ClipboardCheck,
-  Bookmark,
   BriefcaseBusiness,
   UserRound,
   Settings,
   House,
+  LogIn,
+  UserRoundPlus,
 } from "lucide-react";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
 import { ButtonLink } from "@/components/ui/button";
-const primary = [
-  { href: "/jobs", label: "Discover", icon: Compass },
-  { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
-  { href: "/applications", label: "Tracking", icon: ClipboardCheck },
-  { href: "/jobs?status=saved", label: "Saved", icon: Bookmark },
-];
 const secondary = [
   {
     href: "/jobs?status=dismissed",
@@ -40,92 +32,63 @@ export function MobileWorkspaceMenu({
   isActive: Active;
   onClose: () => void;
 }) {
+  const { isLoaded, isSignedIn } = useAuth();
   if (!open) return null;
+  const isGuest = !configured || (isLoaded && !isSignedIn);
   return (
     <div className="th-mobile-workspace-menu" id="th-mobile-workspace-menu">
       <nav aria-label="More navigation">
-        <Link href="/" onClick={onClose}>
-          <House size={17} />
-          Home
-        </Link>
-        {secondary.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            data-active={isActive(item.href)}
-            onClick={onClose}
-          >
-            <item.icon size={17} />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-      <div className="th-mobile-workspace-account">
-        <span className="th-mobile-workspace-account-name">Account</span>
-        {configured ? (
-          <SignOutControl />
-        ) : (
-          <ButtonLink href="/sign-in" variant="secondary" size="md">
-            Sign in
-          </ButtonLink>
-        )}
-      </div>
-    </div>
-  );
-}
-export function MobileWorkspaceBottomNav({
-  isActive,
-  publicMode = false,
-  configured = true,
-}: {
-  isActive: Active;
-  publicMode?: boolean;
-  configured?: boolean;
-}) {
-  const { isLoaded, isSignedIn } = useAuth();
-  const items = publicMode
-    ? [{ ...primary[0], href: "/" }, ...primary.slice(1)]
-    : primary;
-  const link = (item: (typeof primary)[number]) => (
-    <Link
-      key={item.href}
-      href={item.href}
-      data-active={isActive(item.href)}
-      aria-current={isActive(item.href) ? "page" : undefined}
-    >
-      <item.icon size={19} strokeWidth={1.8} />
-      <span>{item.label}</span>
-    </Link>
-  );
-  return (
-    <nav
-      className={`th-mobile-bottom-nav ${publicMode ? "th-mobile-bottom-nav--public" : "th-mobile-bottom-nav--workspace"}`}
-      aria-label="Primary navigation"
-    >
-      {publicMode && configured && isLoaded && !isSignedIn ? (
-        <>
-          {link(items[0])}
-          {items.slice(1).map((item) => (
-            <SignInButton
-              key={item.href}
-              mode="modal"
-              fallbackRedirectUrl="/jobs?welcome=1"
+        {isGuest ? (
+          <>
+            <Link href="/" onClick={onClose}>
+              <House size={17} />
+              Discover jobs
+            </Link>
+            <ButtonLink
+              href="/sign-in"
+              variant="secondary"
+              size="md"
+              onClick={onClose}
             >
-              <a
+              <LogIn size={17} />
+              Sign in
+            </ButtonLink>
+            <ButtonLink
+              href="/sign-up"
+              variant="primary"
+              size="md"
+              onClick={onClose}
+            >
+              <UserRoundPlus size={17} />
+              Create account
+            </ButtonLink>
+          </>
+        ) : (
+          <>
+            <Link href="/" onClick={onClose}>
+              <House size={17} />
+              Home
+            </Link>
+            {secondary.map((item) => (
+              <Link
+                key={item.href}
                 href={item.href}
-                aria-label={"Sign in to access " + item.label}
+                data-active={isActive(item.href)}
+                onClick={onClose}
               >
-                <item.icon size={19} strokeWidth={1.8} />
-                <span>{item.label}</span>
-              </a>
-            </SignInButton>
-          ))}
-        </>
-      ) : publicMode && !configured ? (
-        link(items[0])
-      ) : (
-        items.map(link)
+                <item.icon size={17} />
+                {item.label}
+              </Link>
+            ))}
+          </>
+        )}
+      </nav>
+      {!isGuest && (
+        <div className="th-mobile-workspace-account">
+          <span className="th-mobile-workspace-account-name">Account</span>
+          <SignOutControl />
+        </div>
       )}
-    </nav>
+    </div>
   );
 }

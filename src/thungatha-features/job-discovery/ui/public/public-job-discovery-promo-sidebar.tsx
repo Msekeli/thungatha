@@ -10,7 +10,7 @@ const features = [
       "Build your profile so we can match opportunities to your skills and experience.",
     note: "Personalised recommendations",
     icon: ClipboardList,
-    iconClass: "text-secondary",
+    iconClass: "text-fg-muted",
     action: "Create your profile",
   },
   {
@@ -19,7 +19,7 @@ const features = [
       "Keep interesting opportunities together and return to them when you are ready.",
     note: "Build your shortlist",
     icon: Bookmark,
-    iconClass: "text-accent",
+    iconClass: "text-accent-text",
     action: "Sign in to save jobs",
   },
   {
@@ -41,13 +41,13 @@ export function PublicJobDiscoveryPromoSidebar({
   return (
     <aside
       aria-label="Thungatha features"
-      className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto"
+      className="th-public-discovery-promo-sidebar flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto max-[1199px]:hidden"
     >
       <div>
         <h2 className="text-base font-bold leading-snug">
           Make more of your job search
         </h2>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 text-sm text-fg-muted">
           Find opportunities and use Thungatha tools to move forward with
           confidence.
         </p>

@@ -247,7 +247,7 @@ describe("Job Discovery", () => {
     expect(screen.getAllByText("Full-time").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Example Employer").length).toBeGreaterThan(0);
     expect(
-      await screen.findByText("Build and support web services."),
+      await screen.findAllByText("Build and support web services."),
     ).toBeTruthy();
   });
 
@@ -261,11 +261,10 @@ describe("Job Discovery", () => {
         target: { value: "engineer" },
       },
     );
-    fireEvent.mouseDown(
-      screen.getByRole("combobox", { name: "Search location" }),
-    );
-    fireEvent.click(await screen.findByRole("option", { name: "Cape Town" }));
     fireEvent.click(screen.getByRole("button", { name: "Open filters" }));
+    fireEvent.change(screen.getByLabelText("Filter by location"), {
+      target: { value: "Cape Town" },
+    });
     fireEvent.click(await screen.findByRole("checkbox", { name: "Remote" }));
     fireEvent.click(screen.getByRole("button", { name: /Employment type/ }));
     fireEvent.click(await screen.findByRole("option", { name: "Full-time" }));
@@ -370,7 +369,7 @@ describe("Job Discovery", () => {
     setupFetch([listingOnlyJob]);
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
     const applyButton = await screen.findByRole("button", {
       name: "Open job listing",
     });
@@ -404,10 +403,10 @@ describe("Job Discovery", () => {
       await screen.findByText(/Employer application link not verified/),
     ).toBeTruthy();
     expect(
-      screen.getByText(
+      screen.getAllByText(
         /A full job description has not been supplied by the source/,
-      ),
-    ).toBeTruthy();
+      ).length,
+    ).toBeGreaterThan(0);
     expect(screen.queryByRole("link", { name: "Greenhouse" })).toBeNull();
     expect(
       screen.getByRole("button", { name: "Open job listing" }),
@@ -510,7 +509,7 @@ describe("Job Discovery", () => {
   it("persists a saved state and can undo it", async () => {
     const { fetchMock } = setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -535,7 +534,7 @@ describe("Job Discovery", () => {
   it("automatically removes the bottom Undo snackbar after ten seconds", async () => {
     setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
 
     vi.useFakeTimers();
     await act(async () => {
@@ -556,7 +555,7 @@ describe("Job Discovery", () => {
   it("keeps dismissal undo available after the job leaves active results", async () => {
     const { requests, fetchMock } = setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
     const dismissButton = screen.queryByRole("button", { name: "Dismiss" });
     expect(dismissButton, JSON.stringify(requests)).not.toBeNull();
     fireEvent.click(dismissButton!);
@@ -586,7 +585,7 @@ describe("Job Discovery", () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     renderAuthenticatedDiscovery();
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
     fireEvent.click(
       screen.getByRole("button", { name: "Apply on company site" }),
     );
@@ -631,7 +630,7 @@ describe("Job Discovery", () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     renderAuthenticatedDiscovery();
-    await screen.findByText("Build and support web services.");
+    await screen.findAllByText("Build and support web services.");
 
     fireEvent.click(
       screen.getByRole("button", { name: "Apply on company site" }),

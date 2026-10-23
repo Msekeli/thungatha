@@ -4,7 +4,7 @@
     z-index: 150;
     top: 64px;
     right: 12px;
-    display: block;
+    display: block !important;
     width: min(280px, calc(100vw - 24px));
     padding: 8px;
     border: 1px solid var(--th-line);
@@ -13,7 +13,7 @@
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
   }
   .th-mobile-workspace-menu nav {
-    display: grid;
+    display: grid !important;
     gap: 3px;
   }
   .th-mobile-workspace-menu nav a {
@@ -32,7 +32,7 @@
     color: var(--th-nav-active-fg);
   }
   .th-mobile-workspace-account {
-    display: grid;
+    display: grid !important;
     gap: 8px;
     margin-top: 8px;
     padding: 12px 10px 4px;
@@ -46,20 +46,22 @@
     justify-content: flex-start;
     min-height: 32px;
   }
-  .th-mobile-bottom-nav.th-mobile-bottom-nav--workspace {
+  .th-mobile-bottom-nav--workspace,
+  .th-mobile-bottom-nav--public {
     position: fixed;
     z-index: 90;
     right: 0;
     bottom: 0;
     left: 0;
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     padding: 6px max(8px, env(safe-area-inset-left))
       calc(6px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--th-line);
     background: var(--th-nav);
   }
-  .th-mobile-bottom-nav--workspace a {
+  .th-mobile-bottom-nav--workspace a,
+  .th-mobile-bottom-nav--public a {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -72,7 +74,8 @@
     font-size: 10px;
     text-decoration: none;
   }
-  .th-mobile-bottom-nav--workspace a[data-active="true"] {
+  .th-mobile-bottom-nav--workspace a[data-active="true"],
+  .th-mobile-bottom-nav--public a[data-active="true"] {
     background: var(--th-nav-active-bg);
     color: var(--th-nav-active-fg);
     font-weight: 600;

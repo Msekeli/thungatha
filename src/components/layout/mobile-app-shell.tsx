@@ -11,8 +11,8 @@ import styles from "./mobile-app-shell.module.css";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import {
   MobileWorkspaceMenu,
-  MobileWorkspaceBottomNav,
 } from "@/components/layout/mobile-workspace-menu";
+import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 
 const workspaceRoutes = [
   "/jobs",
@@ -26,18 +26,19 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isPublicDiscovery = pathname === "/";
+  const isAuthenticationRoute = ["/sign-in", "/sign-up"].some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
   const isWorkspaceRoute = workspaceRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
   const active = (href: string) =>
-    typeof window !== "undefined" &&
-    (window.location.pathname + window.location.search === href ||
-      (href === "/" && window.location.pathname === "/"));
+    pathname === href;
 
   // WorkspaceShell owns navigation for authenticated workspace routes.
   // Rendering the global app shell here duplicates its header and mobile nav.
-  if (isWorkspaceRoute) return null;
+  if (isPublicDiscovery || isWorkspaceRoute || isAuthenticationRoute) return null;
 
   return (
     <>

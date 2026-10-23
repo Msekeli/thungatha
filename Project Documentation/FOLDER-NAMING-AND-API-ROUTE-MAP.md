@@ -9,14 +9,14 @@
 
 Feature-owned folders use explicit lowercase kebab-case names:
 
-| Responsibility | Target feature folder | Boundary |
-|---|---|---|
-| Searching, filtering, viewing, saving, and dismissing catalogue listings | `src/thungatha-features/job-discovery/` | Owns discovery experiences and job-listing catalogue behaviour |
-| Sign-in, sign-up, sign-out and authentication UI | `src/thungatha-features/authentication/` | Authentication integration and UI; identity still resolved server-side |
-| Confirmed professional background | `src/thungatha-features/user-profile/` | Professional facts and profile workflows |
-| Account preferences, privacy and data controls | `src/thungatha-features/user-account/` | Account-level settings; not a collection of multiple user accounts |
-| CV creation and tailored versions | `src/thungatha-features/cv-studio/` | CV authoring and versioning when implemented |
-| Actual submitted job applications and lifecycle | `src/thungatha-features/job-tracking/` | Application records, statuses, follow-ups and submitted-material references |
+| Responsibility                                                           | Target feature folder                    | Boundary                                                                    |
+| ------------------------------------------------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------- |
+| Searching, filtering, viewing, saving, and dismissing catalogue listings | `src/thungatha-features/job-discovery/`  | Owns discovery experiences and job-listing catalogue behaviour              |
+| Sign-in, sign-up, sign-out and authentication UI                         | `src/thungatha-features/authentication/` | Authentication integration and UI; identity still resolved server-side      |
+| Confirmed professional background                                        | `src/thungatha-features/user-profile/`   | Professional facts and profile workflows                                    |
+| Account preferences, privacy and data controls                           | `src/thungatha-features/user-account/`   | Account-level settings; not a collection of multiple user accounts          |
+| CV creation and tailored versions                                        | `src/thungatha-features/cv-studio/`      | CV authoring and versioning when implemented                                |
+| Actual submitted job applications and lifecycle                          | `src/thungatha-features/job-tracking/`   | Application records, statuses, follow-ups and submitted-material references |
 
 A **job listing** is a catalogue/domain record owned by **Job Discovery**. It is not the same thing as a job application. A user saving or dismissing a listing is not creating an application record.
 
@@ -28,16 +28,16 @@ Next.js App Router folder names normally contribute to the URL. Renaming `app/pr
 
 Route groups use parentheses and do not add a URL segment. They let the physical tree identify a feature while preserving an existing URL. These are **proposed target paths**, not yet implemented:
 
-| Proposed physical path | URL preserved |
-|---|---|
-| `src/app/(authentication)/sign-in/[[...sign-in]]/page.tsx` | `/sign-in` |
-| `src/app/(authentication)/sign-up/[[...sign-up]]/page.tsx` | `/sign-up` |
-| `src/app/(job-discovery)/page.tsx` | `/` |
-| `src/app/(job-discovery)/jobs/page.tsx` | `/jobs` |
-| `src/app/(user-profile)/profile/page.tsx` | `/profile` |
-| `src/app/(user-account)/account/page.tsx` | `/account` |
-| `src/app/cv-studio/page.tsx` | `/cv-studio` |
-| `src/app/(job-tracking)/applications/page.tsx` | `/applications` (current URL; see discrepancy below) |
+| Proposed physical path                                     | URL preserved                                        |
+| ---------------------------------------------------------- | ---------------------------------------------------- |
+| `src/app/(authentication)/sign-in/[[...sign-in]]/page.tsx` | `/sign-in`                                           |
+| `src/app/(authentication)/sign-up/[[...sign-up]]/page.tsx` | `/sign-up`                                           |
+| `src/app/(job-discovery)/page.tsx`                         | `/`                                                  |
+| `src/app/(job-discovery)/jobs/page.tsx`                    | `/jobs`                                              |
+| `src/app/(user-profile)/profile/page.tsx`                  | `/profile`                                           |
+| `src/app/(user-account)/account/page.tsx`                  | `/account`                                           |
+| `src/app/cv-studio/page.tsx`                               | `/cv-studio`                                         |
+| `src/app/(job-tracking)/applications/page.tsx`             | `/applications` (current URL; see discrepancy below) |
 
 Route groups must not introduce duplicate URL paths. After moving a route, verify the generated route table/build and run direct-entry tests for the affected URLs.
 
@@ -45,17 +45,17 @@ Route groups must not introduce duplicate URL paths. After moving a route, verif
 
 The following endpoints exist in the inspected source tree. The route-group paths below are a **proposed physical organization only**; the public HTTP paths and methods remain unchanged.
 
-| HTTP method | Current API path | Current responsibility | Authentication / access | Proposed physical route path |
-|---|---|---|---|---|
-| GET | `/api/jobs` | Search/filter/paginate active job listings; optionally joins the signed-in user's saved/dismissed state | Public catalogue reads; user state is scoped to server-resolved identity; saved/dismissed filtering requires identity | `src/app/api/(job-listings)/jobs/route.ts` |
-| GET | `/api/jobs/[id]` | Read one active listing and optionally include the signed-in user's state | Public read; user state is scoped to identity | `src/app/api/(job-listings)/jobs/[id]/route.ts` |
-| PUT | `/api/jobs/[id]/state` | Save or dismiss a listing | Authentication required; server-resolved user ID | `src/app/api/(job-listings)/jobs/[id]/state/route.ts` |
-| DELETE | `/api/jobs/[id]/state` | Clear the signed-in user's saved/dismissed state | Authentication required; deletes only the caller's state | `src/app/api/(job-listings)/jobs/[id]/state/route.ts` |
-| GET | `/api/jobs/[id]/activity` | Read the caller's application-link-opened and applied-at activity timestamps | Authentication required; user-scoped activity | `src/app/api/(job-listings)/jobs/[id]/activity/route.ts` |
-| POST | `/api/jobs/[id]/activity` | Record `opened_application` or `confirm_applied` activity | Authentication required; user-scoped activity | `src/app/api/(job-listings)/jobs/[id]/activity/route.ts` |
-| POST | `/api/internal/jobs/ingest` | Trigger server-side job ingestion | Bearer secret from `INGESTION_CRON_SECRET` or `CRON_SECRET`; server-side only | `src/app/api/(job-ingestion)/internal/jobs/ingest/route.ts` |
-| GET | `/api/profile` | Read the authenticated user's current display name | Authentication required | `src/app/api/(user-profile)/profile/route.ts` |
-| PATCH | `/api/profile` | Validate and save the authenticated user's display name | Authentication required; rejects client-supplied user identity | `src/app/api/(user-profile)/profile/route.ts` |
+| HTTP method | Current API path            | Current responsibility                                                                                  | Authentication / access                                                                                               | Proposed physical route path                                |
+| ----------- | --------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| GET         | `/api/jobs`                 | Search/filter/paginate active job listings; optionally joins the signed-in user's saved/dismissed state | Public catalogue reads; user state is scoped to server-resolved identity; saved/dismissed filtering requires identity | `src/app/api/(job-listings)/jobs/route.ts`                  |
+| GET         | `/api/jobs/[id]`            | Read one active listing and optionally include the signed-in user's state                               | Public read; user state is scoped to identity                                                                         | `src/app/api/(job-listings)/jobs/[id]/route.ts`             |
+| PUT         | `/api/jobs/[id]/state`      | Save or dismiss a listing                                                                               | Authentication required; server-resolved user ID                                                                      | `src/app/api/(job-listings)/jobs/[id]/state/route.ts`       |
+| DELETE      | `/api/jobs/[id]/state`      | Clear the signed-in user's saved/dismissed state                                                        | Authentication required; deletes only the caller's state                                                              | `src/app/api/(job-listings)/jobs/[id]/state/route.ts`       |
+| GET         | `/api/jobs/[id]/activity`   | Read the caller's application-link-opened and applied-at activity timestamps                            | Authentication required; user-scoped activity                                                                         | `src/app/api/(job-listings)/jobs/[id]/activity/route.ts`    |
+| POST        | `/api/jobs/[id]/activity`   | Record `opened_application` or `confirm_applied` activity                                               | Authentication required; user-scoped activity                                                                         | `src/app/api/(job-listings)/jobs/[id]/activity/route.ts`    |
+| POST        | `/api/internal/jobs/ingest` | Trigger server-side job ingestion                                                                       | Bearer secret from `INGESTION_CRON_SECRET` or `CRON_SECRET`; server-side only                                         | `src/app/api/(job-ingestion)/internal/jobs/ingest/route.ts` |
+| GET         | `/api/profile`              | Read the authenticated user's current display name                                                      | Authentication required                                                                                               | `src/app/api/(user-profile)/profile/route.ts`               |
+| PATCH       | `/api/profile`              | Validate and save the authenticated user's display name                                                 | Authentication required; rejects client-supplied user identity                                                        | `src/app/api/(user-profile)/profile/route.ts`               |
 
 The API folder named `jobs` is currently part of the public contract (`/api/jobs`). Do not rename it to `/api/job-listings` as a folder cleanup. A route group such as `(job-listings)` can provide clearer physical ownership without changing the endpoint.
 
@@ -82,7 +82,6 @@ Before any route or feature folder is moved:
 7. Run the actual package scripts available in `package.json`: at minimum relevant Vitest tests, ESLint, and a production build when the local environment supports them. Record what was and was not run.
 8. Do not mark a migration verified based only on a successful text edit or GitHub commit.
 
-
 ## 6. File naming conventions
 
 Use a filename that identifies the responsibility, not merely the framework role or a broad technical category.
@@ -101,7 +100,7 @@ Use a filename that identifies the responsibility, not merely the framework role
 
 ### UI styling priority
 
-- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns for redesigned components, reusing existing shared controls where suitable. MUI remains in areas not yet migrated.
+- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns, reusing existing shared controls where suitable. MUI has been removed.
 - Use Tailwind CSS v4 utilities for layout and straightforward styling.
 - Add scoped CSS only when Tailwind cannot reasonably meet the requirement or a component needs a complex visual treatment.
 - Keep custom CSS small and scoped to the owning component/feature; do not create CSS files by default.
@@ -139,13 +138,13 @@ The scan of the current `dev` tree found 81 files under `src/` before the featur
 
 Largest source files identified by the scan:
 
-| Current file | Approximate size | Initial recommendation |
-|---|---:|---|
-| `src/thungatha-features/job-discovery/ui/jobs-discovery.tsx` | 1,378 lines | Split page orchestration, job results/list, job details, filter controls, and API/state operations into cohesive modules after dependency review |
-| `src/thungatha-features/job-discovery/ui/jobs-discovery.css` | 3,445 lines | Split styles by stable UI section/component, keeping feature scoping and responsive behaviour intact |
-| `src/thungatha-features/job-discovery/ui/public-job-discovery.css` | 3,216 lines | Split by public discovery sections, preserving selector scope and media-query behaviour |
-| `src/thungatha-features/job-discovery/ui/public-job-discovery.tsx` | 56 physical lines, about 23 KB | Reformat first; many statements are compressed onto single lines. Then assess component boundaries |
-| `src/styles/components.css` | 487 lines, about 12 KB | Inspect ownership and group shared styles by component only where it improves discovery |
+| Current file                                                       |               Approximate size | Initial recommendation                                                                                                                           |
+| ------------------------------------------------------------------ | -----------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/thungatha-features/job-discovery/ui/jobs-discovery.tsx`       |                    1,378 lines | Split page orchestration, job results/list, job details, filter controls, and API/state operations into cohesive modules after dependency review |
+| `src/thungatha-features/job-discovery/ui/jobs-discovery.css`       |                    3,445 lines | Split styles by stable UI section/component, keeping feature scoping and responsive behaviour intact                                             |
+| `src/thungatha-features/job-discovery/ui/public-job-discovery.css` |                    3,216 lines | Split by public discovery sections, preserving selector scope and media-query behaviour                                                          |
+| `src/thungatha-features/job-discovery/ui/public-job-discovery.tsx` | 56 physical lines, about 23 KB | Reformat first; many statements are compressed onto single lines. Then assess component boundaries                                               |
+| `src/styles/components.css`                                        |         487 lines, about 12 KB | Inspect ownership and group shared styles by component only where it improves discovery                                                          |
 
 Sizes are a prioritisation signal, not a mandate to split every large file. CSS splitting can change cascade order, and React splitting can change state/effect behaviour; both require targeted tests and visual verification.
 
@@ -156,7 +155,7 @@ Sizes are a prioritisation signal, not a mandate to split every large file. CSS 
 - `src/app/api/profile/route.ts` (about 107 lines) resolves identity and handles GET/PATCH validation and persistence. It should delegate to named profile operations where this improves clarity, without pretending the current display-name API is a full professional-profile API.
 - `src/app/api/jobs/[id]/route.ts` (about 63 lines) and `src/app/api/internal/jobs/ingest/route.ts` (about 60 lines) are smaller; keep them focused rather than splitting them automatically.
 - `src/thungatha-features/job-discovery/server/providers/aggregators/index.ts` and `src/thungatha-features/job-discovery/server/providers/ats/index.ts` are tiny files with no exports in the inspected source. Verify whether they are needed; if not imported, remove them as part of a reference-checked cleanup rather than keeping meaningless files.
-- `src/lib/theme.ts` and `src/theme/theme.ts` are not duplicates: the first defines the app's theme preference/bootstrap script, while the second creates a Material UI theme from tokens. Keep them separate or rename them to distinguish those responsibilities; do not merge based on the basename.
+- `src/lib/theme.ts` defines the app's theme preference/bootstrap script. The former `src/theme/theme.ts` UI-library theme has been removed.
 - The current public discovery TSX file is compressed into only 56 physical lines despite being about 23 KB. Reformat it before evaluating its true complexity; formatting should be a behaviour-neutral change.
 
 ### Migration order
@@ -169,4 +168,3 @@ Sizes are a prioritisation signal, not a mandate to split every large file. CSS 
 6. Review duplicate `index.ts`, `schema.ts`, and `theme.ts` names in context; do not perform blind global renames.
 7. Update imports, paired tests, architecture docs, and `folder-structure.txt` in the same coherent change.
 8. Run the relevant tests, lint, and production build where available. Record exactly what ran; do not call a text-only rename verified.
-

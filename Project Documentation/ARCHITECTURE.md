@@ -29,7 +29,7 @@ The architecture must deliver the approved product specification and milestones 
 - **Database:** PostgreSQL through Supabase, with version-controlled SQL migrations.
 - **Database access:** Supabase JavaScript client and SQL/migrations following the existing repository pattern. Do not introduce Prisma or Drizzle by default.
 - **Validation:** Zod for untrusted requests and structured external/AI output, consistent with existing code.
-- **UI:** Incrementally move from MUI to Tailwind CSS v4 and shadcn/ui patterns as screens are redesigned. Reuse existing shared controls; do not add a component dependency solely to imitate shadcn/ui. Keep MUI on unmigrated screens and interactions. Create scoped CSS only when Tailwind cannot reasonably meet the requirement.
+- **UI:** Tailwind CSS v4, shadcn/ui patterns, and the existing Base UI primitives. Reuse shared controls; do not add a dependency solely to imitate shadcn/ui. Create scoped CSS only when Tailwind cannot reasonably meet the requirement.
 - **Source-file size:** Keep handwritten source files at 100 physical lines or fewer; warn at 80. Count blank/comment lines. Generated files, dependency lockfiles, and vendored code are excluded. Refactor by cohesive responsibility, never by compressing code.
 - **Testing:** existing Vitest/React Testing Library and Playwright conventions, where present.
 - **File storage:** Supabase Storage or another approved object-storage service when CV uploads/generated files are implemented. Do not depend on Vercel function local disk for durable files.
@@ -54,6 +54,7 @@ flowchart TD
 ```
 
 Trust boundaries:
+
 - Browser input, URL parameters, IDs, profile data, and requested state changes are untrusted.
 - External job data and AI responses are untrusted until normalized and validated.
 - Authentication establishes identity; it does not by itself authorize access to every record.
@@ -71,6 +72,7 @@ The app can organize code by feature and responsibility inside the existing `src
 - **Shared cross-cutting utilities:** authentication helpers, response/error conventions, schemas, environment validation, and logging. Do not turn `src/lib` into a catch-all for feature business logic.
 
 Dependency rules:
+
 1. UI components do not query PostgreSQL directly.
 2. Route handlers validate requests, resolve the authenticated actor, call application logic, and translate outcomes into responses. Keep substantial business logic out of route handlers.
 3. User IDs must be derived from the authenticated server identity, not accepted from the browser as authority.
@@ -160,7 +162,7 @@ thungatha/
 - The tree is a **target map**, not an inventory of current files. The current repository tree is recorded in `../folder-structure.txt`; update that document when the actual tree changes. See `FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the naming standard, verified endpoint inventory, URL-preserving route-group examples, and unresolved route discrepancy.
 - Keep all existing routes, API paths, request/response shapes, authentication boundaries, and business behavior unchanged during structural-only changes. Because App Router folder names normally define URLs, use route groups such as `(user-profile)` around an existing `profile/` route when a clearer physical grouping is needed without changing `/profile`.
 - Create the approved top-level feature roots early, even before implementation, and keep a concise README.md in each to record its ownership and planned responsibilities. Do not create empty ui/, server/, data/, or other implementation subfolders until code is ready.
-Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
+  Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias for imports into source modules so moving a test does not depend on relative directory depth.
 - Keep CSS with its owning feature when it is feature-specific. Shared design tokens and cross-feature styling remain in the existing shared styles/theme locations.
 - Keep `src/app/api/**/route.ts` files as thin HTTP adapters over time; move business logic only when an isolated, tested extraction can preserve the endpoint contract.
 - The `src/thungatha-features/job-discovery/` feature contains the shared discovery screen/controller used by both public `/` and authenticated `/jobs` entry points, plus job ingestion/provider/search/schema modules. Keep route/layout shells thin and share discovery UI, state, feed, filtering, pagination, selection, and detail logic; do not duplicate the feature into separate public and authenticated implementations or force it into one oversized component.
@@ -170,38 +172,38 @@ Keep tests under `tests/`, grouped by test type and feature. Use the `@/` alias 
 
 ## 6. File and folder guide
 
-| Path | Responsibility |
-|---|---|
-| `src/app/` | Next.js routes, page/layout composition and API Route Handlers |
-| `src/thungatha-features/job-discovery/` | Current location for public and authenticated discovery UI and job server modules |
+| Path                                           | Responsibility                                                                                                                         |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`                                     | Next.js routes, page/layout composition and API Route Handlers                                                                         |
+| `src/thungatha-features/job-discovery/`        | Current location for public and authenticated discovery UI and job server modules                                                      |
 | `src/thungatha-features/job-discovery/client/` | Future browser-side API callers/hooks shared by both discovery experiences where behavior matches; create only when real code is moved |
-| `src/thungatha-features/job-discovery/types/` | Shared job and feed response types |
-| `src/thungatha-features/job-discovery/utils/` | Shared pure helpers such as safe URL and display formatting |
-| `src/thungatha-features/job-discovery/server/` | Future home for extracted job use cases/data access when a tested refactor warrants it; do not create empty layers |
-| `src/thungatha-features/cv-studio/` | CV Studio feature code when M4 requires it |
-| `src/thungatha-features/job-tracking/` | Authenticated application lifecycle code when M5 requires it |
-| `src/components/ui/` | Generic buttons, modals, skeletons, toasts and other cross-feature primitives |
-| `src/components/layout/` | Shared application shells and navigation |
-| `src/lib/http/`, `src/lib/supabase/` | Cross-cutting HTTP and Supabase infrastructure |
-| `src/thungatha-features/authentication/` | Authentication UI and server-side identity resolution |
-| `supabase/migrations/` | Version-controlled database schema changes |
-| `tests/end-to-end-tests/` | Playwright user journeys; configured through `playwright.config.ts` |
-| `tests/unit-tests/` | Isolated function, schema, provider, repository, and component tests |
-| `tests/integration-tests/` | API Route Handler tests for validation, authentication, ownership, and persistence |
-| `tests/test-support/` | Shared Vitest setup and test-only mocks |
+| `src/thungatha-features/job-discovery/types/`  | Shared job and feed response types                                                                                                     |
+| `src/thungatha-features/job-discovery/utils/`  | Shared pure helpers such as safe URL and display formatting                                                                            |
+| `src/thungatha-features/job-discovery/server/` | Future home for extracted job use cases/data access when a tested refactor warrants it; do not create empty layers                     |
+| `src/thungatha-features/cv-studio/`            | CV Studio feature code when M4 requires it                                                                                             |
+| `src/thungatha-features/job-tracking/`         | Authenticated application lifecycle code when M5 requires it                                                                           |
+| `src/components/ui/`                           | Generic buttons, modals, skeletons, toasts and other cross-feature primitives                                                          |
+| `src/components/layout/`                       | Shared application shells and navigation                                                                                               |
+| `src/lib/http/`, `src/lib/supabase/`           | Cross-cutting HTTP and Supabase infrastructure                                                                                         |
+| `src/thungatha-features/authentication/`       | Authentication UI and server-side identity resolution                                                                                  |
+| `supabase/migrations/`                         | Version-controlled database schema changes                                                                                             |
+| `tests/end-to-end-tests/`                      | Playwright user journeys; configured through `playwright.config.ts`                                                                    |
+| `tests/unit-tests/`                            | Isolated function, schema, provider, repository, and component tests                                                                   |
+| `tests/integration-tests/`                     | API Route Handler tests for validation, authentication, ownership, and persistence                                                     |
+| `tests/test-support/`                          | Shared Vitest setup and test-only mocks                                                                                                |
 
 Feature-specific business rules must not drift into generic shared utilities. Avoid maintaining two competing locations for the same implementation.
- 
+
 ## 7. Product module boundaries
 
-| Module/experience | Owns | Does not own |
-|---|---|---|
-| Job Discovery | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status | Application lifecycle, CV versions, Profile-based scoring in M1 |
-| Profile | Confirmed professional facts, import drafts, confirmation, profile history | Silent AI-driven edits |
-| Matching | Requirement extraction, evidence mapping, deterministic scoring, explanation and stale-state | Owning job listings or CV versions |
-| CV Studio | Master CV and tailored versions, recommendation, review, preview, comparison, export | Editing Profile silently; application status history |
-| Job Tracking | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups | Job-source catalogue ownership or CV authoring |
-| Account | User preferences and account-level settings defined in M6 | Duplicating Clerk identity or feature data |
+| Module/experience | Owns                                                                                                                | Does not own                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, Profile-based scoring in M1 |
+| Profile           | Confirmed professional facts, import drafts, confirmation, profile history                                          | Silent AI-driven edits                                          |
+| Matching          | Requirement extraction, evidence mapping, deterministic scoring, explanation and stale-state                        | Owning job listings or CV versions                              |
+| CV Studio         | Master CV and tailored versions, recommendation, review, preview, comparison, export                                | Editing Profile silently; application status history            |
+| Job Tracking      | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups | Job-source catalogue ownership or CV authoring                  |
+| Account           | User preferences and account-level settings defined in M6                                                           | Duplicating Clerk identity or feature data                      |
 
 Job Tracking links to the exact CV version or submitted-material snapshot used for an application. CV Studio remains the owner of CV versions. A user can record an externally sourced application in Job Tracking without first creating a Job Discovery catalogue record.
 
@@ -222,6 +224,7 @@ The existing profile API/repository/migration provide a starting example. Inspec
 ## 9. Job-source integrations
 
 Each approved job source should sit behind a small server-side adapter with a normalized internal output. Source adapters should:
+
 - preserve source-specific identifiers and original discovery/application URLs;
 - validate and normalize provider responses;
 - respect terms, attribution, quotas, and approved access methods;
@@ -257,18 +260,19 @@ When CV upload and export are implemented, use durable object storage approved f
 - Each primary experience must handle direct entry and missing prerequisites gracefully.
 - Use the current shared theme and design tokens rather than creating feature-specific competing design systems.
 - Keep only one dominant glow/high-emphasis action per screen, consistent with the supplied design direction.
-- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns for redesigned components, reusing existing shared controls where suitable. MUI remains in unmigrated areas during the gradual transition.
+- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns, reusing existing shared controls where suitable. MUI has been removed.
 - Prefer accessible native controls or existing shared controls for interactions; use established primitives for dialogs, popovers, menus, tooltips and other complex interactions.
 - Prefer Tailwind CSS v4 utilities for layout, spacing, flex/grid, responsive behavior and straightforward styling. Avoid standalone CSS for styles Tailwind can express clearly.
 - Keep standalone/scoped CSS for genuinely complex presentation or interactions that Tailwind cannot reasonably express. Consolidate selectors and avoid repeated override blocks.
 - Use the shared `src/theme/tokens.json` and generated `src/styles/tokens.css` as the source of truth for theme colors, surfaces, borders, text, accents, radii, and related design values. Do not add feature-specific competing palettes or edit generated token CSS by hand.
 - Use `lucide-react` for icons; do not introduce another icon library without approval.
-- When extracting shared UI, migrate styles toward Tailwind and shadcn/ui patterns instead of merely moving legacy MUI styling into smaller files. Remove old CSS only after confirming public and authenticated experiences retain their intended light/dark and responsive appearance.
+- When extracting shared UI, use Tailwind and shadcn/ui patterns. Remove old CSS only after confirming public and authenticated experiences retain their intended light/dark and responsive appearance.
 - Inspect existing dashboard/auth-shell references before removal or migration.
 
 ## 13. Testing and operational visibility
 
 For each checkpoint, select tests under `tests/` that prove the changed behaviour:
+
 - unit tests for deterministic rules and state transitions;
 - API/integration tests for validation, persistence, provider failures, and ownership;
 - component tests for loading/empty/error/validation and accessible interactions;
@@ -283,6 +287,7 @@ At release, run the available formatting, lint, type-check, test, build, browser
 Change the architecture when there is a demonstrated technical need, a product requirement that cannot be met with the current design, or an external constraint that invalidates an assumption.
 
 Before making a structural change:
+
 1. identify the requirement or evidence;
 2. describe the alternatives and trade-offs;
 3. identify effects on approved milestone scope and acceptance criteria;

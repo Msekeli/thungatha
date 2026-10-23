@@ -5,14 +5,15 @@ import { ChevronDown, MapPin } from "lucide-react";
 type Props = {
   value: string;
   onChange: (value: string) => void;
+  ariaLabel?: string;
 };
 
-export function JobLocationSelect({ value, onChange }: Props) {
+export function JobLocationSelect({ value, onChange, ariaLabel = "Search location" }: Props) {
   return (
     <div className="relative flex h-11 min-w-0 flex-1 items-center rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] text-[var(--th-fg)] transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 md:flex-none">
       <MapPin className="pointer-events-none absolute left-3 size-[17px] shrink-0 text-[var(--th-accent)]" aria-hidden="true" />
       <select
-        aria-label="Search location"
+        aria-label={ariaLabel}
         value={value || "Anywhere"}
         onChange={(event) =>
           onChange(event.target.value === "Anywhere" ? "" : event.target.value)

@@ -1,14 +1,10 @@
 /*
  * Layer order must be the first statement. Clerk gets its own layer (see cssLayerName in
  * clerk-appearance.ts) so our classes in "components" beat Clerk without !important.
- * Also set, in src/app/layout.tsx:
- *   <InitColorSchemeScript attribute="data-theme" defaultMode="system" />
- *   <AppRouterCacheProvider options={{ enableCssLayer: true }}>
- *     <ThemeProvider theme={theme}> <CssBaseline /> {children} </ThemeProvider>
- *   </AppRouterCacheProvider>
- * and load Inter with next/font, exposing --font-inter on <html>.
+ * The persisted data-theme is initialized in src/app/layout.tsx.
+ * Inter is loaded with next/font and exposed as --font-inter on <html>.
  */
-@layer theme, base, mui, clerk, components, utilities;
+@layer theme, base, clerk, components, utilities;
 
 @import "tailwindcss";
 @import "../styles/base.css";
@@ -27,14 +23,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/shadcn-theme.css";
-@import "../styles/shadcn-light-theme.css";
-@import "../styles/shadcn-dark-theme.css";
 
-/* Tailwind's dark: variant follows data-theme (the name MUI sets), not only the OS. */
+/* Tailwind's dark: variant follows the persisted data-theme, not only the OS. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 @custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
 @layer components {
-
-
 }

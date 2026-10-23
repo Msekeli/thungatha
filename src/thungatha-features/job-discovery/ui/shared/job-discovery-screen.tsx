@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { JobDiscoveryDialogs } from "../authenticated/job-discovery-dialogs";
-import { JobDiscoveryControls } from "../authenticated/job-discovery-controls";
 import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
+import { JobDiscoverySearchToolbar } from "./job-discovery-search-toolbar";
 import { useJobDiscoveryDialogAnchors } from "../hooks/use-job-discovery-dialog-anchors";
 import { useJobDiscoveryState } from "../hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "../hooks/use-job-discovery-controller";
@@ -29,32 +29,12 @@ export function JobDiscoveryScreen({
 
   return (
     <>
-      <div className={workspaceLeadingColumn ? "mx-auto mb-4 w-full max-w-6xl" : undefined}>
-        <JobDiscoveryControls
-          isAuthenticated={s.isAuthenticated}
-          draft={s.draft}
-          filtersOpen={s.filtersOpen}
-          categories={c.categories}
-          category={s.filters.employmentType || s.category}
-          onQueryChange={(value) => c.changeDraft("query", value)}
-          onLocationChange={(value) => c.changeDraft("location", value)}
-          onSubmit={c.submitFilters}
-          onToggleFilters={(anchorEl) => {
-            s.setFilterAnchorEl(anchorEl);
-            s.setFiltersOpen((value) => !value);
-          }}
-          onCategoryChange={c.changeCategory}
-          undoAction={s.undoAction}
-          stateBusy={s.stateBusy}
-          onUndo={() => void c.undoLastStateChange()}
-          onDismissUndo={() => s.setUndoAction(null)}
-          stateMessage={s.stateMessage}
-          onDismissMessage={() => s.setStateMessage(null)}
-          stateError={s.stateError}
-          onDismissError={() => s.setStateError(null)}
-        />
-      </div>
-      <div className={workspaceLeadingColumn ? "min-h-0 flex-1" : "min-h-0"}>
+      <JobDiscoverySearchToolbar
+        state={s}
+        controller={c}
+        hasLeadingColumn={Boolean(workspaceLeadingColumn)}
+      />
+      <div className="min-h-0 flex-1 max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col">
         <JobDiscoveryWorkspace
           jobs={c.visibleJobs}
           feed={s.feed}
@@ -86,8 +66,6 @@ export function JobDiscoveryScreen({
           onDismiss={c.workspaceActions.dismissSelectedJob}
           onRetryDetail={c.workspaceActions.retryDetail}
           configured={configured}
-          sortOrder={s.sortOrder}
-          onSortChange={s.setSortOrder}
           leadingColumn={workspaceLeadingColumn}
         />
       </div>

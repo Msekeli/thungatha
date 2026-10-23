@@ -37,9 +37,9 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 ### D-035 — Tailwind CSS and shadcn/ui direction
 
 - **Status:** Confirmed
-- **Decision:** Move the interface from MUI toward Tailwind CSS v4 and shadcn/ui patterns, migrating incrementally as screens are redesigned.
+- **Decision:** Use Tailwind CSS v4 and shadcn/ui patterns for the interface. MUI has been removed from the application.
 - **Rationale:** The user is redesigning the interface and selected Tailwind and shadcn/ui as the direction.
-- **Constraints:** Preserve existing shared controls where suitable. Do not recreate components or add a dependency solely to imitate shadcn/ui. MUI may remain on screens and interactions not yet migrated.
+- **Constraints:** Preserve existing shared controls where suitable. Do not recreate components or add a dependency solely to imitate shadcn/ui.
 
 ### D-034 — UI icon library
 
@@ -135,7 +135,7 @@ The project has discussed a broad source-coverage goal. The candidate inventory 
 
 | ID | Question | Required validation | Status |
 |---|---|---|---|
-| D-024 | Exact supported versions of Next.js, React, MUI, Tailwind CSS v4, Clerk, Supabase, and related libraries | Check official compatibility guidance and the installed repository versions; lock compatible dependencies. | Open |
+| D-024 | Exact supported versions of Next.js, React, Tailwind CSS v4, Clerk, Supabase, and related libraries | Check official compatibility guidance and the installed repository versions; lock compatible dependencies. | Open |
 | D-025 | Exact Clerk–Supabase authorization and Row Level Security design | Verify the supported integration and token/connection model; test cross-user isolation. | Open |
 | D-026 | CV/document storage, access, retention, export, deletion, and backup policy | Select compatible storage and define access-control and lifecycle requirements before production reliance. | Open |
 | D-027 | Job refresh and scheduled-work execution | Validate source terms, idempotency, refresh requirements, quotas, and current Vercel/runtime limits. | Open |

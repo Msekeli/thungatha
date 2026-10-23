@@ -1,10 +1,6 @@
 "use client";
 
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-
 export type JobDetailTab = { label: string; value: string };
-
 type JobDetailTabsProps = {
   tabs?: JobDetailTab[];
   value: string;
@@ -24,16 +20,23 @@ export function JobDetailTabs({
   onChange,
 }: JobDetailTabsProps) {
   return (
-    <Tabs
-      value={value}
-      onChange={(_, nextValue: string) => onChange(nextValue)}
-      variant="scrollable"
-      scrollButtons="auto"
+    <div
+      role="tablist"
       aria-label="Job details sections"
+      className="flex min-w-0 overflow-x-auto border-b border-line"
     >
       {tabs.map((tab) => (
-        <Tab key={tab.value} label={tab.label} value={tab.value} />
+        <button
+          key={tab.value}
+          type="button"
+          role="tab"
+          aria-selected={value === tab.value}
+          className="min-h-12 shrink-0 border-b-2 border-transparent px-4 text-sm text-fg-muted hover:text-fg aria-selected:border-accent aria-selected:text-accent"
+          onClick={() => onChange(tab.value)}
+        >
+          {tab.label}
+        </button>
       ))}
-    </Tabs>
+    </div>
   );
 }

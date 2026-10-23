@@ -2,8 +2,6 @@ export { JobSearchBar } from "./job-search-bar";
 export { JobDiscoverySearchFilters } from "./job-discovery-search-filters";
 export { JobCategoryChips } from "./job-category-chips";
 export { JobLocationSelect } from "./job-location-select";
-export { JobFilters } from "./job-filters";
-export type { JobFilterField, JobFilterOption } from "./job-filters";
 export { JobList } from "./job-list";
 export { JobOpportunityCard } from "./job-opportunity-card";
 export type { JobCardData } from "./job-opportunity-card";
@@ -19,4 +17,3 @@ export {
   formatDate,
   titleCase,
 } from "./job-formatters";
-export { JobPagination } from "./job-pagination";

@@ -18,6 +18,30 @@
   background: var(--th-nav);
   border-right: 1px solid var(--th-line);
 }
+
+@media (max-width: 700px) {
+  .th-workspace-shell:has(.th-workspace-header--jobs) {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .th-workspace-shell:has(.th-workspace-header--jobs) .th-workspace-content {
+    flex: 0 0 auto;
+    height: calc(100dvh - 116px - env(safe-area-inset-bottom));
+    min-height: 0;
+  }
+  .th-workspace-shell:has(.th-workspace-header--jobs) .th-workspace-page-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+}
+@media (max-width: 900px) {
+  .th-workspace-shell:has(.th-workspace-header--jobs) .th-workspace-page-content {
+    padding: 0;
+  }
+}
 .th-workspace-brand {
   padding: 0 10px 24px;
 }

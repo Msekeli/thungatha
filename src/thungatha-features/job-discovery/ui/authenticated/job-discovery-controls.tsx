@@ -31,13 +31,9 @@ export function JobDiscoveryControls(props: Props) {
     <>
       <JobDiscoveryHeader
         draft={props.draft}
-        categories={props.categories}
-        category={props.category}
         onQueryChange={props.onQueryChange}
-        onLocationChange={props.onLocationChange}
         onSubmit={props.onSubmit}
         onToggleFilters={props.onToggleFilters}
-        onCategoryChange={props.onCategoryChange}
       />
       <JobDiscoveryFeedback
         isAuthenticated={props.isAuthenticated}

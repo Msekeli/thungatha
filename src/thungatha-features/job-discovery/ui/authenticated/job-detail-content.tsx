@@ -1,6 +1,4 @@
 import { Button } from "@/components/ui/button";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { JobDetailActions } from "./job-detail-actions";
 import { JobDetailStatus } from "./job-detail-status";
 import {
@@ -8,6 +6,7 @@ import {
   JobDetailEmptyState,
 } from "../shared/job-detail-presentation";
 import type { JobDetailContentProps } from "./job-detail-types";
+import { JobDetailMatchSummary } from "./job-detail-match-summary";
 
 export function AuthenticatedJobDetailContent({
   configured,
@@ -33,28 +32,9 @@ export function AuthenticatedJobDetailContent({
       job={job}
       postedAt={source?.published_at || null}
       formatDate={formatDate}
-      headingAction={
-        <Stack
-          className="th-jobs-match-scorebox"
-          spacing={0.5}
-          sx={{ alignItems: "flex-start" }}
-        >
-          <Typography variant="caption">Match</Typography>
-          <Typography component="strong" sx={{ fontWeight: 700 }}>
-            Not calculated
-          </Typography>
-          <Button
-            variant="link"
-            size="sm"
-            className="h-auto px-0"
-            onClick={(event) => onViewMatch(event.currentTarget)}
-          >
-            Why is this unavailable?
-          </Button>
-        </Stack>
-      }
+      headingAction={<JobDetailMatchSummary onViewMatch={onViewMatch} />}
       actions={
-        <Stack spacing={1}>
+        <div className="flex flex-col gap-2">
           <JobDetailActions
             configured={configured}
             job={job}
@@ -73,7 +53,17 @@ export function AuthenticatedJobDetailContent({
             applicationUrl={applicationUrl}
             onRetry={onRetry}
           />
-        </Stack>
+        </div>
+      }
+      afterDescription={
+        <Button
+          variant="link"
+          size="sm"
+          className="h-auto self-start px-0 text-accent-text min-[601px]:hidden"
+          onClick={(event) => onViewMatch(event.currentTarget)}
+        >
+          About job matching
+        </Button>
       }
     />
   );

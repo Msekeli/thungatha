@@ -42,7 +42,7 @@ export function JobDetailActions({
   return (
     <div className="th-job-detail-actions">
       <Button
-        className={actionClass}
+        className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
         disabled={!applicationDestination || disabled}
         title={applyTitle}
         data-job-application-trigger

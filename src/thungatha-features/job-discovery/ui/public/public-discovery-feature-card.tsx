@@ -28,14 +28,18 @@ export function PublicDiscoveryFeatureCard({
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
         <h3 className="text-sm font-bold">{title}</h3>
-        <p className="text-sm text-muted">{description}</p>
-        <p className="text-xs text-muted">{note}</p>
+        <p className="text-sm text-fg-muted">{description}</p>
+        <p className="text-xs text-fg-muted">{note}</p>
         <PublicAuthPrompt
           configured={configured}
           title={title}
           description={`Sign in or create a free account to access ${title.toLowerCase()} and keep your job search organised.`}
         >
-          <Button variant="outline" size="sm" className="whitespace-normal text-left">
+          <Button
+            variant="outline"
+            size="sm"
+            className="whitespace-normal text-left"
+          >
             {action}
           </Button>
         </PublicAuthPrompt>

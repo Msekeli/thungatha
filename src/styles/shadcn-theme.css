@@ -1,4 +1,39 @@
 /* Tailwind theme mappings for shadcn/ui. */
+:root {
+  --background: var(--th-page);
+  --foreground: var(--th-fg);
+  --card: var(--th-panel);
+  --card-foreground: var(--th-fg);
+  --popover: var(--th-panel);
+  --popover-foreground: var(--th-fg);
+  --primary: var(--th-btn);
+  --primary-foreground: var(--th-btn-fg);
+  --secondary: var(--th-panel-2);
+  --secondary-foreground: var(--th-fg);
+  --muted: var(--th-panel-2);
+  --muted-foreground: var(--th-fg-muted);
+  --accent: var(--th-accent-bg);
+  --accent-foreground: var(--th-fg);
+  --destructive: var(--th-warn);
+  --border: var(--th-line);
+  --input: var(--th-line);
+  --ring: var(--th-accent);
+  --chart-1: var(--th-btn);
+  --chart-2: var(--th-accent);
+  --chart-3: var(--th-success);
+  --chart-4: var(--th-warn);
+  --chart-5: var(--th-fg-muted);
+  --radius: var(--th-radius-panel);
+  --sidebar: var(--th-nav);
+  --sidebar-foreground: var(--th-nav-text);
+  --sidebar-primary: var(--th-btn);
+  --sidebar-primary-foreground: var(--th-btn-fg);
+  --sidebar-accent: var(--th-nav-active-bg);
+  --sidebar-accent-foreground: var(--th-nav-active-fg);
+  --sidebar-border: var(--th-line);
+  --sidebar-ring: var(--th-accent);
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
