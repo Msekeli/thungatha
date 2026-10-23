@@ -56,7 +56,7 @@ export function JobDetailProtectedActions({
         description="Sign in or create a free account to dismiss jobs you are not interested in."
         onAction={onDismiss}
       >
-        <Button variant="outline" className={actionClass} disabled={disabled}>
+        <Button variant="warning" className={actionClass} disabled={disabled}>
           {job.state === "dismissed" ? null : (
             <EyeOff size={14} aria-hidden="true" />
           )}
