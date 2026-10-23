@@ -11,6 +11,8 @@
 @layer theme, base, mui, clerk, components, utilities;
 
 @import "tailwindcss";
+@import "../styles/base.css";
+@import "../styles/breakpoints.css";
 @import "../styles/tokens.css";
 @import "../styles/components.css";
 @import "tw-animate-css";
@@ -20,46 +22,6 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 @custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
-@layer base {
-  html {
-    background: var(--th-page);
-    @apply font-sans;
-  }
-
-  body {
-    background: var(--th-page);
-    color: var(--th-fg);
-    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-    font-size: 13px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    @apply bg-background text-foreground;
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--th-accent-text);
-    outline-offset: 2px;
-  }
-
-  ::selection {
-    background: var(--th-accent-bg);
-    color: var(--th-fg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-  * {
-    @apply border-border outline-ring/50;
-  }
-}
 @layer components {
   .th-mobile-bottom-nav {
     display: none;
@@ -107,77 +69,6 @@
     }
     .th-mobile-bottom-nav a span {
       display: block;
-    }
-  }
-}
-@layer components {
-  .th-mobile-app-header {
-    display: none;
-  }
-  @media (max-width: 760px) {
-    .th-mobile-app-header {
-      position: sticky;
-      top: 0;
-      z-index: 1200;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 56px;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--th-line);
-      background: var(--th-panel);
-    }
-    .th-mobile-app-header img {
-      display: block;
-      width: clamp(100px, 30vw, 142px);
-      height: auto;
-    }
-    .th-mobile-app-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      flex: 1;
-      min-width: 0;
-      gap: 4px;
-      flex-wrap: nowrap;
-    }
-    .th-mobile-app-actions .MuiIconButton-root {
-      flex: 0 0 auto;
-      color: var(--th-fg);
-      border: 1px solid var(--th-line);
-    }
-    .th-mobile-bottom-nav {
-      position: fixed !important;
-      inset: auto 0 0;
-      z-index: 1300;
-      display: grid !important;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      width: 100%;
-      min-height: calc(56px + env(safe-area-inset-bottom));
-      padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-      margin: 0;
-      border-top: 1px solid var(--th-line);
-      background: var(--th-panel);
-      box-sizing: border-box;
-    }
-    .th-mobile-bottom-nav > a {
-      display: flex;
-      min-width: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 4px 2px;
-      color: var(--th-fg-muted);
-      text-decoration: none;
-      font-size: 11px;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-    .th-mobile-bottom-nav > a[data-active="true"] {
-      color: var(--th-accent-text);
-      background: var(--th-accent-bg);
     }
   }
 }
