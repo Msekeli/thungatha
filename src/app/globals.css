@@ -14,7 +14,16 @@
 @import "../styles/base.css";
 @import "../styles/breakpoints.css";
 @import "../styles/tokens.css";
-@import "../styles/components.css";
+@import "../styles/components/badges.css";
+@import "../styles/components/requirements-status.css";
+@import "../styles/components/content-surfaces.css";
+@import "../styles/components/brand-auth.css";
+@import "../styles/components/motion.css";
+@import "../styles/components/buttons.css";
+@import "../styles/components/button-variants.css";
+@import "../styles/components/form-controls.css";
+@import "../styles/components/clerk.css";
+@import "../styles/components/navigation.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
