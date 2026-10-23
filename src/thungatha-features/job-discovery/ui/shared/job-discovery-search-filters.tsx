@@ -33,9 +33,9 @@ export function JobDiscoverySearchFilters(props: Props) {
     job.employer_name ?? "",
   ]);
   return (
-    <header className="w-full">
-      <div className="flex w-full flex-col gap-3 lg:flex-row">
-        <div className="min-w-0 lg:w-[min(48%,640px)] lg:flex-none">
+    <header className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:flex-row md:items-center">
+        <div className="min-w-0 flex-1">
           <JobSearchBar
             value={props.query}
             onChange={props.onQueryChange}
@@ -44,14 +44,14 @@ export function JobDiscoverySearchFilters(props: Props) {
             suggestions={suggestions}
           />
         </div>
-        <div className="flex min-w-0 gap-3 lg:w-[min(36%,440px)]">
+        <div className="flex min-w-0 gap-3 md:w-[min(38%,400px)] md:flex-none">
           <JobLocationSelect
             value={props.location}
             onChange={props.onLocationChange}
           />
           <Button
             variant="primary"
-            className="h-11 shrink-0 gap-2 px-5"
+            className="h-11 shrink-0 gap-2 px-4"
             aria-label="Open filters"
             onClick={(event) => props.onOpenFilters(event.currentTarget)}
           >
