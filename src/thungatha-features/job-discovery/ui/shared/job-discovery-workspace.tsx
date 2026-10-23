@@ -46,10 +46,10 @@ export function JobDiscoveryWorkspace(props: Props) {
   return (
     <div
       className={[
-        "th-jobs-workspace th-jobs-redesign-workspace grid min-h-0 w-full gap-4",
+        "th-jobs-workspace th-jobs-redesign-workspace grid h-[min(72dvh,900px)] max-h-[calc(100dvh-12rem)] min-h-0 w-full gap-4",
         hasLeadingColumn
-          ? "h-full max-h-full grid-cols-[minmax(0,15%)_minmax(0,1fr)_minmax(0,1fr)] overflow-hidden"
-          : "h-[min(72dvh,900px)] max-h-[calc(100dvh-12rem)] grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]",
+          ? "grid-cols-[minmax(0,15%)_minmax(0,1fr)_minmax(0,1fr)] overflow-hidden"
+          : "grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]",
       ].join(" ")}
     >
       {props.leadingColumn}
