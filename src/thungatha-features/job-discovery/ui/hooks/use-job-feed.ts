@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import {
-  getApiError,
   buildJobFeedParams,
-  isValidFeed,
   type Feed,
   type Filters,
 } from "../job-discovery-utils";
+import { JobFeedRequestError, requestJobFeed } from "../request-job-feed";
 import {
   canReusePublicJobFeed,
   getReusablePublicFeed,
@@ -45,26 +44,8 @@ export function useJobFeed(
             return;
           }
         }
-        const response = await fetch(`/api/jobs?${params}`, {
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-          signal,
-        });
-        if (!response.ok) {
-          setFeed(null);
-          setError(await getApiError(response));
-          setIsAuthenticated(response.status !== 401);
-          return;
-        }
+        const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
-        const data = (await response.json()) as Feed;
-        if (!isValidFeed(data)) {
-          setFeed(null);
-          setError(
-            "The jobs service returned an unexpected response. Please retry.",
-          );
-          return;
-        }
         setFeed((current) => {
           if (page <= 1 || !current) return data;
           const knownIds = new Set(current.jobs.map((job) => job.id));
@@ -84,8 +65,12 @@ export function useJobFeed(
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
         setFeed(null);
+        if (reason instanceof JobFeedRequestError)
+          setIsAuthenticated(reason.status !== 401);
         setError(
-          "Could not reach Job Discovery. Check your connection and retry.",
+          reason instanceof JobFeedRequestError
+            ? reason.message
+            : "Could not reach Job Discovery. Check your connection and retry.",
         );
       } finally {
         if (!signal.aborted) setLoading(false);

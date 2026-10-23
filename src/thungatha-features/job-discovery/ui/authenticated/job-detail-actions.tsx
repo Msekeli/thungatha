@@ -1,30 +1,26 @@
 "use client";
 
-import Link from "next/link";
-import { Button, Stack } from "@mui/material";
-import {
-  Bookmark,
-  Check,
-  EyeOff,
-  ExternalLink,
-  PanelsTopLeft,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
+import { JobDetailProtectedActions } from "./job-detail-protected-actions";
 
 type JobState = "saved" | "dismissed" | null;
 type Job = { id: string; title: string; state: JobState };
 type Props = {
+  configured: boolean;
   job: Job;
   applicationDestination: string | null;
   applicationUrl: string | null;
   jobSourceUrl: string | null;
   busy: boolean;
   detailLoading: boolean;
-  onApply: () => void;
+  onApply: (anchorEl: HTMLElement) => void;
   onSave: () => void;
   onDismiss: () => void;
 };
 
 export function JobDetailActions({
+  configured,
   job,
   applicationDestination,
   applicationUrl,
@@ -41,49 +37,27 @@ export function JobDetailActions({
     : jobSourceUrl
       ? "Opens the available source listing; it may not be the employer application page"
       : "No job or application link is available";
+  const actionClass = "th-job-detail-action-button";
 
   return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      spacing={1}
-      sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
-    >
+    <div className="th-job-detail-actions">
       <Button
-        variant="contained"
+        className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
         disabled={!applicationDestination || disabled}
         title={applyTitle}
-        onClick={onApply}
-        startIcon={<ExternalLink size={14} />}
+        data-job-application-trigger
+        onClick={(event) => onApply(event.currentTarget)}
       >
+        <ExternalLink size={14} aria-hidden="true" />
         {applicationUrl ? "Apply on company site" : "Open job listing"}
       </Button>
-      <Button
-        component={Link}
-        href={`/cv-studio?jobId=${encodeURIComponent(job.id)}`}
-        variant="outlined"
-        startIcon={<PanelsTopLeft size={14} />}
-      >
-        Tailor my CV
-      </Button>
-      <Button
-        variant="outlined"
+      <JobDetailProtectedActions
+        configured={configured}
+        job={job}
         disabled={disabled}
-        onClick={onSave}
-        startIcon={
-          job.state === "saved" ? <Check size={14} /> : <Bookmark size={14} />
-        }
-      >
-        {job.state === "saved" ? "Saved" : "Save"}
-      </Button>
-      <Button
-        variant="outlined"
-        color="warning"
-        disabled={disabled}
-        onClick={onDismiss}
-        startIcon={job.state === "dismissed" ? undefined : <EyeOff size={14} />}
-      >
-        {job.state === "dismissed" ? "Restore" : "Dismiss"}
-      </Button>
-    </Stack>
+        onSave={onSave}
+        onDismiss={onDismiss}
+      />
+    </div>
   );
 }

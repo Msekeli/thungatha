@@ -1,5 +1,7 @@
 import { useJobApplicationActions } from "./use-job-application-actions";
+import { useConfirmJobApplied } from "./use-confirm-job-applied";
 import { useJobFilterActions } from "./use-job-filter-actions";
+import { useJobDiscoveryWorkspaceActions } from "./use-job-discovery-workspace-actions";
 import { useJobDiscoveryData } from "./use-job-discovery-data";
 import { buildJobDiscoveryViewModel } from "../job-discovery-view-model";
 import { formatDate, shown, sourceFor } from "../job-discovery-utils";
@@ -17,6 +19,13 @@ export function useJobDiscoveryController(s: DiscoveryState) {
     sortOrder: s.sortOrder,
   });
   const application = useJobApplicationActions(
+    s.userSignedIn,
+    s.setStateError,
+    s.setJobActivity,
+    s.setForceAppliedPrompt,
+    s.setDismissedPromptForJobId,
+  );
+  const confirmApplied = useConfirmJobApplied(
     view.selectedDetail,
     s.stateBusy,
     s.setStateBusy,
@@ -31,13 +40,31 @@ export function useJobDiscoveryController(s: DiscoveryState) {
     s.draft,
     s.setDraft,
     s.setFilters,
+    s.setCategory,
     s.setPage,
     s.setMobileDetail,
+  );
+  const workspaceActions = useJobDiscoveryWorkspaceActions(
+    s,
+    view.selectedDetail,
+    view.applicationDestination,
+    data.updateJobState,
+    application.openApplicationLink,
+  );
+  const showApplicationPrompt = Boolean(
+    view.selectedDetail &&
+    (s.forceAppliedPrompt ||
+      (Boolean(view.selectedActivity?.application_link_opened_at) &&
+        !view.selectedActivity?.applied_at &&
+        s.dismissedPromptForJobId !== s.selectedId)),
   );
   return {
     ...data,
     ...view,
     ...application,
+    confirmApplied,
+    workspaceActions,
+    showApplicationPrompt,
     ...filters,
     formatDate,
     shown,

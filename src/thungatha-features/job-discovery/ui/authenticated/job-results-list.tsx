@@ -1,9 +1,9 @@
 import type { RefObject } from "react";
-import Box from "@mui/material/Box";
-import { Bookmark } from "lucide-react";
+import { Bookmark, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
 import type { Job, JobSource } from "./job-results-types";
+import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 
 export function JobResultsList({
   jobs,
@@ -15,6 +15,8 @@ export function JobResultsList({
   formatDate,
   onSelect,
   onSave,
+  onDismiss,
+  configured,
 }: {
   jobs: Job[];
   selectedId: string | null;
@@ -25,6 +27,8 @@ export function JobResultsList({
   formatDate: (value: string | null | undefined) => string | null;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
+  onDismiss: (job: Job) => void;
+  configured: boolean;
 }) {
   return (
     <>
@@ -41,37 +45,56 @@ export function JobResultsList({
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;
           const saved = fullJob.state === "saved";
+          const dismissed = fullJob.state === "dismissed";
           return (
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              aria-label={
-                saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
-              }
-              title={saved ? "Remove from saved jobs" : "Save job"}
-              onClick={() => onSave(fullJob)}
-            >
-              <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
-            </Button>
+            <>
+              <ProtectedDiscoveryAction
+                configured={configured}
+                title="Save this opportunity"
+                description="Sign in or create a free account to save this job and return to it later."
+                onAction={() => onSave(fullJob)}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  aria-label={saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`}
+                  title={saved ? "Remove from saved jobs" : "Save job"}
+                >
+                  <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
+                </Button>
+              </ProtectedDiscoveryAction>
+              <ProtectedDiscoveryAction
+                configured={configured}
+                title="Dismiss this opportunity"
+                description="Sign in or create a free account to dismiss jobs that are not right for you."
+                onAction={() => onDismiss(fullJob)}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  aria-label={dismissed ? `Restore ${fullJob.title}` : `Dismiss ${fullJob.title}`}
+                  title={dismissed ? "Restore job" : "Not for me"}
+                  className={dismissed ? "text-[var(--th-accent)]" : "text-[var(--th-fg-muted)] hover:text-destructive"}
+                >
+                  <ThumbsDown size={16} />
+                </Button>
+              </ProtectedDiscoveryAction>
+            </>
           );
         }}
       />
       {feed && feed.page < feed.totalPages && (
-        <Box
+        <div
           ref={loadMoreRef}
           aria-live="polite"
-          sx={{
-            p: "16px 8px",
-            textAlign: "center",
-            color: "text.secondary",
-            fontSize: 12,
-          }}
+          className="px-2 py-4 text-center text-xs text-fg-muted"
         >
           {loading
             ? "Loading more opportunities…"
             : "Scroll to load more opportunities"}
-        </Box>
+        </div>
       )}
     </>
   );

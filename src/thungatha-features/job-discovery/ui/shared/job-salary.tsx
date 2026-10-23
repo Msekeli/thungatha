@@ -1,5 +1,3 @@
-import Typography from "@mui/material/Typography";
-
 type Props = {
   minimum?: number | null;
   maximum?: number | null;
@@ -32,27 +30,15 @@ export function JobSalary({
   const currency = suppliedCurrency || "ZAR";
   if (minimum == null && maximum == null && hideWhenEmpty) return null;
   if (minimum == null && maximum == null)
-    return (
-      <Typography variant="body2" color="text.secondary">
-        Salary not disclosed
-      </Typography>
-    );
+    return <p className="text-sm text-fg-muted">Salary not disclosed</p>;
   const label =
     minimum != null && maximum != null
       ? `${amount(minimum, currency, locale)} – ${amount(maximum, currency, locale)}`
       : amount((minimum ?? maximum) as number, currency, locale);
   return (
-    <Typography
-      variant="body2"
-      sx={{
-        fontWeight: prefix ? 400 : 600,
-        ...(prefix
-          ? { m: 0, fontSize: "0.75rem", color: "text.secondary" }
-          : {}),
-      }}
-    >
+    <p className={prefix ? "m-0 text-xs font-normal text-fg-muted" : "text-sm font-semibold text-fg"}>
       {prefix && <strong>{prefix}</strong>}
       {label}
-    </Typography>
+    </p>
   );
 }

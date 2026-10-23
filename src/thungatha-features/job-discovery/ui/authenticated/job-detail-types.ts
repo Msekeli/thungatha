@@ -1,6 +1,7 @@
 import type { Job, JobSource } from "./job-results-types";
 
 export type JobDetailContentProps = {
+  configured: boolean;
   job: Job | null;
   source: JobSource | null;
   applicationDestination: string | null;
@@ -12,8 +13,8 @@ export type JobDetailContentProps = {
   detailError: string | null;
   formatDate: (value: string | null | undefined) => string | null;
   onBack: () => void;
-  onViewMatch: () => void;
-  onApply: () => void;
+  onViewMatch: (anchorEl: HTMLElement) => void;
+  onApply: (anchorEl: HTMLElement) => void;
   onSave: () => void;
   onDismiss: () => void;
   onRetry: () => void;

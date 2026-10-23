@@ -458,3 +458,43 @@ The workflow does not run `npm run test:e2e`. The current Playwright tests cover
 ### Audit decision
 
 The repository and latest CI run are in a better state, but **M1 is not accepted**. No deployment or merge to `main` was performed. The next action is to resolve source approval and the C05 decision, then complete the hosted-data/RLS and browser checks with evidence.
+
+---
+
+## M1-C07 shared public/authenticated discovery implementation — 2026-10-20
+
+**Status: Implemented in the current working tree; not accepted.**
+
+### Changes
+
+- `/` and `/jobs` now use the same `JobsDiscovery` entry point, state/controller, search and filter controls, feed/data hooks, pagination, selection, and authenticated workspace/results/detail components. The signed-in `/` redirect to `/jobs?welcome=1` remains.
+- Public-only discovery screen, feed/filter/detail hooks, result components, and stylesheet were removed after verifying no remaining source callers. `PublicAuthPrompt` remains and is used by the shared `ProtectedDiscoveryAction` adapter.
+- Save, dismiss/restore, and CV tailoring actions show the login prompt when signed out and execute the existing behavior when signed in. External job links remain available publicly. Application activity sync and persistence run only for signed-in users; server-side authorization was not changed.
+- The shared `Job`/`JobSource` domain types are the source of truth for result and detail data. Publication-date sorting is shared in `ui/shared/sort-job-discoveries.ts`.
+- Updated the home Playwright assertions to check the common discovery screen.
+
+### Verification observed on 2026-10-20
+
+- `npx tsc --noEmit`: passed.
+- ESLint on changed TypeScript files: 0 errors and 0 warnings on the final run.
+- Discovery unit test: did not start; Vitest worker loading failed because CommonJS `html-encoding-sniffer` requires the ESM-only `@exodus/bytes/encoding-lite.js`.
+- Home Playwright test: did not start; sandbox denied binding the configured web server to `0.0.0.0:3000` (`EPERM`).
+- `npm run build`: failed before application compilation completed because `next/font` could not fetch Inter from Google Fonts in the network-restricted environment.
+- Hosted Supabase, browser accessibility/responsive behavior, protected action flows, and cross-user isolation were not verified.
+
+### Remaining acceptance work
+
+- Run unit and browser checks in an environment where the test worker, web-server port, and Google Fonts request are available or locally provisioned.
+- Verify public feed/detail access, authenticated saved/dismissed state and activity, cross-user isolation, and combined filter/pagination behavior against controlled data.
+- Complete keyboard, responsive, and user review. Keep C07 and M1 in review until required evidence is recorded and the user accepts the result.
+
+## M1 Job Discovery UI redesign components — 2026-10-23
+
+**Status: Implemented in the current working tree; visual/browser acceptance remains open.**
+
+- Created and wired `JobDiscoverySearchFilters`, `JobOpportunityCard`, and `JobOpportunityDetailPanel` in `ui/shared/`. Existing search, location, category, button, card, and authenticated detail behavior stays composed through their current controls and handlers.
+- Migrated the shared search field, location selector, category chips, card shell, and detail panel shell to Tailwind CSS v4. Reused the existing `src/components/ui/button.tsx` control; no shadcn package or dependency was added.
+- Recorded the user-approved incremental MUI to Tailwind/shadcn direction in D-035 and aligned the architecture, naming, and agent guidance. MUI remains in supporting and not-yet-migrated discovery elements.
+- `npx tsc --noEmit`: passed. ESLint on changed TypeScript files: passed with no output.
+- No tests or browser checks were run. Responsive, keyboard, theme, and visual comparison with the attached references still need browser review. This does not change C07 or M1 acceptance status.
+- A repeated-component audit removed the unused authenticated search toolbar, category strip, duplicate detail heading, and shared results toolbar. Sorting now flows through `JobDiscoverySearchFilters`; current filters, search, result summary, and shared detail content each have one active implementation. Removed the unreferenced `JobMatchAvailability` duplicate trigger. `JobFilters` and `JobPagination` remain exported but have no runtime call sites; they are dormant utilities with distinct behavior, so were not included in this focused cleanup.

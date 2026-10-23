@@ -1,0 +1,41 @@
+/* Global document defaults. Keep component styling in component stylesheets. */
+@layer base {
+  html {
+    background: var(--th-page);
+    @apply font-sans;
+  }
+
+  body {
+    background: var(--th-page);
+    color: var(--th-fg);
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    @apply bg-background text-foreground;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--th-accent-text);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--th-accent-bg);
+    color: var(--th-fg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+}

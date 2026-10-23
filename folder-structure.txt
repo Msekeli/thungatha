@@ -19,9 +19,9 @@ NEXT.JS RULES THAT AFFECT THIS STRUCTURE
 
 UI STYLING AND FILE SIZE STANDARD
 
-- Prefer Material UI (MUI) components and their built-in styling before reaching for custom styling.
+- Prefer existing shared shadcn/ui and Base UI components before creating custom controls.
 - Use Tailwind CSS v4 utilities for layout and straightforward styling where appropriate.
-- Create standalone CSS files or custom CSS rules only when MUI and Tailwind cannot reasonably satisfy the requirement, or when a component needs scoped styles for a complex visual treatment.
+- Create standalone CSS files or custom CSS rules only when Tailwind cannot reasonably satisfy the requirement, or when a component needs scoped styles for a complex visual treatment.
 - Keep every handwritten source file at 100 physical lines or fewer, including components, CSS, tests, and configuration. Count blank lines and comments. Generated files, dependency lockfiles, and vendored code are excluded.
 - Warn at 80 lines. Before and after each meaningful code change, check line counts and report any changed file at or above 80 lines or over 100 lines.
 - Refactor by cohesive responsibility before exceeding 100 lines. Never compress code just to meet the limit or split it into meaningless fragments.

@@ -1,7 +1,5 @@
 import { SearchX } from "lucide-react";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -22,28 +20,22 @@ export function JobEmptyState({
   icon,
 }: Props) {
   return (
-    <Stack
-      spacing={1.5}
-      sx={{
-        alignItems: "center",
-        textAlign: "center",
-        ...(presentation === "card"
-          ? { border: 1, borderColor: "divider", borderRadius: 3, p: 4 }
-          : { py: 5, px: 2 }),
-      }}
+    <div
+      className={[
+        "flex flex-col items-center gap-3 text-center",
+        presentation === "card"
+          ? "rounded-3xl border border-line p-8"
+          : "px-4 py-12",
+      ].join(" ")}
     >
       {icon ?? <SearchX size={28} aria-hidden="true" />}
-      <Typography variant="h6" component="h3">
-        {title}
-      </Typography>
-      <Typography color="text.secondary" variant="body2">
-        {message}
-      </Typography>
+      <h3 className="text-base font-semibold text-fg">{title}</h3>
+      <p className="text-sm text-fg-muted">{message}</p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} variant="outlined">
+        <Button onClick={onAction} variant="outline">
           {actionLabel}
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

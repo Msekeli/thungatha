@@ -1,44 +1,24 @@
+/* Mobile navigation must never participate in the desktop workspace layout. */
 .th-mobile-workspace-header,
 .th-mobile-workspace-menu,
-.th-mobile-bottom-nav {
-  display: none;
+.th-mobile-bottom-nav--workspace,
+.th-mobile-bottom-nav--public {
+  display: none !important;
+}
+
+@media (max-width: 1199px) {
+  .th-public-discovery-promo-heading,
+  .th-public-discovery-promo-sidebar {
+    display: none !important;
+  }
 }
 
 @media (max-width: 700px) {
-  /* Mobile is a fixed-height app shell; only the content region scrolls. */
-  html:has(.th-workspace-shell),
-  body:has(.th-workspace-shell) {
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .th-workspace-shell {
-    display: flex !important;
-    flex-direction: column;
-    width: 100%;
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .th-workspace-sidebar {
-    display: none !important;
-  }
-  .th-workspace-content {
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-    height: calc(100dvh - 116px - env(safe-area-inset-bottom));
-    min-height: 0;
-    overflow-x: clip;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-  }
   .th-mobile-workspace-header {
     position: sticky;
     z-index: 100;
     top: 0;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     min-height: 58px;
@@ -76,83 +56,5 @@
     border-radius: 8px;
     background: var(--th-panel);
     color: var(--th-fg);
-  }
-  .th-mobile-workspace-menu {
-    position: fixed;
-    z-index: 150;
-    top: 64px;
-    right: 12px;
-    display: block;
-    width: min(280px, calc(100vw - 24px));
-    padding: 8px;
-    border: 1px solid var(--th-line);
-    border-radius: 12px;
-    background: var(--th-panel);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
-  }
-  .th-mobile-workspace-menu nav {
-    display: grid;
-    gap: 3px;
-  }
-  .th-mobile-workspace-menu nav a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 42px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    color: var(--th-fg-muted);
-    font-size: 13px;
-    text-decoration: none;
-  }
-  .th-mobile-workspace-menu nav a[data-active="true"] {
-    background: var(--th-nav-active-bg);
-    color: var(--th-nav-active-fg);
-  }
-  .th-mobile-workspace-account {
-    display: grid;
-    gap: 8px;
-    margin-top: 8px;
-    padding: 12px 10px 4px;
-    border-top: 1px solid var(--th-line);
-  }
-  .th-mobile-workspace-account-name {
-    color: var(--th-fg);
-    font-size: 12px;
-  }
-  .th-mobile-workspace-account .th-btn {
-    justify-content: flex-start;
-    min-height: 32px;
-  }
-  .th-mobile-bottom-nav {
-    position: fixed;
-    z-index: 90;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding: 6px max(8px, env(safe-area-inset-left))
-      calc(6px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--th-line);
-    background: var(--th-nav);
-  }
-  .th-mobile-bottom-nav a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    min-width: 0;
-    min-height: 48px;
-    border-radius: 8px;
-    color: var(--th-nav-text, var(--th-fg-muted));
-    font-size: 10px;
-    text-decoration: none;
-  }
-  .th-mobile-bottom-nav a[data-active="true"] {
-    background: var(--th-nav-active-bg);
-    color: var(--th-nav-active-fg);
-    font-weight: 600;
   }
 }

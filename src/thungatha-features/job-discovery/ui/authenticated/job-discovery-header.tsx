@@ -1,66 +1,28 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { AuthenticatedJobSearchToolbar } from "./job-search-toolbar";
-import { JobCategoryStrip } from "./job-category-strip";
-import type { Filters } from "../job-discovery-utils";
+"use client";
 
-type Category = { key: string; label: string; count: number | null };
+import { JobDiscoverySearchFilters } from "../shared/job-discovery-search-filters";
+import type { Filters } from "../job-discovery-utils";
+import type { FormEvent } from "react";
 
 export function JobDiscoveryHeader({
   draft,
-  filtersOpen,
-  categories,
-  category,
-  sortOrder,
   onQueryChange,
-  onLocationChange,
   onSubmit,
   onToggleFilters,
-  onSortChange,
-  onCategoryChange,
 }: {
   draft: Filters;
-  filtersOpen: boolean;
-  categories: Category[];
-  category: string;
-  sortOrder: string;
   onQueryChange: (value: string) => void;
-  onLocationChange: (value: string) => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  onToggleFilters: () => void;
-  onSortChange: (value: string) => void;
-  onCategoryChange: (key: string, label: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onToggleFilters: (anchorEl: HTMLElement) => void;
 }) {
   return (
-    <Box
-      component="header"
-      sx={{ px: { xs: 1.5, md: 2.5 }, pt: { xs: 1.25, md: 1.75 } }}
-    >
-      <Typography
-        component="h1"
-        variant="h5"
-        sx={{ fontWeight: 750, mb: 1.25 }}
-      >
-        Job discovery
-      </Typography>
-      <AuthenticatedJobSearchToolbar
+    <div className="w-full">
+      <JobDiscoverySearchFilters
         query={draft.query}
-        location={draft.location}
-        filtersOpen={filtersOpen}
         onQueryChange={onQueryChange}
-        onLocationChange={onLocationChange}
+        onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}
-        onToggleFilters={onToggleFilters}
       />
-      <Box sx={{ pt: 1.25, pb: 0.5 }}>
-        <JobCategoryStrip
-          categories={categories}
-          category={category}
-          sortOrder={sortOrder}
-          onSortChange={onSortChange}
-          onCategoryChange={onCategoryChange}
-        />
-      </Box>
-    </Box>
+    </div>
   );
 }

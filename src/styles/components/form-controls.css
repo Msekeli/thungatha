@@ -1,0 +1,21 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  /* Text inputs, shared with Clerk's form fields */
+  .th-input {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: var(--th-radius-control);
+    border: 1px solid color-mix(in srgb, var(--th-fg) 22%, var(--th-line));
+    background: var(--th-detail);
+    color: var(--th-fg);
+    font-size: 13px;
+  }
+  .th-input::placeholder {
+    color: var(--th-fg-muted);
+  }
+  .th-input:focus {
+    outline: none;
+    border-color: var(--th-accent-text);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--th-accent) 28%, transparent);
+  }
+}

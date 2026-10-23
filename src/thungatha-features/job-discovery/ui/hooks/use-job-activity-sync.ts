@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getApiError, type JobActivity } from "../job-discovery-utils";
 
 export function useJobActivitySync(
+  isSignedIn: boolean,
   selectedId: string | null,
   setJobActivity: (
     value: { jobId: string; activity: JobActivity } | null,
@@ -12,8 +13,9 @@ export function useJobActivitySync(
   setForceAppliedPrompt: (value: boolean) => void,
   setDismissedPromptForJobId: (value: string | null) => void,
 ) {
+  const wasHidden = useRef(false);
   useEffect(() => {
-    if (!selectedId) return;
+    if (!isSignedIn || !selectedId) return;
     const jobId = selectedId;
     let controller: AbortController | null = null;
     const loadActivity = () => {
@@ -44,19 +46,26 @@ export function useJobActivitySync(
       loadActivity();
     };
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") handleReturnToPage();
+      if (document.visibilityState === "hidden") {
+        wasHidden.current = true;
+      } else if (wasHidden.current) {
+        wasHidden.current = false;
+        handleReturnToPage();
+      }
+    };
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) handleReturnToPage();
     };
     loadActivity();
-    window.addEventListener("focus", handleReturnToPage);
-    window.addEventListener("pageshow", handleReturnToPage);
+    window.addEventListener("pageshow", handlePageShow);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       controller?.abort();
-      window.removeEventListener("focus", handleReturnToPage);
-      window.removeEventListener("pageshow", handleReturnToPage);
+      window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [
+    isSignedIn,
     selectedId,
     setJobActivity,
     setActivityError,

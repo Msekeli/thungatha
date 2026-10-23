@@ -15,7 +15,7 @@ These capabilities are delivered incrementally through the project's milestone p
 ## Technology Stack
 
 - **Frontend:** Next.js App Router, React, TypeScript
-- **UI:** Material UI (MUI) and Tailwind CSS v4
+- **UI:** Tailwind CSS v4, shadcn/ui patterns, and Base UI primitives
 - **Authentication:** Clerk
 - **Database:** Supabase PostgreSQL with version-controlled SQL migrations
 - **Validation:** Zod

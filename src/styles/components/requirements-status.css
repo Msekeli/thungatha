@@ -1,0 +1,82 @@
+/* Extracted from the shared component stylesheet; keep rules in the components layer. */
+@layer components {
+  /* Requirement assessment tag (match detail) */
+  .th-req {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: var(--th-radius-tag);
+    font-size: 11px;
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-req[data-state="met"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+  }
+  .th-req[data-state="partial"] {
+    background: var(--th-warn-bg);
+    color: var(--th-warn);
+  }
+  .th-req[data-state="unknown"] {
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-req[data-state="missing"] {
+    background: transparent;
+    color: var(--th-fg);
+    border: 1px solid var(--th-line);
+  }
+
+  /* Application status pill */
+  .th-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: var(--th-radius-tag);
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--th-tag-bg);
+    color: var(--th-fg-muted);
+  }
+  .th-status[data-status="interviewing"] {
+    background: var(--th-accent-bg);
+    color: var(--th-accent-text);
+  }
+  .th-status[data-status="offer"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+  }
+  .th-status[data-status="rejected"] {
+    background: var(--th-warn-bg);
+    color: var(--th-warn);
+  }
+
+  /* ---- Added for the landing and auth pages ---- */
+
+  /* Requirement states from the module definitions */
+  .th-req[data-state="confirmed"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+  }
+  .th-req[data-state="inferred"] {
+    background: var(--th-accent-bg);
+    color: var(--th-accent-text);
+  }
+  .th-req[data-state="unverifiable"] {
+    background: transparent;
+    color: var(--th-fg-muted);
+    border: 1px dashed var(--th-fg-muted);
+  }
+
+  /* Application statuses beyond the first set */
+  .th-status[data-status="contact"],
+  .th-status[data-status="interview"] {
+    background: var(--th-accent-bg);
+    color: var(--th-accent-text);
+  }
+  .th-status[data-status="accepted"] {
+    background: var(--th-success-bg);
+    color: var(--th-success);
+  }
+}

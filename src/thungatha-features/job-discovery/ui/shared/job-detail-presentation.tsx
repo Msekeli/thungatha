@@ -1,13 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BriefcaseBusiness } from "lucide-react";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { JobDetailMeta } from "./job-detail-meta";
 import { JobDetailDescription } from "./job-detail-description";
 import { JobDetailHeading } from "./job-detail-heading";
 import { JobSalary } from "./job-salary";
+export { JobDetailEmptyState } from "./job-detail-empty-state";
 
 export type JobDetailPresentationData = {
   id: string;
@@ -23,6 +21,16 @@ export type JobDetailPresentationData = {
   updated_at: string | null;
 };
 
+type Props = {
+  job: JobDetailPresentationData;
+  postedAt: string | null;
+  formatDate: (value: string | null | undefined) => string | null;
+  actions?: ReactNode;
+  headingAction?: ReactNode;
+  beforeContent?: ReactNode;
+  afterDescription?: ReactNode;
+};
+
 export function JobDetailPresentation({
   job,
   postedAt,
@@ -31,21 +39,11 @@ export function JobDetailPresentation({
   headingAction,
   beforeContent,
   afterDescription,
-}: {
-  job: JobDetailPresentationData;
-  postedAt: string | null;
-  formatDate: (value: string | null | undefined) => string | null;
-  actions?: ReactNode;
-  headingAction?: ReactNode;
-  beforeContent?: ReactNode;
-  afterDescription?: ReactNode;
-}) {
+}: Props) {
   return (
-    <Stack
-      className="th-jobs-detail-content"
+    <div
+      className="th-jobs-detail-content flex min-h-0 min-w-0 flex-1 flex-col gap-3"
       key={job.id}
-      spacing={1.5}
-      sx={{ minWidth: 0 }}
     >
       {beforeContent}
       <JobDetailHeading
@@ -71,33 +69,6 @@ export function JobDetailPresentation({
       {actions}
       <JobDetailDescription description={job.description} />
       {afterDescription}
-    </Stack>
-  );
-}
-
-export function JobDetailEmptyState({ children }: { children?: ReactNode }) {
-  return (
-    <Stack
-      spacing={1.5}
-      sx={{
-        alignItems: "center",
-        gap: 1.25,
-        p: "30px 4px",
-        color: "text.secondary",
-        fontSize: 12,
-        "& > svg": { color: "primary.main", fontSize: 24 },
-        "& strong": { color: "text.primary", fontSize: 13, fontWeight: 600 },
-        "& p": { m: 0, lineHeight: 1.6 },
-      }}
-    >
-      <BriefcaseBusiness size={24} aria-hidden="true" />
-      <Typography variant="h6" component="strong">
-        Select an opportunity
-      </Typography>
-      <Typography color="text.secondary" variant="body2">
-        Choose a listing to view its description and application destination.
-      </Typography>
-      {children}
-    </Stack>
+    </div>
   );
 }

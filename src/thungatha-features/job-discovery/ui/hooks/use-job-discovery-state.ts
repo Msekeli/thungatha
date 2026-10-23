@@ -7,10 +7,15 @@ import {
   type JobActivity,
 } from "../job-discovery-utils";
 
-export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
+export function useJobDiscoveryState(
+  showProfileSetupPrompt: boolean,
+  isSignedIn: boolean,
+) {
   const [profileSetupPrompt, setProfileSetupPrompt] = useState(
     showProfileSetupPrompt,
   );
+  const [profileSetupAnchorEl, setProfileSetupAnchorEl] =
+    useState<HTMLElement | null>(null);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -26,6 +31,7 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
   const [mobileDetail, setMobileDetail] = useState(false);
   const [category, setCategory] = useState("new");
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [userSignedIn, setUserSignedIn] = useState(isSignedIn);
   const [stateBusy, setStateBusy] = useState(false);
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
@@ -45,13 +51,21 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     string | null
   >(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(
+    null,
+  );
   const [matchOpen, setMatchOpen] = useState(false);
+  const [matchAnchorEl, setMatchAnchorEl] = useState<HTMLElement | null>(null);
+  const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] =
+    useState<HTMLElement | null>(null);
   const [sortOrder, setSortOrder] = useState("newest");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   return {
     profileSetupPrompt,
     setProfileSetupPrompt,
+    profileSetupAnchorEl,
+    setProfileSetupAnchorEl,
     draft,
     setDraft,
     filters,
@@ -82,6 +96,8 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     setCategory,
     isAuthenticated,
     setIsAuthenticated,
+    userSignedIn,
+    setUserSignedIn,
     stateBusy,
     setStateBusy,
     stateError,
@@ -100,8 +116,14 @@ export function useJobDiscoveryState(showProfileSetupPrompt: boolean) {
     setDismissedPromptForJobId,
     filtersOpen,
     setFiltersOpen,
+    filterAnchorEl,
+    setFilterAnchorEl,
     matchOpen,
     setMatchOpen,
+    matchAnchorEl,
+    setMatchAnchorEl,
+    applicationPromptAnchorEl,
+    setApplicationPromptAnchorEl,
     sortOrder,
     setSortOrder,
     loadMoreRef,

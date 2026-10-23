@@ -1,0 +1,45 @@
+.th-workspace-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+.th-workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 76px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--th-line);
+  background: var(--th-page);
+}
+.th-workspace-heading {
+  min-width: 0;
+}
+.th-workspace-heading h1 {
+  margin: 0;
+  color: var(--th-fg);
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.th-workspace-heading p {
+  margin: 3px 0 0;
+  color: var(--th-fg-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.th-workspace-theme-toggle {
+  flex: 0 0 auto;
+}
+.th-workspace-page-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 20px 24px;
+}

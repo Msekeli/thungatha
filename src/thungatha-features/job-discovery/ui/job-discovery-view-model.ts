@@ -1,11 +1,13 @@
 import {
   safeExternalUrl,
   sourceFor,
+  EMPTY_FILTERS,
   type Feed,
   type Filters,
   type Job,
   type JobActivity,
 } from "./job-discovery-utils";
+import { sortJobDiscoveries } from "./shared/sort-job-discoveries";
 
 export function buildJobDiscoveryViewModel(input: {
   detail: Job | null;
@@ -25,14 +27,9 @@ export function buildJobDiscoveryViewModel(input: {
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const applicationUrl = safeExternalUrl(selectedSource?.application_url);
   const jobSourceUrl = safeExternalUrl(selectedSource?.source_url);
-  const visibleJobs = [...(feed?.jobs ?? [])].sort((a, b) => {
-    const date = (job: Job) =>
-      new Date(sourceFor(job)?.published_at ?? job.updated_at ?? 0).getTime() ||
-      0;
-    return sortOrder === "oldest" ? date(a) - date(b) : date(b) - date(a);
-  });
-  const hasFilters = Object.entries(filters).some(([key, value]) =>
-    key === "publishedWithin" ? value !== "30d" : Boolean(value),
+  const visibleJobs = sortJobDiscoveries(feed?.jobs ?? [], sortOrder, filters.query);
+  const hasFilters = Object.entries(filters).some(
+    ([key, value]) => value !== EMPTY_FILTERS[key as keyof Filters],
   );
   return {
     selectedDetail,

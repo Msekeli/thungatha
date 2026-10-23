@@ -11,6 +11,7 @@ type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
 export function useJobDiscoveryData(state: DiscoveryState) {
   const s = state;
+  const { undoAction, setUndoAction } = state;
   useJobFeed(
     s.page,
     s.category,
@@ -31,6 +32,7 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.setDetailError,
   );
   useJobActivitySync(
+    s.userSignedIn,
     s.selectedId,
     s.setJobActivity,
     s.setActivityError,
@@ -57,9 +59,9 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.setStateMessage,
   );
   useEffect(() => {
-    if (!s.undoAction) return;
-    const timeoutId = window.setTimeout(() => s.setUndoAction(null), 10_000);
+    if (!undoAction) return;
+    const timeoutId = window.setTimeout(() => setUndoAction(null), 10_000);
     return () => window.clearTimeout(timeoutId);
-  }, [s.undoAction, s.setUndoAction]);
+  }, [undoAction, setUndoAction]);
   return { updateJobState, undoLastStateChange };
 }

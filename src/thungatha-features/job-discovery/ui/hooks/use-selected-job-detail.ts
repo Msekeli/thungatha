@@ -1,7 +1,6 @@
-"use client";
-
 import { useCallback, useEffect } from "react";
-import { getApiError, type Job } from "../job-discovery-utils";
+import type { Job } from "../job-discovery-utils";
+import { JobDetailRequestError, requestJobDetail } from "../request-job-detail";
 
 export function useSelectedJobDetail(
   selectedId: string | null,
@@ -16,27 +15,14 @@ export function useSelectedJobDetail(
       setDetailError(null);
       setDetail(null);
       try {
-        const response = await fetch(`/api/jobs/${encodeURIComponent(id)}`, {
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-          signal,
-        });
-        if (!response.ok) {
-          setDetailError(await getApiError(response));
-          return;
-        }
-        const data = (await response.json()) as { job: Job };
-        if (!data.job?.id) {
-          setDetailError(
-            "The job details service returned an unexpected response. Please retry.",
-          );
-          return;
-        }
-        setDetail(data.job);
+        const detail = await requestJobDetail<Job>(id, signal);
+        setDetail(detail);
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
         setDetailError(
-          "Could not load this job's details. Check your connection and retry.",
+          reason instanceof JobDetailRequestError
+            ? reason.message
+            : "Could not load this job's details. Check your connection and retry.",
         );
       } finally {
         if (!signal.aborted) setDetailLoading(false);
