@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Box from "@mui/material/Box";
 import { JobDiscoveryDialogs } from "../authenticated/job-discovery-dialogs";
 import { JobDiscoveryControls } from "../authenticated/job-discovery-controls";
 import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
@@ -55,12 +54,7 @@ export function JobDiscoveryScreen({
           onDismissError={() => s.setStateError(null)}
         />
       </div>
-      <Box
-        sx={{
-          flex: workspaceLeadingColumn ? "1 1 auto" : undefined,
-          minHeight: 0,
-        }}
-      >
+      <div className={workspaceLeadingColumn ? "min-h-0 flex-1" : "min-h-0"}>
         <JobDiscoveryWorkspace
           jobs={c.visibleJobs}
           feed={s.feed}
@@ -96,7 +90,7 @@ export function JobDiscoveryScreen({
           onSortChange={s.setSortOrder}
           leadingColumn={workspaceLeadingColumn}
         />
-      </Box>
+      </div>
       <JobDiscoveryDialogs
         filtersOpen={s.filtersOpen}
         filterAnchorEl={s.filterAnchorEl}
