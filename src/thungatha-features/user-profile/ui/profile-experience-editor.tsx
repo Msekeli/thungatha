@@ -18,21 +18,11 @@ export function ProfileExperienceEditor({
   const [employer, setEmployer] = useState("");
 
   const handleAdd = () => {
-    if (!title.trim() || !employer.trim()) return;
-    const startDate = window.prompt("Start date (e.g. Jan 2022)", "");
-    if (startDate === null || !startDate.trim()) return;
-    const location = window.prompt("Location (optional)", "");
-    if (location === null) return;
-    const isCurrent = window.confirm("Is this your current role?");
-    const endDate = isCurrent ? null : window.prompt("End date (e.g. Mar 2024)", "");
-    if (endDate === null && !isCurrent) return;
-    const description = window.prompt("Responsibilities and achievements (optional)", "");
-    if (description === null) return;
-    onChange([...items, {
-      id: `exp-${Date.now()}`, jobTitle: title.trim(), employer: employer.trim(),
-      location: location || null, startDate: startDate.trim(), endDate: endDate || null,
-      isCurrent, description: description || null,
-    }]);
+    if (!title || !employer) return;
+    onChange([
+      ...items,
+      { id: `exp-${Date.now()}`, jobTitle: title, employer, startDate: "Present", isCurrent: true },
+    ]);
     setTitle(""); setEmployer(""); setAdding(false);
   };
 
@@ -50,18 +40,13 @@ export function ProfileExperienceEditor({
               <p className="font-medium text-fg">{item.jobTitle} · {item.employer}</p>
               <p className="text-[11px] text-fg-muted">{item.startDate} – {item.endDate || "Present"}</p>
             </div>
-            <div className="flex gap-3">
-              <button type="button" onClick={() => {
-                const jobTitle = window.prompt("Job title", item.jobTitle); if (jobTitle === null) return;
-                const employer = window.prompt("Employer", item.employer); if (employer === null) return;
-                const location = window.prompt("Location (optional)", item.location || ""); if (location === null) return;
-                const startDate = window.prompt("Start date", item.startDate); if (startDate === null) return;
-                const endDate = item.isCurrent ? null : window.prompt("End date (optional)", item.endDate || ""); if (endDate === null && !item.isCurrent) return;
-                const description = window.prompt("Responsibilities and achievements (optional)", item.description || ""); if (description === null) return;
-                onChange(items.map((entry) => entry.id === item.id ? { ...entry, jobTitle, employer, location: location || null, startDate, endDate: endDate || null, description: description || null } : entry));
-              }} className="text-xs text-accent hover:underline">Edit</button>
-              <button type="button" onClick={() => onChange(items.filter((i) => i.id !== item.id))} className="text-xs text-warn hover:underline">Remove</button>
-            </div>
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((i) => i.id !== item.id))}
+              className="text-xs text-warn hover:underline"
+            >
+              Remove
+            </button>
           </div>
         ))}
       </div>
