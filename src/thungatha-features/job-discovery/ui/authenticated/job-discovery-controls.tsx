@@ -2,7 +2,10 @@
 
 import type { FormEvent } from "react";
 import { JobDiscoveryHeader } from "./job-discovery-header";
-import { JobDiscoveryFeedback, type JobUndoAction } from "./job-discovery-feedback";
+import {
+  JobDiscoveryFeedback,
+  type JobUndoAction,
+} from "./job-discovery-feedback";
 import type { Filters } from "../job-discovery-utils";
 
 type Props = {

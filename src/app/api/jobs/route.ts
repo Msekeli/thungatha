@@ -176,7 +176,10 @@ export async function GET(request: Request) {
         .select(
           "id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)",
         )
-        .in("id", feedRows.map((job) => job.id))
+        .in(
+          "id",
+          feedRows.map((job) => job.id),
+        )
         .eq("job_sources.availability_status", "active")
         .order("published_at", {
           referencedTable: "job_sources",

@@ -1,16 +1,18 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
-import { cva, type VariantProps } from "class-variance-authority"
-import Link from "next/link"
-import type { ComponentProps } from "react"
-import { cn } from "@/lib/utils"
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
+import { cva, type VariantProps } from "class-variance-authority";
+import Link from "next/link";
+import type { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
-        primary: "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
+        default:
+          "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
+        primary:
+          "border-transparent bg-[var(--th-btn)] text-[var(--th-btn-fg)] shadow-[var(--th-glow)] hover:brightness-110",
         outline:
           "border-[var(--th-btn)] bg-[var(--th-panel)] text-[var(--th-fg)] shadow-sm hover:bg-[var(--th-panel-2)] hover:shadow-[var(--th-glow)]",
         secondary:
@@ -42,8 +44,8 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
-)
+  },
+);
 
 function Button({
   className,
@@ -57,11 +59,11 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
 type ButtonLinkProps = ComponentProps<typeof Link> &
-  VariantProps<typeof buttonVariants>
+  VariantProps<typeof buttonVariants>;
 
 function ButtonLink({
   className,
@@ -75,7 +77,7 @@ function ButtonLink({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
-export { Button, ButtonLink, buttonVariants }
+export { Button, ButtonLink, buttonVariants };

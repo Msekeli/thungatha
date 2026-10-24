@@ -24,7 +24,11 @@ export function JobDiscoverySearchToolbar({
         draft={s.draft}
         filtersOpen={s.filtersOpen}
         categories={c.categories}
-        category={s.category === "dismissed" || s.category === "saved" ? s.category : s.filters.employmentType || "all"}
+        category={
+          s.category === "dismissed" || s.category === "saved"
+            ? s.category
+            : s.filters.employmentType || "all"
+        }
         resultCount={s.feed?.total ?? 0}
         sortOrder={s.sortOrder}
         onSortOrderChange={s.setSortOrder}

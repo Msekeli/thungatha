@@ -20,7 +20,11 @@ export function ProtectedDiscoveryAction({
   onAction,
 }: Props) {
   const prompt = (
-    <PublicAuthPrompt configured={configured} title={title} description={description}>
+    <PublicAuthPrompt
+      configured={configured}
+      title={title}
+      description={description}
+    >
       <span onClick={(event) => event.preventDefault()}>{children}</span>
     </PublicAuthPrompt>
   );

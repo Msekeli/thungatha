@@ -5,7 +5,8 @@ type JobWithPublicationDate = {
   updated_at: string | null;
   salary_min?: number | null;
   salary_max?: number | null;
-  job_sources: { published_at: string | null }[] | { published_at: string | null } | null;
+  job_sources:
+    { published_at: string | null }[] | { published_at: string | null } | null;
 };
 
 export function jobPublicationDate(job: JobWithPublicationDate): string | null {
@@ -47,7 +48,8 @@ export function sortJobDiscoveries<T extends JobWithPublicationDate>(
     }
 
     if (order === "relevance" && query.trim()) {
-      const relevanceDifference = relevanceScore(b, query) - relevanceScore(a, query);
+      const relevanceDifference =
+        relevanceScore(b, query) - relevanceScore(a, query);
       if (relevanceDifference !== 0) return relevanceDifference;
     }
 

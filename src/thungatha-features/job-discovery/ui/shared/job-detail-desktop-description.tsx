@@ -35,7 +35,9 @@ export function JobDetailDesktopDescription({
       <JobDetailTabs
         tabs={[
           {
-            label: descriptionIsPreview ? "Description preview" : "Job description",
+            label: descriptionIsPreview
+              ? "Description preview"
+              : "Job description",
             value: "description",
           },
           { label: "Requirements", value: "requirements" },

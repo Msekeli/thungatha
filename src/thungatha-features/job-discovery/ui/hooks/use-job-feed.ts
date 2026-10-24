@@ -49,11 +49,13 @@ export function useJobFeed(
             void requestJobFeed(
               buildJobFeedParams(1, "dismissed", filters),
               signal,
-            ).then((dismissedFeed) => {
-              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
-            }).catch(() => {
-              // Keep the last known count if the separate count request fails.
-            });
+            )
+              .then((dismissedFeed) => {
+                if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+              })
+              .catch(() => {
+                // Keep the last known count if the separate count request fails.
+              });
             return;
           }
         }
@@ -81,11 +83,13 @@ export function useJobFeed(
           void requestJobFeed(
             buildJobFeedParams(1, "dismissed", filters),
             signal,
-          ).then((dismissedFeed) => {
-            if (!signal.aborted) setDismissedCount(dismissedFeed.total);
-          }).catch(() => {
-            // Count refresh is independent; it must not fail the main feed.
-          });
+          )
+            .then((dismissedFeed) => {
+              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+            })
+            .catch(() => {
+              // Count refresh is independent; it must not fail the main feed.
+            });
         }
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;

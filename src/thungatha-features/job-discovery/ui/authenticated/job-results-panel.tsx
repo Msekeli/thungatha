@@ -12,12 +12,32 @@ const sortOptions = [
 ];
 
 export function AuthenticatedJobResultsPanel({
-  jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
-  loadMoreRef, sourceFor, formatDate, onRetry, onSelect, onSave, onDismiss,
-  configured, resultCount, category, dismissedCount, isAuthenticated,
-  sortOrder, onSortOrderChange, onCategoryChange,
+  jobs,
+  feed,
+  loading,
+  error,
+  hasFilters,
+  mobileDetail,
+  selectedId,
+  loadMoreRef,
+  sourceFor,
+  formatDate,
+  onRetry,
+  onSelect,
+  onSave,
+  onDismiss,
+  configured,
+  resultCount,
+  category,
+  dismissedCount,
+  isAuthenticated,
+  sortOrder,
+  onSortOrderChange,
+  onCategoryChange,
 }: JobResultsPanelProps) {
-  const selectedSortLabel = sortOptions.find((option) => option.value === sortOrder)?.label ?? "Most relevant";
+  const selectedSortLabel =
+    sortOptions.find((option) => option.value === sortOrder)?.label ??
+    "Most relevant";
 
   return (
     <section
@@ -27,8 +47,14 @@ export function AuthenticatedJobResultsPanel({
     >
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3 max-[700px]:flex-nowrap max-[700px]:gap-2 max-[700px]:pb-2">
         <div className="flex min-w-0 items-center gap-3 text-sm text-[var(--th-fg-muted)] max-[700px]:flex-1 max-[700px]:gap-2 max-[700px]:whitespace-nowrap">
-          <span aria-live="polite" className="max-[700px]:hidden">{resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}</span>
-          <span aria-live="polite" className="hidden max-[700px]:inline">{resultCount} jobs</span>
+          <span aria-live="polite" className="max-[700px]:hidden">
+            {resultCount > 0
+              ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities`
+              : "0 opportunities"}
+          </span>
+          <span aria-live="polite" className="hidden max-[700px]:inline">
+            {resultCount} jobs
+          </span>
           {isAuthenticated && category === "dismissed" ? (
             <button
               type="button"
@@ -49,7 +75,11 @@ export function AuthenticatedJobResultsPanel({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2 max-[700px]:gap-1">
-          <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden" aria-hidden="true" />
+          <ArrowDownWideNarrow
+            size={16}
+            className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden"
+            aria-hidden="true"
+          />
           <Select.Root value={sortOrder} onValueChange={onSortOrderChange}>
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
@@ -61,13 +91,23 @@ export function AuthenticatedJobResultsPanel({
               </Select.Icon>
             </Select.Trigger>
             <Select.Portal>
-              <Select.Positioner className="z-50 outline-none" sideOffset={6} align="end">
+              <Select.Positioner
+                className="z-50 outline-none"
+                sideOffset={6}
+                align="end"
+              >
                 <Select.Popup className="min-w-52 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-1 text-sm text-[var(--th-fg)] shadow-lg outline-none">
                   <Select.List>
                     {sortOptions.map((option) => (
-                      <Select.Item key={option.value} value={option.value} className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50">
+                      <Select.Item
+                        key={option.value}
+                        value={option.value}
+                        className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50"
+                      >
                         <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator><Check size={14} aria-hidden="true" /></Select.ItemIndicator>
+                        <Select.ItemIndicator>
+                          <Check size={14} aria-hidden="true" />
+                        </Select.ItemIndicator>
                       </Select.Item>
                     ))}
                   </Select.List>
@@ -78,8 +118,29 @@ export function AuthenticatedJobResultsPanel({
         </div>
       </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
-        <JobResultsState loading={loading} hasFeed={Boolean(feed)} error={error} hasJobs={jobs.length > 0} hasFilters={hasFilters} onRetry={onRetry} />
-        {jobs.length > 0 && <JobResultsList jobs={jobs} selectedId={selectedId} loading={loading} feed={feed} loadMoreRef={loadMoreRef} sourceFor={sourceFor} formatDate={formatDate} onSelect={onSelect} onSave={onSave} onDismiss={onDismiss} configured={configured} />}
+        <JobResultsState
+          loading={loading}
+          hasFeed={Boolean(feed)}
+          error={error}
+          hasJobs={jobs.length > 0}
+          hasFilters={hasFilters}
+          onRetry={onRetry}
+        />
+        {jobs.length > 0 && (
+          <JobResultsList
+            jobs={jobs}
+            selectedId={selectedId}
+            loading={loading}
+            feed={feed}
+            loadMoreRef={loadMoreRef}
+            sourceFor={sourceFor}
+            formatDate={formatDate}
+            onSelect={onSelect}
+            onSave={onSave}
+            onDismiss={onDismiss}
+            configured={configured}
+          />
+        )}
       </div>
     </section>
   );
