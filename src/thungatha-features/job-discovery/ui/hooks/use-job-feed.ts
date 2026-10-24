@@ -15,6 +15,7 @@ export function useJobFeed(
   page: number,
   category: string,
   filters: Filters,
+  sortOrder: string,
   retryFeed: number,
   setFeed: Dispatch<SetStateAction<Feed | null>>,
   setDismissedCount: Dispatch<SetStateAction<number>>,
@@ -24,8 +25,8 @@ export function useJobFeed(
   setSelectedId: Dispatch<SetStateAction<string | null>>,
 ) {
   const params = useMemo(
-    () => buildJobFeedParams(page, category, filters),
-    [page, category, filters],
+    () => buildJobFeedParams(page, category, filters, sortOrder),
+    [page, category, filters, sortOrder],
   );
   const refreshFeed = useCallback(
     async (signal: AbortSignal) => {
@@ -102,6 +103,7 @@ export function useJobFeed(
       page,
       category,
       filters,
+      sortOrder,
       setLoading,
       setError,
       setFeed,
