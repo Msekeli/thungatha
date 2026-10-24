@@ -57,6 +57,19 @@
 - Existing files over 100 lines are known technical debt, not automatically fixed by a documentation change. Record them and refactor incrementally with targeted tests and visual verification.
 - Add an automated line-count check with an 80-line warning and a 100-line failure to local/CI checks in a separate implementation step. Until that checker exists and is verified, agents must perform and report manual counts.
 
+## Component Discovery and Reuse Rules
+
+Before creating any UI component, inspect the existing component inventory in this order:
+
+1. **Current feature:** Search the feature being implemented for a suitable component. Reuse or extend it when its responsibility and behaviour fit.
+2. **Global/shared level:** If the feature has no suitable component, inspect the global/shared component library and reuse a suitable component there.
+3. **Create only if missing:** Create a component only when neither the current feature nor the global/shared level contains a suitable component. Put it at the correct ownership level: feature-specific components stay in their feature; genuinely cross-feature components belong in the global/shared library.
+4. **Respect feature boundaries:** Do not import or depend directly on another feature's private components. If multiple features need the same capability, assess whether a generic shared component is justified instead of coupling features or duplicating shared behaviour.
+5. **Suitability matters:** Do not force-fit an existing component that does not meet the requirement. State why it is unsuitable or missing before creating a replacement.
+6. **Avoid duplication:** Before introducing a new component, record which feature-level and shared-level locations were checked and why reuse was not appropriate. Keep the audit lightweight and proportional to the change.
+
+This rule is about component ownership and discovery, not a requirement to share every component. Prefer the smallest correct reuse; do not create abstractions merely because two components look similar.
+
 ## UI Styling Rules
 
 - Use Tailwind CSS v4 and shadcn/ui patterns for interface components. Reuse existing shared controls where suitable.
