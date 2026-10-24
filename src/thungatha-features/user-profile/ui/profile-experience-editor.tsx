@@ -40,13 +40,18 @@ export function ProfileExperienceEditor({
               <p className="font-medium text-fg">{item.jobTitle} · {item.employer}</p>
               <p className="text-[11px] text-fg-muted">{item.startDate} – {item.endDate || "Present"}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((i) => i.id !== item.id))}
-              className="text-xs text-warn hover:underline"
-            >
-              Remove
-            </button>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => {
+                const jobTitle = window.prompt("Job title", item.jobTitle); if (jobTitle === null) return;
+                const employer = window.prompt("Employer", item.employer); if (employer === null) return;
+                const location = window.prompt("Location (optional)", item.location || ""); if (location === null) return;
+                const startDate = window.prompt("Start date", item.startDate); if (startDate === null) return;
+                const endDate = item.isCurrent ? null : window.prompt("End date (optional)", item.endDate || ""); if (endDate === null && !item.isCurrent) return;
+                const description = window.prompt("Responsibilities and achievements (optional)", item.description || ""); if (description === null) return;
+                onChange(items.map((entry) => entry.id === item.id ? { ...entry, jobTitle, employer, location: location || null, startDate, endDate: endDate || null, description: description || null } : entry));
+              }} className="text-xs text-accent hover:underline">Edit</button>
+              <button type="button" onClick={() => onChange(items.filter((i) => i.id !== item.id))} className="text-xs text-warn hover:underline">Remove</button>
+            </div>
           </div>
         ))}
       </div>
