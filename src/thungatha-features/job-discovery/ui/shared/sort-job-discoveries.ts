@@ -8,11 +8,11 @@ type JobWithPublicationDate = {
   job_sources: { published_at: string | null }[] | { published_at: string | null } | null;
 };
 
-export function jobPublicationDate(job: JobWithPublicationDate) {
+export function jobPublicationDate(job: JobWithPublicationDate): string | null {
   const source = Array.isArray(job.job_sources)
     ? job.job_sources[0]
     : job.job_sources;
-  return source?.published_at ?? job.updated_at ?? 0;
+  return source?.published_at ?? null;
 }
 
 function relevanceScore(job: JobWithPublicationDate, query: string) {
@@ -51,9 +51,16 @@ export function sortJobDiscoveries<T extends JobWithPublicationDate>(
       if (relevanceDifference !== 0) return relevanceDifference;
     }
 
-    const difference =
-      new Date(jobPublicationDate(a)).getTime() -
-      new Date(jobPublicationDate(b)).getTime();
+    const aPublishedAt = jobPublicationDate(a);
+    const bPublishedAt = jobPublicationDate(b);
+    if (aPublishedAt === null && bPublishedAt !== null) return 1;
+    if (aPublishedAt !== null && bPublishedAt === null) return -1;
+    if (aPublishedAt === null || bPublishedAt === null) return 0;
+
+    const aTime = new Date(aPublishedAt).getTime();
+    const bTime = new Date(bPublishedAt).getTime();
+    if (Number.isNaN(aTime) || Number.isNaN(bTime)) return 0;
+    const difference = aTime - bTime;
     return order === "oldest" ? difference : -difference;
   });
 }
