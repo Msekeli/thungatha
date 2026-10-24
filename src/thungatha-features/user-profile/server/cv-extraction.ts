@@ -1,4 +1,5 @@
 import "server-only";
+import "pdf-parse/worker";
 import { PDFParse } from "pdf-parse";
 import * as mammoth from "mammoth";
 export type CvExtraction = {
@@ -85,7 +86,7 @@ export async function extractCv(
   let text = "";
   try {
     if (format === "pdf") {
-      const parser = new PDFParse({ data: bytes });
+      const parser = new PDFParse({ data: Buffer.from(bytes) });
       try {
         text = (await parser.getText()).text;
       } finally {
@@ -99,7 +100,8 @@ export async function extractCv(
       if (result.messages.length)
         warnings.push("Some DOCX content may not have been interpreted.");
     }
-  } catch {
+  } catch (error) {
+    console.error("CV text extraction failed:", error instanceof Error ? { name: error.name, message: error.message } : { errorType: typeof error });
     return {
       status: "failed",
       extractedTextLength: 0,
