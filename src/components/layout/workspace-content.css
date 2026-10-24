@@ -62,3 +62,31 @@
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Keep profile inputs consistent and comfortably tappable on phones. */
+.th-profile-page input:not([type="checkbox"]):not([type="radio"]),
+.th-profile-page textarea,
+.th-profile-page select {
+  box-sizing: border-box;
+  min-height: 44px;
+  border: 1px solid var(--th-line);
+  border-radius: 10px;
+  background: var(--th-panel-2);
+  padding: 10px 12px;
+  color: var(--th-fg);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.th-profile-page input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+.th-profile-page textarea:focus-visible,
+.th-profile-page select:focus-visible {
+  border-color: var(--th-accent);
+  outline: 2px solid color-mix(in srgb, var(--th-accent) 28%, transparent);
+  outline-offset: 1px;
+}
+.th-profile-page textarea {
+  min-height: 104px;
+  resize: vertical;
+}
