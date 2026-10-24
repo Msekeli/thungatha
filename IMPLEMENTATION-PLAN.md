@@ -46,7 +46,7 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | Not started |
+| M2 | Profile and CV Import | **In progress — C01 backend foundation** |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Next milestone:** M2 — Profile and CV Import. M1 must not be reopened for routine follow-up work; only a concrete regression or explicit scope decision should reopen it.
+**Current milestone:** M2 — Profile and CV Import, checkpoint C01 in progress. C01 is extending the existing profile contract with country, bounded repeatable sections and version history. Local database migration and automated verification remain pending. M1 remains closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
