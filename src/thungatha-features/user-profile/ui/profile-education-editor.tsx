@@ -18,8 +18,14 @@ export function ProfileEducationEditor({
   const [inst, setInst] = useState("");
 
   const handleAdd = () => {
-    if (!qual || !inst) return;
-    onChange([...items, { id: `edu-${Date.now()}`, qualification: qual, institution: inst }]);
+    if (!qual.trim() || !inst.trim()) return;
+    const fieldOfStudy = window.prompt("Field of study (optional)", "");
+    if (fieldOfStudy === null) return;
+    const startDate = window.prompt("Start date (optional)", "");
+    if (startDate === null) return;
+    const endDate = window.prompt("End/completion date (optional)", "");
+    if (endDate === null) return;
+    onChange([...items, { id: `edu-${Date.now()}`, qualification: qual.trim(), institution: inst.trim(), fieldOfStudy: fieldOfStudy || null, startDate: startDate || null, endDate: endDate || null }]);
     setQual(""); setInst(""); setAdding(false);
   };
 
