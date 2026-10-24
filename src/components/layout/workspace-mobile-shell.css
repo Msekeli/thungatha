@@ -62,4 +62,7 @@
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
   }
+  .th-workspace-content:has(.th-profile-page) {
+    overflow: hidden;
+  }
 }
