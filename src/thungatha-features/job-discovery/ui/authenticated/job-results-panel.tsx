@@ -1,4 +1,5 @@
 "use client";
+import { ChevronDown } from "lucide-react";
 import { JobResultsState } from "./job-results-state";
 import { JobResultsList } from "./job-results-list";
 import type { JobResultsPanelProps } from "./job-results-types";
@@ -24,13 +25,21 @@ export function AuthenticatedJobResultsPanel({
             </button>
           )}
         </div>
-        <label className="flex items-center gap-3 text-sm text-[var(--th-fg-muted)]">
+        <label className="relative flex items-center">
           <span className="sr-only">Sort opportunities</span>
-          <select aria-label="Sort opportunities" value={sortOrder} onChange={(event) => onSortOrderChange(event.target.value)} className="h-11 min-w-[12rem] rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] px-4 text-base text-[var(--th-fg)] outline-none focus:border-[var(--th-accent)]">
+          <select
+            aria-label="Sort opportunities"
+            value={sortOrder}
+            onChange={(event) => onSortOrderChange(event.target.value)}
+            className="h-11 min-w-[14rem] appearance-none rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] py-2 pl-4 pr-11 text-base text-[var(--th-fg)] outline-none transition-colors focus:border-[var(--th-accent)] focus:ring-2 focus:ring-[var(--th-accent)]/20"
+          >
             <option value="relevance">Most relevant</option>
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="salary-high">Salary: high to low</option>
+            <option value="salary-low">Salary: low to high</option>
           </select>
+          <ChevronDown size={18} aria-hidden="true" className="pointer-events-none absolute right-4 text-[var(--th-fg-muted)]" />
         </label>
       </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
