@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
 **Working branch:** `dev`  
-**Status:** In progress — M2-C01. Continue one approved checkpoint at a time; user tests locally before accepting the checkpoint.
+**Status:** In progress — C02 accepted by the user on 2026-10-24; C03 is next. Continue one approved checkpoint at a time.
 
 ## Read first
 
@@ -82,11 +82,9 @@ After C00 approval, define and implement the minimum agreed backend for user-own
 
 Exit evidence: setup/migration instructions, validation and persistence tests, ownership/access-control tests where feasible, API contract documentation and a focused commit. Do not claim isolation unless tested.
 
-### C02 — Profile view and manual editing (commit required)
+### C02 — Profile view and manual editing (accepted 2026-10-24)
 
-Build the approved empty/saved profile and manual editing experience within the existing workspace shell, connected only to the agreed C01 contract. Include loading, empty, validation, save/cancel, success and recoverable load/save failure states.
-
-Exit evidence: create/edit/save/reload behaviour, relevant tests, responsive/browser evidence and a focused commit.
+The user reviewed the local result and confirmed it was satisfactory. The increment is committed on `dev` as `e3534b3948a69e2a10cbea6fd962745b85ac29f2` (`feat(profile): extend manual profile editing`). It includes residential-area fields, languages and personal attributes, work achievements entry, and saved-profile display updates. ChatGPT did not run tests, lint, builds or browser checks, per the user's standing instruction. Do not claim these checks passed. C02 is accepted by the user; proceed to C03 only after upload/storage decisions are agreed.
 
 ### C03 — CV upload and private storage (commit required)
 

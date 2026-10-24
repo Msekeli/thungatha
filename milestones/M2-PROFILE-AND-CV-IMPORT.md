@@ -1,9 +1,9 @@
 # M2 — Profile and CV Import
 
-**Status:** In progress  
-**Planning note:** M2-C00 was approved; M2-C01 backend foundation is in progress as of 2026-10-24.  
-**Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
-**Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.  
+**Status:** In progress — C02 accepted; C03 is next.
+**Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has now been accepted by the user.
+**Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
+**Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
 
 ## Purpose and scope
@@ -14,7 +14,7 @@ The CV Studio design expects the master CV to load from Profile when one exists.
 
 ## M2 start plan and engineering constraints
 
-M2-C01 implementation is in progress. The current branch already contains a structured Profile API, Zod validation, a repository and mapper, Clerk-derived identity, and an initial `profiles` migration. C01 extends the contract with bounded repeatable sections, server-maintained profile version history, structured residential-area fields (suburb, city/town, province and optional postal code; no street address), languages, personal attributes and work achievements. The extension is profession-neutral and remains optional where appropriate.
+C01 implemented the profile data contract and backend foundation, including bounded repeatable sections, server-maintained profile version history, residential-area fields (suburb, city/town, province and optional postal code; no street address), languages, personal attributes and work achievements. C02 implemented the user-facing manual profile editing increment. The extension is profession-neutral and remains optional where appropriate.
 
 ### Required execution order
 
@@ -30,10 +30,6 @@ M2-C01 implementation is in progress. The current branch already contains a stru
 C00 is a planning/audit checkpoint and does not require an application-code commit. Every checkpoint from C01 onward must deliver a meaningful, reviewable increment that can be committed. Tests and verification are evidence for a code checkpoint, not standalone implementation checkpoints. After each code checkpoint, report the focused commit hash, changed files, actual test results and remaining issues; wait for approval before proceeding to the next checkpoint.
 
 See [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md) for the detailed agent instructions and acceptance evidence.
-
-- **Component reuse before creation:** Before building a UI component, inspect the current feature's existing components first, then the global/shared component library. Reuse or extend a suitable component at either level. Create a new component only if neither level has a suitable fit.
-- **Respect feature boundaries:** Do not use another feature's private component as a shortcut. If multiple features need the same capability, consider whether a generic component belongs in the global/shared library. Keep feature-specific components inside their owning feature.
-- **Explain genuine gaps:** If neither level has a suitable component, briefly identify what was checked and why the available options do not fit. Do not force-fit components or introduce abstractions just because two UI elements look alike.
 
 ### UI and component rules for M2
 
@@ -133,22 +129,22 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 
 ## Checkpoints
 
-- **M2-C00 — Repository and backend readiness audit:** audit only; no application-code changes and no implementation commit required.
-- **M2-C01 — Profile data contract and backend foundation:** meaningful backend/data-contract increment; commit required.
-- **M2-C02 — Profile view and manual editing:** meaningful user-facing profile increment; commit required.
-- **M2-C03 — CV upload and private storage:** upload/storage increment; commit required.
-- **M2-C04 — Deterministic extraction and progress/failure states:** extraction increment; commit required.
-- **M2-C05 — Review and confirmation workflow:** reviewed, user-confirmed profile data increment; commit required.
-- **M2-C06 — Master CV lifecycle and replacement safety:** file lifecycle increment; commit required.
-- **M2-C07 — End-to-end acceptance and closeout:** completed acceptance evidence and any meaningful fixes/final documentation; commit changes where applicable and obtain explicit user acceptance.
+- **M2-C00 — Repository and backend readiness audit:** Accepted / planning baseline; no application-code changes and no implementation commit required.
+- **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
+- **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
+- **M2-C03 — CV upload and private storage:** **Not started** — next checkpoint. Confirm formats, size limits, private storage, access policy, retention/deletion expectations and validation before implementation.
+- **M2-C04 — Deterministic extraction and progress/failure states:** Not started.
+- **M2-C05 — Review and confirmation workflow:** Not started.
+- **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
+- **M2-C07 — End-to-end acceptance and closeout:** Not started.
 
+## M2-C02 execution record — 2026-10-24
 
-## M2-C01 execution record — 2026-10-24
-
-- **Status:** In progress.
-- **Changes made:** Add country to the personal-details contract and persistence mapping; cap repeatable sections at 100 items; add server-maintained profile version metadata and a database snapshot history; document the API contract; update schema tests and the API inventory.
-- **Verification commands/tests actually run:** None in this ChatGPT session, per user instruction.
-- **Observed results/evidence:** Source files and the existing M2 migration were inspected on remote `dev`. The new migration has not been applied to a database; updated tests have not been executed.
-- **Open issues or decisions:** Local migration application, automated test results and actual cross-user RLS isolation remain unverified.
-- **Next action:** User pulls the commit, applies migrations in the intended environment, runs the relevant checks, and reports any failures before C01 is accepted.
-- **Reviewed/accepted by user:** No.
+- **Status:** Accepted by user.
+- **Changes made:** Improved manual profile editing for profession-neutral use; added residential-area fields, language and personal-attribute lists, and work-experience description/achievements entry; updated saved profile details display.
+- **Commit:** `e3534b3948a69e2a10cbea6fd962745b85ac29f2` — `feat(profile): extend manual profile editing`.
+- **Files changed:** `src/thungatha-features/user-profile/ui/profile-personal-details-form.tsx`, `src/thungatha-features/user-profile/ui/profile-language-attributes-editor.tsx` (new), `src/thungatha-features/user-profile/ui/profile-editor-view.tsx`, `src/thungatha-features/user-profile/ui/profile-saved-details-card.tsx`, `src/thungatha-features/user-profile/ui/profile-experience-editor.tsx`.
+- **Verification evidence:** User reported that the local result was all well and explicitly asked to close C02. ChatGPT did not run tests, lint, build or browser checks, per the user's standing instruction.
+- **Remaining scope:** Education, certification and project editor enhancements may be addressed if a concrete gap appears during later review; C02 is accepted by user and is not reopened by default.
+- **Next action:** Start C03 only after the user approves the upload/storage decisions and implementation plan.
+- **Reviewed/accepted by user:** Yes, 2026-10-24.

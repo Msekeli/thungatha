@@ -1,6 +1,6 @@
 # Thungatha — Master Implementation Plan
 
-**Document status:** Maintained roadmap — M1 accepted and closed  
+**Document status:** Maintained roadmap — M1 accepted and closed; M2-C02 accepted  
 **Purpose:** Master roadmap, milestone scope, dependencies, progress and acceptance tracking  
 **Product:** Thungatha  
 **Architecture:** Next.js modular monolith  
@@ -46,7 +46,7 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | **In progress — C01 backend foundation** |
+| M2 | Profile and CV Import | **In progress — C02 accepted; C03 next** |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Current milestone:** M2 — Profile and CV Import, checkpoint C01 in progress. C01 is extending the existing profile contract with country, bounded repeatable sections and version history. Local database migration and automated verification remain pending. M1 remains closed.
+**Current milestone:** M2 — Profile and CV Import. C02 — Profile view and manual editing — was accepted by the user on 2026-10-24. C01 migrations have been applied by the user; automated verification and RLS isolation evidence were not run by ChatGPT. Next is C03 — CV upload and private storage, after agreeing supported formats, size limits, private storage, access policy, and retention/deletion expectations. M1 remains closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -130,9 +130,9 @@ Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
-**Status: Not started**
+**Status: In progress — C02 accepted; C03 next**
 
-**Planning note:** Detailed execution order and engineering constraints were updated on 2026-10-24. Begin at M2-C01.
+**Planning note:** C01 backend foundation has been implemented and the user reports applying the migrations. C02 manual profile editing was accepted on 2026-10-24. Begin C03 only after upload/storage decisions are agreed.
 
 **Outcome:** A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
 
