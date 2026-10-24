@@ -33,8 +33,8 @@ export function ProfileForm({ initialMode }: { initialMode?: "empty" | "view" | 
           email: draft.personalDetails.email || fields.email, phone: draft.personalDetails.phone || fields.phone,
           linkedinUrl: draft.personalDetails.linkedinUrl || fields.linkedinUrl, portfolioUrl: draft.personalDetails.portfolioUrl || fields.portfolioUrl },
         summary: draft.summary || fields.summary, skills: draft.skills.length ? draft.skills : fields.skills,
-        workExperience: draft.workExperience.length ? draft.workExperience : fields.workExperience,
-        education: draft.education.length ? draft.education : fields.education,
+        workExperience: draft.workExperience.length ? draft.workExperience : fields.workExperience.map((item) => ({ ...item, location: null })),
+        education: draft.education.length ? draft.education : fields.education.map((item) => ({ ...item, educationLevel: null, isCurrent: false })),
       });
       setMode("edit");
     }} />}
