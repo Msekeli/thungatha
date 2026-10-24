@@ -4,21 +4,10 @@ import { JobResultsList } from "./job-results-list";
 import type { JobResultsPanelProps } from "./job-results-types";
 
 export function AuthenticatedJobResultsPanel({
-  jobs,
-  feed,
-  loading,
-  error,
-  hasFilters,
-  mobileDetail,
-  selectedId,
-  loadMoreRef,
-  sourceFor,
-  formatDate,
-  onRetry,
-  onSelect,
-  onSave,
-  onDismiss,
-  configured,
+  jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
+  loadMoreRef, sourceFor, formatDate, onRetry, onSelect, onSave, onDismiss,
+  configured, resultCount, category, dismissedCount, isAuthenticated,
+  sortOrder, onSortOrderChange, onCategoryChange,
 }: JobResultsPanelProps) {
   return (
     <section
@@ -26,30 +15,27 @@ export function AuthenticatedJobResultsPanel({
       aria-label="Job search results"
       aria-busy={loading}
     >
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3">
+        <div className="flex items-center gap-3 text-sm text-[var(--th-fg-muted)]">
+          <span aria-live="polite">{resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}</span>
+          {isAuthenticated && (
+            <button type="button" onClick={() => onCategoryChange("dismissed", "Dismissed")} className={category === "dismissed" ? "font-semibold text-[var(--th-accent)] underline underline-offset-4" : "text-[var(--th-accent)] hover:underline"} aria-pressed={category === "dismissed"}>
+              Dismissed ({dismissedCount})
+            </button>
+          )}
+        </div>
+        <label className="flex items-center gap-3 text-sm text-[var(--th-fg-muted)]">
+          <span className="sr-only">Sort opportunities</span>
+          <select aria-label="Sort opportunities" value={sortOrder} onChange={(event) => onSortOrderChange(event.target.value)} className="h-11 min-w-[12rem] rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] px-4 text-base text-[var(--th-fg)] outline-none focus:border-[var(--th-accent)]">
+            <option value="relevance">Most relevant</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </label>
+      </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
-        <JobResultsState
-          loading={loading}
-          hasFeed={Boolean(feed)}
-          error={error}
-          hasJobs={jobs.length > 0}
-          hasFilters={hasFilters}
-          onRetry={onRetry}
-        />
-        {jobs.length > 0 && (
-          <JobResultsList
-            jobs={jobs}
-            selectedId={selectedId}
-            loading={loading}
-            feed={feed}
-            loadMoreRef={loadMoreRef}
-            sourceFor={sourceFor}
-            formatDate={formatDate}
-            onSelect={onSelect}
-            onSave={onSave}
-            onDismiss={onDismiss}
-            configured={configured}
-          />
-        )}
+        <JobResultsState loading={loading} hasFeed={Boolean(feed)} error={error} hasJobs={jobs.length > 0} hasFilters={hasFilters} onRetry={onRetry} />
+        {jobs.length > 0 && <JobResultsList jobs={jobs} selectedId={selectedId} loading={loading} feed={feed} loadMoreRef={loadMoreRef} sourceFor={sourceFor} formatDate={formatDate} onSelect={onSelect} onSave={onSave} onDismiss={onDismiss} configured={configured} />}
       </div>
     </section>
   );
