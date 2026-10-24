@@ -1,11 +1,12 @@
-import type { UserProfileDto } from "../server/user-profile-schema";
+import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
 
 export async function saveProfileDraft(draft: UserProfileDto) {
   try {
+    const complete = profileCompletionSchema.safeParse(draft).success;
     const payload = {
       ...draft,
       displayName: draft.personalDetails.fullName || draft.displayName || undefined,
-      confirmedAt: new Date().toISOString(),
+      confirmedAt: complete ? new Date().toISOString() : null,
     };
     const response = await fetch("/api/profile", {
       method: "PATCH",
