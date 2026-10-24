@@ -13,7 +13,7 @@ export const createBlankProfile = (): UserProfileDto => ({
 export function isProfileEmpty(p: UserProfileDto | null): boolean {
   if (!p) return true;
   return (
-    !p.displayName && !p.personalDetails.fullName && !p.summary &&
+    !p.displayName && !p.personalDetails.fullName && !p.personalDetails.email && !p.personalDetails.phone && !p.personalDetails.location && !p.personalDetails.linkedinUrl && !p.personalDetails.portfolioUrl && !p.summary &&
     p.workExperience.length === 0 && p.education.length === 0 &&
     p.skills.length === 0 && p.certifications.length === 0 && p.projects.length === 0
   );
@@ -51,7 +51,7 @@ export function useProfile() {
     try {
       const payload = {
         ...draft,
-        displayName: draft.personalDetails.fullName || draft.displayName || "User",
+        displayName: draft.personalDetails.fullName || draft.displayName || null,
         confirmedAt: new Date().toISOString(),
       };
       const res = await fetch("/api/profile", {
