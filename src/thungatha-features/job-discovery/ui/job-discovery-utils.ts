@@ -110,11 +110,13 @@ export function buildJobFeedParams(
   page: number,
   category: string,
   filters: Filters,
+  sortOrder = "newest",
 ): string {
   const search = new URLSearchParams({
     page: String(page),
     pageSize: String(PAGE_SIZE),
     state: category === "saved" || category === "dismissed" ? category : "all",
+    sortOrder,
   });
   for (const [key, value] of Object.entries(filters)) {
     if (value.trim()) search.set(key, value.trim());
