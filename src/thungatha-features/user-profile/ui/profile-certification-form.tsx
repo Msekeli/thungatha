@@ -8,7 +8,7 @@ const types = [{ value: "professional-certification", label: "Professional certi
 const categories = ["A1", "A", "B", "C1", "C", "EB", "EC1", "EC"];
 const countries = ["South Africa", "United Kingdom", "United States", "Australia"];
 export function ProfileCertificationForm({ value, onChange, onSave, onCancel, editing }: { value: Entry; onChange: (value: Entry) => void; onSave: () => void; onCancel: () => void; editing: boolean }) {
-  const set = (key: keyof Entry, next: string | string[]) => onChange({ ...value, [key]: next || null } as Entry);
+  const set = (key: keyof Entry, next: string | string[]) => onChange({ ...value, [key]: key === "issuingCountry" ? next : next || null } as Entry);
   const driver = value.type === "drivers-licence";
   const country = value.issuingCountry ?? "South Africa";
   const knownCountry = countries.includes(country);
