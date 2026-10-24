@@ -1,6 +1,6 @@
 "use client";
 import { Select } from "@base-ui/react/select";
-import { ArrowDownUp, ChevronDown, Check } from "lucide-react";
+import { ArrowDownWideNarrow, ChevronDown, Check } from "lucide-react";
 import { JobResultsState } from "./job-results-state";
 import { JobResultsList } from "./job-results-list";
 import type { JobResultsPanelProps } from "./job-results-types";
@@ -35,7 +35,7 @@ export function AuthenticatedJobResultsPanel({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <ArrowDownUp size={16} className="shrink-0 text-[var(--th-fg-muted)]" aria-hidden="true" />
+          <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)]" aria-hidden="true" />
           <Select.Root value={sortOrder} onValueChange={onSortOrderChange}>
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
