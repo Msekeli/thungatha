@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
 **Working branch:** `dev`  
-**Status:** Planning only. Implement only after the user approves each checkpoint.
+**Status:** In progress — M2-C01. Continue one approved checkpoint at a time; user tests locally before accepting the checkpoint.
 
 ## Read first
 
@@ -49,7 +49,7 @@ These are responsive compositions and UI states, not separate routes. Match the 
 
 ## Local workflow and remote safety
 
-Antigravity and GitHub Copilot operate on the user's local checkout of the `dev` branch. Do not push, fetch-and-merge, create/update remote branches, open PRs, or make remote repository changes. Do not use GitHub APIs or other remote write mechanisms. Local commits are allowed only for approved C01+ checkpoints, with a focused commit and report. The user controls when local commits are pushed to GitHub. C00 must not change application code or create a commit.
+The user-approved workflow as of 2026-10-24 is to commit each approved C01+ checkpoint directly to the existing remote `dev` branch. The user pulls those commits into the local checkout and runs the requested verification there. Before each remote write, inspect the current `dev` state and use an expected-head/lease check so concurrent changes are not overwritten. Do not create branches or PRs, force-push, deploy, or write to production data. Do not commit a checkpoint without the user's explicit approval. C00 remains audit-only and must not change application code or create a commit.
 
 ## Checkpoint and commit rules
 
@@ -57,7 +57,7 @@ Antigravity and GitHub Copilot operate on the user's local checkout of the `dev`
 
 **C01 onward must each deliver a meaningful, reviewable increment that can be committed.** A test run, inspection, or verification alone is not an implementation checkpoint. Tests are evidence attached to the relevant code increment.
 
-After each code checkpoint, make a focused commit and report its hash, changed files, actual test commands/results, unresolved issues and next checkpoint. Do not push, merge, deploy, or continue to the next checkpoint without explicit user approval.
+After each code checkpoint, commit the coherent changes to remote `dev` and report the commit hash, changed files, actual test commands/results, unresolved issues and next checkpoint. The user pulls and tests locally. Do not deploy or continue to the next checkpoint without explicit user approval.
 
 ## Execution order
 
