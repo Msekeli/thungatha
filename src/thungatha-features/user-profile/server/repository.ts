@@ -49,9 +49,28 @@ export async function saveProfile(
 ) {
   const supabase = await createAuthenticatedSupabaseClient(getToken);
   const row = mapInputToRow(userId, input);
+  const { user_id: ownerId, ...patch } = row;
+  const updated = await supabase
+    .from("profiles")
+    .update(patch)
+    .eq("user_id", ownerId)
+    .select(PROFILE_SELECT_COLUMNS)
+    .maybeSingle<ProfileDatabaseRow>();
+
+  if (updated.error || updated.data) return updated;
+
+  const inserted = await supabase
+    .from("profiles")
+    .insert(row)
+    .select(PROFILE_SELECT_COLUMNS)
+    .single<ProfileDatabaseRow>();
+
+  if (!inserted.error || inserted.error.code !== "23505") return inserted;
+
   return supabase
     .from("profiles")
-    .upsert(row, { onConflict: "user_id" })
+    .update(patch)
+    .eq("user_id", ownerId)
     .select(PROFILE_SELECT_COLUMNS)
     .single<ProfileDatabaseRow>();
 }
