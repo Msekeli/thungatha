@@ -61,6 +61,12 @@ export function ProfileSavedView({
           ))}
         </ProfileSavedSectionCard>
 
+        <ProfileSavedSectionCard title="Certifications" count={profile.certifications.length}>
+          {profile.certifications.map((cert) => <div key={cert.id} className="py-2.5"><p className="text-xs font-semibold text-fg">{cert.name}</p>{cert.issuer && <p className="text-[11px] text-fg-muted">{cert.issuer}</p>}{(cert.issueDate || cert.expiryDate) && <p className="text-[11px] text-fg-muted">{cert.issueDate || ""}{cert.issueDate && cert.expiryDate ? " – " : ""}{cert.expiryDate || ""}</p>}</div>)}
+        </ProfileSavedSectionCard>
+        <ProfileSavedSectionCard title="Projects" count={profile.projects.length}>
+          {profile.projects.map((project) => <div key={project.id} className="py-2.5"><p className="text-xs font-semibold text-fg">{project.name}</p>{project.role && <p className="text-[11px] text-fg-muted">{project.role}</p>}{project.description && <p className="whitespace-pre-wrap text-xs text-fg-muted">{project.description}</p>}{project.url && <a className="break-all text-xs text-accent underline" href={project.url} target="_blank" rel="noreferrer">{project.url}</a>}</div>)}
+        </ProfileSavedSectionCard>
         <ProfileMasterCvCard
           filename={profile.masterCv?.filename}
           fileSize={profile.masterCv?.fileSize}
