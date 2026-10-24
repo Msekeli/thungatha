@@ -35,8 +35,8 @@ export function ProfileCvUpload({ hasCurrentCv = false, onExtracted }: {
       setError(cause instanceof Error ? cause.message : "Upload failed. Please try again.");
     } finally { setBusy(false); }
   }
-  return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
-    <div className="flex items-start gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"><FileText className="size-5" /></span><div><h2 className="text-base font-semibold">{hasCurrentCv ? "Upload a replacement CV" : "Start from your CV"}</h2><p className="mt-1 text-sm text-muted-foreground">PDF or DOCX · Maximum 5 MB. Your file is stored privately.</p></div></div>
+  return <section className="rounded-xl border border-border bg-card p-3 text-card-foreground shadow-sm sm:p-6">
+    <div className="flex items-start gap-2 sm:gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground sm:size-10"><FileText className="size-4 sm:size-5" /></span><div><h2 className="text-sm font-semibold sm:text-base">{hasCurrentCv ? "Upload a replacement CV" : "Start from your CV"}</h2><p className="mt-1 text-xs leading-4 text-muted-foreground sm:text-sm sm:leading-normal">PDF or DOCX · Maximum 5 MB. Your file is stored privately.</p></div></div>
     {uploaded ? <ProfileCvStagedUpload uploaded={uploaded} hasCurrentCv={hasCurrentCv} onExtracted={onExtracted} onChooseAnother={() => { setUploaded(null); inputRef.current?.click(); }} /> : <ProfileCvDropzone inputRef={inputRef} file={file} busy={busy} error={error} dragging={dragging} onDragging={setDragging} onSelectFile={selectFile} onUpload={() => void upload()} onCancel={() => selectFile(null)} />}
   </section>;
 }
