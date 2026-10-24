@@ -8,6 +8,10 @@ export type ProfileDatabaseRow = {
   phone?: string | null;
   location?: string | null;
   country?: string | null;
+  residential_suburb?: string | null;
+  residential_city?: string | null;
+  residential_province?: string | null;
+  residential_postal_code?: string | null;
   linkedin_url?: string | null;
   portfolio_url?: string | null;
   summary?: string | null;
@@ -16,6 +20,8 @@ export type ProfileDatabaseRow = {
   skills?: unknown;
   certifications?: unknown;
   projects?: unknown;
+  languages?: unknown;
+  personal_attributes?: unknown;
   master_cv?: unknown;
   confirmed_at?: string | null;
   profile_version?: number;
@@ -35,6 +41,10 @@ export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileD
       phone: row?.phone ?? null,
       location: row?.location ?? null,
       country: row?.country ?? null,
+      residentialSuburb: row?.residential_suburb ?? null,
+      residentialCity: row?.residential_city ?? null,
+      residentialProvince: row?.residential_province ?? null,
+      residentialPostalCode: row?.residential_postal_code ?? null,
       linkedinUrl: row?.linkedin_url ?? null,
       portfolioUrl: row?.portfolio_url ?? null,
     },
@@ -44,6 +54,8 @@ export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileD
     skills: asArr(row?.skills),
     certifications: asArr(row?.certifications),
     projects: asArr(row?.projects),
+    languages: asArr(row?.languages),
+    personalAttributes: asArr(row?.personal_attributes),
     masterCv: (row?.master_cv as UserProfileDto["masterCv"]) ?? null,
     confirmedAt: row?.confirmed_at ?? null,
     profileVersion: row?.profile_version ?? 1,
@@ -65,6 +77,10 @@ export function mapInputToRow(userId: string, input: UpdateProfileInput | string
     ...(p?.phone !== undefined && { phone: p.phone }),
     ...(p?.location !== undefined && { location: p.location }),
     ...(p?.country !== undefined && { country: p.country }),
+    ...(p?.residentialSuburb !== undefined && { residential_suburb: p.residentialSuburb }),
+    ...(p?.residentialCity !== undefined && { residential_city: p.residentialCity }),
+    ...(p?.residentialProvince !== undefined && { residential_province: p.residentialProvince }),
+    ...(p?.residentialPostalCode !== undefined && { residential_postal_code: p.residentialPostalCode }),
     ...(p?.linkedinUrl !== undefined && { linkedin_url: p.linkedinUrl }),
     ...(p?.portfolioUrl !== undefined && { portfolio_url: p.portfolioUrl }),
     ...(input.summary !== undefined && { summary: input.summary }),
@@ -73,6 +89,8 @@ export function mapInputToRow(userId: string, input: UpdateProfileInput | string
     ...(input.skills !== undefined && { skills: input.skills }),
     ...(input.certifications !== undefined && { certifications: input.certifications }),
     ...(input.projects !== undefined && { projects: input.projects }),
+    ...(input.languages !== undefined && { languages: input.languages }),
+    ...(input.personalAttributes !== undefined && { personal_attributes: input.personalAttributes }),
     ...(input.masterCv !== undefined && { master_cv: input.masterCv }),
     ...(input.confirmedAt !== undefined && { confirmed_at: input.confirmedAt }),
   };
