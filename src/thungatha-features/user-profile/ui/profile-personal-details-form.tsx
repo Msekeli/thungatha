@@ -2,86 +2,43 @@
 
 import type { UserProfileDto } from "../server/user-profile-schema";
 
-export function ProfilePersonalDetailsForm({
-  details,
-  onChange,
-}: {
+export function ProfilePersonalDetailsForm({ details, onChange }: {
   details: UserProfileDto["personalDetails"];
   onChange: (updated: UserProfileDto["personalDetails"]) => void;
 }) {
-  const update = (key: keyof UserProfileDto["personalDetails"], val: string) => {
-    onChange({ ...details, [key]: val || null });
-  };
-
+  const update = (key: keyof UserProfileDto["personalDetails"], value: string) =>
+    onChange({ ...details, [key]: value || null });
+  const fields: Array<[keyof UserProfileDto["personalDetails"], string, string, string?]> = [
+    ["fullName", "Full name", "e.g. Lerato Naidoo"],
+    ["email", "Email", "you@example.com", "email"],
+    ["phone", "Phone", "Phone number"],
+    ["location", "Professional location", "City or region"],
+    ["country", "Country", "Country"],
+    ["residentialSuburb", "Residential area / suburb", "Suburb or neighbourhood"],
+    ["residentialCity", "Residential city / town", "City or town"],
+    ["residentialProvince", "Province / region", "Province or region"],
+    ["residentialPostalCode", "Postal code", "Optional postal code"],
+    ["linkedinUrl", "LinkedIn URL", "https://linkedin.com/in/you", "url"],
+    ["portfolioUrl", "Portfolio URL", "https://your-site.example", "url"],
+  ];
   return (
-    <div className="rounded-xl border border-line bg-panel p-5">
-      <h2 className="text-sm font-semibold text-fg">Personal Details</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="display-name" className="block text-xs font-medium text-fg-muted">
-            Display name
-          </label>
-          <input
-            id="display-name"
-            name="displayName"
-            required
-            value={details.fullName || ""}
-            onChange={(e) => update("fullName", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent"
-            placeholder="e.g. Lerato Naidoo"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="profile-email" className="block text-xs font-medium text-fg-muted">
-            Email
-          </label>
-          <input
-            id="profile-email"
-            type="email"
-            value={details.email || ""}
-            onChange={(e) => update("email", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent"
-            placeholder="e.g. lerato@example.com"
-          />
-        </div>
-
-        <div className={`rounded-lg p-2 ${!details.phone ? "border border-dashed border-warn/60 bg-warn-bg/10" : ""}`}>
-          <div className="flex items-center justify-between">
-            <label htmlFor="profile-phone" className="block text-xs font-medium text-fg-muted">Phone</label>
-            {!details.phone && <span className="text-[10px] text-warn">Not found in CV</span>}
-          </div>
-          <input
-            id="profile-phone"
-            value={details.phone || ""}
-            onChange={(e) => update("phone", e.target.value)}
-            className="mt-1 w-full rounded border border-line bg-panel px-2.5 py-1.5 text-xs text-fg"
-            placeholder="Add phone"
-          />
-        </div>
-
-        <div className={`rounded-lg p-2 ${!details.location ? "border border-dashed border-warn/60 bg-warn-bg/10" : ""}`}>
-          <div className="flex items-center justify-between">
-            <label htmlFor="profile-location" className="block text-xs font-medium text-fg-muted">Location</label>
-            {!details.location && <span className="text-[10px] text-warn">Not found in CV</span>}
-          </div>
-          <input
-            id="profile-location"
-            value={details.location || ""}
-            onChange={(e) => update("location", e.target.value)}
-            className="mt-1 w-full rounded border border-line bg-panel px-2.5 py-1.5 text-xs text-fg"
-            placeholder="Add location (e.g. Cape Town)"
-          />
-        </div>
-        <div>
-          <label htmlFor="profile-linkedin" className="block text-xs font-medium text-fg-muted">LinkedIn URL <span className="font-normal">(optional)</span></label>
-          <input id="profile-linkedin" type="url" value={details.linkedinUrl || ""} onChange={(e) => update("linkedinUrl", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent" placeholder="https://linkedin.com/in/your-profile" />
-        </div>
-        <div>
-          <label htmlFor="profile-portfolio" className="block text-xs font-medium text-fg-muted">Portfolio URL <span className="font-normal">(optional)</span></label>
-          <input id="profile-portfolio" type="url" value={details.portfolioUrl || ""} onChange={(e) => update("portfolioUrl", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent" placeholder="https://your-portfolio.dev" />
-        </div>
+    <section className="rounded-xl border border-line bg-panel p-5">
+      <div>
+        <h2 className="text-sm font-semibold text-fg">Personal and contact details</h2>
+        <p className="mt-1 text-xs text-fg-muted">Only add details you want to include in your professional profile.</p>
       </div>
-    </div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {fields.map(([key, label, placeholder, type]) => (
+          <div key={key}>
+            <label htmlFor={String(key)} className="block text-xs font-medium text-fg-muted">{label}</label>
+            <input id={String(key)} type={type || "text"} value={details[key] || ""}
+              onChange={(event) => update(key, event.target.value)}
+              className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              placeholder={placeholder} />
+            {key === "residentialSuburb" && <p className="mt-1 text-[11px] text-fg-muted">No street address or house number needed.</p>}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
