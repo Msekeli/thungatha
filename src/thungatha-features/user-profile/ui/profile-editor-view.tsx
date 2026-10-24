@@ -25,8 +25,11 @@ export function ProfileEditorView({
           Build your professional profile
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-          Keep your experience and skills in one place. Save a draft at any
-          stage; optional sections can remain empty.
+          Save a draft at any stage; optional sections can remain empty.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Fields marked <span className="font-semibold text-destructive">Required</span>
+          {" "}must be completed to add that entry. Other profile sections are optional.
         </p>
       </header>
       <div className="th-profile-editor-grid">
