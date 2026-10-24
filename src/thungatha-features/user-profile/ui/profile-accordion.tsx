@@ -10,7 +10,7 @@ export function ProfileAccordion({ title, description, status, children }: {
   children: ReactNode;
 }) {
   return (
-    <details className="th-profile-accordion group">
+    <details name="thungatha-profile-sections" className="th-profile-accordion group">
       <summary className="th-profile-accordion-trigger">
         <span className="th-profile-accordion-copy">
           <span className="th-profile-accordion-title">{title}</span>
