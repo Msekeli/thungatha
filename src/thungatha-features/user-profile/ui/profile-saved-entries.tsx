@@ -1,4 +1,5 @@
 import type { UserProfileDto } from "../server/user-profile-schema";
+import { displayProfileMonth } from "./profile-date-utils";
 import { ProfileSavedSectionCard } from "./profile-saved-section-card";
 export function ProfileSavedEntries({ profile }: { profile: UserProfileDto }) {
   return <>
@@ -6,9 +7,9 @@ export function ProfileSavedEntries({ profile }: { profile: UserProfileDto }) {
       {profile.workExperience.map((item) => <div key={item.id} className="py-3 first:pt-0"><p className="text-sm font-medium">{item.jobTitle} · {item.employer}</p><p className="text-sm text-muted-foreground">{item.startDate} – {item.isCurrent ? "Present" : item.endDate || "Not specified"}{item.location ? ` · ${item.location}` : ""}</p>{item.description && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{item.description}</p>}</div>)}
     </ProfileSavedSectionCard>
     <ProfileSavedSectionCard title="Education" count={profile.education.length}>
-      {profile.education.map((item) => <div key={item.id} className="py-3 first:pt-0"><p className="text-sm font-medium">{item.qualification}</p><p className="text-sm text-muted-foreground">{item.institution}{item.endDate ? ` · ${item.endDate}` : ""}</p></div>)}
+      {profile.education.map((item) => <div key={item.id} className="py-3 first:pt-0"><p className="text-sm font-medium">{item.qualification}</p><p className="text-sm text-muted-foreground">{item.educationLevel ? `${item.educationLevel} · ` : ""}{item.institution}</p>{item.fieldOfStudy && <p className="text-sm text-muted-foreground">Field of study: {item.fieldOfStudy}</p>}<p className="text-xs text-muted-foreground">{item.startDate ? displayProfileMonth(item.startDate) : "Start date not specified"} – {item.isCurrent ? `Currently studying${item.endDate ? ` · expected ${displayProfileMonth(item.endDate)}` : ""}` : item.endDate ? displayProfileMonth(item.endDate) : "End date not specified"}</p></div>)}
     </ProfileSavedSectionCard>
-    <ProfileSavedSectionCard title="Certifications" count={profile.certifications.length}>
+    <ProfileSavedSectionCard title="Certifications and licences" count={profile.certifications.length}>
       {profile.certifications.map((item) => <div key={item.id} className="py-3 first:pt-0"><p className="text-sm font-medium">{item.name}</p>{item.issuer && <p className="text-sm text-muted-foreground">{item.issuer}</p>}{(item.issueDate || item.expiryDate) && <p className="text-xs text-muted-foreground">{item.issueDate || ""}{item.issueDate && item.expiryDate ? " – " : ""}{item.expiryDate || ""}</p>}</div>)}
     </ProfileSavedSectionCard>
     <ProfileSavedSectionCard title="Projects" count={profile.projects.length}>
