@@ -13,10 +13,10 @@ export function ProfileEditorView({ profile, saving, onChange, onSave, onCancel 
   onCancel: () => void;
 }) {
   return <div className="th-profile-editor-layout ml-0 mr-auto w-full max-w-none">
-    <header className="th-profile-editor-heading space-y-2 border-b border-border pb-4">
-      <p className="text-sm font-medium text-muted-foreground">Your profile</p>
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground">Build your professional profile</h1>
-            <div className="th-profile-mobile-actions flex gap-2 pt-2">
+    <header className="th-profile-editor-heading border-b border-border pb-3">
+      <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Build your professional profile</h1>
+      <p className="th-profile-heading-label text-sm font-medium text-muted-foreground">Your profile</p>
+      <div className="th-profile-mobile-actions flex gap-2 pt-2">
         <Button className="flex-1" disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Save draft"}</Button>
         <Button className="flex-1" variant="outline" disabled={saving} onClick={onCancel}>Cancel</Button>
       </div>
