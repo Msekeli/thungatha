@@ -28,12 +28,16 @@ cross join lateral (
   from public.job_sources as s
   where s.job_id = j.id
     and s.availability_status = 'active'
+    and s.published_at is not null
+    and s.published_at >= now() - interval '30 days'
 ) as source
 where exists (
   select 1
   from public.job_sources as s
   where s.job_id = j.id
     and s.availability_status = 'active'
+    and s.published_at is not null
+    and s.published_at >= now() - interval '30 days'
 );
 
 grant select on public.job_discovery_feed to anon, authenticated;
