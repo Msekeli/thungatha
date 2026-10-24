@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { UserProfileDto } from "../server/user-profile-schema";
+import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
 import { createBlankProfile, isProfileEmpty } from "./profile-defaults";
 import { saveProfileDraft } from "./profile-save";
 export { createBlankProfile, isProfileEmpty } from "./profile-defaults";
@@ -51,8 +51,9 @@ export function useProfile() {
       }
       setProfile(result.profile);
       setDraft(result.profile);
-      setMode("view");
-      setMessage("Profile saved.");
+      const complete = profileCompletionSchema.safeParse(result.profile).success;
+      setMode(complete ? "view" : "edit");
+      setMessage(complete ? "Profile saved successfully." : "Draft saved. Complete the required personal details, professional summary, and education to save your profile.");
     } finally {
       setSaving(false);
     }
