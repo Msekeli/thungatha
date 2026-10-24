@@ -1,6 +1,6 @@
 @media (max-width: 1199px) {
-  .th-workspace-shell .th-workspace-header--jobs {
-    display: none;
+  .th-workspace-shell .th-workspace-header {
+    display: none !important;
   }
 }
 
