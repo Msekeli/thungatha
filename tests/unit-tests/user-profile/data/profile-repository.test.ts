@@ -49,10 +49,11 @@ describe("profile repository ownership and partial updates", () => {
     await saveProfile("user_alice", {
       personalDetails: { fullName: "Alice", country: "South Africa" },
       skills: ["TypeScript"],
+      nextRole: "Software Engineer",
     }, vi.fn());
     expect(q.update).toHaveBeenCalledWith(expect.objectContaining({
       display_name: "Alice", full_name: "Alice",
-      country: "South Africa", skills: ["TypeScript"],
+      country: "South Africa", skills: ["TypeScript"], next_role: "Software Engineer",
     }));
     expect(q.insert).not.toHaveBeenCalled();
   });

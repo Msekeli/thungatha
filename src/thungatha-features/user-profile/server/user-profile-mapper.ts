@@ -1,33 +1,7 @@
 import type { UpdateProfileInput, UserProfileDto } from "./user-profile-schema";
+import type { ProfileDatabaseRow } from "./profile-database-row";
+export type { ProfileDatabaseRow } from "./profile-database-row";
 
-export type ProfileDatabaseRow = {
-  user_id: string;
-  display_name: string | null;
-  full_name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  location?: string | null;
-  country?: string | null;
-  residential_suburb?: string | null;
-  residential_city?: string | null;
-  residential_province?: string | null;
-  residential_postal_code?: string | null;
-  linkedin_url?: string | null;
-  portfolio_url?: string | null;
-  summary?: string | null;
-  experience?: unknown;
-  education?: unknown;
-  skills?: unknown;
-  certifications?: unknown;
-  projects?: unknown;
-  languages?: unknown;
-  personal_attributes?: unknown;
-  master_cv?: unknown;
-  confirmed_at?: string | null;
-  profile_version?: number;
-  created_at?: string;
-  updated_at?: string;
-};
 
 export function mapRowToProfileDto(
   row: ProfileDatabaseRow | null,
@@ -37,6 +11,7 @@ export function mapRowToProfileDto(
   const asArr = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
   return {
     displayName,
+    nextRole: row?.next_role ?? null,
     personalDetails: {
       fullName,
       email: row?.email ?? null,
@@ -78,6 +53,7 @@ export function mapInputToRow(
   return {
     user_id: userId,
     ...(displayName !== undefined && { display_name: displayName }),
+    ...(input.nextRole !== undefined && { next_role: input.nextRole }),
     ...(fullName !== undefined && { full_name: fullName }),
     ...(p?.email !== undefined && { email: p.email }),
     ...(p?.phone !== undefined && { phone: p.phone }),

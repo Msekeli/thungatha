@@ -17,6 +17,7 @@ export const skillItemSchema = z.string().trim().min(1).max(50);
 export const updateProfileSchema = z
   .object({
     displayName: z.string().trim().min(1).max(100).optional(),
+    nextRole: z.string().trim().max(150).nullable().optional(),
     personalDetails: personalDetailsSchema.optional(),
     summary: z.string().trim().max(5000).nullable().optional(),
     workExperience: z.array(workExperienceItemSchema).max(100).optional(),
@@ -43,6 +44,7 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export type UserProfileDto = {
   displayName: string | null;
+  nextRole: string | null;
   personalDetails: z.infer<typeof personalDetailsSchema>;
   summary: string | null;
   workExperience: Array<z.infer<typeof workExperienceItemSchema>>;

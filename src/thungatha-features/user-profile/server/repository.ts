@@ -1,12 +1,14 @@
 import "server-only";
 
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { mapInputToRow, type ProfileDatabaseRow } from "./user-profile-mapper";
+import { mapInputToRow } from "./user-profile-mapper";
+import type { ProfileDatabaseRow } from "./profile-database-row";
 import type { UpdateProfileInput } from "./user-profile-schema";
 
 export const PROFILE_SELECT_COLUMNS = [
   "user_id",
   "display_name",
+  "next_role",
   "full_name",
   "email",
   "phone",

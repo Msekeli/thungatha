@@ -268,3 +268,14 @@ When a decision is approved or changed:
 - **Rationale:** Centralized tokens preserve theme consistency; existing controls reduce duplication; concise components are easier to review and maintain; deliberate CSS introduction prevents competing styling systems.
 - **Consequences:** Apply these rules to all new M2 work. Existing legacy violations should be recorded and addressed incrementally rather than triggering unrelated rewrites.
 - **Review trigger:** Revisit only when a concrete UI requirement cannot be met through shared tokens, existing controls, or Tailwind CSS v4.
+
+
+### D-041 — Optional target-role preference in Profile
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed
+- **Context:** Profile needs to capture the kind of role a user wants next without conflating profession with industry.
+- **Decision:** Add one optional “What’s your next role?” text preference. Provide common role suggestions while allowing a custom job title. Do not add an Industry field. The preference is a relevance signal, not a hard filter.
+- **Rationale:** The same profession can be used across many industries; the target title is a more direct signal for job discovery.
+- **Consequences:** Persist the value in the profile and version snapshots. Job ranking integration remains part of matching/discovery follow-up and must not hide adjacent roles.
+- **Review trigger:** User feedback or evidence that one target title is too restrictive.

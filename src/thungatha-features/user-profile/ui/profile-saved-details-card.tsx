@@ -41,6 +41,9 @@ export function ProfileSavedDetailsCard({
       {roleLine && (
         <p className="mt-2 text-sm font-medium text-fg">{roleLine}</p>
       )}
+      {profile.nextRole && (
+        <p className="mt-2 text-xs text-fg-muted">Target role: {profile.nextRole}</p>
+      )}
       {contactLine && (
         <p className="mt-1 break-words text-xs text-accent">{contactLine}</p>
       )}

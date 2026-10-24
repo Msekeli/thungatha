@@ -2,61 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { UserProfileDto } from "../server/user-profile-schema";
-
-export const createBlankProfile = (): UserProfileDto => ({
-  displayName: null,
-  personalDetails: {
-    fullName: null,
-    email: null,
-    phone: null,
-    location: null,
-    country: null,
-    residentialSuburb: null,
-    residentialCity: null,
-    residentialProvince: null,
-    residentialPostalCode: null,
-    linkedinUrl: null,
-    portfolioUrl: null,
-  },
-  summary: null,
-  workExperience: [],
-  education: [],
-  skills: [],
-  certifications: [],
-  projects: [],
-  languages: [],
-  personalAttributes: [],
-  masterCv: null,
-  confirmedAt: null,
-  profileVersion: 1,
-});
-
-export function isProfileEmpty(p: UserProfileDto | null): boolean {
-  if (!p) return true;
-  const d = p.personalDetails;
-  return (
-    !p.displayName &&
-    !d.fullName &&
-    !d.email &&
-    !d.phone &&
-    !d.location &&
-    !d.country &&
-    !d.residentialSuburb &&
-    !d.residentialCity &&
-    !d.residentialProvince &&
-    !d.residentialPostalCode &&
-    !d.linkedinUrl &&
-    !d.portfolioUrl &&
-    !p.summary &&
-    p.workExperience.length === 0 &&
-    p.education.length === 0 &&
-    p.skills.length === 0 &&
-    p.certifications.length === 0 &&
-    p.projects.length === 0 &&
-    p.languages.length === 0 &&
-    p.personalAttributes.length === 0
-  );
-}
+import { createBlankProfile, isProfileEmpty } from "./profile-defaults";
+import { saveProfileDraft } from "./profile-save";
+export { createBlankProfile, isProfileEmpty } from "./profile-defaults";
 
 export function useProfile() {
   const [profile, setProfile] = useState<UserProfileDto | null>(null);
@@ -96,33 +44,15 @@ export function useProfile() {
     setError("");
     setMessage("");
     try {
-      const payload = {
-        ...draft,
-        displayName:
-          draft.personalDetails.fullName || draft.displayName || undefined,
-        confirmedAt: new Date().toISOString(),
-      };
-      const res = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setError(
-          json.error || "We couldn’t save your changes. Please try again.",
-        );
+      const result = await saveProfileDraft(draft);
+      if (!result.profile) {
+        setError(result.error || "We couldn’t save your changes. Please try again.");
         return;
       }
-      const saved = json.profile as UserProfileDto;
-      setProfile(saved);
-      setDraft(saved);
+      setProfile(result.profile);
+      setDraft(result.profile);
       setMode("view");
       setMessage("Profile saved.");
-    } catch {
-      setError(
-        "We couldn’t save your changes. Check your connection and try again.",
-      );
     } finally {
       setSaving(false);
     }

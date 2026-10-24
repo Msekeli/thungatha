@@ -172,3 +172,13 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 **Verification:** No tests, lint, build, browser checks or Vercel operations were run, per user instruction. The user installed extraction packages locally; package manifest/lockfile synchronization must be included with local dependency changes.
 
 **Next action:** user pulls/reconciles the checkpoint, reviews representative CV output, and reports acceptance or defects. Do not start C05 until C04 is accepted.
+
+
+## Profile role-preference extension — 2026-10-24
+
+- **Status:** Implemented in source; user review pending.
+- **Scope:** Added the optional “What’s your next role?” preference, with suggested titles and custom text entry. Industry remains excluded.
+- **Persistence:** Added forward migration `20261024000700_add_profile_next_role.sql`; the migration adds `profiles.next_role` and includes `nextRole` in profile-version snapshots. The earlier migrations remain unchanged.
+- **Architecture:** Updated the profile schema, mapper, repository select list, blank-profile state and editor. The role preference is persisted but is not yet wired into job ranking; M3/matching work should use it as a soft relevance signal rather than a hard filter.
+- **Verification:** No tests, lint, build, browser checks or live migration commands were run by ChatGPT, per user instruction. The user must apply the new migration with the existing linked Supabase CLI workflow before this field can persist remotely.
+- **Next action:** Pull `dev`, apply the new migration, review the role field and confirm persistence before expanding the remaining profile editor sections.

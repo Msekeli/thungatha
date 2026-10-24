@@ -7,6 +7,10 @@ describe("updateProfileSchema validation", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts an optional custom target role", () => {
+    expect(updateProfileSchema.safeParse({ nextRole: "Platform Engineer" }).success).toBe(true);
+  });
+
   it("rejects client-supplied identity fields", () => {
     const result = updateProfileSchema.safeParse({
       displayName: "Lerato",
