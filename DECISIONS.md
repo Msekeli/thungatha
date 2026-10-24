@@ -234,3 +234,26 @@ When a decision is approved or changed:
 - **Consequences:** Remove the separate public discovery implementation and its exclusive components/hooks when no longer referenced. Public and authenticated data may still differ where identity legitimately affects saved/dismissed state.
 - **Verification:** Local TypeScript check and final ESLint run passed with no errors or warnings. Unit/E2E/build checks were blocked by the test dependency, sandbox port permission, and external font fetch respectively; see the M1-C07 record.
 - **Review trigger:** Revisit only if product requirements establish a public-only discovery workflow that cannot be composed around the shared screen.
+
+
+### D-038 — No AI extraction in M1 without a demonstrated content gap
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed for M1
+- **Context:** M1-C05 required a decision on whether provider content needs AI extraction.
+- **Decision:** Do not add AI extraction to M1. Use deterministic validation and normalization for the structured provider responses currently supported. Reopen only if a permitted source demonstrates a concrete extraction gap and the scope is explicitly reviewed.
+- **Rationale:** AI is not justified as an additional dependency where deterministic processing meets the current Discovery requirements.
+- **Evidence/validation:** The M1 source-validation report documents structured provider payloads; M1 closeout records user acceptance on 2026-10-24.
+- **Consequences:** M1-C05 is accepted as unnecessary for the current scope. This does not prevent a future, separately approved AI capability.
+- **Review trigger:** A source-content audit identifies a concrete, tested need that deterministic extraction cannot satisfy.
+
+### D-039 — M1 acceptance with explicit source limitations
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed for M1 scope
+- **Context:** M1 closure requires the source limitations to be visible and must not conflate technical connectivity with permission for ongoing production use.
+- **Decision:** Accept and close M1 with the source limitations recorded in the M1 milestone document. Adzuna remains excluded from ongoing use unless explicitly reopened. Jooble and public employer ATS integrations remain subject to their documented terms, attribution, quotas, freshness, and destination-quality constraints.
+- **Rationale:** The user has explicitly accepted M1 closure, while the repository must continue to distinguish implementation validation from legal/operational source approval.
+- **Evidence/validation:** The user's M1 acceptance on 2026-10-24 and the source-validation report supplied to the project.
+- **Consequences:** M1 is closed with limitations carried forward. This decision is not blanket approval for unrestricted use of every provider and does not reopen Adzuna.
+- **Review trigger:** New source-specific approval evidence or an explicit user decision to reopen a provider.
