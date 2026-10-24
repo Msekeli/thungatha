@@ -13,7 +13,7 @@ export function ProfileExperienceEditor({ items, onChange }: { items: Experience
   const [editingId, setEditingId] = useState<string | null>(null);
   const save = () => {
     if (!draft || !draft.title.trim() || !draft.employer.trim() || !draft.startDate || (!draft.current && !draft.endDate)) return;
-    const entry: Experience = { id: editingId || `exp-${Date.now()}`, jobTitle: draft.title.trim(), employer: draft.employer.trim(), startDate: draft.startDate, endDate: draft.current ? null : draft.endDate, isCurrent: draft.current, location: draft.location.trim() || null, description: draft.description.trim() || null, achievements: [] };
+    const entry: Experience = { id: editingId || `exp-${Date.now()}`, jobTitle: draft.title.trim(), employer: draft.employer.trim(), startDate: draft.startDate, endDate: draft.current ? null : draft.endDate, isCurrent: draft.current, location: draft.location.trim() || null, description: draft.description.trim() || null, achievements: items.find((item) => item.id === editingId)?.achievements || [] };
     onChange(editingId ? items.map((item) => item.id === editingId ? entry : item) : [...items, entry]);
     setDraft(null); setEditingId(null);
   };
