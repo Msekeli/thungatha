@@ -8,6 +8,7 @@ export function ProfileEmptyState({
   onStartManualEntry,
 }: {
   onStartManualEntry: () => void;
+  onExtracted: (fields: { fullName: string | null; email: string | null; phone: string | null; linkedinUrl: string | null; portfolioUrl: string | null; summary: string | null; skills: string[] }) => void;
 }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-5 sm:gap-8 sm:py-8">
@@ -25,7 +26,7 @@ export function ProfileEmptyState({
         </p>
       </div>
 
-      <ProfileCvUpload />
+      <ProfileCvUpload onExtracted={onExtracted} />
 
       <section className="rounded-2xl border border-accent/40 bg-panel p-5 sm:p-7">
         <div className="max-w-xl">

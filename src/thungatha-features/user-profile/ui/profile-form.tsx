@@ -86,7 +86,26 @@ export function ProfileForm({
       )}
 
       {currentMode === "empty" && (
-        <ProfileEmptyState onStartManualEntry={() => setMode("edit")} />
+        <ProfileEmptyState
+          onStartManualEntry={() => setMode("edit")}
+          onExtracted={(fields) => {
+            setDraft({
+              ...draft,
+              displayName: draft.displayName || fields.fullName,
+              personalDetails: {
+                ...draft.personalDetails,
+                fullName: draft.personalDetails.fullName || fields.fullName,
+                email: draft.personalDetails.email || fields.email,
+                phone: draft.personalDetails.phone || fields.phone,
+                linkedinUrl: draft.personalDetails.linkedinUrl || fields.linkedinUrl,
+                portfolioUrl: draft.personalDetails.portfolioUrl || fields.portfolioUrl,
+              },
+              summary: draft.summary || fields.summary,
+              skills: draft.skills.length ? draft.skills : fields.skills,
+            });
+            setMode("edit");
+          }}
+        />
       )}
       {currentMode === "view" && profile && (
         <ProfileSavedView

@@ -18,8 +18,10 @@ type UploadedCv = {
 
 export function ProfileCvUpload({
   hasCurrentCv = false,
+  onExtracted,
 }: {
   hasCurrentCv?: boolean;
+  onExtracted: (fields: { fullName: string | null; email: string | null; phone: string | null; linkedinUrl: string | null; portfolioUrl: string | null; summary: string | null; skills: string[] }) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -105,12 +107,12 @@ export function ProfileCvUpload({
             {hasCurrentCv
               ? "Your current CV has not been changed."
               : "It has not been set as your master CV yet."}{" "}
-            Extracted details will appear below for review. They are not saved
-            to your profile until you confirm them.
+            We’ll fill the existing profile form with any details we can read. Review and correct them before saving.
           </p>
           <ProfileCvExtraction
             filename={uploaded.filename}
             storagePath={uploaded.storagePath}
+            onExtracted={onExtracted}
           />
           <Button
             className="mt-3"
