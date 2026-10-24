@@ -7,6 +7,10 @@ export const personalDetailsSchema = z
     phone: z.string().trim().max(50).nullable().optional(),
     location: z.string().trim().max(150).nullable().optional(),
     country: z.string().trim().max(100).nullable().optional(),
+    residentialSuburb: z.string().trim().max(150).nullable().optional(),
+    residentialCity: z.string().trim().max(150).nullable().optional(),
+    residentialProvince: z.string().trim().max(150).nullable().optional(),
+    residentialPostalCode: z.string().trim().max(20).nullable().optional(),
     linkedinUrl: z.string().trim().max(255).nullable().optional(),
     portfolioUrl: z.string().trim().max(255).nullable().optional(),
   })
@@ -22,6 +26,7 @@ export const workExperienceItemSchema = z
     endDate: z.string().trim().max(50).nullable().optional(),
     isCurrent: z.boolean().default(false),
     description: z.string().trim().max(5000).nullable().optional(),
+    achievements: z.array(z.string().trim().min(1).max(1000)).max(50).optional(),
   })
   .strict();
 
@@ -38,7 +43,7 @@ export const educationItemSchema = z
 
 export const certificationItemSchema = z
   .object({
-    id: z.string().trim().min(1).max(100),
+    id: z.string().trim().min(1).max(150),
     name: z.string().trim().min(1).max(150),
     issuer: z.string().trim().max(150).nullable().optional(),
     issueDate: z.string().trim().max(50).nullable().optional(),
@@ -55,6 +60,9 @@ export const projectItemSchema = z
     url: z.string().trim().max(255).nullable().optional(),
   })
   .strict();
+
+export const languageItemSchema = z.string().trim().min(1).max(100);
+export const personalAttributeItemSchema = z.string().trim().min(1).max(150);
 
 export const masterCvMetadataSchema = z
   .object({
