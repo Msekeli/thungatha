@@ -7,7 +7,10 @@ import {
   saveProfile,
 } from "@/thungatha-features/user-profile/server/repository";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
-import { profileCompletionSchema, updateProfileSchema } from "@/thungatha-features/user-profile/server/user-profile-schema";
+import {
+  profileCompletionSchema,
+  updateProfileSchema,
+} from "@/thungatha-features/user-profile/server/user-profile-schema";
 
 export async function GET() {
   const { identity, response } = await resolveProfileIdentity();
@@ -47,8 +50,14 @@ export async function PATCH(request: Request) {
       400,
     );
   }
-  if (parsed.data.confirmedAt && !profileCompletionSchema.safeParse(parsed.data).success) {
-    return apiError("Complete the required profile fields before confirming it.", 400);
+  if (
+    parsed.data.confirmedAt &&
+    !profileCompletionSchema.safeParse(parsed.data).success
+  ) {
+    return apiError(
+      "Complete the required profile fields before confirming it.",
+      400,
+    );
   }
 
   try {

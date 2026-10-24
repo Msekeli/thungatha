@@ -2,7 +2,6 @@ import type { UpdateProfileInput, UserProfileDto } from "./user-profile-schema";
 import type { ProfileDatabaseRow } from "./profile-database-row";
 export type { ProfileDatabaseRow } from "./profile-database-row";
 
-
 export function mapRowToProfileDto(
   row: ProfileDatabaseRow | null,
 ): UserProfileDto {

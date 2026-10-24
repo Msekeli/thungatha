@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
+import {
+  profileCompletionSchema,
+  type UserProfileDto,
+} from "../server/user-profile-schema";
 import { createBlankProfile, isProfileEmpty } from "./profile-defaults";
 import { saveProfileDraft } from "./profile-save";
 export { createBlankProfile, isProfileEmpty } from "./profile-defaults";
@@ -46,14 +49,22 @@ export function useProfile() {
     try {
       const result = await saveProfileDraft(draft);
       if (!result.profile) {
-        setError(result.error || "We couldn’t save your changes. Please try again.");
+        setError(
+          result.error || "We couldn’t save your changes. Please try again.",
+        );
         return;
       }
       setProfile(result.profile);
       setDraft(result.profile);
-      const complete = profileCompletionSchema.safeParse(result.profile).success;
+      const complete = profileCompletionSchema.safeParse(
+        result.profile,
+      ).success;
       setMode(complete ? "view" : "edit");
-      setMessage(complete ? "Profile saved successfully." : "Draft saved. Complete the required personal details, professional summary, and education to save your profile.");
+      setMessage(
+        complete
+          ? "Profile saved successfully."
+          : "Draft saved. Complete the required personal details, professional summary, and education to save your profile.",
+      );
     } finally {
       setSaving(false);
     }

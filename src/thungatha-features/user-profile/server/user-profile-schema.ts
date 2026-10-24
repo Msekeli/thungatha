@@ -25,26 +25,40 @@ export const profileCompletionSchema = z.object({
     residentialProvince: z.string().trim().min(1).max(150),
   }),
   summary: z.string().trim().min(1).max(5000),
-  education: z.array(educationItemSchema.extend({
-    educationLevel: z.string().trim().min(1).max(100),
-  })).min(1),
+  education: z
+    .array(
+      educationItemSchema.extend({
+        educationLevel: z.string().trim().min(1).max(100),
+      }),
+    )
+    .min(1),
 });
 
-export const updateProfileSchema = z.object({
-  displayName: z.string().trim().min(1).max(100).optional(),
-  nextRole: z.string().trim().max(150).nullable().optional(),
-  personalDetails: personalDetailsSchema.optional(),
-  summary: z.string().trim().max(5000).nullable().optional(),
-  workExperience: z.array(workExperienceItemSchema).max(100).optional(),
-  education: z.array(educationItemSchema).max(100).optional(),
-  skills: z.array(skillItemSchema).max(100).optional(),
-  certifications: z.array(certificationItemSchema).max(100).optional(),
-  projects: z.array(projectItemSchema).max(100).optional(),
-  languages: z.array(languageItemSchema).max(100).optional(),
-  personalAttributes: z.array(personalAttributeItemSchema).max(100).optional(),
-  masterCv: masterCvMetadataSchema.nullable().optional(),
-  confirmedAt: z.string().trim().datetime({ offset: true }).nullable().optional(),
-}).strict();
+export const updateProfileSchema = z
+  .object({
+    displayName: z.string().trim().min(1).max(100).optional(),
+    nextRole: z.string().trim().max(150).nullable().optional(),
+    personalDetails: personalDetailsSchema.optional(),
+    summary: z.string().trim().max(5000).nullable().optional(),
+    workExperience: z.array(workExperienceItemSchema).max(100).optional(),
+    education: z.array(educationItemSchema).max(100).optional(),
+    skills: z.array(skillItemSchema).max(100).optional(),
+    certifications: z.array(certificationItemSchema).max(100).optional(),
+    projects: z.array(projectItemSchema).max(100).optional(),
+    languages: z.array(languageItemSchema).max(100).optional(),
+    personalAttributes: z
+      .array(personalAttributeItemSchema)
+      .max(100)
+      .optional(),
+    masterCv: masterCvMetadataSchema.nullable().optional(),
+    confirmedAt: z
+      .string()
+      .trim()
+      .datetime({ offset: true })
+      .nullable()
+      .optional(),
+  })
+  .strict();
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type UserProfileDto = {
