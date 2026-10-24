@@ -98,6 +98,12 @@ Use a filename that identifies the responsibility, not merely the framework role
 - Prefer descriptive exported names as well as descriptive filenames. File and symbol names should reinforce each other.
 - Keep file naming consistent within a feature. Do not introduce a new convention in one folder while leaving the rest unexplained.
 
+### Component discovery and reuse
+
+Before adding a UI component, inspect the current feature's component folder first, then the global/shared component library. Reuse or extend a suitable component found at either level. Create a new component only when neither level has a suitable fit.
+
+Do not import private components directly from another feature. If multiple features require a capability, assess whether a generic component belongs in the global/shared library. Do not force-fit an unsuitable component; record briefly why existing feature-level and shared-level options do not meet the requirement. Keep feature-specific UI owned by its feature and avoid duplicate implementations.
+
 ### UI styling priority
 
 - Follow D-035: use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls where suitable.
