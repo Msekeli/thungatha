@@ -45,7 +45,7 @@ export function ProfileForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={currentMode === "edit" ? "th-profile-form-state th-profile-form-state--edit" : "space-y-4"}>
       {error && (
         <div className="rounded-xl border border-warn/40 bg-warn-bg/20 p-4">
           <p role="alert" className="text-xs text-warn">{error}</p>
