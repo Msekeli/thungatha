@@ -18,6 +18,7 @@ export function ProfileEditorView({
   saving: boolean;
   onChange: (updated: UserProfileDto) => void;
   onSave: () => void;
+  onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
   const saveLabel = saving

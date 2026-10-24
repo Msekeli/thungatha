@@ -11,6 +11,8 @@ export type ExtractedCvFields = {
   portfolioUrl: string | null;
   summary: string | null;
   skills: string[];
+  workExperience: Array<{ id: string; jobTitle: string; employer: string; startDate: string; endDate?: string | null; isCurrent: boolean; description?: string | null; achievements: string[] }>;
+  education: Array<{ id: string; qualification: string; institution: string; fieldOfStudy?: string | null; startDate?: string | null; endDate?: string | null }>;
 };
 export function ProfileCvExtraction({
   filename,
