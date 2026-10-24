@@ -32,5 +32,12 @@ export type JobDiscoveryWorkspaceProps = {
   onDismiss: () => void;
   onRetryDetail: () => void;
   configured: boolean;
+  resultCount: number;
+  category: string;
+  dismissedCount: number;
+  isAuthenticated: boolean;
+  sortOrder: string;
+  onSortOrderChange: (value: string) => void;
+  onCategoryChange: (key: string, label: string) => void;
   leadingColumn?: ReactNode;
 };

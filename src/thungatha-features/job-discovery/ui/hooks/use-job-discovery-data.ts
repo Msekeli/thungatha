@@ -16,8 +16,10 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.page,
     s.category,
     s.filters,
+    s.sortOrder,
     s.retryFeed,
     s.setFeed,
+    s.setDismissedCount,
     s.setLoading,
     s.setError,
     s.setIsAuthenticated,
@@ -46,6 +48,7 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.setStateMessage,
     s.setFeed,
     s.setDetail,
+    s.setSelectedId,
     s.setUndoAction,
     s.setRetryFeed,
   );

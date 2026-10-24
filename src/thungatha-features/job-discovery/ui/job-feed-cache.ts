@@ -21,7 +21,7 @@ export function canReusePublicJobFeed(
     !filters.location.trim() &&
     !filters.workMode.trim() &&
     !filters.employmentType.trim() &&
-    filters.publishedWithin === "30d"
+    filters.publishedWithin === "any"
   );
 }
 
@@ -30,7 +30,7 @@ export async function getReusablePublicFeed(
 ): Promise<Feed | null> {
   try {
     const cached = JSON.parse(
-      sessionStorage.getItem("thungatha-public-job-feed-v1") ?? "null",
+      sessionStorage.getItem("thungatha-public-job-feed-v2") ?? "null",
     ) as CachedFeed | null;
     if (
       !cached?.feed ||
@@ -55,7 +55,7 @@ export async function getReusablePublicFeed(
     let dismissedCount = 0;
     if (dismissed.length) {
       const dismissedFeed = await requestJobFeed(
-        "state=dismissed&page=1&pageSize=1&publishedWithin=30d",
+        "state=dismissed&page=1&pageSize=1&publishedWithin=any",
         signal,
       );
       dismissedCount = dismissedFeed.total;

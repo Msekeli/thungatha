@@ -97,7 +97,9 @@ If the migration preview or application fails, stop and inspect the error rather
 
 ## Project Status
 
-Development follows six planned milestones, from job discovery through profile and CV import, job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone completion is based on verified acceptance criteria, not mockups alone.
+**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. Known job-source access and usage limitations remain documented in the M1 milestone record; this does not imply unrestricted production approval for every provider.
+
+Development continues with M2 — Profile and CV Import, followed by job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone status and acceptance evidence are tracked in IMPLEMENTATION-PLAN.md and the relevant document under milestones/.
 
 ## Documentation
 
@@ -111,6 +113,13 @@ Development follows six planned milestones, from job discovery through profile a
 - **[Agent Instructions](AGENTS.md):** Development rules and guidance for AI coding assistants.
 
 For milestone-specific requirements, see the relevant document under `milestones/`.
+
+## UI and component standards
+
+- Use shared theme tokens for colors, typography and other design-system values; do not define these locally in components.
+- Prefer Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls.
+- Discuss and justify new CSS before adding it; introduce CSS only when necessary and keep it minimal and scoped.
+- Keep handwritten components at or below 100 lines; warn at 80 and split by cohesive responsibility.
 
 ## Development Workflow
 

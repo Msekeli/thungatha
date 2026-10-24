@@ -29,7 +29,7 @@ The architecture must deliver the approved product specification and milestones 
 - **Database:** PostgreSQL through Supabase, with version-controlled SQL migrations.
 - **Database access:** Supabase JavaScript client and SQL/migrations following the existing repository pattern. Do not introduce Prisma or Drizzle by default.
 - **Validation:** Zod for untrusted requests and structured external/AI output, consistent with existing code.
-- **UI:** Tailwind CSS v4, shadcn/ui patterns, and the existing Base UI primitives. Reuse shared controls; do not add a dependency solely to imitate shadcn/ui. Create scoped CSS only when Tailwind cannot reasonably meet the requirement.
+- **UI:** Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls. Reuse shared controls; do not add a dependency solely to imitate shadcn/ui. Component design values must come from shared tokens, not local overrides. Discuss and justify custom CSS before adding it; prefer Tailwind when it meets the requirement.
 - **Source-file size:** Keep handwritten source files at 100 physical lines or fewer; warn at 80. Count blank/comment lines. Generated files, dependency lockfiles, and vendored code are excluded. Refactor by cohesive responsibility, never by compressing code.
 - **Testing:** existing Vitest/React Testing Library and Playwright conventions, where present.
 - **File storage:** Supabase Storage or another approved object-storage service when CV uploads/generated files are implemented. Do not depend on Vercel function local disk for durable files.
@@ -37,6 +37,18 @@ The architecture must deliver the approved product specification and milestones 
 - **Scheduled ingestion:** only add a Vercel-compatible scheduled invocation or another approved execution mechanism after source refresh needs, plan limits, and idempotency are defined.
 
 Verify current platform limits and integration guidance before relying on function duration, scheduling, payload size, database connection, or provider quotas. Keep local, preview, and production secrets separate.
+
+### Component discovery and ownership
+
+Apply the repository's reuse-before-create rule to every new UI component:
+
+1. Inspect the current feature's own components first and reuse or extend a suitable match.
+2. If no suitable feature-owned component exists, inspect the global/shared component library.
+3. Create a component only when neither level provides a suitable fit. Keep feature-specific components inside their owning feature; place genuinely cross-feature components in the global/shared library.
+4. Never import another feature's private component directly. When a capability is needed by multiple features, evaluate whether it belongs in the shared layer rather than coupling features.
+5. Do not force an unsuitable component into a new role. Briefly explain why existing candidates do not fit before adding a new one.
+
+The purpose is to prevent avoidable duplication while preserving feature boundaries. Similar appearance alone does not make a component suitable for reuse.
 
 ## 3. System context and trust boundaries
 
@@ -260,10 +272,11 @@ When CV upload and export are implemented, use durable object storage approved f
 - Each primary experience must handle direct entry and missing prerequisites gracefully.
 - Use the current shared theme and design tokens rather than creating feature-specific competing design systems.
 - Keep only one dominant glow/high-emphasis action per screen, consistent with the supplied design direction.
-- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns, reusing existing shared controls where suitable. MUI has been removed.
+- Follow D-035: use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls where suitable.
 - Prefer accessible native controls or existing shared controls for interactions; use established primitives for dialogs, popovers, menus, tooltips and other complex interactions.
 - Prefer Tailwind CSS v4 utilities for layout, spacing, flex/grid, responsive behavior and straightforward styling. Avoid standalone CSS for styles Tailwind can express clearly.
-- Keep standalone/scoped CSS for genuinely complex presentation or interactions that Tailwind cannot reasonably express. Consolidate selectors and avoid repeated override blocks.
+- Do not introduce CSS silently: explain why shared tokens, existing controls, and Tailwind CSS v4 are insufficient and obtain user agreement first. Keep approved standalone/scoped CSS minimal and reserve it for genuinely complex presentation or interactions that Tailwind cannot reasonably express. Consolidate selectors and avoid repeated override blocks.
+- Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use semantic theme classes and the shared `src/theme/tokens.json` / generated `src/styles/tokens.css` tokens for design-system values. Avoid arbitrary Tailwind color/typography values and inline styles for design decisions.
 - Use the shared `src/theme/tokens.json` and generated `src/styles/tokens.css` as the source of truth for theme colors, surfaces, borders, text, accents, radii, and related design values. Do not add feature-specific competing palettes or edit generated token CSS by hand.
 - Use `lucide-react` for icons; do not introduce another icon library without approval.
 - When extracting shared UI, use Tailwind and shadcn/ui patterns. Remove old CSS only after confirming public and authenticated experiences retain their intended light/dark and responsive appearance.

@@ -28,10 +28,11 @@ const querySchema = z.object({
     .optional(),
   workMode: z.enum(["onsite", "hybrid", "remote", "unknown"]).optional(),
   employmentType: z.string().trim().max(100).optional(),
-  publishedWithin: z.enum(["24h", "7d", "14d", "30d"]).default("30d"),
+  publishedWithin: z.enum(["any", "24h", "7d", "14d", "30d"]).default("any"),
   page: z.coerce.number().int().min(1).max(10000).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
   state: z.enum(["all", "saved", "dismissed"]).default("all"),
+  sortOrder: z.enum(["relevance", "newest", "oldest"]).default("newest"),
 });
 
 export async function GET(request: Request) {
@@ -58,6 +59,7 @@ export async function GET(request: Request) {
     "page",
     "pageSize",
     "state",
+    "sortOrder",
   ]) {
     const value = params.get(key);
     if (value !== null) raw[key] = value;
@@ -98,16 +100,17 @@ export async function GET(request: Request) {
     }
 
     let query = db
-      .from("jobs")
+      .from("job_discovery_feed")
       .select(
-        "id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)",
+        "id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,published_at",
         { count: "exact" },
-      )
-      .eq("job_sources.availability_status", "active");
+      );
     if (input.query) {
       const term = sanitizeFilterTerm(input.query);
       if (term)
-        query = query.or(`title.ilike.%${term}%,employer_name.ilike.%${term}%`);
+        query = query.or(
+          `title.ilike.%${term}%,employer_name.ilike.%${term}%,description.ilike.%${term}%`,
+        );
     }
     if (input.location) {
       const location = sanitizeFilterTerm(input.location);
@@ -115,15 +118,17 @@ export async function GET(request: Request) {
     }
     if (input.countryCode) query = query.eq("country_code", input.countryCode);
     if (input.workMode) query = query.eq("work_mode", input.workMode);
-    const ageInHours = { "24h": 24, "7d": 168, "14d": 336, "30d": 720 }[
-      input.publishedWithin
-    ];
-    const publishedAfter = new Date(
-      Date.now() - ageInHours * 60 * 60 * 1000,
-    ).toISOString();
-    query = query
-      .gte("job_sources.published_at", publishedAfter)
-      .not("job_sources.published_at", "is", null);
+    if (input.publishedWithin !== "any") {
+      const ageInHours = { "24h": 24, "7d": 168, "14d": 336, "30d": 720 }[
+        input.publishedWithin
+      ];
+      const publishedAfter = new Date(
+        Date.now() - ageInHours * 60 * 60 * 1000,
+      ).toISOString();
+      query = query
+        .gte("published_at", publishedAfter)
+        .not("published_at", "is", null);
+    }
     if (input.employmentType) {
       const term = sanitizeFilterTerm(input.employmentType)
         .toLowerCase()
@@ -150,19 +155,44 @@ export async function GET(request: Request) {
     }
     const from = (input.page - 1) * input.pageSize;
     const { data, error, count } = await query
-      .order("updated_at", { ascending: false })
-      .order("id", { ascending: true })
       .order("published_at", {
-        referencedTable: "job_sources",
-        ascending: false,
+        ascending: input.sortOrder === "oldest",
         nullsFirst: false,
       })
+      .order("updated_at", { ascending: false })
+      .order("id", { ascending: true })
       .range(from, from + input.pageSize - 1);
     if (error) throw error;
-    const jobs = (data ?? []).map((job) => ({
-      ...job,
-      state: stateByJob.get(job.id) ?? null,
-    }));
+
+    const feedRows = data ?? [];
+    let jobs: {
+      id: string;
+      state: "saved" | "dismissed" | null;
+      [key: string]: unknown;
+    }[] = [];
+    if (feedRows.length > 0) {
+      const { data: details, error: detailsError } = await db
+        .from("jobs")
+        .select(
+          "id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)",
+        )
+        .in(
+          "id",
+          feedRows.map((job) => job.id),
+        )
+        .eq("job_sources.availability_status", "active")
+        .order("published_at", {
+          referencedTable: "job_sources",
+          ascending: false,
+          nullsFirst: false,
+        });
+      if (detailsError) throw detailsError;
+      const detailsById = new Map((details ?? []).map((job) => [job.id, job]));
+      jobs = feedRows.flatMap((row) => {
+        const job = detailsById.get(row.id);
+        return job ? [{ ...job, state: stateByJob.get(job.id) ?? null }] : [];
+      });
+    }
     const total = count ?? 0;
     return NextResponse.json({
       jobs,

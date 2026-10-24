@@ -30,6 +30,9 @@ export function AuthenticatedJobDetailContent({
   return (
     <JobDetailPresentation
       job={job}
+      descriptionIsPreview={
+        source?.provider_key === "adzuna" || source?.provider_key === "jooble"
+      }
       postedAt={source?.published_at || null}
       formatDate={formatDate}
       headingAction={<JobDetailMatchSummary onViewMatch={onViewMatch} />}

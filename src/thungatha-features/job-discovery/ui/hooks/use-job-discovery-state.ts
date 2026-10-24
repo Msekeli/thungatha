@@ -20,6 +20,7 @@ export function useJobDiscoveryState(
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
   const [feed, setFeed] = useState<Feed | null>(null);
+  const [dismissedCount, setDismissedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryFeed, setRetryFeed] = useState(0);
@@ -74,6 +75,8 @@ export function useJobDiscoveryState(
     setPage,
     feed,
     setFeed,
+    dismissedCount,
+    setDismissedCount,
     loading,
     setLoading,
     error,

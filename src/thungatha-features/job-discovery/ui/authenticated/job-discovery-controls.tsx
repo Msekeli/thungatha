@@ -2,7 +2,10 @@
 
 import type { FormEvent } from "react";
 import { JobDiscoveryHeader } from "./job-discovery-header";
-import { JobDiscoveryFeedback, type JobUndoAction } from "./job-discovery-feedback";
+import {
+  JobDiscoveryFeedback,
+  type JobUndoAction,
+} from "./job-discovery-feedback";
 import type { Filters } from "../job-discovery-utils";
 
 type Props = {
@@ -11,6 +14,9 @@ type Props = {
   filtersOpen: boolean;
   categories: { key: string; label: string; count: number | null }[];
   category: string;
+  resultCount: number;
+  sortOrder: string;
+  onSortOrderChange: (value: string) => void;
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -34,6 +40,13 @@ export function JobDiscoveryControls(props: Props) {
         onQueryChange={props.onQueryChange}
         onSubmit={props.onSubmit}
         onToggleFilters={props.onToggleFilters}
+        categories={props.categories}
+        category={props.category}
+        onCategoryChange={props.onCategoryChange}
+        resultCount={props.resultCount}
+        sortOrder={props.sortOrder}
+        onSortOrderChange={props.onSortOrderChange}
+        isAuthenticated={props.isAuthenticated}
       />
       <JobDiscoveryFeedback
         isAuthenticated={props.isAuthenticated}

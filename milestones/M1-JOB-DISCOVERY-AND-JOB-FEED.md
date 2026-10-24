@@ -1,6 +1,6 @@
 # M1 — Job Discovery and Job Feed
 
-**Status:** In progress — C04 scoped database path verified; C05 decision open; C06 cloud/RLS acceptance gates outstanding; C07 UI in review; C08 implementation and user-tested application reminder in review; C09 audit in progress  
+**Status:** Accepted — complete and closed (2026-10-24); all nine checkpoints M1-C01–M1-C09 are accepted  
 **Outcome:** A reliable Job Discovery experience backed by persisted listings from approved sources.  
 **Design reference:** `Job Discovery · Dark.png`  
 **Dependency:** M0 — Foundation and Authentication (Accepted)
@@ -17,9 +17,35 @@ The supplied Job Discovery screen is the UX reference: job cards show role/emplo
 
 Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accepted**. Each checkpoint record must include changes made, commands/tests actually run, observed evidence, unresolved issues, next action, and user review status. Code written alone does not qualify as acceptance.
 
+## Final milestone acceptance and closure — 2026-10-24
+
+**Milestone status: ACCEPTED — COMPLETE. All checkpoints M1-C01 through M1-C09 are closed.**
+
+The user has confirmed that all implementation testing is complete and has explicitly requested closure of Milestone 1. This final acceptance record supersedes earlier dated entries in this document that recorded checkpoints as open, blocked, or in review at the time.
+
+| Checkpoint | Final status | Closeout record |
+|---|---|---|
+| M1-C01 — Repository audit and scope lock | **Accepted** | Scope and product boundaries established; milestone accepted by the user. |
+| M1-C02 — Job data model and persistence | **Accepted** | Persisted job catalogue and user-owned discovery state are part of the completed scope; user confirms testing is complete. |
+| M1-C03 — First approved job source | **Accepted with documented limitations** | Source adapters were validated technically. Adzuna remains excluded from ongoing use unless explicitly reopened. Jooble and public employer ATS feeds retain their documented terms, attribution, quota, freshness, and destination limitations. This is not blanket approval for unrestricted production use. |
+| M1-C04 — Normalization, deduplication and refresh reliability | **Accepted** | Database-side ingestion reliability smoke test and schema lint are recorded in the dated evidence below; user confirms the overall M1 testing is complete. |
+| M1-C05 — Optional AI boundary for job content | **Accepted — AI extraction not required for M1** | Current provider responses support deterministic normalization. Do not add AI extraction to M1 without a concrete source-content gap and an explicit scope decision. |
+| M1-C06 — Discovery query and action contracts | **Accepted** | Feed/detail and user-state contracts are implemented. User confirms the required testing is complete. Detailed final cloud/RLS command output was not provided in this closeout conversation. |
+| M1-C07 — Job Discovery feed, search, filters and details | **Accepted** | Shared public/authenticated discovery, search/filter/sort, results and detail experiences are accepted by the user following their testing. |
+| M1-C08 — Save, dismiss, undo and application-state integration | **Accepted** | Save/dismiss/undo and explicit application-activity confirmation are included in the accepted scope. The user confirms testing is complete. |
+| M1-C09 — End-to-end verification and acceptance | **Accepted** | User explicitly accepted the milestone and requested all checkpoints be closed on 2026-10-24. |
+
+**Evidence boundary:** The final user test pass is recorded from the user's confirmation; the exact commands, browser/device matrix, hosted test data, and individual results were not supplied in this conversation. They are intentionally not invented. Historical CI and test results remain as recorded in their dated entries. This closeout does not claim that this documentation edit itself ran tests.
+
+**Known limitations carried forward:** Technical access to a provider does not by itself establish ongoing-use rights. Keep source restrictions visible and do not describe every adapter as unconditionally production-approved. AI extraction is outside M1. Matching scores, CV tailoring, and the full application lifecycle remain in their later milestones.
+
+**Final decision:** Milestone 1 is finished and closed. Proceed to **M2 — Profile and CV Import**. Reopen M1 only for a concrete regression or an explicitly approved scope change.
+
 ## Checkpoints
 
 ### M1-C01 — Repository audit and scope lock
+
+**Final status: Accepted (2026-10-24).**
 
 **Goal:** establish the actual starting point and reconcile the existing application with the approved product scope.
 
@@ -39,6 +65,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C02 — Job data model and persistence
 
+**Final status: Accepted (2026-10-24).**
+
 **Goal:** define a durable normalized listing model and user-owned discovery state.
 
 **Work**
@@ -56,6 +84,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Existing M0/profile behaviour is not regressed.
 
 ### M1-C03 — First approved job source
+
+**Final status: Accepted with documented source limitations (2026-10-24).**
 
 **Goal:** ingest at least one source whose intended use has been validated.
 
@@ -103,6 +133,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C04 — Normalization, deduplication and refresh reliability
 
+**Final status: Accepted (2026-10-24).**
+
 **Goal:** make repeated ingestion safe and preserve useful history.
 
 **Implementation record (remote changes on dev; verification pending)**
@@ -132,6 +164,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M1-C05 — Optional AI boundary for job content
 
+**Final status: Accepted — AI extraction not required for M1 (2026-10-24).**
+
 **Status: Under investigation — implementation decision pending.**
 
 **Goal:** use AI only if the source audit shows a concrete need.
@@ -150,6 +184,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - No future matching score or CV tailoring is pulled into M1.
 
 ### M1-C06 — Discovery query and action contracts
+
+**Final status: Accepted (2026-10-24).**
 
 **Next active checkpoint.** C05 remains open while the AI-extraction decision is investigated. C06 may proceed because its documented API/data-operation scope does not require AI extraction; do not treat this sequencing decision as C05 acceptance.
 
@@ -188,6 +224,8 @@ Security and lifecycle boundaries:
 
 ### M1-C07 — Job Discovery feed, search, filters and details
 
+**Final status: Accepted (2026-10-24).**
+
 **Goal:** implement the supplied Discovery experience using persisted listings.
 
 **Work**
@@ -207,6 +245,8 @@ Security and lifecycle boundaries:
 - UI actions match their real outcomes and keyboard/accessibility checks pass.
 
 ### M1-C08 — Save, dismiss, undo and application-state integration
+
+**Final status: Accepted (2026-10-24).**
 
 **Goal:** persist discovery decisions, capture external application-link activity, and let users explicitly record an application without mistaking a click for a submission.
 
@@ -231,6 +271,8 @@ Security and lifecycle boundaries:
 - Source disappearance does not destroy the user's history.
 
 ### M1-C09 — End-to-end verification and acceptance
+
+**Final status: Accepted (2026-10-24).**
 
 **Goal:** demonstrate a dependable Discovery workflow.
 
@@ -494,7 +536,14 @@ The repository and latest CI run are in a better state, but **M1 is not accepted
 
 - Created and wired `JobDiscoverySearchFilters`, `JobOpportunityCard`, and `JobOpportunityDetailPanel` in `ui/shared/`. Existing search, location, category, button, card, and authenticated detail behavior stays composed through their current controls and handlers.
 - Migrated the shared search field, location selector, category chips, card shell, and detail panel shell to Tailwind CSS v4. Reused the existing `src/components/ui/button.tsx` control; no shadcn package or dependency was added.
-- Recorded the user-approved incremental MUI to Tailwind/shadcn direction in D-035 and aligned the architecture, naming, and agent guidance. MUI remains in supporting and not-yet-migrated discovery elements.
+- Recorded the user-approved incremental shared UI controls to Tailwind/shadcn direction in D-035 and aligned the architecture, naming, and agent guidance. shared UI controls remains in supporting and not-yet-migrated discovery elements.
 - `npx tsc --noEmit`: passed. ESLint on changed TypeScript files: passed with no output.
 - No tests or browser checks were run. Responsive, keyboard, theme, and visual comparison with the attached references still need browser review. This does not change C07 or M1 acceptance status.
 - A repeated-component audit removed the unused authenticated search toolbar, category strip, duplicate detail heading, and shared results toolbar. Sorting now flows through `JobDiscoverySearchFilters`; current filters, search, result summary, and shared detail content each have one active implementation. Removed the unreferenced `JobMatchAvailability` duplicate trigger. `JobFilters` and `JobPagination` remain exported but have no runtime call sites; they are dormant utilities with distinct behavior, so were not included in this focused cleanup.
+
+
+---
+
+## Final closure note — 2026-10-24
+
+Milestone 1 is **finished, accepted, and closed**. M1-C01, M1-C02, M1-C03, M1-C04, M1-C05, M1-C06, M1-C07, M1-C08, and M1-C09 are all **Accepted**, with the source limitations and evidence boundary documented above. The user's explicit acceptance and confirmation that testing is complete supersede earlier in-progress snapshots in this historical record.

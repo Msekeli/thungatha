@@ -26,8 +26,12 @@ export function JobCardButton({
           .toUpperCase()}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="break-words text-base font-bold leading-tight text-[var(--th-fg)]">{job.title}</span>
-        <span className="text-sm text-[var(--th-fg-muted)]">{job.employer_name || "Employer not listed"}</span>
+        <span className="break-words text-base font-bold leading-tight text-[var(--th-fg)]">
+          {job.title}
+        </span>
+        <span className="text-sm text-[var(--th-fg-muted)]">
+          {job.employer_name || "Employer not listed"}
+        </span>
         <JobMetadata
           location={job.location_text}
           employmentType={job.employment_type}

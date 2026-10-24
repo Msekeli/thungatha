@@ -39,7 +39,10 @@ export function JobMetadata({
   return (
     <div className="flex flex-wrap gap-x-3 gap-y-1.5">
       {items.map(({ label, icon: Icon }) => (
-        <span key={label} className="inline-flex items-center gap-1 text-xs text-fg-muted">
+        <span
+          key={label}
+          className="inline-flex items-center gap-1 text-xs text-fg-muted"
+        >
           <Icon size={13} aria-hidden="true" /> {label}
         </span>
       ))}

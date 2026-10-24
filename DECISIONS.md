@@ -21,7 +21,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-002 | Next.js App Router, React, strict TypeScript, hosted on Vercel | Established application and hosting direction. | Confirmed |
 | D-003 | Clerk is the authentication baseline | Resolve identity server-side; authentication alone does not enforce record ownership. | Confirmed |
 | D-004 | Supabase PostgreSQL is the primary relational database | Schema changes must be repeatable and version-controlled. | Confirmed |
-| D-005 | MUI for reusable components and Tailwind CSS v4 for layout and utilities | Previous UI direction; replaced by D-035. | Superseded |
+| D-005 | Earlier reusable-component and utility styling approach | Superseded by the shared-token and Tailwind CSS v4 direction in D-035 and D-040. | Superseded |
 | D-006 | Docker is optional | Local development must not require a running Docker daemon as a universal prerequisite. | Confirmed |
 | D-007 | Do not introduce an ORM by default | Use the existing Supabase JS client and SQL migrations unless a documented need justifies a change. | Confirmed |
 | D-008 | The confirmed professional profile is the source of truth | Imported and AI-generated information remains a draft until reviewed and confirmed by the user. | Confirmed |
@@ -37,7 +37,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 ### D-035 — Tailwind CSS and shadcn/ui direction
 
 - **Status:** Confirmed
-- **Decision:** Use Tailwind CSS v4 and shadcn/ui patterns for the interface. MUI has been removed from the application.
+- **Decision:** Use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls for the interface.
 - **Rationale:** The user is redesigning the interface and selected Tailwind and shadcn/ui as the direction.
 - **Constraints:** Preserve existing shared controls where suitable. Do not recreate components or add a dependency solely to imitate shadcn/ui.
 
@@ -234,3 +234,37 @@ When a decision is approved or changed:
 - **Consequences:** Remove the separate public discovery implementation and its exclusive components/hooks when no longer referenced. Public and authenticated data may still differ where identity legitimately affects saved/dismissed state.
 - **Verification:** Local TypeScript check and final ESLint run passed with no errors or warnings. Unit/E2E/build checks were blocked by the test dependency, sandbox port permission, and external font fetch respectively; see the M1-C07 record.
 - **Review trigger:** Revisit only if product requirements establish a public-only discovery workflow that cannot be composed around the shared screen.
+
+
+### D-038 — No AI extraction in M1 without a demonstrated content gap
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed for M1
+- **Context:** M1-C05 required a decision on whether provider content needs AI extraction.
+- **Decision:** Do not add AI extraction to M1. Use deterministic validation and normalization for the structured provider responses currently supported. Reopen only if a permitted source demonstrates a concrete extraction gap and the scope is explicitly reviewed.
+- **Rationale:** AI is not justified as an additional dependency where deterministic processing meets the current Discovery requirements.
+- **Evidence/validation:** The M1 source-validation report documents structured provider payloads; M1 closeout records user acceptance on 2026-10-24.
+- **Consequences:** M1-C05 is accepted as unnecessary for the current scope. This does not prevent a future, separately approved AI capability.
+- **Review trigger:** A source-content audit identifies a concrete, tested need that deterministic extraction cannot satisfy.
+
+### D-039 — M1 acceptance with explicit source limitations
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed for M1 scope
+- **Context:** M1 closure requires the source limitations to be visible and must not conflate technical connectivity with permission for ongoing production use.
+- **Decision:** Accept and close M1 with the source limitations recorded in the M1 milestone document. Adzuna remains excluded from ongoing use unless explicitly reopened. Jooble and public employer ATS integrations remain subject to their documented terms, attribution, quotas, freshness, and destination-quality constraints.
+- **Rationale:** The user has explicitly accepted M1 closure, while the repository must continue to distinguish implementation validation from legal/operational source approval.
+- **Evidence/validation:** The user's M1 acceptance on 2026-10-24 and the source-validation report supplied to the project.
+- **Consequences:** M1 is closed with limitations carried forward. This decision is not blanket approval for unrestricted use of every provider and does not reopen Adzuna.
+- **Review trigger:** New source-specific approval evidence or an explicit user decision to reopen a provider.
+
+
+### D-040 — Shared design tokens, component size, and controlled CSS introduction
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed
+- **Context:** Component-local visual values can cause theme drift and inconsistent interfaces. Milestone 2 must follow the same rules from its first change.
+- **Decision:** Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use existing semantic classes and shared theme tokens in `src/theme/tokens.json` and generated `src/styles/tokens.css`. Use Tailwind CSS v4 for layout and ordinary styling, and reuse existing shadcn/ui patterns and Base UI/shared controls. A handwritten component must remain at or below 100 physical lines; warn at 80 and refactor by cohesive responsibility. The same 100-line rule applies to other maintained handwritten source files. Before adding a CSS file or custom selector, explain why tokens, shared controls, and Tailwind are insufficient and obtain the user's agreement. CSS is allowed only when necessary and must remain minimal and scoped.
+- **Rationale:** Centralized tokens preserve theme consistency; existing controls reduce duplication; concise components are easier to review and maintain; deliberate CSS introduction prevents competing styling systems.
+- **Consequences:** Apply these rules to all new M2 work. Existing legacy violations should be recorded and addressed incrementally rather than triggering unrelated rewrites.
+- **Review trigger:** Revisit only when a concrete UI requirement cannot be met through shared tokens, existing controls, or Tailwind CSS v4.

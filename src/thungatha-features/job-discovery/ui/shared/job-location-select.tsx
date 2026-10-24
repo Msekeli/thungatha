@@ -8,10 +8,17 @@ type Props = {
   ariaLabel?: string;
 };
 
-export function JobLocationSelect({ value, onChange, ariaLabel = "Search location" }: Props) {
+export function JobLocationSelect({
+  value,
+  onChange,
+  ariaLabel = "Search location",
+}: Props) {
   return (
     <div className="relative flex h-11 min-w-0 flex-1 items-center rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] text-[var(--th-fg)] transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 md:flex-none">
-      <MapPin className="pointer-events-none absolute left-3 size-[17px] shrink-0 text-[var(--th-accent)]" aria-hidden="true" />
+      <MapPin
+        className="pointer-events-none absolute left-3 size-[17px] shrink-0 text-[var(--th-accent)]"
+        aria-hidden="true"
+      />
       <select
         aria-label={ariaLabel}
         value={value || "Anywhere"}
@@ -26,7 +33,10 @@ export function JobLocationSelect({ value, onChange, ariaLabel = "Search locatio
         <option value="Durban">Durban</option>
         <option value="Remote">Remote</option>
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 size-4 text-[var(--th-fg-muted)]" aria-hidden="true" />
+      <ChevronDown
+        className="pointer-events-none absolute right-3 size-4 text-[var(--th-fg-muted)]"
+        aria-hidden="true"
+      />
     </div>
   );
 }
