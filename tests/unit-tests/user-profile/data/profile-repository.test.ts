@@ -1,80 +1,59 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import {
-  PROFILE_SELECT_COLUMNS,
-  readProfile,
-  saveProfile,
-} from "@/thungatha-features/user-profile/server/repository";
+import { PROFILE_SELECT_COLUMNS, readProfile, saveProfile } from "@/thungatha-features/user-profile/server/repository";
 
-vi.mock("@/lib/supabase/server", () => ({
-  createAuthenticatedSupabaseClient: vi.fn(),
-}));
+vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.fn() }));
 vi.mock("server-only", () => ({}));
 
 const createClient = vi.mocked(createAuthenticatedSupabaseClient);
 
-describe("profile repository ownership scope", () => {
+function setupQuery(updateData: unknown, insertData: unknown = null) {
+  const readMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+  const readEq = vi.fn().mockReturnValue({ maybeSingle: readMaybeSingle });
+  const select = vi.fn().mockReturnValue({ eq: readEq });
+  const updateMaybeSingle = vi.fn().mockResolvedValue({ data: updateData, error: null });
+  const updateSelect = vi.fn().mockReturnValue({ maybeSingle: updateMaybeSingle });
+  const updateEq = vi.fn().mockReturnValue({ select: updateSelect });
+  const update = vi.fn().mockReturnValue({ eq: updateEq });
+  const insertSingle = vi.fn().mockResolvedValue({ data: insertData, error: null });
+  const insertSelect = vi.fn().mockReturnValue({ single: insertSingle });
+  const insert = vi.fn().mockReturnValue({ select: insertSelect });
+  const from = vi.fn().mockReturnValue({ select, update, insert });
+  createClient.mockResolvedValue({ from } as never);
+  return { from, select, readEq, update, updateEq, insert, updateMaybeSingle };
+}
+
+describe("profile repository ownership and partial updates", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("filters profile reads by the Clerk identity passed by the server route", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-    const eq = vi.fn().mockReturnValue({ maybeSingle });
-    const select = vi.fn().mockReturnValue({ eq });
-    const from = vi.fn().mockReturnValue({ select });
-    createClient.mockResolvedValue({ from } as never);
+  it("filters profile reads by the server-resolved identity", async () => {
+    const q = setupQuery(null);
     const getToken = vi.fn().mockResolvedValue("session-token");
-
     await readProfile("user_alice", getToken);
-
     expect(createClient).toHaveBeenCalledWith(getToken);
-    expect(from).toHaveBeenCalledWith("profiles");
-    expect(select).toHaveBeenCalledWith(PROFILE_SELECT_COLUMNS);
-    expect(eq).toHaveBeenCalledWith("user_id", "user_alice");
+    expect(q.from).toHaveBeenCalledWith("profiles");
+    expect(q.select).toHaveBeenCalledWith(PROFILE_SELECT_COLUMNS);
+    expect(q.readEq).toHaveBeenCalledWith("user_id", "user_alice");
   });
 
-  it("writes the server-resolved owner ID and no client-selected identity", async () => {
-    const single = vi.fn().mockResolvedValue({ data: { display_name: "Alice" }, error: null });
-    const select = vi.fn().mockReturnValue({ single });
-    const upsert = vi.fn().mockReturnValue({ select });
-    const from = vi.fn().mockReturnValue({ upsert });
-    createClient.mockResolvedValue({ from } as never);
-    const getToken = vi.fn().mockResolvedValue("session-token");
-
-    await saveProfile("user_alice", "Alice", getToken);
-
-    expect(upsert).toHaveBeenCalledWith(
-      { user_id: "user_alice", display_name: "Alice" },
-      { onConflict: "user_id" },
-    );
+  it("inserts a first profile using only server-resolved ownership", async () => {
+    const q = setupQuery(null, { display_name: "Alice" });
+    await saveProfile("user_alice", "Alice", vi.fn());
+    expect(q.update).toHaveBeenCalledWith({ display_name: "Alice" });
+    expect(q.updateEq).toHaveBeenCalledWith("user_id", "user_alice");
+    expect(q.insert).toHaveBeenCalledWith({ user_id: "user_alice", display_name: "Alice" });
   });
 
-  it("maps structured profile input fields to database columns", async () => {
-    const single = vi.fn().mockResolvedValue({ data: {}, error: null });
-    const select = vi.fn().mockReturnValue({ single });
-    const upsert = vi.fn().mockReturnValue({ select });
-    const from = vi.fn().mockReturnValue({ upsert });
-    createClient.mockResolvedValue({ from } as never);
-    const getToken = vi.fn().mockResolvedValue("session-token");
-
-    await saveProfile(
-      "user_alice",
-      {
-        personalDetails: { fullName: "Alice", email: "alice@example.com", country: "South Africa" },
-        skills: ["TypeScript"],
-      },
-      getToken,
-    );
-
-    expect(upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user_id: "user_alice",
-        display_name: "Alice",
-        full_name: "Alice",
-        email: "alice@example.com",
-        country: "South Africa",
-        skills: ["TypeScript"],
-      }),
-      { onConflict: "user_id" },
-    );
+  it("updates only supplied fields and preserves omitted sections", async () => {
+    const q = setupQuery({ country: "South Africa", skills: ["TypeScript"] });
+    await saveProfile("user_alice", {
+      personalDetails: { fullName: "Alice", country: "South Africa" },
+      skills: ["TypeScript"],
+    }, vi.fn());
+    expect(q.update).toHaveBeenCalledWith(expect.objectContaining({
+      user_id: undefined, display_name: "Alice", full_name: "Alice",
+      country: "South Africa", skills: ["TypeScript"],
+    }));
+    expect(q.insert).not.toHaveBeenCalled();
   });
-});
+}
