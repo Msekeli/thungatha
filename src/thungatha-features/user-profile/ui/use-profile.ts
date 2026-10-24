@@ -5,17 +5,27 @@ import type { UserProfileDto } from "../server/user-profile-schema";
 
 export const createBlankProfile = (): UserProfileDto => ({
   displayName: null,
-  personalDetails: { fullName: null, email: null, phone: null, location: null, linkedinUrl: null, portfolioUrl: null },
-  summary: null, workExperience: [], education: [], skills: [], certifications: [], projects: [],
-  masterCv: null, confirmedAt: null, profileVersion: 1,
+  personalDetails: {
+    fullName: null, email: null, phone: null, location: null, country: "South Africa",
+    residentialSuburb: null, residentialCity: null, residentialProvince: null,
+    residentialPostalCode: null, linkedinUrl: null, portfolioUrl: null,
+  },
+  summary: null, workExperience: [], education: [], skills: [], certifications: [],
+  projects: [], languages: [], personalAttributes: [], masterCv: null,
+  confirmedAt: null, profileVersion: 1,
 });
 
 export function isProfileEmpty(p: UserProfileDto | null): boolean {
   if (!p) return true;
+  const d = p.personalDetails;
   return (
-    !p.displayName && !p.personalDetails.fullName && !p.personalDetails.email && !p.personalDetails.phone && !p.personalDetails.location && !p.personalDetails.country && !p.personalDetails.linkedinUrl && !p.personalDetails.portfolioUrl && !p.summary &&
-    p.workExperience.length === 0 && p.education.length === 0 &&
-    p.skills.length === 0 && p.certifications.length === 0 && p.projects.length === 0
+    !p.displayName && !d.fullName && !d.email && !d.phone && !d.location &&
+    !d.country && !d.residentialSuburb && !d.residentialCity &&
+    !d.residentialProvince && !d.residentialPostalCode && !d.linkedinUrl &&
+    !d.portfolioUrl && !p.summary && p.workExperience.length === 0 &&
+    p.education.length === 0 && p.skills.length === 0 &&
+    p.certifications.length === 0 && p.projects.length === 0 &&
+    p.languages.length === 0 && p.personalAttributes.length === 0
   );
 }
 
