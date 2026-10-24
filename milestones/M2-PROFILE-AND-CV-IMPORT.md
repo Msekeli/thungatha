@@ -38,6 +38,88 @@ M2 is planned but implementation has not started. Begin with M2-C01 and an audit
 - Keep every handwritten component at or below 100 physical lines, warning at 80. Apply the repository's 100-line limit to other maintained handwritten source files too. Refactor by cohesive responsibility, not by compressing code or fragmenting files.
 - Before and after each meaningful code change, inspect line counts, run relevant checks, and record actual results. Do not claim tests or visual acceptance that were not performed.
 
+## UI design brief — Profile and CV import
+
+The intended experience is deliberately simple: upload an existing CV, extract what can be read, review the prefilled information, correct gaps, and save. Do not make AI chat the centre of this workflow or make AI a prerequisite for a successful import.
+
+### Screen 1 — Profile overview / first-time empty state
+
+Purpose: explain what Profile stores and give the user one obvious next action.
+
+- Page title: **Your professional profile**.
+- Short explanation: the profile stores confirmed experience and qualifications used by Job Matching and CV Studio.
+- Primary action: **Upload your CV**.
+- Secondary action: **Enter details manually** (available if the user has no CV or prefers not to upload one).
+- If a profile/master CV already exists, show a compact profile summary and the current CV file card instead of the first-time empty state.
+- Show a useful empty state without implying the user must finish every field before using the rest of Thungatha.
+
+### Screen 2 — CV upload
+
+Include:
+- Drag-and-drop target and a **Choose file** button.
+- Clearly list the formats and maximum file size only after those limits are confirmed in C01/C04; do not invent unsupported formats in the design.
+- Selected-file row with file name, type/size, and **Remove** or **Choose another file**.
+- Primary action: **Import CV**.
+- Secondary action: **Cancel**.
+- Uploading/extracting progress, disabled duplicate submissions, and understandable error/retry states for unsupported, malformed, empty, too-large, failed, or interrupted uploads.
+- Privacy reassurance: the CV is private and used to populate this user's profile. Do not make unreviewed claims about retention or provider processing; show those details only after policy is decided.
+
+### Screen 3 — Review extracted details
+
+After extraction, show a review form with prefilled values where detected. Group information into readable sections, not one long undifferentiated form:
+
+1. **Personal and contact details:** full name, email, phone, location (city/region and country). Do not force optional fields.
+2. **Professional summary:** short profile/about statement.
+3. **Work experience:** repeatable entries with job title, employer, location (optional), start/end dates, current-role toggle, and responsibilities/achievements text.
+4. **Education:** repeatable entries with qualification, institution, field of study (optional), start/end or completion date.
+5. **Skills:** editable list or tags; allow adding and removing individual skills.
+6. **Certifications and licences:** repeatable entries with name, issuing organisation (optional), issue/expiry dates (optional).
+7. **Projects:** repeatable entries with project name, description, role/contribution and link (optional), where present in the CV.
+8. **Master CV file:** show the uploaded filename and import state.
+
+Only include sections that fit the agreed Profile data contract. Do not invent values or create speculative fields merely to fill space. Missing sections should be visibly empty/optional, not filled with generated content.
+
+Each section must support **Edit**, and repeatable sections must support **Add**, **Remove**, and where appropriate **Add another**. Keep field labels explicit and include inline validation. Preserve dates and wording as extracted unless the user edits them.
+
+Show clear review status for extracted content: extracted values are **Needs review** until confirmed. If extraction is uncertain or a field is empty, mark it for user attention without pretending the information is false or absent from the original CV.
+
+Primary action: **Review and save profile** (or equivalent wording that makes confirmation explicit).
+Secondary actions: **Back**, **Cancel import**, and **Try extraction again** when extraction failed or can be retried.
+Do not use a single ambiguous **Done** button. Explain that saving confirms the reviewed fields. Users must be able to save a partial profile without fabricating missing information.
+
+### Screen 4 — Saved Profile
+
+Show:
+- A readable summary of confirmed profile sections.
+- A **Profile completeness** indicator only if it is based on agreed useful fields; avoid arbitrary percentages.
+- The current master CV file name and available actions, such as **View/download**, **Replace CV**, and **Remove CV**, subject to the confirmed storage/retention policy.
+- A clear **Edit profile** action.
+- A confirmation message after saving, and a recoverable error state if persistence fails.
+- When replacing a CV, distinguish replacing the file from overwriting confirmed profile facts. Ask the user to review new extracted information before applying it.
+
+### Required interaction and visual states
+
+Design for:
+- First-time empty profile.
+- Existing profile and existing master CV.
+- File selected and validation failure.
+- Uploading/extracting progress.
+- Extraction success with all, some, or very few fields found.
+- Extraction failure with retry and manual-entry fallback.
+- Review form with missing/uncertain fields.
+- Save in progress, save success, and save failure.
+- Existing confirmed data that conflicts with a newly imported CV.
+- Replace/cancel/remove confirmation where data could be lost.
+- Mobile and desktop layouts, keyboard navigation, visible focus, accessible labels, and clear loading/empty/error states.
+
+### UI implementation constraints
+
+Follow the repository's existing design system and component reuse rule: inspect components in the Profile feature first, then the global/shared library. Do not import private components from another feature. Create a new component only if neither level contains a suitable fit. Use shared theme tokens and Tailwind CSS v4/shadcn/ui patterns; do not define local design tokens or custom CSS without discussing the need and receiving approval. Keep each handwritten component at or below 100 physical lines, with a warning at 80.
+
+### Extraction strategy — no mandatory AI
+
+The first implementation should attempt conventional text extraction and deterministic parsing for the agreed supported file formats. CV formats are inconsistent, so the design must handle partial extraction and offer manual editing. AI is optional, not required for the core journey. Only propose adding AI after representative CV tests demonstrate a meaningful quality gap that deterministic parsing cannot reasonably address. If later introduced, it must be an optional server-side adapter, return schema-validated candidate fields, respect privacy/consent requirements, and never auto-confirm or silently overwrite existing confirmed data.
+
 ## Checkpoint status rules
 
 Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accepted**. Record actual changes, tests, evidence, unresolved issues, next action and user review for each checkpoint.
