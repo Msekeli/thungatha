@@ -18,6 +18,7 @@ export function ProfileEditorFields({ profile, onChange }: {
   const details = profile.personalDetails;
   const requiredDetails = [details.fullName, details.email, details.phone, details.location, details.country, details.residentialSuburb, details.residentialCity, details.residentialProvince];
   const detailsComplete = requiredDetails.every((value) => Boolean(value?.trim()));
+  const educationComplete = profile.education.some((item) => Boolean(item.educationLevel?.trim() && item.qualification.trim() && item.institution.trim()));
   return <div className="th-profile-editor-fields space-y-3">
     <ProfileAccordion title="Personal details" description="Contact and location information" status={detailsComplete ? "Complete" : "Required"}>
       <ProfilePersonalDetailsForm details={details} onChange={(personalDetails) => onChange({ ...profile, personalDetails })} />
@@ -31,7 +32,7 @@ export function ProfileEditorFields({ profile, onChange }: {
     <ProfileAccordion title="Work experience" description="Your recent roles and responsibilities" status={profile.workExperience.length ? `${profile.workExperience.length} added` : "Optional"}>
       <ProfileExperienceEditor items={profile.workExperience} onChange={(workExperience) => onChange({ ...profile, workExperience })} />
     </ProfileAccordion>
-    <ProfileAccordion title="Education" description="At least one complete education record is required for profile completion" status={profile.education.length ? `${profile.education.length} added` : "Required"}>
+    <ProfileAccordion title="Education" description="At least one complete education record is required for profile completion" status={educationComplete ? `${profile.education.length} added` : profile.education.length ? "Needs details" : "Required"}>
       <ProfileEducationEditor items={profile.education} onChange={(education) => onChange({ ...profile, education })} />
     </ProfileAccordion>
     <ProfileAccordion title="Skills" description="Skills employers can search for" status={profile.skills.length ? `${profile.skills.length} added` : "Optional"}>
