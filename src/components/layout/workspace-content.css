@@ -46,15 +46,20 @@
 
 /* Profile owns the only scroll region; its shell and page header stay fixed. */
 .th-workspace-page-content:has(.th-profile-page) {
+  display: flex;
   flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
   padding: 0;
 }
 .th-profile-page {
   box-sizing: border-box;
-  height: 100%;
-  max-height: 100%;
+  flex: 1 1 0%;
+  width: 100%;
+  height: auto;
+  max-height: none;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
