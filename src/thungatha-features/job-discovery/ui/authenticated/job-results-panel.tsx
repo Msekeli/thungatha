@@ -28,11 +28,24 @@ export function AuthenticatedJobResultsPanel({
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3">
         <div className="flex items-center gap-3 text-sm text-[var(--th-fg-muted)]">
           <span aria-live="polite">{resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}</span>
-          {isAuthenticated && (
-            <button type="button" onClick={() => onCategoryChange("dismissed", "Dismissed")} className={category === "dismissed" ? "font-semibold text-[var(--th-accent)] underline underline-offset-4" : "text-[var(--th-accent)] hover:underline"} aria-pressed={category === "dismissed"}>
+          {isAuthenticated && category === "dismissed" ? (
+            <button
+              type="button"
+              onClick={() => onCategoryChange("all", "All opportunities")}
+              className="inline-flex items-center rounded-lg px-2 py-1 font-medium text-[var(--th-accent)] hover:bg-[var(--th-line)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/40"
+            >
+              ← Back to all jobs
+            </button>
+          ) : isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => onCategoryChange("dismissed", "Dismissed")}
+              className="text-[var(--th-accent)] hover:underline"
+              aria-pressed={false}
+            >
               Dismissed ({dismissedCount})
             </button>
-          )}
+          ) : null}
         </div>
         <div className="flex items-center gap-2">
           <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)]" aria-hidden="true" />
