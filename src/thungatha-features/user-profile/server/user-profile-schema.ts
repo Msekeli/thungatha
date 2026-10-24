@@ -2,7 +2,9 @@ import { z } from "zod";
 import {
   certificationItemSchema,
   educationItemSchema,
+  languageItemSchema,
   masterCvMetadataSchema,
+  personalAttributeItemSchema,
   personalDetailsSchema,
   projectItemSchema,
   workExperienceItemSchema,
@@ -22,6 +24,8 @@ export const updateProfileSchema = z
     skills: z.array(skillItemSchema).max(100).optional(),
     certifications: z.array(certificationItemSchema).max(100).optional(),
     projects: z.array(projectItemSchema).max(100).optional(),
+    languages: z.array(languageItemSchema).max(100).optional(),
+    personalAttributes: z.array(personalAttributeItemSchema).max(100).optional(),
     masterCv: masterCvMetadataSchema.nullable().optional(),
     confirmedAt: z
       .string()
@@ -43,6 +47,8 @@ export type UserProfileDto = {
   skills: string[];
   certifications: Array<z.infer<typeof certificationItemSchema>>;
   projects: Array<z.infer<typeof projectItemSchema>>;
+  languages: string[];
+  personalAttributes: string[];
   masterCv: z.infer<typeof masterCvMetadataSchema> | null;
   confirmedAt: string | null;
   profileVersion: number;
