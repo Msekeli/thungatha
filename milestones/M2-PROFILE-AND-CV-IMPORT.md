@@ -14,7 +14,7 @@ The CV Studio design expects the master CV to load from Profile when one exists.
 
 ## M2 start plan and engineering constraints
 
-M2-C01 implementation is in progress. The current branch already contains a structured Profile API, Zod validation, a repository and mapper, Clerk-derived identity, and an initial `profiles` migration. C01 is extending that contract with explicit country data, bounded repeatable sections and server-maintained profile version history before CV upload or extraction is introduced.
+M2-C01 implementation is in progress. The current branch already contains a structured Profile API, Zod validation, a repository and mapper, Clerk-derived identity, and an initial `profiles` migration. C01 extends the contract with bounded repeatable sections, server-maintained profile version history, structured residential-area fields (suburb, city/town, province and optional postal code; no street address), languages, personal attributes and work achievements. The extension is profession-neutral and remains optional where appropriate.
 
 ### Required execution order
 
