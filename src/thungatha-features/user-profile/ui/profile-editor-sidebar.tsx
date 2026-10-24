@@ -2,12 +2,13 @@
 
 import { CheckCircle2, Circle, CircleDashed } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { UserProfileDto } from "../server/user-profile-schema";
+import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
 
-export function ProfileEditorSidebar({ profile, saving, onSave, onCancel }: {
-  profile: UserProfileDto; saving: boolean; onSave: () => void; onCancel: () => void;
+export function ProfileEditorSidebar({ profile, saving, onSave }: {
+  profile: UserProfileDto; saving: boolean; onSave: () => void;
 }) {
   const d = profile.personalDetails;
+  const complete = profileCompletionSchema.safeParse(profile).success;
   const detailsDone = [d.fullName, d.email, d.phone, d.location, d.country, d.residentialSuburb, d.residentialCity, d.residentialProvince].every((v) => Boolean(v?.trim()));
   const educationDone = profile.education.some((e) => Boolean(e.educationLevel?.trim() && e.qualification.trim() && e.institution.trim()));
   const items = [
@@ -32,7 +33,7 @@ export function ProfileEditorSidebar({ profile, saving, onSave, onCancel }: {
         <span className={done ? "text-foreground" : "text-muted-foreground"}>{label}<span className="th-profile-completion-kind">{done ? "Complete" : isRequired ? "Required" : "Optional"}</span></span>
       </li>)}
     </ul>
-    <p className="mt-4 border-t border-border pt-3 text-xs leading-5 text-muted-foreground">Optional sections do not block completion. Incomplete required sections stay unchecked.</p>
-    <div className="mt-4 flex flex-col gap-2"><Button className="w-full" disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Save draft"}</Button><Button className="w-full" variant="outline" disabled={saving} onClick={onCancel}>Cancel</Button></div>
+    <p className="mt-3 border-t border-border pt-2 text-xs leading-4 text-muted-foreground">Optional sections do not block completion. Incomplete required sections stay unchecked.</p>
+    <div className="mt-3"><Button className="w-full" disabled={saving} onClick={onSave}>{saving ? "Saving…" : complete ? "Save Profile" : "Save draft"}</Button></div>
   </section>;
 }
