@@ -71,6 +71,8 @@ export function useProfile() {
     saving,
     error,
     message,
+    dismissError: () => setError(""),
+    dismissMessage: () => setMessage(""),
     loadFailed,
     mode,
     setMode,
