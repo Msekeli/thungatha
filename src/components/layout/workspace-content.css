@@ -155,3 +155,54 @@
   min-height: 104px;
   resize: vertical;
 }
+
+@media (max-width: 700px) {
+  .th-profile-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .th-profile-form-scroll > .py-6 {
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
+  .th-profile-editor-layout {
+    gap: 12px;
+  }
+  .th-profile-editor-heading h1 {
+    font-size: 1.5rem;
+  }
+  .th-profile-editor-heading > p:last-child {
+    margin-top: 8px;
+    padding: 10px;
+  }
+  .th-profile-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .th-profile-editor-fields {
+    grid-row: 1;
+    padding-right: 2px;
+    padding-bottom: 8px;
+  }
+  .th-profile-editor-sidebar {
+    grid-row: 2;
+    align-self: stretch;
+  }
+  .th-profile-editor-sidebar > div {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .th-profile-editor-sidebar > div > div:first-child,
+  .th-profile-editor-sidebar > div > p {
+    display: none;
+  }
+  .th-profile-editor-sidebar > div > div:last-child {
+    flex-direction: row;
+    gap: 8px;
+    padding-top: 0;
+  }
+  .th-profile-editor-sidebar button {
+    min-height: 40px;
+  }
+}
