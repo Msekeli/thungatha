@@ -130,7 +130,9 @@ Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
-**Status: Not started — planning updated 2026-10-24**
+**Status: Not started**
+
+**Planning note:** Detailed execution order and engineering constraints were updated on 2026-10-24. Begin at M2-C01.
 
 **Outcome:** A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
 

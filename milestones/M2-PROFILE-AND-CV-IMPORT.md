@@ -1,6 +1,7 @@
 # M2 — Profile and CV Import
 
-**Status:** Not started — plan updated 2026-10-24  
+**Status:** Not started  
+**Planning note:** Plan updated 2026-10-24; ready to begin at M2-C01.  
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
 **Design references:** The Profile experience implied by the supplied CV Studio input screen; no dedicated Profile screenshot was supplied.  
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
