@@ -44,7 +44,7 @@
   padding: 20px 24px;
 }
 
-/* Profile owns the only scroll region; its shell and page header stay fixed. */
+/* The workspace content is fixed; scrolling is delegated to the inner form region. */
 .th-workspace-page-content:has(.th-profile-page) {
   display: flex;
   flex: 1 1 0%;
@@ -54,12 +54,22 @@
   overflow: hidden;
   padding: 0;
 }
+/* Fixed page frame; only the inner form region scrolls. */
 .th-profile-page {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.th-profile-form-scroll {
   flex: 1 1 0%;
   width: 100%;
-  height: auto;
-  max-height: none;
+  min-width: 0;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
