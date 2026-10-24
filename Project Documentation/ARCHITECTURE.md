@@ -38,6 +38,18 @@ The architecture must deliver the approved product specification and milestones 
 
 Verify current platform limits and integration guidance before relying on function duration, scheduling, payload size, database connection, or provider quotas. Keep local, preview, and production secrets separate.
 
+### Component discovery and ownership
+
+Apply the repository's reuse-before-create rule to every new UI component:
+
+1. Inspect the current feature's own components first and reuse or extend a suitable match.
+2. If no suitable feature-owned component exists, inspect the global/shared component library.
+3. Create a component only when neither level provides a suitable fit. Keep feature-specific components inside their owning feature; place genuinely cross-feature components in the global/shared library.
+4. Never import another feature's private component directly. When a capability is needed by multiple features, evaluate whether it belongs in the shared layer rather than coupling features.
+5. Do not force an unsuitable component into a new role. Briefly explain why existing candidates do not fit before adding a new one.
+
+The purpose is to prevent avoidable duplication while preserving feature boundaries. Similar appearance alone does not make a component suitable for reuse.
+
 ## 3. System context and trust boundaries
 
 ```mermaid
