@@ -1,6 +1,6 @@
 # M2 — Antigravity Execution Brief
 
-**Branch:** `ui-fixing`  
+**Working branch:** `dev`  
 **Status:** Planning only. Implement only after the user approves each checkpoint.
 
 ## Read first
@@ -46,6 +46,10 @@ These are responsive compositions and UI states, not separate routes. Match the 
 - Extracted data is a proposal until the user explicitly confirms it. Never fabricate missing fields or silently overwrite confirmed facts.
 - Begin with conventional text extraction and deterministic parsing. AI is optional; propose it only if representative CV testing shows a meaningful quality gap, then obtain approval for provider, privacy/consent, cost and adapter design.
 - Do not implement CV tailoring or Matching as part of M2.
+
+## Local workflow and remote safety
+
+Antigravity and GitHub Copilot operate on the user's local checkout of the `dev` branch. Do not push, fetch-and-merge, create/update remote branches, open PRs, or make remote repository changes. Do not use GitHub APIs or other remote write mechanisms. Local commits are allowed only for approved C01+ checkpoints, with a focused commit and report. The user controls when local commits are pushed to GitHub. C00 must not change application code or create a commit.
 
 ## Checkpoint and commit rules
 
