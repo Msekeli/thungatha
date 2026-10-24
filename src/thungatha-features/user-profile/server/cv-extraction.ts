@@ -56,28 +56,40 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
     /^(work experience|professional experience|employment history|career history|experience)$/i,
     /^(education|academic background|qualifications|skills|technical skills|certifications|projects|languages)$/i,
   );
-  const groups: string[][] = [];
-  for (const line of section) {
-    if (/^[-•·▪]/.test(line) && groups.length) groups[groups.length - 1].push(line.replace(/^[-•·▪]\s*/, ""));
-    else if (/\b(19|20)\d{2}\b/.test(line) && groups.length && groups[groups.length - 1].length < 3) groups[groups.length - 1].push(line);
-    else groups.push([line]);
+  const month = "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+  const token = "(?:" + month + "\\s+)?(?:19|20)\\d{2}|present|current";
+  const rangePattern = new RegExp("(" + token + "\\s*(?:[-–—]|to)\\s*" + token + ")", "i");
+  const normalizeDate = (value: string) => {
+    const match = value.match(new RegExp("^(" + month + ")\\s+((?:19|20)\\d{2})$", "i"));
+    if (!match) return /^(?:19|20)\\d{2}$/.test(value) ? value : null;
+    const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+    const number = months.indexOf(match[1].slice(0, 3).toLowerCase()) + 1;
+    return match[2] + "-" + String(number).padStart(2, "0");
+  };
+  const parseRange = (value: string) => {
+    const tokens = value.match(new RegExp(month + "\\s+(?:19|20)\\d{2}|(?:19|20)\\d{2}|present|current", "gi")) ?? [];
+    const dates = tokens.map((item) => /present|current/i.test(item) ? item : normalizeDate(item)).filter((item): item is string => Boolean(item));
+    return { startDate: dates[0] ?? "", endDate: dates[1] && !/present|current/i.test(dates[1]) ? dates[1] : null, isCurrent: dates.some((item) => /present|current/i.test(item)) };
+  };
+  const records: Array<{ heading: string; details: string[] }> = [];
+  for (const rawLine of section) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    if (!/^[-•·▪]/.test(line) && rangePattern.test(line)) records.push({ heading: line, details: [] });
+    else if (records.length) records[records.length - 1].details.push(line.replace(/^[-•·▪]\\s*/, "").trim());
   }
-  return groups.map((group, index) => {
-    const heading = group[0];
-    const parts = heading.split(/\s+(?:at|@|\||—|–)\s+/i);
-    const jobTitle = (parts[0] || "").replace(/\s*\((?:current|present)\)$/i, "").trim();
-    const employer = (parts[1] || group[1] || "").trim();
-    if (!jobTitle || !employer || jobTitle.length > 150 || employer.length > 150) return null;
-    const dateLine = group.find((line) => /\b(19|20)\d{2}\b/.test(line)) || "";
-    const dates = dateLine.match(/(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?\s+)?(?:19|20)\d{2}|present|current/gi) || [];
-    const isCurrent = /present|current/i.test(dateLine);
-    const description = group.slice(parts[1] ? 1 : 2).filter((line) => line !== dateLine).join(" ").trim();
-    return {
-      id: `cv-exp-${index + 1}`, jobTitle, employer,
-      startDate: dates[0] || "Not specified",
-      endDate: dates[1] && !/present|current/i.test(dates[1]) ? dates[1] : null,
-      isCurrent, description: description || null, achievements: [],
-    };
+  return records.map((record, index) => {
+    const range = record.heading.match(rangePattern);
+    if (!range || range.index === undefined) return null;
+    const heading = record.heading.slice(0, range.index).replace(/[|–—-]\\s*$/, "").trim();
+    const parts = heading.split(/\\s+\\|\\s+/).map((part) => part.trim()).filter(Boolean);
+    if (parts.length < 2) return null;
+    const jobTitle = parts[0].slice(0, 150);
+    const employer = parts.slice(1).join(" | ").slice(0, 150);
+    const dates = parseRange(range[1]);
+    if (!jobTitle || !employer || !dates.startDate) return null;
+    const description = record.details.map((line) => line.replace(/\\s+/g, " ").trim()).filter(Boolean).join(" ").slice(0, 5000);
+    return { id: `cv-exp-${index + 1}`, jobTitle, employer, startDate: dates.startDate, endDate: dates.endDate, isCurrent: dates.isCurrent, description: description || null, achievements: [] };
   }).filter((item): item is ExtractedExperience => item !== null).slice(0, 30);
 }
 function parseEducation(lines: string[]): ExtractedEducation[] {
