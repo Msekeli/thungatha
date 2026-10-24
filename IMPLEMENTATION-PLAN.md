@@ -46,7 +46,7 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | **In progress — C02 accepted; C03 in review** |
+| M2 | Profile and CV Import | **In progress — C02/C03 accepted; C04 in review** |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
@@ -421,3 +421,8 @@ No provider ingestion was re-run and no production database changes were made du
 **Verification:** no tests, lint, build, browser checks or Vercel operations were run, per user instruction. ChatGPT did not apply the Supabase migration or verify runtime storage policies. Do not claim security isolation has been tested. Staged-file cleanup remains a later lifecycle concern.
 
 **Next action:** user pulls latest `dev`, applies the new migration to the linked Supabase project, reviews the CV upload states, and reports acceptance or defects. Do not start C04 until C03 is accepted.
+
+
+## M2-C04 status update — 2026-10-24
+
+Server-side deterministic PDF/DOCX text extraction is implemented on `dev` using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Candidate fields remain unconfirmed and are not persisted. C04 remains in review pending user review with representative CVs. No automated or browser checks were run by ChatGPT, per instruction. Ensure local dependency manifest and lockfile changes are synchronized before a clean install.

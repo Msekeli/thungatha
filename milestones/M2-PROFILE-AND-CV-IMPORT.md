@@ -1,6 +1,6 @@
 # M2 — Profile and CV Import
 
-**Status:** In progress — C02 accepted; C03 implemented and awaiting user review.
+**Status:** In progress — C02 and C03 accepted; C04 in review.
 **Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has now been accepted by the user.
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
@@ -132,8 +132,8 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **M2-C00 — Repository and backend readiness audit:** Accepted / planning baseline; no application-code changes and no implementation commit required.
 - **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
 - **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
-- **M2-C03 — CV upload and private storage:** **In review** — PDF/DOCX, 5 MB limit, private Supabase Storage, user-scoped access, keep-current-until-confirmed replacement, and retention until user removal/replacement approved on 2026-10-24. Implementation commit and user verification pending.
-- **M2-C04 — Deterministic extraction and progress/failure states:** Not started.
+- **M2-C03 — CV upload and private storage:** **Accepted by user (2026-10-24)** — PDF/DOCX, 5 MB limit, private Supabase Storage and staged replacement safety. User applied the migration and reported local testing complete. Commit: `8828f04cbfe31662da841a7c4738d31d294c1bf0`.
+- **M2-C04 — Deterministic extraction and progress/failure states:** **In review** — server-side PDF/DOCX text extraction and deterministic candidate parsing added; results remain unconfirmed and are not persisted.
 - **M2-C05 — Review and confirmation workflow:** Not started.
 - **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
 - **M2-C07 — End-to-end acceptance and closeout:** Not started.
@@ -159,3 +159,16 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Verification:** no tests, lint, build, browser checks, or Vercel operations were run, per user instruction. The migration has not been applied by ChatGPT; the user must apply it to the linked Supabase project before storage works.
 - **Known limitation:** staged upload state is returned to the client and is not yet promoted to master-CV metadata. Extraction/review and safe promotion belong to later checkpoints. Staged-object cleanup policy needs to be addressed before lifecycle closeout.
 - **Next action:** user pulls/reviews the focused commit, applies the migration, and reports acceptance or defects. Do not begin C04 until C03 is accepted.
+
+
+## M2-C04 — Deterministic extraction and progress/failure states (2026-10-24)
+
+**Status:** In review — implementation committed to `dev`; user review pending.
+
+**Implemented:** Authenticated server-side text extraction for staged PDF/DOCX files using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Deterministic parsing proposes name, email, phone, LinkedIn URL, portfolio URL, summary and skills where recognizable. The UI exposes an explicit extraction action, busy state, retry, partial/failure messages and warnings.
+
+**Trust boundary:** Candidate values are display-only; they are not written to the profile or master-CV metadata and are not confirmed. Scanned PDFs/OCR, complex layouts, work-history/education extraction, and the C05 review/save workflow remain unsupported or future work.
+
+**Verification:** No tests, lint, build, browser checks or Vercel operations were run, per user instruction. The user installed extraction packages locally; package manifest/lockfile synchronization must be included with local dependency changes.
+
+**Next action:** user pulls/reconciles the checkpoint, reviews representative CV output, and reports acceptance or defects. Do not start C05 until C04 is accepted.

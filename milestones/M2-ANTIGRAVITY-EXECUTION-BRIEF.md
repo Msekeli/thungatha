@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
 **Working branch:** `dev`  
-**Status:** In progress — C02 accepted; C03 implementation prepared on 2026-10-24 and awaiting user review. Continue one approved checkpoint at a time.
+**Status:** In progress — C02/C03 accepted; C04 implementation prepared on 2026-10-24 and awaiting user review. Continue one approved checkpoint at a time.
 
 ## Read first
 
@@ -119,3 +119,12 @@ Exit evidence: actual test results, visual comparison evidence, security/privacy
 ## Required first response from Antigravity
 
 Perform **C00 only**. Return the audit and proposed C01 implementation plan. Do not edit application code, create migrations, change API contracts, install dependencies, or commit until the user approves C00.
+
+
+## M2-C04 implementation record — 2026-10-24
+
+C04 adds server-side text extraction for staged PDF/DOCX files using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Deterministic parsing returns candidate fields only; it does not write to confirmed Profile or master-CV data. The UI provides an explicit extraction action, busy state, retry, partial/failure messaging and warnings for unreadable/scanned PDFs. Scanned PDFs require OCR and are not supported by this checkpoint.
+
+The extraction endpoint derives identity on the server, validates that the staged storage path is under that user's prefix, downloads through the authenticated Supabase client and limits the object to 5 MB. No AI API is called.
+
+No tests, lint, build, browser checks or Vercel operations were run, per the user's standing instruction. Synchronize local `package.json` and `package-lock.json` changes with the remote checkpoint before a clean install.
