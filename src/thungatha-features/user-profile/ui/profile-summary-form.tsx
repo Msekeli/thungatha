@@ -1,25 +1,27 @@
 "use client";
 
-export function ProfileSummaryForm({
-  summary,
-  onChange,
-}: {
+import { Textarea } from "@/components/ui/textarea";
+
+export function ProfileSummaryForm({ summary, onChange }: {
   summary: string | null;
   onChange: (val: string) => void;
 }) {
   return (
-    <div className="rounded-xl border border-line bg-panel p-5">
-      <h2 className="text-sm font-semibold text-fg">Professional Summary</h2>
-      <p className="mt-1 text-xs text-fg-muted">
-        Short profile or about statement highlighting your experience.
+    <section className="rounded-xl border border-line bg-card p-5">
+      <h2 className="text-sm font-semibold text-card-foreground">Professional summary</h2>
+      <p className="mt-1 text-xs text-muted-foreground">
+        A concise statement highlighting your professional experience and strengths.
       </p>
-      <textarea
-        rows={3}
+      <Textarea
+        rows={4}
+        maxLength={5000}
         value={summary || ""}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-3 w-full rounded-lg border border-line bg-panel-2 p-3 text-xs text-fg placeholder:text-fg-muted/50 outline-none focus:border-accent"
-        placeholder="e.g. Software engineer with 4 years of experience building web applications..."
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-3"
+        placeholder="Summarise your experience, strengths, and the work you do."
+        aria-label="Professional summary"
       />
-    </div>
+      <p className="mt-1 text-right text-xs text-muted-foreground">{(summary || "").length}/5000</p>
+    </section>
   );
 }
