@@ -28,8 +28,8 @@ export function ProfileEditorView({
           Save a draft at any stage; optional sections can remain empty.
         </p>
         <p className="text-sm text-muted-foreground">
-          Fields marked <span className="font-semibold text-destructive">Required</span>
-          {" "}must be completed to add that entry. Other profile sections are optional.
+          Required fields must be completed for their entry or profile completion.
+          You can save a draft before everything is complete; certifications, licences and projects are optional.
         </p>
       </header>
       <div className="th-profile-editor-grid">
