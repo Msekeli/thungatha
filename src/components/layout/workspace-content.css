@@ -67,8 +67,52 @@
   overflow: hidden;
 }
 .th-profile-form-scroll {
+  display: flex;
   flex: 1 1 0%;
+  flex-direction: column;
   width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.th-profile-form-scroll > .py-6 {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.th-profile-form-state--edit {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.th-profile-editor-layout {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  gap: 18px;
+}
+.th-profile-editor-heading {
+  flex: 0 0 auto;
+}
+.th-profile-editor-grid {
+  display: grid;
+  flex: 1 1 0%;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 24px;
+  min-width: 0;
+  min-height: 0;
+}
+.th-profile-editor-fields {
   min-width: 0;
   min-height: 0;
   overflow-x: hidden;
@@ -76,6 +120,12 @@
   overscroll-behavior-y: contain;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
+  padding: 0 8px 12px 0;
+}
+.th-profile-editor-sidebar {
+  align-self: start;
+  min-width: 0;
+  min-height: 0;
 }
 
 /* Keep profile inputs consistent and comfortably tappable on phones. */
