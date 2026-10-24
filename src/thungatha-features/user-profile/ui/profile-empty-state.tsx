@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight, FileText, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProfileCvUpload } from "./profile-cv-upload";
 
 export function ProfileEmptyState({
   onStartManualEntry,
@@ -24,34 +25,7 @@ export function ProfileEmptyState({
         </p>
       </div>
 
-      <section className="rounded-2xl border border-line bg-panel p-5 shadow-sm sm:p-7">
-        <div className="flex items-start gap-4">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-panel-2 text-accent">
-            <FileText size={21} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-base font-semibold text-fg">Start from your CV</h2>
-              <span className="rounded-full bg-panel-2 px-2.5 py-1 text-[10px] font-semibold text-fg-muted">
-                Coming soon
-              </span>
-            </div>
-            <p className="mt-1 text-sm leading-relaxed text-fg-muted">
-              CV import is planned, but is not available yet. You can create
-              your profile manually in the meantime.
-            </p>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled
-              className="mt-4 w-full sm:w-auto"
-              title="CV import is not available yet"
-            >
-              CV import coming soon
-            </Button>
-          </div>
-        </div>
-      </section>
+      <ProfileCvUpload />
 
       <section className="rounded-2xl border border-accent/40 bg-panel p-5 sm:p-7">
         <div className="max-w-xl">

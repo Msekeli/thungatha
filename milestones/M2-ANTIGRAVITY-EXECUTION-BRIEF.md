@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
 **Working branch:** `dev`  
-**Status:** In progress — C02 accepted by the user on 2026-10-24; C03 is next. Continue one approved checkpoint at a time.
+**Status:** In progress — C02 accepted; C03 implementation prepared on 2026-10-24 and awaiting user review. Continue one approved checkpoint at a time.
 
 ## Read first
 
@@ -88,9 +88,9 @@ The user reviewed the local result and confirmed it was satisfactory. The increm
 
 ### C03 — CV upload and private storage (commit required)
 
-First agree supported formats, size limits, private storage, access policy, retention/deletion expectations and validation. Implement upload and selected-file state only; do not add extraction in this checkpoint.
+Approved by the user on 2026-10-24: PDF and DOCX only; maximum 5 MB; retain the current master CV until the user removes or replaces it; keep the existing CV until a new upload succeeds and the user confirms replacement. The implementation uses a private Supabase Storage bucket, Clerk-subject-scoped storage policies, authenticated upload endpoint, file validation, and selected-file/upload states only. Uploads are staged under a unique user-owned path and do not change `profiles.master_cv`; no extraction, public URL, or service-role key is used. The user must apply the migration to the linked Supabase project. Do not run tests, lint, builds, browser checks or Vercel operations unless the user changes that instruction.
 
-Exit evidence: valid/invalid file tests, private ownership/access checks, failure handling, configuration docs and a focused commit.
+Exit evidence: user review of valid/invalid upload states, private ownership/access policy review, failure handling and a focused commit. The user has explicitly paused automated checks and browser checks, so do not run them. Document that security isolation has not been tested.
 
 ### C04 — Deterministic extraction and progress/failure states (commit required)
 

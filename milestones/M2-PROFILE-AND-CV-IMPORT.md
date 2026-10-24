@@ -1,6 +1,6 @@
 # M2 — Profile and CV Import
 
-**Status:** In progress — C02 accepted; C03 is next.
+**Status:** In progress — C02 accepted; C03 implemented and awaiting user review.
 **Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has now been accepted by the user.
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
@@ -132,7 +132,7 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **M2-C00 — Repository and backend readiness audit:** Accepted / planning baseline; no application-code changes and no implementation commit required.
 - **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
 - **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
-- **M2-C03 — CV upload and private storage:** **Not started** — next checkpoint. Confirm formats, size limits, private storage, access policy, retention/deletion expectations and validation before implementation.
+- **M2-C03 — CV upload and private storage:** **In review** — PDF/DOCX, 5 MB limit, private Supabase Storage, user-scoped access, keep-current-until-confirmed replacement, and retention until user removal/replacement approved on 2026-10-24. Implementation commit and user verification pending.
 - **M2-C04 — Deterministic extraction and progress/failure states:** Not started.
 - **M2-C05 — Review and confirmation workflow:** Not started.
 - **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
@@ -148,3 +148,14 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Remaining scope:** Education, certification and project editor enhancements may be addressed if a concrete gap appears during later review; C02 is accepted by user and is not reopened by default.
 - **Next action:** Start C03 only after the user approves the upload/storage decisions and implementation plan.
 - **Reviewed/accepted by user:** Yes, 2026-10-24.
+
+
+## M2-C03 execution record — 2026-10-24
+
+- **Status:** In review; implementation prepared for user review.
+- **Approved decisions:** PDF and DOCX only; 5 MB maximum; retain the current master CV until the user removes or replaces it; keep the existing CV until a replacement upload succeeds and the user confirms replacement.
+- **Implemented scope:** private `profile-cvs` Supabase Storage bucket; storage policies scoped to the authenticated Clerk subject and per-user staged path; authenticated upload endpoint with extension/MIME, size, empty-file and basic file-signature validation; responsive file-selection, drag/drop, remove-selection, upload, retryable error and staged-success UI on empty and saved profile views.
+- **Safety boundary:** uploaded objects are staged under a unique per-user path. This checkpoint does not update `profiles.master_cv`, replace/delete an existing master CV, or extract CV contents. No public URLs or service-role key are used.
+- **Verification:** no tests, lint, build, browser checks, or Vercel operations were run, per user instruction. The migration has not been applied by ChatGPT; the user must apply it to the linked Supabase project before storage works.
+- **Known limitation:** staged upload state is returned to the client and is not yet promoted to master-CV metadata. Extraction/review and safe promotion belong to later checkpoints. Staged-object cleanup policy needs to be addressed before lifecycle closeout.
+- **Next action:** user pulls/reviews the focused commit, applies the migration, and reports acceptance or defects. Do not begin C04 until C03 is accepted.

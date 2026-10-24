@@ -46,7 +46,7 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | **In progress — C02 accepted; C03 next** |
+| M2 | Profile and CV Import | **In progress — C02 accepted; C03 in review** |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Current milestone:** M2 — Profile and CV Import. C02 — Profile view and manual editing — was accepted by the user on 2026-10-24. C01 migrations have been applied by the user; automated verification and RLS isolation evidence were not run by ChatGPT. Next is C03 — CV upload and private storage, after agreeing supported formats, size limits, private storage, access policy, and retention/deletion expectations. M1 remains closed.
+**Current milestone:** M2 — Profile and CV Import. C02 — Profile view and manual editing — was accepted by the user on 2026-10-24. C01 migrations have been applied by the user; automated verification and RLS isolation evidence were not run by ChatGPT. C03 — CV upload and private storage — has been implemented for review with user-approved PDF/DOCX, 5 MB, private storage, retention, and replacement rules. The user must apply the migration and review the result. M1 remains closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -406,3 +406,18 @@ No provider ingestion was re-run and no production database changes were made du
 **Verification:** Remote file/diff inspection confirms the six intended files are present on `dev`. This is repository inspection only, not a code execution check. A component test suite was added but has not been executed in a local checkout. `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and browser tests were not run through the remote-edit workflow. C06 authenticated Supabase smoke and cross-user isolation checks remain outstanding.
 
 **Next action:** Pull latest `origin/dev` locally without discarding work, inspect the diff, run all quality gates and responsive/keyboard browser checks, fix any observed defects, and return for user review. Do not merge to `main` or mark C07 Accepted without verification and explicit acceptance.
+
+
+## M2-C03 — CV upload and private storage (2026-10-24)
+
+**Status:** In review — implementation committed to `dev`; user review and Supabase migration application pending.
+
+**Approved decisions:** PDF and DOCX only; maximum 5 MB; keep the current CV until user removal/replacement; preserve the existing CV until a new upload succeeds and the user confirms replacement.
+
+**Implemented:** Private `profile-cvs` storage bucket with user-scoped staged paths and storage policies; authenticated upload API; extension/MIME, size, empty-file and basic file-signature validation; responsive file picker/drag-drop, selected-file state, removal before upload, upload status and errors. New uploads are staged only and do not overwrite `profiles.master_cv` or trigger extraction.
+
+**Files changed:** `src/app/api/profile/cv-upload/route.ts`, `src/thungatha-features/user-profile/ui/profile-cv-upload.tsx`, `src/thungatha-features/user-profile/ui/profile-empty-state.tsx`, `src/thungatha-features/user-profile/ui/profile-saved-view.tsx`, `supabase/migrations/20261024000600_profile_cv_private_storage.sql`, `milestones/M2-PROFILE-AND-CV-IMPORT.md`, `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md`, `IMPLEMENTATION-PLAN.md`.
+
+**Verification:** no tests, lint, build, browser checks or Vercel operations were run, per user instruction. ChatGPT did not apply the Supabase migration or verify runtime storage policies. Do not claim security isolation has been tested. Staged-file cleanup remains a later lifecycle concern.
+
+**Next action:** user pulls latest `dev`, applies the new migration to the linked Supabase project, reviews the CV upload states, and reports acceptance or defects. Do not start C04 until C03 is accepted.
