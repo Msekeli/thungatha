@@ -1,7 +1,7 @@
 # M2 — Profile and CV Import
 
 **Status:** Not started  
-**Planning note:** Plan updated 2026-10-24; ready to begin at M2-C01.  
+**Planning note:** Plan updated 2026-10-24; begin with M2-C00 (audit only).  
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.  
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
@@ -129,7 +129,7 @@ The first implementation should attempt conventional text extraction and determi
 
 Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accepted**. Record actual changes, tests, evidence, unresolved issues, next action and user review for each checkpoint.
 
-Checkpoint meanings, commit expectations, detailed exit evidence and Antigravity's first-task instruction are maintained in [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md).
+Checkpoint meanings, commit expectations, local-only agent workflow, detailed exit evidence and first-task instruction are maintained in [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md).
 
 ## Checkpoints
 
