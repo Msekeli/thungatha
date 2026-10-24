@@ -7,6 +7,7 @@ export type ProfileDatabaseRow = {
   email?: string | null;
   phone?: string | null;
   location?: string | null;
+  country?: string | null;
   linkedin_url?: string | null;
   portfolio_url?: string | null;
   summary?: string | null;
@@ -17,6 +18,7 @@ export type ProfileDatabaseRow = {
   projects?: unknown;
   master_cv?: unknown;
   confirmed_at?: string | null;
+  profile_version?: number;
   created_at?: string;
   updated_at?: string;
 };
@@ -32,6 +34,7 @@ export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileD
       email: row?.email ?? null,
       phone: row?.phone ?? null,
       location: row?.location ?? null,
+      country: row?.country ?? null,
       linkedinUrl: row?.linkedin_url ?? null,
       portfolioUrl: row?.portfolio_url ?? null,
     },
@@ -43,6 +46,7 @@ export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileD
     projects: asArr(row?.projects),
     masterCv: (row?.master_cv as UserProfileDto["masterCv"]) ?? null,
     confirmedAt: row?.confirmed_at ?? null,
+    profileVersion: row?.profile_version ?? 1,
     createdAt: row?.created_at,
     updatedAt: row?.updated_at,
   };
@@ -60,6 +64,7 @@ export function mapInputToRow(userId: string, input: UpdateProfileInput | string
     ...(p?.email !== undefined && { email: p.email }),
     ...(p?.phone !== undefined && { phone: p.phone }),
     ...(p?.location !== undefined && { location: p.location }),
+    ...(p?.country !== undefined && { country: p.country }),
     ...(p?.linkedinUrl !== undefined && { linkedin_url: p.linkedinUrl }),
     ...(p?.portfolioUrl !== undefined && { portfolio_url: p.portfolioUrl }),
     ...(input.summary !== undefined && { summary: input.summary }),
