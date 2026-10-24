@@ -22,7 +22,7 @@ type Props = {
 
 export function JobDiscoverySearchFilters(props: Props) {
   return (
-    <header className="mx-auto mb-4 w-full max-w-5xl max-[900px]:mx-0 max-[900px]:mb-3 max-[900px]:max-w-none">
+    <header className="mx-auto mb-4 w-full max-w-5xl max-[900px]:mx-0 max-[900px]:mb-3 max-[900px]:max-w-none max-[700px]:mt-4">
       <div className="mx-auto flex w-full max-w-4xl flex-row items-center gap-2 max-[900px]:max-w-none">
         <div className="min-w-0 flex-1">
           <JobSearchBar value={props.query} onChange={props.onQueryChange} onSubmit={props.onSubmit} placeholder="Job title, skill, or company" />
@@ -33,7 +33,7 @@ export function JobDiscoverySearchFilters(props: Props) {
           </Button>
         </div>
       </div>
-      <div className="mt-3 min-w-0">
+      <div className="mt-3 min-w-0 max-[700px]:hidden">
         <JobDiscoveryCategoryControls selectedType={props.category} total={props.resultCount} onTypeChange={props.onCategoryChange} />
       </div>
     </header>
