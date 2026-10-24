@@ -17,12 +17,14 @@ export function ProfileEditorView({ profile, saving, onChange, onSave }: {
     <header className="th-profile-editor-heading border-b border-border pb-3">
       <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Build your professional profile</h1>
       <p className="th-profile-heading-label text-sm font-medium text-muted-foreground">Your profile</p>
-      <div className="th-profile-mobile-actions pt-2">
-        <Button className="w-full" disabled={saving} onClick={onSave}>{saveLabel}</Button>
-      </div>
     </header>
     <div className="th-profile-editor-grid">
-      <ProfileEditorFields profile={profile} onChange={onChange} />
+      <div className="th-profile-editor-main">
+        <ProfileEditorFields profile={profile} onChange={onChange} />
+        <div className="th-profile-mobile-actions pt-3">
+          <Button className="w-full" disabled={saving} onClick={onSave}>{saveLabel}</Button>
+        </div>
+      </div>
       <aside className="th-profile-editor-sidebar">
         <ProfileEditorSidebar profile={profile} saving={saving} onSave={onSave} />
       </aside>
