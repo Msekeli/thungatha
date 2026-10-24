@@ -10,7 +10,8 @@ export function ProfileProjectsEditor({ items, onChange }: { items: Project[]; o
   const add = () => { if (!name.trim()) return; onChange([...items, { id: `project-${Date.now()}`, name: name.trim() }]); setName(""); };
   return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm">
     <h2 className="text-base font-semibold">Projects</h2>
+    <p className="mt-1 text-sm text-muted-foreground">Optional section; the project name is required when adding an item.</p>
     <ul className="mt-3 divide-y divide-border">{items.map((item) => <li key={item.id} className="flex items-center justify-between gap-2 py-2 text-sm"><span>{item.name}</span><Button size="icon" variant="ghost" aria-label={`Remove ${item.name}`} onClick={() => onChange(items.filter((entry) => entry.id !== item.id))}><X className="size-4" /></Button></li>)}{!items.length && <li className="py-2 text-sm text-muted-foreground">No projects added yet.</li>}</ul>
-    <form className="mt-3 flex gap-2" onSubmit={(event) => { event.preventDefault(); add(); }}><Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Project name" aria-label="Project name" /><Button type="submit" disabled={!name.trim()}><Plus className="size-4" /> Add</Button></form>
+    <form className="mt-3 flex gap-2" onSubmit={(event) => { event.preventDefault(); add(); }}><label className="min-w-0 flex-1 space-y-2 text-sm font-medium">Project name <span className="font-normal text-destructive">(Required)</span><Input required value={name} onChange={(event) => setName(event.target.value)} placeholder="Project name" /></label><Button type="submit" disabled={!name.trim()}><Plus className="size-4" /> Add</Button></form>
   </section>;
 }
