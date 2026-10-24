@@ -23,24 +23,12 @@ export function ProfileExtraSectionsEditor({
 
   const addCert = () => {
     if (!cert.trim()) return;
-    const issuer = window.prompt("Issuing organisation (optional)", "");
-    if (issuer === null) return;
-    const issueDate = window.prompt("Issue date (optional)", "");
-    if (issueDate === null) return;
-    const expiryDate = window.prompt("Expiry date (optional)", "");
-    if (expiryDate === null) return;
-    onCertsChange([...certifications, { id: `c-${Date.now()}`, name: cert.trim(), issuer: issuer || null, issueDate: issueDate || null, expiryDate: expiryDate || null }]);
+    onCertsChange([...certifications, { id: `c-${Date.now()}`, name: cert.trim() }]);
     setCert("");
   };
   const addProj = () => {
     if (!proj.trim()) return;
-    const description = window.prompt("Project description (optional)", "");
-    if (description === null) return;
-    const role = window.prompt("Role / contribution (optional)", "");
-    if (role === null) return;
-    const url = window.prompt("Project URL (optional)", "");
-    if (url === null) return;
-    onProjectsChange([...projects, { id: `p-${Date.now()}`, name: proj.trim(), description: description || null, role: role || null, url: url || null }]);
+    onProjectsChange([...projects, { id: `p-${Date.now()}`, name: proj.trim() }]);
     setProj("");
   };
 
@@ -52,13 +40,7 @@ export function ProfileExtraSectionsEditor({
           {certifications.map((c) => (
             <div key={c.id} className="flex items-center justify-between py-1.5 text-xs text-fg">
               <span>{c.name}</span>
-              <div className="flex gap-2"><button type="button" onClick={() => {
-                const name = window.prompt("Certification name", c.name); if (name === null) return;
-                const issuer = window.prompt("Issuing organisation (optional)", c.issuer || ""); if (issuer === null) return;
-                const issueDate = window.prompt("Issue date (optional)", c.issueDate || ""); if (issueDate === null) return;
-                const expiryDate = window.prompt("Expiry date (optional)", c.expiryDate || ""); if (expiryDate === null) return;
-                onCertsChange(certifications.map((entry) => entry.id === c.id ? { ...entry, name, issuer: issuer || null, issueDate: issueDate || null, expiryDate: expiryDate || null } : entry));
-              }} className="text-accent hover:underline">Edit</button><button type="button" onClick={() => onCertsChange(certifications.filter((i) => i.id !== c.id))} className="text-warn hover:underline">Remove</button></div>
+              <button type="button" onClick={() => onCertsChange(certifications.filter((i) => i.id !== c.id))} className="text-warn hover:underline">Remove</button>
             </div>
           ))}
         </div>
@@ -74,13 +56,7 @@ export function ProfileExtraSectionsEditor({
           {projects.map((p) => (
             <div key={p.id} className="flex items-center justify-between py-1.5 text-xs text-fg">
               <span>{p.name}</span>
-              <div className="flex gap-2"><button type="button" onClick={() => {
-                const name = window.prompt("Project name", p.name); if (name === null) return;
-                const description = window.prompt("Project description (optional)", p.description || ""); if (description === null) return;
-                const role = window.prompt("Role / contribution (optional)", p.role || ""); if (role === null) return;
-                const url = window.prompt("Project URL (optional)", p.url || ""); if (url === null) return;
-                onProjectsChange(projects.map((entry) => entry.id === p.id ? { ...entry, name, description: description || null, role: role || null, url: url || null } : entry));
-              }} className="text-accent hover:underline">Edit</button><button type="button" onClick={() => onProjectsChange(projects.filter((i) => i.id !== p.id))} className="text-warn hover:underline">Remove</button></div>
+              <button type="button" onClick={() => onProjectsChange(projects.filter((i) => i.id !== p.id))} className="text-warn hover:underline">Remove</button>
             </div>
           ))}
         </div>
