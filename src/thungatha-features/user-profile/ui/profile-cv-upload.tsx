@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { FileText, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProfileCvExtraction } from "@/thungatha-features/user-profile/ui/profile-cv-extraction";
+import { ProfileCvExtraction, type ExtractedCvFields } from "@/thungatha-features/user-profile/ui/profile-cv-extraction";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ACCEPT =
@@ -21,7 +21,7 @@ export function ProfileCvUpload({
   onExtracted,
 }: {
   hasCurrentCv?: boolean;
-  onExtracted: (fields: { fullName: string | null; email: string | null; phone: string | null; linkedinUrl: string | null; portfolioUrl: string | null; summary: string | null; skills: string[] }) => void;
+  onExtracted: (fields: ExtractedCvFields) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);

@@ -3,13 +3,14 @@
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileCvUpload } from "./profile-cv-upload";
+import type { ExtractedCvFields } from "./profile-cv-extraction";
 
 export function ProfileEmptyState({
   onStartManualEntry,
   onExtracted,
 }: {
   onStartManualEntry: () => void;
-  onExtracted: (fields: { fullName: string | null; email: string | null; phone: string | null; linkedinUrl: string | null; portfolioUrl: string | null; summary: string | null; skills: string[] }) => void;
+  onExtracted: (fields: ExtractedCvFields) => void;
 }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-5 sm:gap-8 sm:py-8">

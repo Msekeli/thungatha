@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-type Fields = {
+export type ExtractedCvFields = {
   fullName: string | null;
   email: string | null;
   phone: string | null;
@@ -15,7 +15,7 @@ type Fields = {
 export function ProfileCvExtraction({ filename, storagePath, onExtracted }: {
   filename: string;
   storagePath: string;
-  onExtracted: (fields: Fields) => void;
+  onExtracted: (fields: ExtractedCvFields) => void;
 }) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
@@ -29,7 +29,7 @@ export function ProfileCvExtraction({ filename, storagePath, onExtracted }: {
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "CV extraction failed.");
-      const result = body.extraction as { status: string; fields: Fields; warnings: string[] };
+      const result = body.extraction as { status: string; fields: ExtractedCvFields; warnings: string[] };
       setWarnings(result.warnings || []);
       if (result.status === "failed") { setError("We couldn’t read enough information from this CV."); return; }
       onExtracted(result.fields);
