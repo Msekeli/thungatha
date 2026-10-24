@@ -19,6 +19,8 @@ export function ProfileForm({
     saving,
     error,
     message,
+    dismissError,
+    dismissMessage,
     loadFailed,
     mode,
     setMode,
