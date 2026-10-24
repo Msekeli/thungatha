@@ -18,7 +18,7 @@ export function ProfileEditorView({
   onCancel: () => void;
 }) {
   return (
-    <div className="th-profile-editor-layout mx-auto w-full max-w-6xl">
+    <div className="th-profile-editor-layout ml-0 mr-auto w-full max-w-[80rem]">
       <header className="th-profile-editor-heading space-y-2 border-b border-border pb-5">
         <p className="text-sm font-medium text-muted-foreground">Your profile</p>
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">
