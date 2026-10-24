@@ -96,6 +96,9 @@ describe("GET /api/jobs", () => {
       expect.any(String),
     );
     expect(jobs.or).toHaveBeenCalled();
+    expect(jobs.or).toHaveBeenCalledWith(
+      "title.ilike.%software%,employer_name.ilike.%software%,description.ilike.%software%",
+    );
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
     expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
     expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
@@ -217,9 +220,35 @@ describe("GET /api/jobs", () => {
 
     expect(response.status).toBe(200);
     expect(jobs.or).toHaveBeenCalledWith(
-      "title.ilike.%engineer id eq x%,employer_name.ilike.%engineer id eq x%",
+      "title.ilike.%engineer id eq x%,employer_name.ilike.%engineer id eq x%,description.ilike.%engineer id eq x%",
     );
     expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
+  });
+
+  it("does not apply an implicit publication-age filter", async () => {
+    const userStates = query({ data: [], error: null });
+    const jobs = query({ data: [], error: null, count: 0 });
+    client.mockResolvedValue({
+      from: vi.fn().mockReturnValueOnce(userStates).mockReturnValueOnce(jobs),
+    } as never);
+
+    const response = await GET(new Request("http://localhost/api/jobs"));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      page: 1,
+      pageSize: 25,
+      total: 0,
+    });
+    expect(jobs.gte).not.toHaveBeenCalledWith(
+      "job_sources.published_at",
+      expect.any(String),
+    );
+    expect(jobs.not).not.toHaveBeenCalledWith(
+      "job_sources.published_at",
+      "is",
+      null,
+    );
   });
 
   it("returns an empty result for a saved/dismissed state with no matching user states", async () => {

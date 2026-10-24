@@ -316,7 +316,7 @@ describe("Job Discovery", () => {
           const p = new URL(url, "http://local").searchParams;
           return (
             !p.get("query") &&
-            p.get("publishedWithin") === "30d" &&
+            p.get("publishedWithin") === "any" &&
             p.get("page") === "1" &&
             p.get("pageSize") === "30"
           );

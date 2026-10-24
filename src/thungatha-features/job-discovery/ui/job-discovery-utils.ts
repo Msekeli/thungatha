@@ -50,7 +50,7 @@ export const EMPTY_FILTERS: Filters = {
   location: "",
   workMode: "",
   employmentType: "",
-  publishedWithin: "30d",
+  publishedWithin: "any",
 };
 export const PAGE_SIZE = 30;
 

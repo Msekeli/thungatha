@@ -29,6 +29,7 @@ type Props = {
   headingAction?: ReactNode;
   beforeContent?: ReactNode;
   afterDescription?: ReactNode;
+  descriptionIsPreview?: boolean;
 };
 
 export function JobDetailPresentation({
@@ -39,6 +40,7 @@ export function JobDetailPresentation({
   headingAction,
   beforeContent,
   afterDescription,
+  descriptionIsPreview = false,
 }: Props) {
   return (
     <div
@@ -67,7 +69,10 @@ export function JobDetailPresentation({
         locale="en-ZA"
       />
       {actions}
-      <JobDetailDescription description={job.description} />
+      <JobDetailDescription
+        description={job.description}
+        descriptionIsPreview={descriptionIsPreview}
+      />
       {afterDescription}
     </div>
   );
