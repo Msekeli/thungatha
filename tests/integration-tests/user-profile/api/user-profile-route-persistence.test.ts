@@ -77,18 +77,21 @@ describe("profile API persistence and validation", () => {
     const getToken = vi.fn().mockResolvedValue("jwt");
     identity.mockResolvedValue({ userId: "u_lerato", getToken });
     const payload = {
-      personalDetails: { fullName: "Lerato", email: "l@example.com" },
+      personalDetails: { fullName: "Lerato", email: "l@example.com", country: "South Africa" },
       skills: ["React"],
       confirmedAt: "2026-10-24T08:00:00.000Z",
     };
     save.mockResolvedValue({
-      data: { display_name: "Lerato", skills: ["React"] },
+      data: { display_name: "Lerato", country: "South Africa", profile_version: 2, skills: ["React"] },
       error: null,
     } as never);
 
     const res = await PATCH(patchReq(payload));
     expect(res.status).toBe(200);
     expect(save).toHaveBeenCalledWith("u_lerato", payload, getToken);
-    expect((await res.json()).profile.skills).toEqual(["React"]);
+    const profile = (await res.json()).profile;
+    expect(profile.skills).toEqual(["React"]);
+    expect(profile.personalDetails.country).toBe("South Africa");
+    expect(profile.profileVersion).toBe(2);
   });
 });
