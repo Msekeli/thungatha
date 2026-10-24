@@ -6,6 +6,7 @@ import { ProfileCvUpload } from "./profile-cv-upload";
 
 export function ProfileEmptyState({
   onStartManualEntry,
+  onExtracted,
 }: {
   onStartManualEntry: () => void;
   onExtracted: (fields: { fullName: string | null; email: string | null; phone: string | null; linkedinUrl: string | null; portfolioUrl: string | null; summary: string | null; skills: string[] }) => void;
