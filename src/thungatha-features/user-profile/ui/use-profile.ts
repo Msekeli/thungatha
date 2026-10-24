@@ -7,13 +7,13 @@ export const createBlankProfile = (): UserProfileDto => ({
   displayName: null,
   personalDetails: { fullName: null, email: null, phone: null, location: null, linkedinUrl: null, portfolioUrl: null },
   summary: null, workExperience: [], education: [], skills: [], certifications: [], projects: [],
-  masterCv: null, confirmedAt: null,
+  masterCv: null, confirmedAt: null, profileVersion: 1,
 });
 
 export function isProfileEmpty(p: UserProfileDto | null): boolean {
   if (!p) return true;
   return (
-    !p.displayName && !p.personalDetails.fullName && !p.personalDetails.email && !p.personalDetails.phone && !p.personalDetails.location && !p.personalDetails.linkedinUrl && !p.personalDetails.portfolioUrl && !p.summary &&
+    !p.displayName && !p.personalDetails.fullName && !p.personalDetails.email && !p.personalDetails.phone && !p.personalDetails.location && !p.personalDetails.country && !p.personalDetails.linkedinUrl && !p.personalDetails.portfolioUrl && !p.summary &&
     p.workExperience.length === 0 && p.education.length === 0 &&
     p.skills.length === 0 && p.certifications.length === 0 && p.projects.length === 0
   );
