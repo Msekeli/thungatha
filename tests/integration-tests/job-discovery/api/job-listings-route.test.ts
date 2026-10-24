@@ -61,15 +61,18 @@ describe("GET /api/jobs", () => {
 
   it("returns filtered catalogue jobs through the public client when Clerk is not configured", async () => {
     configured.mockReturnValue(false);
-    const jobs = query({
-      data: [{ id: "job-public", title: "Software Engineer", job_sources: [] }],
+    const feed = query({
+      data: [{ id: "job-public", title: "Software Engineer", published_at: "2026-10-18T10:00:00Z" }],
       error: null,
       count: 1,
     });
-    const from = vi.fn().mockReturnValue(jobs);
-    publicClient.mockResolvedValue({
-      from,
-    } as never);
+    const details = query({
+      data: [{ id: "job-public", title: "Software Engineer", job_sources: [] }],
+      error: null,
+      count: null,
+    });
+    const from = vi.fn().mockReturnValueOnce(feed).mockReturnValueOnce(details);
+    publicClient.mockResolvedValue({ from } as never);
     const response = await GET(
       new Request(
         "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&publishedWithin=7d&page=2&pageSize=10",
@@ -85,25 +88,20 @@ describe("GET /api/jobs", () => {
     });
     expect(publicClient).toHaveBeenCalled();
     expect(client).not.toHaveBeenCalled();
-    expect(from).toHaveBeenCalledTimes(1);
-    expect(from).toHaveBeenCalledWith("jobs");
-    expect(jobs.eq).toHaveBeenCalledWith(
-      "job_sources.availability_status",
-      "active",
-    );
-    expect(jobs.gte).toHaveBeenCalledWith(
-      "job_sources.published_at",
-      expect.any(String),
-    );
-    expect(jobs.or).toHaveBeenCalled();
-    expect(jobs.or).toHaveBeenCalledWith(
+    expect(from).toHaveBeenCalledTimes(2);
+    expect(from).toHaveBeenNthCalledWith(1, "job_discovery_feed");
+    expect(from).toHaveBeenNthCalledWith(2, "jobs");
+    expect(feed.gte).toHaveBeenCalledWith("published_at", expect.any(String));
+    expect(feed.not).toHaveBeenCalledWith("published_at", "is", null);
+    expect(feed.or).toHaveBeenCalledWith(
       "title.ilike.%software%,employer_name.ilike.%software%,description.ilike.%software%",
     );
-    expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
-    expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
-    expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
-    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
-    expect(jobs.range).toHaveBeenCalledWith(10, 19);
+    expect(feed.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
+    expect(feed.eq).toHaveBeenCalledWith("country_code", "ZA");
+    expect(feed.eq).toHaveBeenCalledWith("work_mode", "remote");
+    expect(feed.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
+    expect(feed.range).toHaveBeenCalledWith(10, 19);
+    expect(details.eq).toHaveBeenCalledWith("job_sources.availability_status", "active");
   });
 
   it("returns 503 when Clerk identity verification throws", async () => {
@@ -146,63 +144,62 @@ describe("GET /api/jobs", () => {
     expect(client).not.toHaveBeenCalled();
   });
 
-  it("returns persisted active jobs with pagination and the current user's state", async () => {
+  it("returns persisted active jobs with publication-date sorting and the current user's state", async () => {
     const userStates = query({
       data: [{ job_id: "job-1", state: "saved" }],
       error: null,
     });
-    const jobs = query({
-      data: [{ id: "job-1", title: "Software Engineer" }],
+    const feed = query({
+      data: [{ id: "job-1", title: "Software Engineer", published_at: "2026-10-10T10:00:00Z" }],
       error: null,
       count: 31,
+    });
+    const details = query({
+      data: [{ id: "job-1", title: "Software Engineer", job_sources: [] }],
+      error: null,
+      count: null,
     });
     const from = vi
       .fn()
       .mockReturnValueOnce(userStates)
-      .mockReturnValueOnce(jobs);
+      .mockReturnValueOnce(feed)
+      .mockReturnValueOnce(details);
     client.mockResolvedValue({ from } as never);
 
     const response = await GET(
       new Request(
-        "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&publishedWithin=7d&page=2&pageSize=10",
+        "http://localhost/api/jobs?query=software&location=Cape%20Town&countryCode=ZA&workMode=remote&employmentType=full-time&publishedWithin=7d&page=2&pageSize=10&sortOrder=oldest",
       ),
     );
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      jobs: [{ id: "job-1", title: "Software Engineer", state: "saved" }],
+      jobs: [{ id: "job-1", title: "Software Engineer", job_sources: [], state: "saved" }],
       page: 2,
       pageSize: 10,
       total: 31,
       totalPages: 4,
     });
     expect(from).toHaveBeenNthCalledWith(1, "user_job_states");
-    expect(from).toHaveBeenNthCalledWith(2, "jobs");
+    expect(from).toHaveBeenNthCalledWith(2, "job_discovery_feed");
+    expect(from).toHaveBeenNthCalledWith(3, "jobs");
     expect(userStates.eq).toHaveBeenCalledWith("user_id", "user_alice");
-    expect(jobs.eq).toHaveBeenCalledWith(
-      "job_sources.availability_status",
-      "active",
-    );
-    expect(jobs.gte).toHaveBeenCalledWith(
-      "job_sources.published_at",
-      expect.any(String),
-    );
-    expect(jobs.not).toHaveBeenCalledWith(
-      "job_sources.published_at",
-      "is",
-      null,
-    );
-    expect(jobs.order).toHaveBeenCalledWith("updated_at", { ascending: false });
-    expect(jobs.order).toHaveBeenCalledWith("published_at", {
-      referencedTable: "job_sources",
-      ascending: false,
+    expect(feed.gte).toHaveBeenCalledWith("published_at", expect.any(String));
+    expect(feed.not).toHaveBeenCalledWith("published_at", "is", null);
+    expect(feed.order).toHaveBeenCalledWith("published_at", {
+      ascending: true,
       nullsFirst: false,
     });
-    expect(jobs.or).toHaveBeenCalled();
-    expect(jobs.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
-    expect(jobs.eq).toHaveBeenCalledWith("country_code", "ZA");
-    expect(jobs.eq).toHaveBeenCalledWith("work_mode", "remote");
-    expect(jobs.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
-    expect(jobs.range).toHaveBeenCalledWith(10, 19);
+    expect(feed.order).toHaveBeenCalledWith("updated_at", { ascending: false });
+    expect(feed.or).toHaveBeenCalledWith(
+      "title.ilike.%software%,employer_name.ilike.%software%,description.ilike.%software%",
+    );
+    expect(feed.ilike).toHaveBeenCalledWith("location_text", "%Cape Town%");
+    expect(feed.eq).toHaveBeenCalledWith("country_code", "ZA");
+    expect(feed.eq).toHaveBeenCalledWith("work_mode", "remote");
+    expect(feed.ilike).toHaveBeenCalledWith("employment_type", "%full_time%");
+    expect(feed.range).toHaveBeenCalledWith(10, 19);
+    expect(details.in).toHaveBeenCalledWith("id", ["job-1"]);
+    expect(details.eq).toHaveBeenCalledWith("job_sources.availability_status", "active");
   });
 
   it("treats search text as plain text rather than PostgREST filter syntax", async () => {
