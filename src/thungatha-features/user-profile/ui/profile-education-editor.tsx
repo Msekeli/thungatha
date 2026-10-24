@@ -37,13 +37,17 @@ export function ProfileEducationEditor({
               <p className="font-medium text-fg">{item.qualification}</p>
               <p className="text-[11px] text-fg-muted">{item.institution}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((i) => i.id !== item.id))}
-              className="text-xs text-warn hover:underline"
-            >
-              Remove
-            </button>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => {
+                const qualification = window.prompt("Qualification", item.qualification); if (qualification === null) return;
+                const institution = window.prompt("Institution", item.institution); if (institution === null) return;
+                const fieldOfStudy = window.prompt("Field of study (optional)", item.fieldOfStudy || ""); if (fieldOfStudy === null) return;
+                const startDate = window.prompt("Start date (optional)", item.startDate || ""); if (startDate === null) return;
+                const endDate = window.prompt("End/completion date (optional)", item.endDate || ""); if (endDate === null) return;
+                onChange(items.map((entry) => entry.id === item.id ? { ...entry, qualification, institution, fieldOfStudy: fieldOfStudy || null, startDate: startDate || null, endDate: endDate || null } : entry));
+              }} className="text-xs text-accent hover:underline">Edit</button>
+              <button type="button" onClick={() => onChange(items.filter((i) => i.id !== item.id))} className="text-xs text-warn hover:underline">Remove</button>
+            </div>
           </div>
         ))}
       </div>
