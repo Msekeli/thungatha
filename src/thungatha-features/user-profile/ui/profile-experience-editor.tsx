@@ -18,11 +18,21 @@ export function ProfileExperienceEditor({
   const [employer, setEmployer] = useState("");
 
   const handleAdd = () => {
-    if (!title || !employer) return;
-    onChange([
-      ...items,
-      { id: `exp-${Date.now()}`, jobTitle: title, employer, startDate: "Present", isCurrent: true },
-    ]);
+    if (!title.trim() || !employer.trim()) return;
+    const startDate = window.prompt("Start date (e.g. Jan 2022)", "");
+    if (startDate === null || !startDate.trim()) return;
+    const location = window.prompt("Location (optional)", "");
+    if (location === null) return;
+    const isCurrent = window.confirm("Is this your current role?");
+    const endDate = isCurrent ? null : window.prompt("End date (e.g. Mar 2024)", "");
+    if (endDate === null && !isCurrent) return;
+    const description = window.prompt("Responsibilities and achievements (optional)", "");
+    if (description === null) return;
+    onChange([...items, {
+      id: `exp-${Date.now()}`, jobTitle: title.trim(), employer: employer.trim(),
+      location: location || null, startDate: startDate.trim(), endDate: endDate || null,
+      isCurrent, description: description || null,
+    }]);
     setTitle(""); setEmployer(""); setAdding(false);
   };
 
