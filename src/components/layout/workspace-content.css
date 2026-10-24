@@ -37,20 +37,24 @@
   flex: 0 0 auto;
 }
 .th-workspace-page-content {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
   padding: 20px 24px;
 }
 
-/* Keep the workspace page fixed; only the Profile content area scrolls. */
+/* Profile owns the only scroll region; its shell and page header stay fixed. */
 .th-workspace-page-content:has(.th-profile-page) {
+  flex: 1 1 0%;
   min-height: 0;
   overflow: hidden;
+  padding: 0;
 }
 .th-profile-page {
+  box-sizing: border-box;
   height: 100%;
+  max-height: 100%;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
