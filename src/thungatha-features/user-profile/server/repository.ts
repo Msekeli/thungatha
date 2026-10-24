@@ -14,6 +14,7 @@ export const PROFILE_SELECT_COLUMNS = [
   "email",
   "phone",
   "location",
+  "country",
   "linkedin_url",
   "portfolio_url",
   "summary",
@@ -24,6 +25,7 @@ export const PROFILE_SELECT_COLUMNS = [
   "projects",
   "master_cv",
   "confirmed_at",
+  "profile_version",
   "created_at",
   "updated_at",
 ].join(", ");
