@@ -43,3 +43,11 @@
   overflow: hidden;
   padding: 20px 24px;
 }
+
+/* The Profile editor is a long form and needs its own vertical scrolling area. */
+.th-workspace-page-content:has(.th-profile-page) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
