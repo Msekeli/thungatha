@@ -36,7 +36,12 @@ export function JobDiscoveryScreen({ configured, state, controller, routerPushPr
           onSave={c.workspaceActions.saveSelectedJob} onDismiss={c.workspaceActions.dismissSelectedJob}
           onRetryDetail={c.workspaceActions.retryDetail} configured={configured} leadingColumn={workspaceLeadingColumn}
           resultCount={s.feed?.total ?? 0} category={category} dismissedCount={dismissedCount}
-          isAuthenticated={s.isAuthenticated} sortOrder={s.sortOrder} onSortOrderChange={s.setSortOrder}
+          isAuthenticated={s.isAuthenticated} sortOrder={s.sortOrder}
+          onSortOrderChange={(value) => {
+            s.setSortOrder(value);
+            s.setPage(1);
+            s.setMobileDetail(false);
+          }}
           onCategoryChange={c.changeCategory}
         />
       </div>
