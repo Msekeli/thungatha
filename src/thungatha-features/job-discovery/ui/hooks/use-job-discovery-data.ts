@@ -16,6 +16,7 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.page,
     s.category,
     s.filters,
+    s.sortOrder,
     s.retryFeed,
     s.setFeed,
     s.setDismissedCount,
