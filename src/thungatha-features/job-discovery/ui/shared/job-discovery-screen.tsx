@@ -17,7 +17,7 @@ export function JobDiscoveryScreen({ configured, state, controller, routerPushPr
   const c = controller;
   useJobDiscoveryDialogAnchors(s, c.showApplicationPrompt);
   const category = s.category === "dismissed" || s.category === "saved" ? s.category : s.filters.employmentType || "all";
-  const dismissedCount = c.categories.find((item) => item.key === "dismissed")?.count ?? 0;
+  const dismissedCount = s.dismissedCount;
 
   return (
     <>
