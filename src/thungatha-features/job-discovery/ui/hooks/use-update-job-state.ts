@@ -12,6 +12,7 @@ export function useUpdateJobState(
   setStateMessage: (value: string | null) => void,
   setFeed: SetValue<Feed | null>,
   setDetail: SetValue<Job | null>,
+  setSelectedId: SetValue<string | null>,
   setUndoAction: (
     value: {
       jobId: string;
@@ -65,6 +66,9 @@ export function useUpdateJobState(
         setDetail((current) =>
           current?.id === job.id ? { ...current, state: nextState } : current,
         );
+        if (nextState === "dismissed") {
+          setSelectedId((current) => (current === job.id ? null : current));
+        }
         if (recordUndo)
           setUndoAction({
             jobId: job.id,
@@ -90,6 +94,7 @@ export function useUpdateJobState(
       setStateMessage,
       setFeed,
       setDetail,
+      setSelectedId,
       setUndoAction,
       setRetryFeed,
     ],
