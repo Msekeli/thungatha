@@ -16,7 +16,7 @@ export const workExperienceItemSchema = z.object({
 }).strict();
 
 export const educationItemSchema = z.object({
-  id: z.string().trim().min(1).max(100), educationLevel: z.string().trim().max(100).nullable().optional(),
+  id: z.string().trim().min(1).max(100), educationLevel: z.string().trim().min(1).max(100).nullable().optional(),
   qualification: z.string().trim().min(1).max(150), institution: z.string().trim().min(1).max(150), fieldOfStudy: z.string().trim().max(150).nullable().optional(),
   startDate: z.string().trim().max(50).nullable().optional(), endDate: z.string().trim().max(50).nullable().optional(), isCurrent: z.boolean().optional().default(false),
 }).strict();
