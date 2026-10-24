@@ -26,6 +26,10 @@ Success: `200`
       "phone": null,
       "location": null,
       "country": null,
+      "residentialSuburb": null,
+      "residentialCity": null,
+      "residentialProvince": null,
+      "residentialPostalCode": null,
       "linkedinUrl": null,
       "portfolioUrl": null
     },
@@ -35,6 +39,8 @@ Success: `200`
     "skills": [],
     "certifications": [],
     "projects": [],
+    "languages": [],
+    "personalAttributes": [],
     "masterCv": null,
     "confirmedAt": null,
     "profileVersion": 1
@@ -50,7 +56,7 @@ The body is a strict, partial update object. Unknown properties—including `use
 
 Supported properties:
 - `displayName`
-- `personalDetails`: `fullName`, `email`, `phone`, `location`, `country`, `linkedinUrl`, `portfolioUrl`
+- `personalDetails`: `fullName`, `email`, `phone`, legacy `location`, `country`, optional `residentialSuburb`, `residentialCity`, `residentialProvince`, `residentialPostalCode`, `linkedinUrl`, `portfolioUrl`
 - `summary`
 - `workExperience`: entries with `id`, `jobTitle`, `employer`, optional `location`, `startDate`, optional `endDate`, `isCurrent`, optional `description`
 - `education`: entries with `id`, `qualification`, `institution`, optional `fieldOfStudy`, `startDate`, `endDate`
@@ -71,6 +77,6 @@ Each repeatable section is limited to 100 entries. Missing information remains n
 
 ## Persistence and versioning
 
-Migration `20261024000400_add_profile_country_and_version_history.sql` adds country and a server-maintained `profile_version`, plus `profile_versions` snapshots. A database trigger records each inserted or updated profile version. Snapshots retain structured profile data and CV metadata, not file bytes.
+Migrations `20261024000400_add_profile_country_and_version_history.sql` and `20261024000500_add_profile_residential_location_and_languages.sql` add country, server-maintained `profile_version`, version snapshots, residential-area fields (no street address/house number), languages and personal attributes. Work achievements are stored within each JSON work-experience entry. Snapshots retain structured profile data and CV metadata, not file bytes.
 
 Apply migrations through the project's normal Supabase migration workflow before exercising the API. This checkpoint has not been tested against a live database in this session.
