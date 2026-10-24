@@ -5,11 +5,12 @@ import { profileCompletionSchema, type UserProfileDto } from "../server/user-pro
 import { ProfileEditorFields } from "./profile-editor-fields";
 import { ProfileEditorSidebar } from "./profile-editor-sidebar";
 
-export function ProfileEditorView({ profile, saving, onChange, onSave }: {
+export function ProfileEditorView({ profile, saving, onChange, onSave, onCancel }: {
   profile: UserProfileDto;
   saving: boolean;
   onChange: (updated: UserProfileDto) => void;
   onSave: () => void;
+  onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
   const saveLabel = saving ? "Saving…" : complete ? "Save Profile" : "Save draft";
