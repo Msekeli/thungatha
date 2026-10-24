@@ -58,7 +58,9 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`}
+                  aria-label={
+                    saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
+                  }
                   title={saved ? "Remove from saved jobs" : "Save job"}
                 >
                   <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
@@ -74,9 +76,17 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={dismissed ? `Restore ${fullJob.title}` : `Dismiss ${fullJob.title}`}
+                  aria-label={
+                    dismissed
+                      ? `Restore ${fullJob.title}`
+                      : `Dismiss ${fullJob.title}`
+                  }
                   title={dismissed ? "Restore job" : "Not for me"}
-                  className={dismissed ? "text-[var(--th-accent)]" : "text-[var(--th-fg-muted)] hover:text-destructive"}
+                  className={
+                    dismissed
+                      ? "text-[var(--th-accent)]"
+                      : "text-[var(--th-fg-muted)] hover:text-destructive"
+                  }
                 >
                   <ThumbsDown size={16} />
                 </Button>

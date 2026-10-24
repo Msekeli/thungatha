@@ -1,6 +1,6 @@
 # Thungatha — Master Implementation Plan
 
-**Document status:** Draft for review  
+**Document status:** Maintained roadmap — M1 accepted and closed  
 **Purpose:** Master roadmap, milestone scope, dependencies, progress and acceptance tracking  
 **Product:** Thungatha  
 **Architecture:** Next.js modular monolith  
@@ -45,7 +45,7 @@ The product specification and architecture document will define these experience
 | Milestone | Name | Status |
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
-| M1 | Job Discovery and Job Feed | In progress — C05 decision open; C06 cloud/RLS gates outstanding; C07/C08 in review; C09 audit underway |
+| M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
 | M2 | Profile and CV Import | Not started |
 | M3 | Job Matching and Fit Analysis | Not started |
 | M4 | CV Studio | Not started |
@@ -64,23 +64,17 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 ### Current focus
 
-M1 remains in progress. C04's database-side ingestion reliability path passed its scoped smoke test (see the dated record below). C05 remains open: the current provider adapters consume structured provider responses and normalize deterministically, and the repository does not yet establish a concrete need for AI extraction in M1. Record an explicit decision to omit AI extraction from M1 unless testing a permitted source reveals a specific gap. C06 authenticated Supabase smoke tests and real cross-user/RLS isolation are not evidenced. C07 remains in review pending hosted-data filter/pagination validation, responsive and keyboard/browser review, and user acceptance.
+**M1 is Accepted — complete and closed as of 2026-10-24.** The user has confirmed that Milestone 1 implementation and testing are complete and has explicitly accepted closure of all nine checkpoints (M1-C01–M1-C09).
 
-**2026-10-20 working-tree update:** Public `/` and authenticated `/jobs` now compose the same Job Discovery screen/controller, with protected actions gated at the UI action boundary and server authorization unchanged. Separate public discovery components/hooks were removed. Local TypeScript passed; automated tests, browser checks, and build remain blocked by environment/toolchain issues recorded in `milestones/M1-JOB-DISCOVERY-AND-JOB-FEED.md`. This implementation is not checkpoint acceptance; C07/C09 evidence and user review remain open.
+The completed scope is Job Discovery and the persisted job feed: source adapters and normalization, persisted feed/detail access, search and filters, sorting, responsive public/authenticated discovery, protected save/dismiss actions, undo, and explicit application-activity confirmation. The current UI direction is shared Base UI controls, Tailwind CSS v4, shadcn/ui patterns, semantic theme tokens, and Lucide.
 
-C08's application-activity migration `20261017000100_job_application_activity.sql` was applied by the user to hosted Supabase after a dry run showed only that migration pending. The user confirmed the persisted application reminder now works. GitHub Actions passed on `1687578a69734aaa85ed626ed5077cb7fef2fbfe`: TypeScript check, lint, 15 unit-test files / 105 tests, and production build. The workflow does not run Playwright. The current Playwright suite covers the landing page and authentication redirects, not the end-to-end Job Discovery journey.
+**Acceptance record and evidence boundary:** This closure records the user's confirmation that testing is complete. Detailed test commands/results for the final user test pass were not supplied in this conversation and are not reconstructed here. Earlier dated execution records below are historical evidence and may describe gates that were open at that time; the final user acceptance supersedes those earlier status snapshots. This documentation update does not newly claim CI, browser, cloud/RLS, or source-license results.
 
-**2026-10-23 UI redesign work:** Added three named shared Job Discovery components for search/filters, opportunity cards, and the selected opportunity detail panel. The components use Tailwind CSS v4 and existing shared controls, and preserve the existing feed, selection, filter, action, and authorization wiring. Recorded the user's UI direction as D-035 and updated the architecture guidance. `npx tsc --noEmit` and ESLint on changed TypeScript files passed. Visual/browser acceptance was not performed; C07 remains in review.
+**Source limitations retained:** Technical access does not itself prove a provider's ongoing-use rights. Adzuna remains excluded from ongoing use unless explicitly reopened; Jooble and employer-specific public ATS feeds remain subject to their documented access, attribution, quota, freshness, and destination limitations. The user's M1 acceptance closes the milestone with those limitations documented; it is not a blanket legal approval or a claim that every provider has unrestricted production permission.
 
-**2026-10-23 repeated-component audit:** Removed the unused authenticated search toolbar, category strip, and duplicate detail heading plus the unused shared results toolbar. Their active roles now live in the shared search/filter component and shared detail composition; sort state is wired back to the shared search controls. Removed the unreferenced `JobMatchAvailability`, which duplicated the current match-breakdown trigger. The duplicate-basename scan found only Next.js entry-file conventions and repeated `index.ts`, `schema.ts`, and `theme.ts` names already covered by the naming guidance. `JobFilters` and `JobPagination` remain exported but have no runtime call sites; they are distinct dormant utilities, not active duplicate implementations, and were left for separate scope review.
+**C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**2026-10-23 Material UI removal:** Replaced active MUI use in the Jobs route, filters, detail presentation, dialogs, public auth prompt, status and undo notice with existing shared controls, Tailwind classes and the Base UI anchored popover. Removed the MUI provider/theme, confirmed-unused MUI-only components and styles, and direct MUI/Emotion dependencies. TypeScript and ESLint on changed files passed; full ESLint reports an existing `react-hooks/set-state-in-effect` error in unchanged `job-search-bar.tsx`. No milestone acceptance is implied. The user also requested removal of an unidentified page shown before jobs; route inspection found only normal `/sign-in` and `/sign-up` forms, `/` discovery, and `/jobs` (including its existing `welcome=1` profile prompt). The user identified the profile prompt as a different page, so it remains pending identification and confirmation.
-
-**2026-10-23 Next.js URL-data warning:** Moved `/jobs` `searchParams` resolution into an async Server Component beneath a focused Suspense boundary, preserving `welcome=1` profile prompt behavior while allowing the route shell to render. TypeScript and ESLint on the route passed. Browser validation redirected to the configured Clerk sign-in page, so the post-change `/jobs` view was not visually verified.
-
-Source approval remains unresolved. The decision log says Adzuna is excluded unless the user explicitly reopens that decision; the repository does not yet evidence final source-term and operational approval for the enabled Jooble/Greenhouse integrations. C09 audit is in progress. Do not accept M1 until the remaining source, cloud/RLS, browser, and user-review gates are resolved.
-
-No future milestone or checkpoint may be marked complete without the required verification evidence and review.
+**Next milestone:** M2 — Profile and CV Import. M1 must not be reopened for routine follow-up work; only a concrete regression or explicit scope decision should reopen it.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -109,7 +103,7 @@ Scope included the initial application setup, authentication integration, databa
 
 ### M1 — Job Discovery and Job Feed
 
-**Status: In progress**
+**Status: Accepted — complete and closed (2026-10-24)**
 
 **Outcome:** A usable, tested Job Discovery experience that presents real, persisted opportunities from approved sources.
 
@@ -130,13 +124,15 @@ M1 does not include Profile-dependent match scores, CV tailoring or the complete
 
 **Dependency:** M0.
 
-**Completion condition:** The agreed M1 scope works against persisted job records, required verification passes, limitations are documented, and the user explicitly accepts the milestone.
+**Completion condition:** Satisfied for M1 on 2026-10-24. The user confirmed testing was complete and explicitly accepted closure of all nine checkpoints. Known source limitations are retained in the checkpoint record; this acceptance does not claim unrestricted production permission for every provider.
 
 Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
 **Status: Not started**
+
+**Planning note:** Detailed execution order and engineering constraints were updated on 2026-10-24. Begin at M2-C01.
 
 **Outcome:** A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
 
@@ -155,6 +151,8 @@ Profile becomes the source of truth for confirmed professional information used 
 **Dependency:** M0. The existing foundation must remain intact.
 
 **Completion condition:** Profile editing and CV import work reliably, extracted information is reviewable, and security, data integrity and acceptance checks pass.
+
+M2 execution begins with an audit of the existing Profile page, `src/thungatha-features/user-profile/`, `/api/profile`, validation, persistence, migrations and tests. Extend the working foundation rather than creating a parallel implementation. Follow D-040 for shared tokens, Tailwind CSS v4, deliberate CSS introduction and the 100-line component limit.
 
 Detailed checkpoints belong in the M2 milestone document.
 
@@ -338,6 +336,10 @@ Thungatha is ready for final release only when:
 | `README.md` | Project introduction, setup and development commands |
 
 This document governs the overall roadmap. It does not replace the detailed milestone specifications.
+
+## Historical M1 execution records
+
+The dated records below preserve the state of work and evidence at the time each entry was written. Their earlier open/in-review statuses are historical snapshots and are superseded by the M1 final acceptance record dated 2026-10-24 above.
 
 ## M1-C07 — Job Discovery local verification update (2026-10-16)
 

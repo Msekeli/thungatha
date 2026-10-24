@@ -26,6 +26,11 @@ export function JobDiscoveryScreen({
   const s = state;
   const c = controller;
   useJobDiscoveryDialogAnchors(s, c.showApplicationPrompt);
+  const category =
+    s.category === "dismissed" || s.category === "saved"
+      ? s.category
+      : s.filters.employmentType || "all";
+  const dismissedCount = s.dismissedCount;
 
   return (
     <>
@@ -67,6 +72,17 @@ export function JobDiscoveryScreen({
           onRetryDetail={c.workspaceActions.retryDetail}
           configured={configured}
           leadingColumn={workspaceLeadingColumn}
+          resultCount={s.feed?.total ?? 0}
+          category={category}
+          dismissedCount={dismissedCount}
+          isAuthenticated={s.isAuthenticated}
+          sortOrder={s.sortOrder}
+          onSortOrderChange={(value) => {
+            s.setSortOrder(value);
+            s.setPage(1);
+            s.setMobileDetail(false);
+          }}
+          onCategoryChange={c.changeCategory}
         />
       </div>
       <JobDiscoveryDialogs

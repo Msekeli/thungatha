@@ -30,7 +30,8 @@
     height: calc(100dvh - 116px - env(safe-area-inset-bottom));
     min-height: 0;
   }
-  .th-workspace-shell:has(.th-workspace-header--jobs) .th-workspace-page-content {
+  .th-workspace-shell:has(.th-workspace-header--jobs)
+    .th-workspace-page-content {
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
@@ -38,7 +39,8 @@
   }
 }
 @media (max-width: 900px) {
-  .th-workspace-shell:has(.th-workspace-header--jobs) .th-workspace-page-content {
+  .th-workspace-shell:has(.th-workspace-header--jobs)
+    .th-workspace-page-content {
     padding: 0;
   }
 }

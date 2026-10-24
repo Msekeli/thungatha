@@ -36,7 +36,13 @@ export function JobSalary({
       ? `${amount(minimum, currency, locale)} – ${amount(maximum, currency, locale)}`
       : amount((minimum ?? maximum) as number, currency, locale);
   return (
-    <p className={prefix ? "m-0 text-xs font-normal text-fg-muted" : "text-sm font-semibold text-fg"}>
+    <p
+      className={
+        prefix
+          ? "m-0 text-xs font-normal text-fg-muted"
+          : "text-sm font-semibold text-fg"
+      }
+    >
       {prefix && <strong>{prefix}</strong>}
       {label}
     </p>

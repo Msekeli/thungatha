@@ -3,6 +3,13 @@
 grant select on public.jobs to anon;
 grant select on public.job_sources to anon;
 
+-- The remote database may already contain these policies even when this
+-- migration is still pending in migration history. Reconcile them safely.
+drop policy if exists "Anonymous visitors can read jobs with active sources"
+  on public.jobs;
+drop policy if exists "Anonymous visitors can read active job sources"
+  on public.job_sources;
+
 create policy "Anonymous visitors can read jobs with active sources"
   on public.jobs
   for select

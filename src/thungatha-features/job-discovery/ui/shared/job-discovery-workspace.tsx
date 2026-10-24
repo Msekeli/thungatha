@@ -32,6 +32,13 @@ export function JobDiscoveryWorkspace(props: JobDiscoveryWorkspaceProps) {
         onSave={props.onSaveJob}
         onDismiss={props.onDismissJob}
         configured={props.configured}
+        resultCount={props.resultCount}
+        category={props.category}
+        dismissedCount={props.dismissedCount}
+        isAuthenticated={props.isAuthenticated}
+        sortOrder={props.sortOrder}
+        onSortOrderChange={props.onSortOrderChange}
+        onCategoryChange={props.onCategoryChange}
       />
       <AuthenticatedJobDetailPanel
         configured={props.configured}

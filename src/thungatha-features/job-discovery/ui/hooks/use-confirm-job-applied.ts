@@ -1,5 +1,9 @@
 import { useCallback } from "react";
-import { getApiError, type Job, type JobActivity } from "../job-discovery-utils";
+import {
+  getApiError,
+  type Job,
+  type JobActivity,
+} from "../job-discovery-utils";
 
 export function useConfirmJobApplied(
   job: Job | null,
@@ -17,15 +21,18 @@ export function useConfirmJobApplied(
     setBusy(true);
     setError(null);
     try {
-      const response = await fetch(`/api/jobs/${encodeURIComponent(job.id)}/activity`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/jobs/${encodeURIComponent(job.id)}/activity`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "confirm_applied" }),
+          cache: "no-store",
         },
-        body: JSON.stringify({ action: "confirm_applied" }),
-        cache: "no-store",
-      });
+      );
       if (!response.ok) {
         setError(await getApiError(response));
         return;
@@ -37,7 +44,9 @@ export function useConfirmJobApplied(
       setMessage("Application confirmation recorded.");
       retryFeed((value) => value + 1);
     } catch {
-      setError("Could not record your application confirmation. Please try again.");
+      setError(
+        "Could not record your application confirmation. Please try again.",
+      );
     } finally {
       setBusy(false);
     }

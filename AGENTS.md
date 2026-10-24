@@ -44,7 +44,7 @@
 - New source filenames should use descriptive lowercase kebab-case names that communicate the component, operation, or data being handled. Keep Next.js-required entry filenames such as `page.tsx` and `route.ts`, but keep them thin and extract substantial work into meaningfully named modules when a clear boundary exists.
 - Do not blindly rename every repeated basename. Inspect repeated `index.ts`, `schema.ts`, and `theme.ts` files in context; preserve framework conventions and avoid changes that add indirection without improving discoverability.
 - Audit oversized components and stylesheets by responsibility. Split cohesive UI, state/API behaviour, and CSS sections in small verified steps; preserve state/effect behaviour, CSS cascade, responsive rules, and existing route/API contracts. See `Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md` for the current filename and large-file audit.
-- UI direction: use Tailwind CSS v4 and shadcn/ui patterns. Reuse existing shared controls where suitable; do not recreate components or add a dependency just to imitate shadcn/ui.
+- UI direction: use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls. Reuse existing controls; do not recreate them or add a dependency solely to imitate shadcn/ui.
 - Do not create a second source of truth for a document or feature. Update references when an authoritative document is intentionally replaced, and report any stale references found.
 
 ## Source File Size and Refactoring Rules
@@ -57,11 +57,27 @@
 - Existing files over 100 lines are known technical debt, not automatically fixed by a documentation change. Record them and refactor incrementally with targeted tests and visual verification.
 - Add an automated line-count check with an 80-line warning and a 100-line failure to local/CI checks in a separate implementation step. Until that checker exists and is verified, agents must perform and report manual counts.
 
+## Component Discovery and Reuse Rules
+
+Before creating any UI component, inspect the existing component inventory in this order:
+
+1. **Current feature:** Search the feature being implemented for a suitable component. Reuse or extend it when its responsibility and behaviour fit.
+2. **Global/shared level:** If the feature has no suitable component, inspect the global/shared component library and reuse a suitable component there.
+3. **Create only if missing:** Create a component only when neither the current feature nor the global/shared level contains a suitable component. Put it at the correct ownership level: feature-specific components stay in their feature; genuinely cross-feature components belong in the global/shared library.
+4. **Respect feature boundaries:** Do not import or depend directly on another feature's private components. If multiple features need the same capability, assess whether a generic shared component is justified instead of coupling features or duplicating shared behaviour.
+5. **Suitability matters:** Do not force-fit an existing component that does not meet the requirement. State why it is unsuitable or missing before creating a replacement.
+6. **Avoid duplication:** Before introducing a new component, record which feature-level and shared-level locations were checked and why reuse was not appropriate. Keep the audit lightweight and proportional to the change.
+
+This rule is about component ownership and discovery, not a requirement to share every component. Prefer the smallest correct reuse; do not create abstractions merely because two components look similar.
+
 ## UI Styling Rules
 
 - Use Tailwind CSS v4 and shadcn/ui patterns for interface components. Reuse existing shared controls where suitable.
 - Create standalone CSS only when Tailwind cannot reasonably meet the requirement or when scoped styles are needed for a complex component.
-- Keep custom CSS small, scoped, and owned by the relevant component/feature. Avoid duplicate styling systems and unnecessary CSS files.
+- **No component-level design values:** components must not define local colors, typography, font sizes/families, shadows, radii, borders, or theme palettes through inline styles, arbitrary Tailwind design values, or local CSS overrides. Use semantic token classes and the shared theme tokens in `src/theme/tokens.json` / generated `src/styles/tokens.css` as the source of truth.
+- Use Tailwind CSS v4 for layout, spacing, responsive behavior, flex/grid, and straightforward presentation. Prefer existing shadcn/ui patterns and Base UI/shared controls.
+- **Discuss CSS before introducing it.** Before adding a CSS file or custom selector, explain why existing tokens, shared controls, and Tailwind v4 cannot meet the requirement and obtain the user's agreement. Add CSS only when necessary, keep it minimal, and never edit generated token CSS by hand.
+- Keep handwritten components at 100 physical lines or fewer; warn at 80 lines and refactor before crossing 100. The existing 100-line limit also applies to all other maintained handwritten source files. Count blank lines and comments; do not compress code or split files into meaningless fragments.
 
 ## Product and Architecture Rules
 

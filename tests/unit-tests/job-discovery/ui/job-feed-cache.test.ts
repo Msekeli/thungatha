@@ -25,7 +25,7 @@ const job = (id: string) => ({
 
 function cacheFeed(jobs: ReturnType<typeof job>[]) {
   sessionStorage.setItem(
-    "thungatha-public-job-feed-v1",
+    "thungatha-public-job-feed-v2",
     JSON.stringify({
       savedAt: Date.now(),
       feed: { jobs, page: 1, pageSize: 30, total: 10, totalPages: 1 },
@@ -64,7 +64,7 @@ describe("public feed cache reconciliation", () => {
     expect(feed?.jobs[0].state).toBe("saved");
     expect(feed?.total).toBe(8);
     expect(requestJobFeed).toHaveBeenCalledWith(
-      "state=dismissed&page=1&pageSize=1&publishedWithin=30d",
+      "state=dismissed&page=1&pageSize=1&publishedWithin=any",
       expect.any(AbortSignal),
     );
   });

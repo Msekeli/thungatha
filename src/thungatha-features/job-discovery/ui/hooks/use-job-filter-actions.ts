@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { FormEvent, Dispatch, SetStateAction } from "react";
 import { EMPTY_FILTERS, type Filters } from "../job-discovery-utils";
 import { employmentTypeForJobType } from "../shared/job-type-options";
@@ -11,6 +11,15 @@ export function useJobFilterActions(
   setPage: Dispatch<SetStateAction<number>>,
   setMobileDetail: Dispatch<SetStateAction<boolean>>,
 ) {
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    },
+    [],
+  );
+
   const resetResultsView = useCallback(() => {
     setPage(1);
     setMobileDetail(false);
@@ -19,11 +28,21 @@ export function useJobFilterActions(
   const changeDraft = useCallback(
     (key: keyof Filters, value: string) => {
       setDraft((current) => ({ ...current, [key]: value }));
+
+      if (key === "query") {
+        if (searchTimer.current) clearTimeout(searchTimer.current);
+        searchTimer.current = setTimeout(() => {
+          setFilters((current) => ({ ...current, query: value }));
+          setPage(1);
+          setMobileDetail(false);
+        }, 350);
+      }
     },
-    [setDraft],
+    [setDraft, setFilters, setPage, setMobileDetail],
   );
 
   const applyFilters = useCallback(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
     setFilters({ ...draft });
     resetResultsView();
   }, [draft, setFilters, resetResultsView]);
@@ -37,6 +56,7 @@ export function useJobFilterActions(
   );
 
   const clearFilters = useCallback(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
     setDraft(EMPTY_FILTERS);
     setFilters(EMPTY_FILTERS);
     resetResultsView();

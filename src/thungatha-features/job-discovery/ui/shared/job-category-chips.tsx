@@ -18,7 +18,11 @@ export function JobCategoryChips({
   onSelect,
 }: Props) {
   return (
-    <div role="group" aria-label="Opportunity categories" className={`flex flex-wrap items-center gap-2 ${className}`}>
+    <div
+      role="group"
+      aria-label="Opportunity categories"
+      className={`flex flex-wrap items-center gap-2 ${className}`}
+    >
       {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
         const count = counts[item.key];

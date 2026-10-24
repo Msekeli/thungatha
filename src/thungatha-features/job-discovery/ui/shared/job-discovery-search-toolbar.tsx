@@ -24,7 +24,14 @@ export function JobDiscoverySearchToolbar({
         draft={s.draft}
         filtersOpen={s.filtersOpen}
         categories={c.categories}
-        category={s.filters.employmentType || s.category}
+        category={
+          s.category === "dismissed" || s.category === "saved"
+            ? s.category
+            : s.filters.employmentType || "all"
+        }
+        resultCount={s.feed?.total ?? 0}
+        sortOrder={s.sortOrder}
+        onSortOrderChange={s.setSortOrder}
         onQueryChange={(value) => c.changeDraft("query", value)}
         onLocationChange={(value) => c.changeDraft("location", value)}
         onSubmit={c.submitFilters}

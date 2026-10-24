@@ -98,12 +98,18 @@ Use a filename that identifies the responsibility, not merely the framework role
 - Prefer descriptive exported names as well as descriptive filenames. File and symbol names should reinforce each other.
 - Keep file naming consistent within a feature. Do not introduce a new convention in one folder while leaving the rest unexplained.
 
+### Component discovery and reuse
+
+Before adding a UI component, inspect the current feature's component folder first, then the global/shared component library. Reuse or extend a suitable component found at either level. Create a new component only when neither level has a suitable fit.
+
+Do not import private components directly from another feature. If multiple features require a capability, assess whether a generic component belongs in the global/shared library. Do not force-fit an unsuitable component; record briefly why existing feature-level and shared-level options do not meet the requirement. Keep feature-specific UI owned by its feature and avoid duplicate implementations.
+
 ### UI styling priority
 
-- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns, reusing existing shared controls where suitable. MUI has been removed.
+- Follow D-035: use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls where suitable.
 - Use Tailwind CSS v4 utilities for layout and straightforward styling.
-- Add scoped CSS only when Tailwind cannot reasonably meet the requirement or a component needs a complex visual treatment.
-- Keep custom CSS small and scoped to the owning component/feature; do not create CSS files by default.
+- Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use shared semantic token classes and the existing theme-token source of truth.
+- Discuss and justify any new CSS file or custom selector before introducing it; get the user's agreement first. Prefer Tailwind CSS v4 and shared controls. Approved custom CSS must be minimal, scoped, and necessary.
 
 ### Next.js reserved/conventional filenames
 

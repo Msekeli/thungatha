@@ -15,23 +15,28 @@ export function useJobFeed(
   page: number,
   category: string,
   filters: Filters,
+  sortOrder: string,
   retryFeed: number,
   setFeed: Dispatch<SetStateAction<Feed | null>>,
+  setDismissedCount: Dispatch<SetStateAction<number>>,
   setLoading: Dispatch<SetStateAction<boolean>>,
   setError: Dispatch<SetStateAction<string | null>>,
   setIsAuthenticated: Dispatch<SetStateAction<boolean>>,
   setSelectedId: Dispatch<SetStateAction<string | null>>,
 ) {
   const params = useMemo(
-    () => buildJobFeedParams(page, category, filters),
-    [page, category, filters],
+    () => buildJobFeedParams(page, category, filters, sortOrder),
+    [page, category, filters, sortOrder],
   );
   const refreshFeed = useCallback(
     async (signal: AbortSignal) => {
       setLoading(true);
       setError(null);
       try {
-        if (canReusePublicJobFeed(page, category, filters)) {
+        if (
+          sortOrder !== "oldest" &&
+          canReusePublicJobFeed(page, category, filters)
+        ) {
           const cached = await getReusablePublicFeed(signal);
           if (cached) {
             setIsAuthenticated(true);
@@ -39,8 +44,18 @@ export function useJobFeed(
             setSelectedId((current) =>
               current && cached.jobs.some((job) => job.id === current)
                 ? current
-                : (cached.jobs[0]?.id ?? null),
+                : null,
             );
+            void requestJobFeed(
+              buildJobFeedParams(1, "dismissed", filters),
+              signal,
+            )
+              .then((dismissedFeed) => {
+                if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+              })
+              .catch(() => {
+                // Keep the last known count if the separate count request fails.
+              });
             return;
           }
         }
@@ -60,8 +75,22 @@ export function useJobFeed(
         setSelectedId((current) =>
           current && (page > 1 || data.jobs.some((job) => job.id === current))
             ? current
-            : (data.jobs[0]?.id ?? null),
+            : null,
         );
+        if (category === "dismissed") {
+          setDismissedCount(data.total);
+        } else if (page === 1) {
+          void requestJobFeed(
+            buildJobFeedParams(1, "dismissed", filters),
+            signal,
+          )
+            .then((dismissedFeed) => {
+              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+            })
+            .catch(() => {
+              // Count refresh is independent; it must not fail the main feed.
+            });
+        }
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
         setFeed(null);
@@ -81,9 +110,11 @@ export function useJobFeed(
       page,
       category,
       filters,
+      sortOrder,
       setLoading,
       setError,
       setFeed,
+      setDismissedCount,
       setIsAuthenticated,
       setSelectedId,
     ],

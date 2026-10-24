@@ -1,9 +1,5 @@
 import type { RefObject } from "react";
-import type {
-  Feed,
-  Job,
-  JobSource,
-} from "../job-discovery-utils";
+import type { Feed, Job, JobSource } from "../job-discovery-utils";
 
 export type { Feed, Job, JobSource } from "../job-discovery-utils";
 
@@ -23,4 +19,11 @@ export type JobResultsPanelProps = {
   onSave: (job: Job) => void;
   onDismiss: (job: Job) => void;
   configured: boolean;
+  resultCount: number;
+  category: string;
+  dismissedCount: number;
+  isAuthenticated: boolean;
+  sortOrder: string;
+  onSortOrderChange: (value: string) => void;
+  onCategoryChange: (key: string, label: string) => void;
 };

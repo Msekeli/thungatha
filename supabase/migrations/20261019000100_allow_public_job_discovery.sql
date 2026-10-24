@@ -5,6 +5,14 @@
 grant select on public.jobs to anon;
 grant select on public.job_sources to anon;
 
+-- Replace the broader policies from the initial public-read migration.
+-- Permissive policies combine with OR, so leaving them would bypass the
+-- 30-day publication window.
+drop policy if exists "Anonymous visitors can read active job sources"
+  on public.job_sources;
+drop policy if exists "Anonymous visitors can read jobs with active sources"
+  on public.jobs;
+
 create policy "Anonymous users can read recent active job sources"
   on public.job_sources
   for select

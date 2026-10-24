@@ -24,7 +24,11 @@ export function JobResultsState({
   if (loading && !hasFeed)
     return (
       <div role="status" className={stateClass}>
-        <LoaderCircle size={20} className="animate-spin" aria-label="Loading opportunities" />
+        <LoaderCircle
+          size={20}
+          className="animate-spin"
+          aria-label="Loading opportunities"
+        />
         <strong className="text-sm font-semibold text-fg">
           Loading opportunities
         </strong>
@@ -37,7 +41,9 @@ export function JobResultsState({
           We couldn’t load opportunities
         </strong>
         <p className="mb-1 m-0 leading-relaxed">{error}</p>
-        <Button onClick={onRetry} variant="outline">Retry</Button>
+        <Button onClick={onRetry} variant="outline">
+          Retry
+        </Button>
       </div>
     );
   if (hasJobs) return null;

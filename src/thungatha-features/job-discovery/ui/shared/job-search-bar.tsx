@@ -27,7 +27,11 @@ export function JobSearchBar({
       if (stored) {
         const parsed: unknown = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          setRecentSearches(parsed.filter((item): item is string => typeof item === "string").slice(0, MAX_RECENT_SEARCHES));
+          setRecentSearches(
+            parsed
+              .filter((item): item is string => typeof item === "string")
+              .slice(0, MAX_RECENT_SEARCHES),
+          );
         }
       }
     } catch {
@@ -38,7 +42,12 @@ export function JobSearchBar({
   function rememberSearch(search: string) {
     const trimmed = search.trim();
     if (!trimmed) return;
-    const next = [trimmed, ...recentSearches.filter((item) => item.toLowerCase() !== trimmed.toLowerCase())].slice(0, MAX_RECENT_SEARCHES);
+    const next = [
+      trimmed,
+      ...recentSearches.filter(
+        (item) => item.toLowerCase() !== trimmed.toLowerCase(),
+      ),
+    ].slice(0, MAX_RECENT_SEARCHES);
     setRecentSearches(next);
     try {
       window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
@@ -69,7 +78,10 @@ export function JobSearchBar({
         </label>
       </form>
       {!value.trim() && recentSearches.length > 0 && (
-        <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2" aria-label="Recent searches">
+        <div
+          className="mt-2 flex min-w-0 flex-wrap items-center gap-2"
+          aria-label="Recent searches"
+        >
           <span className="text-xs text-[var(--th-fg-muted)]">Recent:</span>
           {recentSearches.map((search) => (
             <button
@@ -88,7 +100,11 @@ export function JobSearchBar({
             title="Clear recent searches"
             onClick={() => {
               setRecentSearches([]);
-              try { window.localStorage.removeItem(RECENT_SEARCHES_KEY); } catch { /* optional storage */ }
+              try {
+                window.localStorage.removeItem(RECENT_SEARCHES_KEY);
+              } catch {
+                /* optional storage */
+              }
             }}
             className="inline-flex size-6 items-center justify-center rounded-full text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
           >
