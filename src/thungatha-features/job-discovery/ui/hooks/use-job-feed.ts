@@ -33,7 +33,10 @@ export function useJobFeed(
       setLoading(true);
       setError(null);
       try {
-        if (canReusePublicJobFeed(page, category, filters)) {
+        if (
+          sortOrder !== "oldest" &&
+          canReusePublicJobFeed(page, category, filters)
+        ) {
           const cached = await getReusablePublicFeed(signal);
           if (cached) {
             setIsAuthenticated(true);
