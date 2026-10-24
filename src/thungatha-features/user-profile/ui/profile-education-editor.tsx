@@ -1,105 +1,22 @@
 "use client";
-
 import { useState } from "react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { UserProfileDto } from "../server/user-profile-schema";
-
-type Edu = UserProfileDto["education"][number];
-
-export function ProfileEducationEditor({
-  items,
-  onChange,
-}: {
-  items: Edu[];
-  onChange: (items: Edu[]) => void;
-}) {
+type Education = UserProfileDto["education"][number];
+export function ProfileEducationEditor({ items, onChange }: { items: Education[]; onChange: (items: Education[]) => void }) {
   const [adding, setAdding] = useState(false);
-  const [qual, setQual] = useState("");
-  const [inst, setInst] = useState("");
-
-  const handleAdd = () => {
-    if (!qual || !inst) return;
-    onChange([
-      ...items,
-      { id: `edu-${Date.now()}`, qualification: qual, institution: inst },
-    ]);
-    setQual("");
-    setInst("");
-    setAdding(false);
+  const [qualification, setQualification] = useState("");
+  const [institution, setInstitution] = useState("");
+  const add = () => {
+    if (!qualification.trim() || !institution.trim()) return;
+    onChange([...items, { id: `edu-${Date.now()}`, qualification: qualification.trim(), institution: institution.trim() }]);
+    setQualification(""); setInstitution(""); setAdding(false);
   };
-
-  return (
-    <div className="rounded-xl border border-line bg-panel p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-fg">Education</h2>
-        <span className="text-xs text-fg-muted">{items.length}</span>
-      </div>
-
-      <div className="mt-3 divide-y divide-line/40">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center justify-between py-2 text-xs"
-          >
-            <div>
-              <p className="font-medium text-fg">{item.qualification}</p>
-              <p className="text-[11px] text-fg-muted">{item.institution}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((i) => i.id !== item.id))}
-              className="text-xs text-warn hover:underline"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {adding ? (
-        <div className="mt-3 rounded-lg bg-panel-2 p-3 space-y-2">
-          <input
-            placeholder="Qualification (e.g. BSc Computer Science)"
-            value={qual}
-            onChange={(e) => setQual(e.target.value)}
-            className="w-full rounded border border-line bg-panel px-2.5 py-1.5 text-xs text-fg"
-          />
-          <input
-            placeholder="Institution (e.g. Westbrook University)"
-            value={inst}
-            onChange={(e) => setInst(e.target.value)}
-            className="w-full rounded border border-line bg-panel px-2.5 py-1.5 text-xs text-fg"
-          />
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="xs"
-              variant="primary"
-              onClick={handleAdd}
-            >
-              Add education
-            </Button>
-            <Button
-              type="button"
-              size="xs"
-              variant="ghost"
-              onClick={() => setAdding(false)}
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <Button
-          type="button"
-          size="xs"
-          variant="outline"
-          className="mt-3"
-          onClick={() => setAdding(true)}
-        >
-          + Add education
-        </Button>
-      )}
-    </div>
-  );
+  return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
+    <div className="flex items-center justify-between"><div><h2 className="text-base font-semibold">Education</h2><p className="mt-1 text-sm text-muted-foreground">Qualifications, courses and current studies.</p></div><span className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">{items.length}</span></div>
+    <ul className="mt-4 divide-y divide-border">{items.map((item) => <li key={item.id} className="flex items-center justify-between gap-3 py-3 first:pt-0"><div className="min-w-0"><p className="text-sm font-medium">{item.qualification}</p><p className="text-sm text-muted-foreground">{item.institution}</p></div><Button aria-label={`Remove ${item.qualification}`} variant="ghost" size="icon" onClick={() => onChange(items.filter((entry) => entry.id !== item.id))}><X className="size-4" /></Button></li>)}{!items.length && <li className="py-2 text-sm text-muted-foreground">No education added yet.</li>}</ul>
+    {adding ? <div className="mt-4 grid gap-3 rounded-lg border border-border bg-muted/40 p-4"><label className="space-y-2 text-sm font-medium">Qualification<Input value={qualification} onChange={(event) => setQualification(event.target.value)} placeholder="e.g. Diploma in Software Development" /></label><label className="space-y-2 text-sm font-medium">Institution<Input value={institution} onChange={(event) => setInstitution(event.target.value)} placeholder="College or university" /></label><div className="flex gap-2"><Button onClick={add} disabled={!qualification.trim() || !institution.trim()}><Plus className="size-4" /> Add education</Button><Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button></div></div> : <Button className="mt-4" variant="outline" onClick={() => setAdding(true)}><Plus className="size-4" /> Add education</Button>}
+  </section>;
 }

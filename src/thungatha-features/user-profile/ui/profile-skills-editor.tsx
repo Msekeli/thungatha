@@ -1,67 +1,18 @@
 "use client";
-
 import { useState } from "react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-export function ProfileSkillsEditor({
-  skills,
-  onChange,
-}: {
-  skills: string[];
-  onChange: (skills: string[]) => void;
-}) {
+import { Input } from "@/components/ui/input";
+export function ProfileSkillsEditor({ skills, onChange }: { skills: string[]; onChange: (skills: string[]) => void }) {
   const [newSkill, setNewSkill] = useState("");
-
-  const handleAdd = () => {
-    const trimmed = newSkill.trim();
-    if (!trimmed || skills.includes(trimmed)) return;
-    onChange([...skills, trimmed]);
-    setNewSkill("");
+  const add = () => {
+    const value = newSkill.trim();
+    if (!value || skills.some((skill) => skill.toLowerCase() === value.toLowerCase())) return;
+    onChange([...skills, value]); setNewSkill("");
   };
-
-  return (
-    <div className="rounded-xl border border-line bg-panel p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-fg">Skills</h2>
-        <span className="text-xs text-fg-muted">{skills.length}</span>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {skills.map((skill) => (
-          <span
-            key={skill}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-panel-2 px-2.5 py-1 text-xs text-fg"
-          >
-            <span>{skill}</span>
-            <button
-              type="button"
-              onClick={() => onChange(skills.filter((s) => s !== skill))}
-              className="text-fg-muted hover:text-warn"
-              aria-label={`Remove skill ${skill}`}
-            >
-              ×
-            </button>
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-4 flex gap-2">
-        <input
-          placeholder="Add skill (e.g. React)"
-          value={newSkill}
-          onChange={(e) => setNewSkill(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleAdd();
-            }
-          }}
-          className="w-full max-w-xs rounded-lg border border-line bg-panel-2 px-3 py-1.5 text-xs text-fg outline-none focus:border-accent"
-        />
-        <Button type="button" size="xs" variant="secondary" onClick={handleAdd}>
-          + Add skill
-        </Button>
-      </div>
-    </div>
-  );
+  return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
+    <div className="space-y-1"><h2 className="text-base font-semibold">Skills</h2><p className="text-sm text-muted-foreground">Add the skills you want employers to find.</p></div>
+    <div className="mt-4 flex flex-wrap gap-2">{skills.map((skill) => <span key={skill} className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary px-3 py-1.5 text-sm">{skill}<button type="button" onClick={() => onChange(skills.filter((item) => item !== skill))} aria-label={`Remove ${skill}`} className="ml-1 rounded-full text-muted-foreground hover:text-foreground"><X className="size-3.5" /></button></span>)}{!skills.length && <p className="text-sm text-muted-foreground">No skills added yet.</p>}</div>
+    <form className="mt-4 flex max-w-lg gap-2" onSubmit={(event) => { event.preventDefault(); add(); }}><Input value={newSkill} onChange={(event) => setNewSkill(event.target.value)} placeholder="e.g. React, SQL, project management" aria-label="Add a skill" /><Button type="submit" disabled={!newSkill.trim()}><Plus className="size-4" /> Add</Button></form>
+  </section>;
 }
