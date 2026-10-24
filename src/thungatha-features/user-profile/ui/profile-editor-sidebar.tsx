@@ -1,20 +1,38 @@
 "use client";
-import { CheckCircle2, Circle } from "lucide-react";
+
+import { CheckCircle2, Circle, CircleDashed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { UserProfileDto } from "../server/user-profile-schema";
+
 export function ProfileEditorSidebar({ profile, saving, onSave, onCancel }: {
   profile: UserProfileDto; saving: boolean; onSave: () => void; onCancel: () => void;
 }) {
-  const details = profile.personalDetails;
-  const personalComplete = [details.fullName, details.email, details.phone, details.location, details.country, details.residentialSuburb, details.residentialCity, details.residentialProvince].every((value) => Boolean(value?.trim()));
-  const educationComplete = profile.education.some((item) => Boolean(item.educationLevel?.trim() && item.qualification.trim() && item.institution.trim()));
-  const sections = [["Personal details", personalComplete], ["Education", educationComplete]] as const;
-  const completed = sections.filter((section) => section[1]).length;
-  return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm">
-    <div className="flex items-center justify-between"><h2 className="text-sm font-semibold">Profile completion</h2><span className="text-xs text-muted-foreground">{completed}/{sections.length}</span></div>
-    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completed / sections.length * 100}%` }} /></div>
-    <ul className="mt-4 space-y-3">{sections.map(([label, done]) => <li key={label} className="flex items-center gap-2 text-sm">{done ? <CheckCircle2 aria-hidden="true" className="size-4 text-primary" /> : <Circle aria-hidden="true" className="size-4 text-muted-foreground" />}<span className={done ? "text-foreground" : "text-muted-foreground"}>{label}</span></li>)}</ul>
-    <p className="mt-5 border-t border-border pt-4 text-xs leading-5 text-muted-foreground">Save a draft at any time. Optional sections do not block completion.</p>
+  const d = profile.personalDetails;
+  const detailsDone = [d.fullName, d.email, d.phone, d.location, d.country, d.residentialSuburb, d.residentialCity, d.residentialProvince].every((v) => Boolean(v?.trim()));
+  const educationDone = profile.education.some((e) => Boolean(e.educationLevel?.trim() && e.qualification.trim() && e.institution.trim()));
+  const items = [
+    { label: "Personal details", done: detailsDone, required: true },
+    { label: "Professional summary", done: Boolean(profile.summary?.trim()), required: true },
+    { label: "Work experience", done: profile.workExperience.length > 0, required: false },
+    { label: "Education", done: educationDone, required: true },
+    { label: "Skills", done: profile.skills.length > 0, required: false },
+    { label: "Certifications and licences", done: profile.certifications.length > 0, required: false },
+    { label: "Projects", done: profile.projects.length > 0, required: false },
+    { label: "Preferred next role", done: Boolean(profile.nextRole?.trim()), required: false },
+    { label: "Languages and personal attributes", done: profile.languages.length + profile.personalAttributes.length > 0, required: false },
+  ];
+  const required = items.filter((item) => item.required);
+  const completed = required.filter((item) => item.done).length;
+  return <section className="th-profile-completion rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+    <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">Profile completion</h2><span className="text-xs text-muted-foreground">{completed}/{required.length} required</span></div>
+    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completed / required.length * 100}%` }} /></div>
+    <ul className="th-profile-completion-list mt-4 space-y-3">
+      {items.map(({ label, done, required: isRequired }) => <li key={label} className="flex items-start gap-2 text-sm">
+        {done ? <CheckCircle2 aria-label="Complete" className="mt-0.5 size-4 shrink-0 text-primary" /> : isRequired ? <Circle aria-label="Required and incomplete" className="mt-0.5 size-4 shrink-0 text-muted-foreground" /> : <CircleDashed aria-label="Optional and not added" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />}
+        <span className={done ? "text-foreground" : "text-muted-foreground"}>{label}<span className="th-profile-completion-kind">{done ? "Complete" : isRequired ? "Required" : "Optional"}</span></span>
+      </li>)}
+    </ul>
+    <p className="mt-4 border-t border-border pt-3 text-xs leading-5 text-muted-foreground">Optional sections do not block completion. Incomplete required sections stay unchecked.</p>
     <div className="mt-4 flex flex-col gap-2"><Button className="w-full" disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Save draft"}</Button><Button className="w-full" variant="outline" disabled={saving} onClick={onCancel}>Cancel</Button></div>
   </section>;
 }
