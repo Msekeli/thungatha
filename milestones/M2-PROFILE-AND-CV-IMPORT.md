@@ -26,6 +26,10 @@ M2 is planned but implementation has not started. Begin with M2-C01 and an audit
 6. **C06 — Master CV lifecycle:** define replacement/version/reference semantics and provide a stable read contract for CV Studio. Do not build CV tailoring or Matching in M2.
 7. **C07 — Acceptance:** run and record relevant checks, privacy/security review, responsive and keyboard/browser checks, and explicit user review.
 
+- **Component reuse before creation:** Before building a UI component, inspect the current feature's existing components first, then the global/shared component library. Reuse or extend a suitable component at either level. Create a new component only if neither level has a suitable fit.
+- **Respect feature boundaries:** Do not use another feature's private component as a shortcut. If multiple features need the same capability, consider whether a generic component belongs in the global/shared library. Keep feature-specific components inside their owning feature.
+- **Explain genuine gaps:** If neither level has a suitable component, briefly identify what was checked and why the available options do not fit. Do not force-fit components or introduce abstractions just because two UI elements look alike.
+
 ### UI and component rules for M2
 
 - Do not set component-local colors, typography, font sizes/families, shadows, radii, borders, or theme palettes. Use existing semantic token classes and shared theme tokens so light/dark theming stays consistent.
