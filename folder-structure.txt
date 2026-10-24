@@ -21,7 +21,9 @@ UI STYLING AND FILE SIZE STANDARD
 
 - Prefer existing shared shadcn/ui and Base UI components before creating custom controls.
 - Use Tailwind CSS v4 utilities for layout and straightforward styling where appropriate.
-- Create standalone CSS files or custom CSS rules only when Tailwind cannot reasonably satisfy the requirement, or when a component needs scoped styles for a complex visual treatment.
+- Do not add CSS files or custom selectors without first explaining why existing tokens, shared controls, and Tailwind CSS v4 are insufficient and obtaining user agreement.
+- Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use semantic token classes backed by `src/theme/tokens.json` and generated `src/styles/tokens.css`; avoid arbitrary design values and inline design styles.
+- After approval, introduce minimal scoped CSS only when Tailwind cannot reasonably meet the requirement or a genuinely complex visual treatment requires it.
 - Keep every handwritten source file at 100 physical lines or fewer, including components, CSS, tests, and configuration. Count blank lines and comments. Generated files, dependency lockfiles, and vendored code are excluded.
 - Warn at 80 lines. Before and after each meaningful code change, check line counts and report any changed file at or above 80 lines or over 100 lines.
 - Refactor by cohesive responsibility before exceeding 100 lines. Never compress code just to meet the limit or split it into meaningless fragments.

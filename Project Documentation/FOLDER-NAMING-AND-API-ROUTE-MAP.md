@@ -100,10 +100,10 @@ Use a filename that identifies the responsibility, not merely the framework role
 
 ### UI styling priority
 
-- Follow D-035: use Tailwind CSS v4 and shadcn/ui patterns, reusing existing shared controls where suitable. MUI has been removed.
+- Follow D-035: use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls where suitable.
 - Use Tailwind CSS v4 utilities for layout and straightforward styling.
-- Add scoped CSS only when Tailwind cannot reasonably meet the requirement or a component needs a complex visual treatment.
-- Keep custom CSS small and scoped to the owning component/feature; do not create CSS files by default.
+- Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use shared semantic token classes and the existing theme-token source of truth.
+- Discuss and justify any new CSS file or custom selector before introducing it; get the user's agreement first. Prefer Tailwind CSS v4 and shared controls. Approved custom CSS must be minimal, scoped, and necessary.
 
 ### Next.js reserved/conventional filenames
 

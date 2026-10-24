@@ -1,6 +1,6 @@
 # M2 — Profile and CV Import
 
-**Status:** Not started  
+**Status:** Not started — plan updated 2026-10-24  
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
 **Design references:** The Profile experience implied by the supplied CV Studio input screen; no dedicated Profile screenshot was supplied.  
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
@@ -11,15 +11,39 @@ Build the Profile foundation used by Matching and CV Studio. The user must be ab
 
 The CV Studio design expects the master CV to load from Profile when one exists. If not, the user can upload a CV there or in the CV Studio workflow. Profile information is the source of truth for confirmed professional facts.
 
+## M2 start plan and engineering constraints
+
+M2 is planned but implementation has not started. Begin with M2-C01 and an audit of the existing Profile foundation before changing routes, persistence, or UI. The repository already contains Profile UI/server/persistence scaffolding and `/api/profile`; inspect and extend those files instead of building a parallel implementation. Preserve the Clerk/Supabase foundation and established route/API contracts unless a verified gap requires an approved change.
+
+### Required execution order
+
+1. **C01 — Audit and contract:** inspect the current Profile page, feature folder, API handler, validation, repository/data access, migrations, theme tokens, and tests. Agree on profile fields, trust states, supported CV formats, storage/retention, and import/review flow before schema or UI work.
+2. **C02 — Persistence and ownership:** implement only the confirmed data contract. Use server-derived Clerk identity, existing Supabase patterns, migrations, and user-scoped access. Verify cross-user isolation with controlled test data.
+3. **C03 — Profile editing:** build on existing Profile code and shared controls. Validate create/edit/save/cancel/reload and accessible responsive states.
+4. **C04 — Upload and extraction:** agree on file types, size limits, storage, retention and extraction strategy before implementation. Keep raw files private; reject malformed/unsupported files safely. AI is optional and must be justified, adapter-based, and schema-validated.
+5. **C05 — Review and confirmation:** extracted facts remain proposals until the user confirms them. Preserve confirmed data when extraction is partial, wrong, or cancelled.
+6. **C06 — Master CV lifecycle:** define replacement/version/reference semantics and provide a stable read contract for CV Studio. Do not build CV tailoring or Matching in M2.
+7. **C07 — Acceptance:** run and record relevant checks, privacy/security review, responsive and keyboard/browser checks, and explicit user review.
+
+### UI and component rules for M2
+
+- Do not set component-local colors, typography, font sizes/families, shadows, radii, borders, or theme palettes. Use existing semantic token classes and shared theme tokens so light/dark theming stays consistent.
+- Prefer Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls. Do not recreate existing controls or add a UI dependency without a demonstrated need.
+- Before adding a CSS file or custom selector, explain why tokens, shared controls, and Tailwind cannot meet the requirement and get the user's agreement. Add CSS only when necessary; keep it minimal and scoped.
+- Keep every handwritten component at or below 100 physical lines, warning at 80. Apply the repository's 100-line limit to other maintained handwritten source files too. Refactor by cohesive responsibility, not by compressing code or fragmenting files.
+- Before and after each meaningful code change, inspect line counts, run relevant checks, and record actual results. Do not claim tests or visual acceptance that were not performed.
+
 ## Checkpoint status rules
 
 Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accepted**. Record actual changes, tests, evidence, unresolved issues, next action and user review for each checkpoint.
 
 ## Checkpoints
 
-### M2-C01 — Profile requirements and data contract
+### M2-C01 — Existing Profile audit and data contract
 
-**Goal:** agree on the professional information Thungatha needs and how its trust status is represented.
+**Goal:** audit and reuse the existing Profile foundation, then agree on the professional information contract.
+
+**Initial audit:** inspect the current `/profile` page, `src/thungatha-features/user-profile/`, `/api/profile`, validation, persistence, migrations, tests, and theme-token usage. Record current behaviour and gaps before changing code.
 
 **Work**
 

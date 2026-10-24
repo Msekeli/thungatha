@@ -66,7 +66,7 @@ M0 completion does not automatically mean that later milestones, the integrated 
 
 **M1 is Accepted — complete and closed as of 2026-10-24.** The user has confirmed that Milestone 1 implementation and testing are complete and has explicitly accepted closure of all nine checkpoints (M1-C01–M1-C09).
 
-The completed scope is Job Discovery and the persisted job feed: source adapters and normalization, persisted feed/detail access, search and filters, sorting, responsive public/authenticated discovery, protected save/dismiss actions, undo, and explicit application-activity confirmation. Material UI has been removed from the active implementation and dependency manifests; the current UI uses Base UI primitives, Tailwind, and Lucide.
+The completed scope is Job Discovery and the persisted job feed: source adapters and normalization, persisted feed/detail access, search and filters, sorting, responsive public/authenticated discovery, protected save/dismiss actions, undo, and explicit application-activity confirmation. The current UI direction is shared Base UI controls, Tailwind CSS v4, shadcn/ui patterns, semantic theme tokens, and Lucide.
 
 **Acceptance record and evidence boundary:** This closure records the user's confirmation that testing is complete. Detailed test commands/results for the final user test pass were not supplied in this conversation and are not reconstructed here. Earlier dated execution records below are historical evidence and may describe gates that were open at that time; the final user acceptance supersedes those earlier status snapshots. This documentation update does not newly claim CI, browser, cloud/RLS, or source-license results.
 
@@ -130,7 +130,7 @@ Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
-**Status: Not started**
+**Status: Not started — planning updated 2026-10-24**
 
 **Outcome:** A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
 
@@ -149,6 +149,8 @@ Profile becomes the source of truth for confirmed professional information used 
 **Dependency:** M0. The existing foundation must remain intact.
 
 **Completion condition:** Profile editing and CV import work reliably, extracted information is reviewable, and security, data integrity and acceptance checks pass.
+
+M2 execution begins with an audit of the existing Profile page, `src/thungatha-features/user-profile/`, `/api/profile`, validation, persistence, migrations and tests. Extend the working foundation rather than creating a parallel implementation. Follow D-040 for shared tokens, Tailwind CSS v4, deliberate CSS introduction and the 100-line component limit.
 
 Detailed checkpoints belong in the M2 milestone document.
 

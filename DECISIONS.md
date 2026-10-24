@@ -21,7 +21,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-002 | Next.js App Router, React, strict TypeScript, hosted on Vercel | Established application and hosting direction. | Confirmed |
 | D-003 | Clerk is the authentication baseline | Resolve identity server-side; authentication alone does not enforce record ownership. | Confirmed |
 | D-004 | Supabase PostgreSQL is the primary relational database | Schema changes must be repeatable and version-controlled. | Confirmed |
-| D-005 | MUI for reusable components and Tailwind CSS v4 for layout and utilities | Previous UI direction; replaced by D-035. | Superseded |
+| D-005 | Earlier reusable-component and utility styling approach | Superseded by the shared-token and Tailwind CSS v4 direction in D-035 and D-040. | Superseded |
 | D-006 | Docker is optional | Local development must not require a running Docker daemon as a universal prerequisite. | Confirmed |
 | D-007 | Do not introduce an ORM by default | Use the existing Supabase JS client and SQL migrations unless a documented need justifies a change. | Confirmed |
 | D-008 | The confirmed professional profile is the source of truth | Imported and AI-generated information remains a draft until reviewed and confirmed by the user. | Confirmed |
@@ -37,7 +37,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 ### D-035 — Tailwind CSS and shadcn/ui direction
 
 - **Status:** Confirmed
-- **Decision:** Use Tailwind CSS v4 and shadcn/ui patterns for the interface. MUI has been removed from the application.
+- **Decision:** Use Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls for the interface.
 - **Rationale:** The user is redesigning the interface and selected Tailwind and shadcn/ui as the direction.
 - **Constraints:** Preserve existing shared controls where suitable. Do not recreate components or add a dependency solely to imitate shadcn/ui.
 
@@ -257,3 +257,14 @@ When a decision is approved or changed:
 - **Evidence/validation:** The user's M1 acceptance on 2026-10-24 and the source-validation report supplied to the project.
 - **Consequences:** M1 is closed with limitations carried forward. This decision is not blanket approval for unrestricted use of every provider and does not reopen Adzuna.
 - **Review trigger:** New source-specific approval evidence or an explicit user decision to reopen a provider.
+
+
+### D-040 — Shared design tokens, component size, and controlled CSS introduction
+
+- **Date:** 2026-10-24
+- **Status:** Confirmed
+- **Context:** Component-local visual values can cause theme drift and inconsistent interfaces. Milestone 2 must follow the same rules from its first change.
+- **Decision:** Components must not define local colors, typography, font sizes/families, shadows, radii, borders, or competing palettes. Use existing semantic classes and shared theme tokens in `src/theme/tokens.json` and generated `src/styles/tokens.css`. Use Tailwind CSS v4 for layout and ordinary styling, and reuse existing shadcn/ui patterns and Base UI/shared controls. A handwritten component must remain at or below 100 physical lines; warn at 80 and refactor by cohesive responsibility. The same 100-line rule applies to other maintained handwritten source files. Before adding a CSS file or custom selector, explain why tokens, shared controls, and Tailwind are insufficient and obtain the user's agreement. CSS is allowed only when necessary and must remain minimal and scoped.
+- **Rationale:** Centralized tokens preserve theme consistency; existing controls reduce duplication; concise components are easier to review and maintain; deliberate CSS introduction prevents competing styling systems.
+- **Consequences:** Apply these rules to all new M2 work. Existing legacy violations should be recorded and addressed incrementally rather than triggering unrelated rewrites.
+- **Review trigger:** Revisit only when a concrete UI requirement cannot be met through shared tokens, existing controls, or Tailwind CSS v4.

@@ -114,6 +114,13 @@ Development continues with M2 — Profile and CV Import, followed by job-fit ana
 
 For milestone-specific requirements, see the relevant document under `milestones/`.
 
+## UI and component standards
+
+- Use shared theme tokens for colors, typography and other design-system values; do not define these locally in components.
+- Prefer Tailwind CSS v4, shadcn/ui patterns, and existing Base UI/shared controls.
+- Discuss and justify new CSS before adding it; introduce CSS only when necessary and keep it minimal and scoped.
+- Keep handwritten components at or below 100 lines; warn at 80 and split by cohesive responsibility.
+
 ## Development Workflow
 
 Work through one meaningful checkpoint at a time. Verify its acceptance criteria before marking it complete. Do not commit, push, or deploy without explicit approval.
