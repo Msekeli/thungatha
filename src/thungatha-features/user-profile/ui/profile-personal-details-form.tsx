@@ -73,6 +73,14 @@ export function ProfilePersonalDetailsForm({
             placeholder="Add location (e.g. Cape Town)"
           />
         </div>
+        <div>
+          <label htmlFor="profile-linkedin" className="block text-xs font-medium text-fg-muted">LinkedIn URL <span className="font-normal">(optional)</span></label>
+          <input id="profile-linkedin" type="url" value={details.linkedinUrl || ""} onChange={(e) => update("linkedinUrl", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent" placeholder="https://linkedin.com/in/your-profile" />
+        </div>
+        <div>
+          <label htmlFor="profile-portfolio" className="block text-xs font-medium text-fg-muted">Portfolio URL <span className="font-normal">(optional)</span></label>
+          <input id="profile-portfolio" type="url" value={details.portfolioUrl || ""} onChange={(e) => update("portfolioUrl", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-panel-2 px-3 py-2 text-xs text-fg outline-none focus:border-accent" placeholder="https://your-portfolio.dev" />
+        </div>
       </div>
     </div>
   );
