@@ -59,7 +59,7 @@ describe("profile repository ownership scope", () => {
     await saveProfile(
       "user_alice",
       {
-        personalDetails: { fullName: "Alice", email: "alice@example.com" },
+        personalDetails: { fullName: "Alice", email: "alice@example.com", country: "South Africa" },
         skills: ["TypeScript"],
       },
       getToken,
@@ -71,6 +71,7 @@ describe("profile repository ownership scope", () => {
         display_name: "Alice",
         full_name: "Alice",
         email: "alice@example.com",
+        country: "South Africa",
         skills: ["TypeScript"],
       }),
       { onConflict: "user_id" },
