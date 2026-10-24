@@ -23,12 +23,24 @@ export function ProfileExtraSectionsEditor({
 
   const addCert = () => {
     if (!cert.trim()) return;
-    onCertsChange([...certifications, { id: `c-${Date.now()}`, name: cert.trim() }]);
+    const issuer = window.prompt("Issuing organisation (optional)", "");
+    if (issuer === null) return;
+    const issueDate = window.prompt("Issue date (optional)", "");
+    if (issueDate === null) return;
+    const expiryDate = window.prompt("Expiry date (optional)", "");
+    if (expiryDate === null) return;
+    onCertsChange([...certifications, { id: `c-${Date.now()}`, name: cert.trim(), issuer: issuer || null, issueDate: issueDate || null, expiryDate: expiryDate || null }]);
     setCert("");
   };
   const addProj = () => {
     if (!proj.trim()) return;
-    onProjectsChange([...projects, { id: `p-${Date.now()}`, name: proj.trim() }]);
+    const description = window.prompt("Project description (optional)", "");
+    if (description === null) return;
+    const role = window.prompt("Role / contribution (optional)", "");
+    if (role === null) return;
+    const url = window.prompt("Project URL (optional)", "");
+    if (url === null) return;
+    onProjectsChange([...projects, { id: `p-${Date.now()}`, name: proj.trim(), description: description || null, role: role || null, url: url || null }]);
     setProj("");
   };
 
