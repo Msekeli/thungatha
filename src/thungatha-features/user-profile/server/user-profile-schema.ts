@@ -17,11 +17,11 @@ export const updateProfileSchema = z
     displayName: z.string().trim().min(1).max(100).optional(),
     personalDetails: personalDetailsSchema.optional(),
     summary: z.string().trim().max(5000).nullable().optional(),
-    workExperience: z.array(workExperienceItemSchema).optional(),
-    education: z.array(educationItemSchema).optional(),
-    skills: z.array(skillItemSchema).optional(),
-    certifications: z.array(certificationItemSchema).optional(),
-    projects: z.array(projectItemSchema).optional(),
+    workExperience: z.array(workExperienceItemSchema).max(100).optional(),
+    education: z.array(educationItemSchema).max(100).optional(),
+    skills: z.array(skillItemSchema).max(100).optional(),
+    certifications: z.array(certificationItemSchema).max(100).optional(),
+    projects: z.array(projectItemSchema).max(100).optional(),
     masterCv: masterCvMetadataSchema.nullable().optional(),
     confirmedAt: z
       .string()
@@ -45,6 +45,7 @@ export type UserProfileDto = {
   projects: Array<z.infer<typeof projectItemSchema>>;
   masterCv: z.infer<typeof masterCvMetadataSchema> | null;
   confirmedAt: string | null;
+  profileVersion: number;
   createdAt?: string;
   updatedAt?: string;
 };
