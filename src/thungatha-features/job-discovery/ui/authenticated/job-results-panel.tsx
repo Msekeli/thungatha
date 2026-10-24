@@ -25,9 +25,10 @@ export function AuthenticatedJobResultsPanel({
       aria-label="Job search results"
       aria-busy={loading}
     >
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3">
-        <div className="flex items-center gap-3 text-sm text-[var(--th-fg-muted)]">
-          <span aria-live="polite">{resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}</span>
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3 max-[700px]:flex-nowrap max-[700px]:gap-2 max-[700px]:pb-2">
+        <div className="flex min-w-0 items-center gap-3 text-sm text-[var(--th-fg-muted)] max-[700px]:flex-1 max-[700px]:gap-2 max-[700px]:whitespace-nowrap">
+          <span aria-live="polite" className="max-[700px]:hidden">{resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}</span>
+          <span aria-live="polite" className="hidden max-[700px]:inline">{resultCount} jobs</span>
           {isAuthenticated && category === "dismissed" ? (
             <button
               type="button"
@@ -40,19 +41,19 @@ export function AuthenticatedJobResultsPanel({
             <button
               type="button"
               onClick={() => onCategoryChange("dismissed", "Dismissed")}
-              className="text-[var(--th-accent)] hover:underline"
+              className="whitespace-nowrap text-[var(--th-accent)] hover:underline"
               aria-pressed={false}
             >
               Dismissed ({dismissedCount})
             </button>
           ) : null}
         </div>
-        <div className="flex items-center gap-2">
-          <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)]" aria-hidden="true" />
+        <div className="flex shrink-0 items-center gap-2 max-[700px]:gap-1">
+          <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden" aria-hidden="true" />
           <Select.Root value={sortOrder} onValueChange={onSortOrderChange}>
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-transparent px-1 text-sm font-medium text-[var(--th-fg)] outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30"
+              className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-[var(--th-fg)] outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"
             >
               <Select.Value>{selectedSortLabel}</Select.Value>
               <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
