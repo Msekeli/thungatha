@@ -24,7 +24,7 @@ export function ProfileForm({ initialMode }: { initialMode?: "empty" | "view" | 
 
   return <div className={currentMode === "edit" ? "th-profile-form-state th-profile-form-state--edit" : "space-y-4"}>
     {error && <Toast message={error} tone="error" onDismiss={dismissError} />}
-    {message && <Toast message={message} tone={message.startsWith("Draft saved") ? "info" : "success"} onDismiss={dismissMessage} />}
+    {message && <Toast message={message} tone={message.startsWith("Draft saved") ? "warning" : "success"} onDismiss={dismissMessage} />}
     {currentMode === "empty" && <ProfileEmptyState onStartManualEntry={() => setMode("edit")} onExtracted={(fields) => {
       setDraft({
         ...draft,
