@@ -71,14 +71,14 @@ export function ProfileForm({
       }
     >
       {error && (
-        <div className="rounded-xl border border-warn/40 bg-warn-bg/20 p-4">
+        <div className="fixed left-1/2 top-20 z-[100] w-[min(92vw,32rem)] -translate-x-1/2 rounded-xl border border-warn/40 bg-warn-bg/95 p-4 shadow-xl backdrop-blur">
           <p role="alert" className="text-xs text-warn">
             {error}
           </p>
         </div>
       )}
       {message && (
-        <div className="rounded-xl border border-accent/40 bg-accent/15 p-4">
+        <div className="fixed left-1/2 top-20 z-[100] w-[min(92vw,32rem)] -translate-x-1/2 rounded-xl border border-accent/40 bg-accent/95 p-4 shadow-xl backdrop-blur">
           <p role="status" className="text-xs font-medium text-accent">
             {message}
           </p>
