@@ -14,6 +14,22 @@ export * from "./user-profile-schema-primitives";
 
 export const skillItemSchema = z.string().trim().min(1).max(50);
 
+export const profileCompletionSchema = z.object({
+  personalDetails: personalDetailsSchema.extend({
+    fullName: z.string().trim().min(1).max(150),
+    email: z.string().trim().email().max(255),
+    phone: z.string().trim().min(1).max(50),
+    location: z.string().trim().min(1).max(150),
+    country: z.string().trim().min(1).max(100),
+    residentialSuburb: z.string().trim().min(1).max(150),
+    residentialCity: z.string().trim().min(1).max(150),
+    residentialProvince: z.string().trim().min(1).max(150),
+  }),
+  education: z.array(educationItemSchema.extend({
+    educationLevel: z.string().trim().min(1).max(100),
+  })).min(1),
+});
+
 export const updateProfileSchema = z
   .object({
     displayName: z.string().trim().min(1).max(100).optional(),
