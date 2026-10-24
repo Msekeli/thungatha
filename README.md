@@ -97,7 +97,9 @@ If the migration preview or application fails, stop and inspect the error rather
 
 ## Project Status
 
-Development follows six planned milestones, from job discovery through profile and CV import, job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone completion is based on verified acceptance criteria, not mockups alone.
+**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. Known job-source access and usage limitations remain documented in the M1 milestone record; this does not imply unrestricted production approval for every provider.
+
+Development continues with M2 — Profile and CV Import, followed by job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone status and acceptance evidence are tracked in IMPLEMENTATION-PLAN.md and the relevant document under milestones/.
 
 ## Documentation
 
