@@ -13,9 +13,9 @@ const fields: Array<[keyof Details, string, string, string?]> = [
 export function ProfilePersonalDetailsForm({ details, onChange }: { details: Details; onChange: (updated: Details) => void }) {
   const update = (key: keyof Details, value: string) => onChange({ ...details, [key]: value || null });
   return <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
-    <div className="mb-5 space-y-1"><h2 className="text-base font-semibold">Personal details</h2><p className="text-sm text-muted-foreground">Contact information and professional links.</p></div>
+    <div className="mb-5 space-y-1"><h2 className="text-base font-semibold">Personal details</h2><p className="text-sm text-muted-foreground">Contact information and professional links. These fields are optional.</p></div>
     <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">{fields.map(([key, label, placeholder, type]) => <div key={key} className="space-y-2">
-      <label htmlFor={String(key)} className="text-sm font-medium">{label}</label>
+      <label htmlFor={String(key)} className="text-sm font-medium">{label} <span className="font-normal text-muted-foreground">(optional)</span></label>
       <Input id={String(key)} type={type || "text"} value={details[key] || ""} onChange={(event) => update(key, event.target.value)} placeholder={placeholder} autoComplete={key === "fullName" ? "name" : key === "email" ? "email" : key === "phone" ? "tel" : undefined} />
       {key === "residentialSuburb" && <p className="text-xs text-muted-foreground">No street address or house number needed.</p>}
     </div>)}</div>
