@@ -132,7 +132,7 @@ export async function GET(request: Request) {
     if (input.employmentType) {
       const term = sanitizeFilterTerm(input.employmentType)
         .toLowerCase()
-        .replace(/[\\s-]+/g, "_");
+        .replace(/[\s-]+/g, "_");
       if (term) query = query.ilike("employment_type", `%${term}%`);
     }
     if (identity && (input.state === "saved" || input.state === "dismissed")) {
