@@ -1,6 +1,10 @@
 -- Give the job feed a parent-level publication timestamp so ordering happens
 -- before pagination. Ordering an embedded job_sources relation only sorts the
 -- nested source rows, not the parent jobs.
+create index if not exists job_sources_active_job_published_idx
+  on public.job_sources (job_id, published_at desc)
+  where availability_status = 'active';
+
 create or replace view public.job_discovery_feed
 with (security_invoker = true)
 as
