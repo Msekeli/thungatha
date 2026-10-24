@@ -6,5 +6,5 @@ export function ProfileExtraSectionsEditor({ certifications, projects, onCertsCh
   certifications: UserProfileDto["certifications"]; projects: UserProfileDto["projects"];
   onCertsChange: (items: UserProfileDto["certifications"]) => void; onProjectsChange: (items: UserProfileDto["projects"]) => void;
 }) {
-  return <div className="grid gap-4 sm:grid-cols-2"><ProfileCertificationsEditor items={certifications} onChange={onCertsChange} /><ProfileProjectsEditor items={projects} onChange={onProjectsChange} /></div>;
+  return <div className="w-full space-y-5"><ProfileCertificationsEditor items={certifications} onChange={onCertsChange} /><ProfileProjectsEditor items={projects} onChange={onProjectsChange} /></div>;
 }
