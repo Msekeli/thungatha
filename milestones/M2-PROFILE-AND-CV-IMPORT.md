@@ -1,7 +1,7 @@
 # M2 — Profile and CV Import
 
-**Status:** Not started  
-**Planning note:** Plan updated 2026-10-24; begin with M2-C00 (audit only).  
+**Status:** In progress  
+**Planning note:** M2-C00 was approved; M2-C01 backend foundation is in progress as of 2026-10-24.  
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.  
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
@@ -14,7 +14,7 @@ The CV Studio design expects the master CV to load from Profile when one exists.
 
 ## M2 start plan and engineering constraints
 
-M2 is planned and implementation has not started. Do not assume a functional backend, Profile API, database schema, migrations, data-access layer, CV storage, or extraction service exists. Inspect the checked-out branch and verify what is real, placeholder, or absent. Existing Profile UI/scaffolding is not evidence of a working backend. Start with M2-C00 (audit only), then build the agreed backend/data foundation before connecting the designed UI. Preserve the established Clerk/Supabase architecture where confirmed, but do not invent or assume a pre-existing API/database contract.
+M2-C01 implementation is in progress. The current branch already contains a structured Profile API, Zod validation, a repository and mapper, Clerk-derived identity, and an initial `profiles` migration. C01 is extending that contract with explicit country data, bounded repeatable sections and server-maintained profile version history before CV upload or extraction is introduced.
 
 ### Required execution order
 
@@ -142,3 +142,13 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **M2-C06 — Master CV lifecycle and replacement safety:** file lifecycle increment; commit required.
 - **M2-C07 — End-to-end acceptance and closeout:** completed acceptance evidence and any meaningful fixes/final documentation; commit changes where applicable and obtain explicit user acceptance.
 
+
+## M2-C01 execution record — 2026-10-24
+
+- **Status:** In progress.
+- **Changes made:** Add country to the personal-details contract and persistence mapping; cap repeatable sections at 100 items; add server-maintained profile version metadata and a database snapshot history; document the API contract; update schema tests and the API inventory.
+- **Verification commands/tests actually run:** None in this ChatGPT session, per user instruction.
+- **Observed results/evidence:** Source files and the existing M2 migration were inspected on remote `dev`. The new migration has not been applied to a database; updated tests have not been executed.
+- **Open issues or decisions:** Local migration application, automated test results and actual cross-user RLS isolation remain unverified.
+- **Next action:** User pulls the commit, applies migrations in the intended environment, runs the relevant checks, and reports any failures before C01 is accepted.
+- **Reviewed/accepted by user:** No.
