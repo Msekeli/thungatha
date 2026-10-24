@@ -7,7 +7,7 @@ type Education = UserProfileDto["education"][number];
 const levels = ["Below Grade 12", "Grade 12 (Matric) — NQF Level 4", "Certificate", "Higher Certificate", "Diploma", "Advanced Certificate", "Advanced Diploma", "Bachelor's Degree", "Honours Degree", "Postgraduate Diploma", "Master's Degree", "Doctoral Degree", "Other"];
 const fields = ["Agriculture", "Computer Science", "Information Technology", "Software Development", "Business Management", "Accounting and Finance", "Engineering", "Education", "Healthcare", "Law", "Marketing", "Science", "Humanities and Social Sciences", "Other"];
 export function ProfileEducationForm({ value, onChange, onSave, onCancel, editing }: { value: Education; onChange: (value: Education) => void; onSave: () => void; onCancel: () => void; editing: boolean }) {
-  const set = (key: keyof Education, next: string | boolean) => onChange({ ...value, [key]: next || null } as Education);
+  const set = (key: keyof Education, next: string | boolean) => onChange({ ...value, [key]: typeof next === "boolean" ? next : next || null } as Education);
   const noField = value.educationLevel === levels[0] || value.educationLevel === levels[1];
   return <form className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4" onSubmit={(event) => { event.preventDefault(); onSave(); }}>
     <label className="block space-y-2 text-sm font-medium">Education level <span className="text-destructive">(Required)</span><NativeSelect required value={value.educationLevel || ""} onChange={(e) => set("educationLevel", e.target.value)}><option value="">Select education level</option>{levels.map((level) => <option key={level}>{level}</option>)}</NativeSelect></label>
