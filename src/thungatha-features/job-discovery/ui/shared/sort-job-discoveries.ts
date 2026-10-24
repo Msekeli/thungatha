@@ -3,6 +3,8 @@ type JobWithPublicationDate = {
   employer_name?: string | null;
   description?: string | null;
   updated_at: string | null;
+  salary_min?: number | null;
+  salary_max?: number | null;
   job_sources: { published_at: string | null }[] | { published_at: string | null } | null;
 };
 
@@ -16,11 +18,9 @@ export function jobPublicationDate(job: JobWithPublicationDate) {
 function relevanceScore(job: JobWithPublicationDate, query: string) {
   const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   if (terms.length === 0) return 0;
-
   const title = (job.title ?? "").toLocaleLowerCase();
   const employer = (job.employer_name ?? "").toLocaleLowerCase();
   const description = (job.description ?? "").toLocaleLowerCase();
-
   return terms.reduce((score, term) => {
     if (title === term) return score + 12;
     if (title.includes(term)) return score + 6;
@@ -36,6 +36,16 @@ export function sortJobDiscoveries<T extends JobWithPublicationDate>(
   query = "",
 ) {
   return [...jobs].sort((a, b) => {
+    if (order === "salary-high" || order === "salary-low") {
+      const aSalary = a.salary_max ?? a.salary_min;
+      const bSalary = b.salary_max ?? b.salary_min;
+      if (aSalary == null && bSalary != null) return 1;
+      if (aSalary != null && bSalary == null) return -1;
+      if (aSalary != null && bSalary != null && aSalary !== bSalary) {
+        return order === "salary-high" ? bSalary - aSalary : aSalary - bSalary;
+      }
+    }
+
     if (order === "relevance" && query.trim()) {
       const relevanceDifference = relevanceScore(b, query) - relevanceScore(a, query);
       if (relevanceDifference !== 0) return relevanceDifference;
