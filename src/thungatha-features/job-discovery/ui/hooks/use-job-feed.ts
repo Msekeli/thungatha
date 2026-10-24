@@ -17,6 +17,7 @@ export function useJobFeed(
   filters: Filters,
   retryFeed: number,
   setFeed: Dispatch<SetStateAction<Feed | null>>,
+  setDismissedCount: Dispatch<SetStateAction<number>>,
   setLoading: Dispatch<SetStateAction<boolean>>,
   setError: Dispatch<SetStateAction<string | null>>,
   setIsAuthenticated: Dispatch<SetStateAction<boolean>>,
@@ -39,8 +40,16 @@ export function useJobFeed(
             setSelectedId((current) =>
               current && cached.jobs.some((job) => job.id === current)
                 ? current
-                : (cached.jobs[0]?.id ?? null),
+                : null,
             );
+            void requestJobFeed(
+              buildJobFeedParams(1, "dismissed", filters),
+              signal,
+            ).then((dismissedFeed) => {
+              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+            }).catch(() => {
+              // Keep the last known count if the separate count request fails.
+            });
             return;
           }
         }
@@ -60,8 +69,20 @@ export function useJobFeed(
         setSelectedId((current) =>
           current && (page > 1 || data.jobs.some((job) => job.id === current))
             ? current
-            : (data.jobs[0]?.id ?? null),
+            : null,
         );
+        if (category === "dismissed") {
+          setDismissedCount(data.total);
+        } else if (page === 1) {
+          void requestJobFeed(
+            buildJobFeedParams(1, "dismissed", filters),
+            signal,
+          ).then((dismissedFeed) => {
+            if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+          }).catch(() => {
+            // Count refresh is independent; it must not fail the main feed.
+          });
+        }
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
         setFeed(null);
@@ -84,6 +105,7 @@ export function useJobFeed(
       setLoading,
       setError,
       setFeed,
+      setDismissedCount,
       setIsAuthenticated,
       setSelectedId,
     ],
