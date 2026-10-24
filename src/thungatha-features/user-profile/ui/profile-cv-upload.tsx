@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { FileText, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProfileCvExtraction } from "@/thungatha-features/user-profile/ui/profile-cv-extraction";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ACCEPT = ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -53,7 +54,8 @@ export function ProfileCvUpload({ hasCurrentCv = false }: { hasCurrentCv?: boole
       {uploaded ? (
         <div className="mt-4 rounded-lg border border-accent/40 bg-accent/10 p-3">
           <p role="status" className="text-sm font-medium text-fg">CV uploaded: {uploaded.filename}</p>
-          <p className="mt-1 text-xs text-fg-muted">It is staged for import. {hasCurrentCv ? "Your current CV has not been changed." : "It has not been set as your master CV yet."} CV extraction and confirmation are not part of this step.</p>
+          <p className="mt-1 text-xs text-fg-muted">It is staged for import. {hasCurrentCv ? "Your current CV has not been changed." : "It has not been set as your master CV yet."} Extraction results are proposals. Review and confirmation will be handled separately.</p>
+          <ProfileCvExtraction filename={uploaded.filename} storagePath={uploaded.storagePath} />
           <Button className="mt-3" variant="secondary" onClick={() => { setUploaded(null); inputRef.current?.click(); }}>Choose another file</Button>
         </div>
       ) : (
