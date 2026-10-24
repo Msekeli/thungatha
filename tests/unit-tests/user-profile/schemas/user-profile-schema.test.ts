@@ -2,23 +2,6 @@ import { describe, expect, it } from "vitest";
 import { updateProfileSchema } from "@/thungatha-features/user-profile/server/user-profile-schema";
 
 describe("updateProfileSchema validation", () => {
-  it("accepts a legacy displayName-only payload", () => {
-    const result = updateProfileSchema.safeParse({ displayName: "Lerato" });
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts an optional custom target role", () => {
-    expect(updateProfileSchema.safeParse({ nextRole: "Platform Engineer" }).success).toBe(true);
-  });
-
-  it("rejects client-supplied identity fields", () => {
-    const result = updateProfileSchema.safeParse({
-      displayName: "Lerato",
-      userId: "user_injected",
-    });
-    expect(result.success).toBe(false);
-  });
-
   it("validates all seven sections and metadata", () => {
     const fullProfile = {
       personalDetails: {

@@ -47,7 +47,7 @@ export function ProfileNextRoleForm({
           list="thungatha-role-suggestions"
           value={value ?? ""}
           onChange={(event) =>
-            onChange(event.target.value.trim() ? event.target.value : null)
+            onChange(event.target.value || null)
           }
           placeholder="e.g. Software Engineer"
           maxLength={150}
