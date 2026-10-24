@@ -234,21 +234,48 @@ afterEach(() => {
 });
 
 describe("Job Discovery", () => {
-  it("renders API-provided listing fields and details", async () => {
+  it("keeps details empty until a listing is explicitly selected", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
     expect(
       (await screen.findAllByRole("heading", { name: "Software Engineer" }))
         .length,
     ).toBeGreaterThan(0);
+    expect(await screen.findByText("Select an opportunity")).toBeTruthy();
+    expect(screen.queryByText("Build and support web services.")).toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Software Engineer, Example Employer/ }),
+    );
+    expect(
+      await screen.findAllByText("Build and support web services."),
+    ).toBeTruthy();
     expect(
       screen.getAllByText("Cape Town, South Africa").length,
     ).toBeGreaterThan(0);
     expect(screen.getAllByText("Full-time").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Example Employer").length).toBeGreaterThan(0);
+  });
+
+  it("shows dismissed jobs and an accurate dismissed count", async () => {
+    const dismissedJobs = Array.from({ length: 4 }, (_, index) => ({
+      ...firstJob,
+      id: `323e4567-e89b-42d3-a456-42661417400${index}`,
+      title: `Dismissed role ${index + 1}`,
+      state: "dismissed" as const,
+    }));
+    setupFetch(dismissedJobs);
+    render(<JobsDiscovery configured />);
+    const dismissedButton = await screen.findByRole("button", {
+      name: "Dismissed (4)",
+    });
+    fireEvent.click(dismissedButton);
     expect(
-      await screen.findAllByText("Build and support web services."),
+      await screen.findByRole("button", { name: /Dismissed role 1/ }),
     ).toBeTruthy();
+    expect(
+      screen.getAllByRole("button", { name: /Dismissed role/ }).length,
+    ).toBeGreaterThanOrEqual(4);
   });
 
   it("submits the supported search and filter query parameters", async () => {
@@ -369,6 +396,9 @@ describe("Job Discovery", () => {
     setupFetch([listingOnlyJob]);
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }),
+    );
     await screen.findAllByText("Build and support web services.");
     const applyButton = await screen.findByRole("button", {
       name: "Open job listing",
