@@ -3,8 +3,9 @@ import { profileCompletionSchema, type UserProfileDto } from "../server/user-pro
 export async function saveProfileDraft(draft: UserProfileDto) {
   try {
     const complete = profileCompletionSchema.safeParse(draft).success;
+    const { profileVersion: _version, createdAt: _created, updatedAt: _updated, ...editable } = draft;
     const payload = {
-      ...draft,
+      ...editable,
       displayName: draft.personalDetails.fullName || draft.displayName || undefined,
       confirmedAt: complete ? new Date().toISOString() : null,
     };
