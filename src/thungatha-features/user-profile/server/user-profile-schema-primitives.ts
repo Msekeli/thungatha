@@ -6,6 +6,7 @@ export const personalDetailsSchema = z
     email: z.string().trim().email().max(255).nullable().optional(),
     phone: z.string().trim().max(50).nullable().optional(),
     location: z.string().trim().max(150).nullable().optional(),
+    country: z.string().trim().max(100).nullable().optional(),
     linkedinUrl: z.string().trim().max(255).nullable().optional(),
     portfolioUrl: z.string().trim().max(255).nullable().optional(),
   })
