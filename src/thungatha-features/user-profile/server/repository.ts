@@ -1,10 +1,7 @@
 import "server-only";
 
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import {
-  mapInputToRow,
-  type ProfileDatabaseRow,
-} from "./user-profile-mapper";
+import { mapInputToRow, type ProfileDatabaseRow } from "./user-profile-mapper";
 import type { UpdateProfileInput } from "./user-profile-schema";
 
 export const PROFILE_SELECT_COLUMNS = [

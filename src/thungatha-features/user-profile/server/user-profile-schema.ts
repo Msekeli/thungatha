@@ -25,7 +25,10 @@ export const updateProfileSchema = z
     certifications: z.array(certificationItemSchema).max(100).optional(),
     projects: z.array(projectItemSchema).max(100).optional(),
     languages: z.array(languageItemSchema).max(100).optional(),
-    personalAttributes: z.array(personalAttributeItemSchema).max(100).optional(),
+    personalAttributes: z
+      .array(personalAttributeItemSchema)
+      .max(100)
+      .optional(),
     masterCv: masterCvMetadataSchema.nullable().optional(),
     confirmedAt: z
       .string()

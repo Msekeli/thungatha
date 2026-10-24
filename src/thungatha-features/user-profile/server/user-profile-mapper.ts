@@ -29,7 +29,9 @@ export type ProfileDatabaseRow = {
   updated_at?: string;
 };
 
-export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileDto {
+export function mapRowToProfileDto(
+  row: ProfileDatabaseRow | null,
+): UserProfileDto {
   const fullName = row?.full_name ?? row?.display_name ?? null;
   const displayName = row?.display_name ?? row?.full_name ?? null;
   const asArr = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
@@ -64,8 +66,12 @@ export function mapRowToProfileDto(row: ProfileDatabaseRow | null): UserProfileD
   };
 }
 
-export function mapInputToRow(userId: string, input: UpdateProfileInput | string) {
-  if (typeof input === "string") return { user_id: userId, display_name: input };
+export function mapInputToRow(
+  userId: string,
+  input: UpdateProfileInput | string,
+) {
+  if (typeof input === "string")
+    return { user_id: userId, display_name: input };
   const p = input.personalDetails;
   const fullName = p?.fullName ?? input.displayName ?? undefined;
   const displayName = input.displayName ?? p?.fullName ?? undefined;
@@ -77,20 +83,34 @@ export function mapInputToRow(userId: string, input: UpdateProfileInput | string
     ...(p?.phone !== undefined && { phone: p.phone }),
     ...(p?.location !== undefined && { location: p.location }),
     ...(p?.country !== undefined && { country: p.country }),
-    ...(p?.residentialSuburb !== undefined && { residential_suburb: p.residentialSuburb }),
-    ...(p?.residentialCity !== undefined && { residential_city: p.residentialCity }),
-    ...(p?.residentialProvince !== undefined && { residential_province: p.residentialProvince }),
-    ...(p?.residentialPostalCode !== undefined && { residential_postal_code: p.residentialPostalCode }),
+    ...(p?.residentialSuburb !== undefined && {
+      residential_suburb: p.residentialSuburb,
+    }),
+    ...(p?.residentialCity !== undefined && {
+      residential_city: p.residentialCity,
+    }),
+    ...(p?.residentialProvince !== undefined && {
+      residential_province: p.residentialProvince,
+    }),
+    ...(p?.residentialPostalCode !== undefined && {
+      residential_postal_code: p.residentialPostalCode,
+    }),
     ...(p?.linkedinUrl !== undefined && { linkedin_url: p.linkedinUrl }),
     ...(p?.portfolioUrl !== undefined && { portfolio_url: p.portfolioUrl }),
     ...(input.summary !== undefined && { summary: input.summary }),
-    ...(input.workExperience !== undefined && { experience: input.workExperience }),
+    ...(input.workExperience !== undefined && {
+      experience: input.workExperience,
+    }),
     ...(input.education !== undefined && { education: input.education }),
     ...(input.skills !== undefined && { skills: input.skills }),
-    ...(input.certifications !== undefined && { certifications: input.certifications }),
+    ...(input.certifications !== undefined && {
+      certifications: input.certifications,
+    }),
     ...(input.projects !== undefined && { projects: input.projects }),
     ...(input.languages !== undefined && { languages: input.languages }),
-    ...(input.personalAttributes !== undefined && { personal_attributes: input.personalAttributes }),
+    ...(input.personalAttributes !== undefined && {
+      personal_attributes: input.personalAttributes,
+    }),
     ...(input.masterCv !== undefined && { master_cv: input.masterCv }),
     ...(input.confirmedAt !== undefined && { confirmed_at: input.confirmedAt }),
   };

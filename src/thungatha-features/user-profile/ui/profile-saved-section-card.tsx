@@ -26,7 +26,9 @@ export function ProfileSavedSectionCard({
         {children ? (
           children
         ) : (
-          <p className="text-xs text-fg-muted">{emptyMessage || "None added yet."}</p>
+          <p className="text-xs text-fg-muted">
+            {emptyMessage || "None added yet."}
+          </p>
         )}
       </div>
     </div>
@@ -59,13 +61,16 @@ export function ProfileMasterCvCard({
             <p className="text-xs font-medium text-fg">{filename}</p>
             <p className="mt-0.5 text-[11px] text-fg-muted">
               {fileSize ? `${Math.round(fileSize / 1024)} KB` : ""}{" "}
-              {uploadedAt ? `· Uploaded ${new Date(uploadedAt).toLocaleDateString()}` : ""}
+              {uploadedAt
+                ? `· Uploaded ${new Date(uploadedAt).toLocaleDateString()}`
+                : ""}
             </p>
           </div>
         </div>
       ) : (
         <p className="mt-3 text-xs text-fg-muted">
-          No CV file uploaded yet. CV upload and private storage will be enabled in milestone C03.
+          No CV file uploaded yet. CV upload and private storage will be enabled
+          in milestone C03.
         </p>
       )}
     </div>

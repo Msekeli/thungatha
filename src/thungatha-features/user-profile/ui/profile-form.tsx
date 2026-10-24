@@ -12,16 +12,32 @@ export function ProfileForm({
   initialMode?: "empty" | "view" | "edit";
 }) {
   const {
-    profile, draft, setDraft, loading, saving, error, message,
-    loadFailed, mode, setMode, loadProfile, handleSave,
+    profile,
+    draft,
+    setDraft,
+    loading,
+    saving,
+    error,
+    message,
+    loadFailed,
+    mode,
+    setMode,
+    loadProfile,
+    handleSave,
   } = useProfile();
 
   const currentMode = initialMode || mode;
 
   if (loading) {
     return (
-      <div className="space-y-4 py-6" aria-busy="true" aria-label="Loading profile">
-        <p role="status" className="sr-only">Loading your profile…</p>
+      <div
+        className="space-y-4 py-6"
+        aria-busy="true"
+        aria-label="Loading profile"
+      >
+        <p role="status" className="sr-only">
+          Loading your profile…
+        </p>
         <Skeleton className="h-6 w-36" />
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-40 w-full rounded-xl" />
@@ -32,7 +48,9 @@ export function ProfileForm({
   if (loadFailed) {
     return (
       <div className="rounded-xl border border-line bg-panel p-6 text-center space-y-3">
-        <p role="alert" className="text-sm text-warn">{error}</p>
+        <p role="alert" className="text-sm text-warn">
+          {error}
+        </p>
         <button
           type="button"
           onClick={() => void loadProfile()}
@@ -45,15 +63,25 @@ export function ProfileForm({
   }
 
   return (
-    <div className={currentMode === "edit" ? "th-profile-form-state th-profile-form-state--edit" : "space-y-4"}>
+    <div
+      className={
+        currentMode === "edit"
+          ? "th-profile-form-state th-profile-form-state--edit"
+          : "space-y-4"
+      }
+    >
       {error && (
         <div className="rounded-xl border border-warn/40 bg-warn-bg/20 p-4">
-          <p role="alert" className="text-xs text-warn">{error}</p>
+          <p role="alert" className="text-xs text-warn">
+            {error}
+          </p>
         </div>
       )}
       {message && (
         <div className="rounded-xl border border-accent/40 bg-accent/15 p-4">
-          <p role="status" className="text-xs font-medium text-accent">{message}</p>
+          <p role="status" className="text-xs font-medium text-accent">
+            {message}
+          </p>
         </div>
       )}
 
@@ -61,7 +89,13 @@ export function ProfileForm({
         <ProfileEmptyState onStartManualEntry={() => setMode("edit")} />
       )}
       {currentMode === "view" && profile && (
-        <ProfileSavedView profile={profile} onEdit={() => { setDraft(profile); setMode("edit"); }} />
+        <ProfileSavedView
+          profile={profile}
+          onEdit={() => {
+            setDraft(profile);
+            setMode("edit");
+          }}
+        />
       )}
       {currentMode === "edit" && (
         <ProfileEditorView
@@ -69,7 +103,14 @@ export function ProfileForm({
           saving={saving}
           onChange={setDraft}
           onSave={handleSave}
-          onCancel={() => setMode(profile && (profile.displayName || profile.personalDetails.fullName) ? "view" : "empty")}
+          onCancel={() =>
+            setMode(
+              profile &&
+                (profile.displayName || profile.personalDetails.fullName)
+                ? "view"
+                : "empty",
+            )
+          }
         />
       )}
     </div>

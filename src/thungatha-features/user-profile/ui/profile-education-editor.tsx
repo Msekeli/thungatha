@@ -19,8 +19,13 @@ export function ProfileEducationEditor({
 
   const handleAdd = () => {
     if (!qual || !inst) return;
-    onChange([...items, { id: `edu-${Date.now()}`, qualification: qual, institution: inst }]);
-    setQual(""); setInst(""); setAdding(false);
+    onChange([
+      ...items,
+      { id: `edu-${Date.now()}`, qualification: qual, institution: inst },
+    ]);
+    setQual("");
+    setInst("");
+    setAdding(false);
   };
 
   return (
@@ -32,7 +37,10 @@ export function ProfileEducationEditor({
 
       <div className="mt-3 divide-y divide-line/40">
         {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between py-2 text-xs">
+          <div
+            key={item.id}
+            className="flex items-center justify-between py-2 text-xs"
+          >
             <div>
               <p className="font-medium text-fg">{item.qualification}</p>
               <p className="text-[11px] text-fg-muted">{item.institution}</p>
@@ -63,12 +71,32 @@ export function ProfileEducationEditor({
             className="w-full rounded border border-line bg-panel px-2.5 py-1.5 text-xs text-fg"
           />
           <div className="flex gap-2">
-            <Button type="button" size="xs" variant="primary" onClick={handleAdd}>Add education</Button>
-            <Button type="button" size="xs" variant="ghost" onClick={() => setAdding(false)}>Cancel</Button>
+            <Button
+              type="button"
+              size="xs"
+              variant="primary"
+              onClick={handleAdd}
+            >
+              Add education
+            </Button>
+            <Button
+              type="button"
+              size="xs"
+              variant="ghost"
+              onClick={() => setAdding(false)}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       ) : (
-        <Button type="button" size="xs" variant="outline" className="mt-3" onClick={() => setAdding(true)}>
+        <Button
+          type="button"
+          size="xs"
+          variant="outline"
+          className="mt-3"
+          onClick={() => setAdding(true)}
+        >
           + Add education
         </Button>
       )}

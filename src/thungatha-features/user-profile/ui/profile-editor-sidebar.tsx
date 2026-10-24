@@ -18,7 +18,10 @@ export function ProfileEditorSidebar({
   const sections = [
     { label: "Personal Details", status: p.fullName ? "Ready" : "Incomplete" },
     { label: "Summary", status: profile.summary ? "Added" : "Empty" },
-    { label: "Work Experience", status: `${profile.workExperience.length} added` },
+    {
+      label: "Work Experience",
+      status: `${profile.workExperience.length} added`,
+    },
     { label: "Education", status: `${profile.education.length} added` },
     { label: "Skills", status: `${profile.skills.length} skills` },
     { label: "Certifications", status: `${profile.certifications.length}` },
@@ -33,7 +36,10 @@ export function ProfileEditorSidebar({
         </h2>
         <div className="mt-3 divide-y divide-line/40 text-xs">
           {sections.map((sec) => (
-            <div key={sec.label} className="flex justify-between py-2 text-fg-muted">
+            <div
+              key={sec.label}
+              className="flex justify-between py-2 text-fg-muted"
+            >
               <span>{sec.label}</span>
               <span className="font-medium text-fg">{sec.status}</span>
             </div>

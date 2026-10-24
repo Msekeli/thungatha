@@ -142,7 +142,9 @@
   font-family: inherit;
   font-size: 14px;
   line-height: 1.4;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 }
 .th-profile-page input:not([type="checkbox"]):not([type="radio"]):focus-visible,
 .th-profile-page textarea:focus-visible,

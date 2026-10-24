@@ -26,7 +26,10 @@ export const workExperienceItemSchema = z
     endDate: z.string().trim().max(50).nullable().optional(),
     isCurrent: z.boolean().default(false),
     description: z.string().trim().max(5000).nullable().optional(),
-    achievements: z.array(z.string().trim().min(1).max(1000)).max(50).optional(),
+    achievements: z
+      .array(z.string().trim().min(1).max(1000))
+      .max(50)
+      .optional(),
   })
   .strict();
 
