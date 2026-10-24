@@ -6,7 +6,7 @@ import type { UserProfileDto } from "../server/user-profile-schema";
 export const createBlankProfile = (): UserProfileDto => ({
   displayName: null,
   personalDetails: {
-    fullName: null, email: null, phone: null, location: null, country: "South Africa",
+    fullName: null, email: null, phone: null, location: null, country: null,
     residentialSuburb: null, residentialCity: null, residentialProvince: null,
     residentialPostalCode: null, linkedinUrl: null, portfolioUrl: null,
   },
