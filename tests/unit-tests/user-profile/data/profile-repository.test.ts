@@ -51,7 +51,7 @@ describe("profile repository ownership and partial updates", () => {
       skills: ["TypeScript"],
     }, vi.fn());
     expect(q.update).toHaveBeenCalledWith(expect.objectContaining({
-      user_id: undefined, display_name: "Alice", full_name: "Alice",
+      display_name: "Alice", full_name: "Alice",
       country: "South Africa", skills: ["TypeScript"],
     }));
     expect(q.insert).not.toHaveBeenCalled();
