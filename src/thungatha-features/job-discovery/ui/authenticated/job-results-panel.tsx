@@ -1,8 +1,15 @@
 "use client";
-import { ChevronDown } from "lucide-react";
+import { Select } from "@base-ui/react/select";
+import { ChevronDown, Check } from "lucide-react";
 import { JobResultsState } from "./job-results-state";
 import { JobResultsList } from "./job-results-list";
 import type { JobResultsPanelProps } from "./job-results-types";
+
+const sortOptions = [
+  { value: "relevance", label: "Most relevant" },
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+];
 
 export function AuthenticatedJobResultsPanel({
   jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
@@ -25,22 +32,31 @@ export function AuthenticatedJobResultsPanel({
             </button>
           )}
         </div>
-        <label className="relative flex items-center">
-          <span className="sr-only">Sort opportunities</span>
-          <select
+        <Select.Root value={sortOrder} onValueChange={onSortOrderChange}>
+          <Select.Trigger
             aria-label="Sort opportunities"
-            value={sortOrder}
-            onChange={(event) => onSortOrderChange(event.target.value)}
-            className="h-11 min-w-[14rem] appearance-none rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] py-2 pl-4 pr-11 text-base text-[var(--th-fg)] outline-none transition-colors focus:border-[var(--th-accent)] focus:ring-2 focus:ring-[var(--th-accent)]/20"
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-transparent px-2 text-sm text-[var(--th-fg)] outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30"
           >
-            <option value="relevance">Most relevant</option>
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="salary-high">Salary: high to low</option>
-            <option value="salary-low">Salary: low to high</option>
-          </select>
-          <ChevronDown size={18} aria-hidden="true" className="pointer-events-none absolute right-4 text-[var(--th-fg-muted)]" />
-        </label>
+            <Select.Value />
+            <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
+              <ChevronDown size={16} aria-hidden="true" />
+            </Select.Icon>
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Positioner className="z-50 outline-none" sideOffset={6} align="end">
+              <Select.Popup className="min-w-52 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-1 text-sm text-[var(--th-fg)] shadow-lg outline-none">
+                <Select.List>
+                  {sortOptions.map((option) => (
+                    <Select.Item key={option.value} value={option.value} className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50">
+                      <Select.ItemText>{option.label}</Select.ItemText>
+                      <Select.ItemIndicator><Check size={14} aria-hidden="true" /></Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.List>
+              </Select.Popup>
+            </Select.Positioner>
+          </Select.Portal>
+        </Select.Root>
       </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
         <JobResultsState loading={loading} hasFeed={Boolean(feed)} error={error} hasJobs={jobs.length > 0} hasFilters={hasFilters} onRetry={onRetry} />
