@@ -21,7 +21,8 @@ describe("updateProfileSchema validation", () => {
         fullName: "Lerato Naidoo",
         email: "lerato.naidoo@example.com",
         phone: "+27 82 123 4567",
-        location: "Cape Town, South Africa",
+        location: "Cape Town",
+        country: "South Africa",
         linkedinUrl: "https://linkedin.com/in/lerato-naidoo",
         portfolioUrl: "https://lerato-example.dev",
       },
@@ -64,3 +65,22 @@ describe("updateProfileSchema validation", () => {
     expect(result.success).toBe(false);
   });
 });
+
+  it("limits repeatable profile sections to 100 entries", () => {
+    const workExperience = Array.from({ length: 101 }, (_, index) => ({
+      id: `experience-${index}`,
+      jobTitle: "Engineer",
+      employer: "Example",
+      startDate: "2024",
+    }));
+    const result = updateProfileSchema.safeParse({ workExperience });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects client-supplied profile version metadata", () => {
+    const result = updateProfileSchema.safeParse({
+      displayName: "Lerato",
+      profileVersion: 99,
+    });
+    expect(result.success).toBe(false);
+  });
