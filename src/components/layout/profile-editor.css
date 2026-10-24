@@ -1,5 +1,5 @@
 .th-profile-mobile-actions { display: none; }
-.th-profile-editor-layout { width: calc(100% + 420px); max-width: none; min-width: 0; margin-left: -220px; }
+.th-profile-editor-layout { width: 100%; max-width: none; min-width: 0; margin-left: 0; }
 .th-profile-editor-heading { position: relative; min-height: 44px; }
 .th-profile-heading-label { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
 .th-profile-editor-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(310px, 340px); align-items: start; gap: 20px; }
