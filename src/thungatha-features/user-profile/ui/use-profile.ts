@@ -51,7 +51,7 @@ export function useProfile() {
     try {
       const payload = {
         ...draft,
-        displayName: draft.personalDetails.fullName || draft.displayName || null,
+        displayName: draft.personalDetails.fullName || draft.displayName || undefined,
         confirmedAt: new Date().toISOString(),
       };
       const res = await fetch("/api/profile", {
