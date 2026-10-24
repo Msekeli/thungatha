@@ -27,7 +27,15 @@ export const certificationItemSchema = z.object({
   expiryDate: z.string().trim().max(50).nullable().optional(), issuingCountry: z.string().trim().max(100).nullable().optional(),
   licenceCategories: z.array(z.string().trim().max(30)).max(20).optional(), licenceNumber: z.string().trim().max(100).nullable().optional(),
   endorsements: z.string().trim().max(500).nullable().optional(),
-}).strict();
+}).strict().superRefine((entry, context) => {
+  if (!entry.type) return;
+  if (entry.type === "drivers-licence" && !entry.issuingCountry?.trim()) {
+    context.addIssue({ code: "custom", path: ["issuingCountry"], message: "Issuing country is required." });
+  }
+  if (entry.type !== "drivers-licence" && !entry.issuer?.trim()) {
+    context.addIssue({ code: "custom", path: ["issuer"], message: "Issuing organisation is required." });
+  }
+});
 
 export const projectItemSchema = z.object({
   id: z.string().trim().min(1).max(100), name: z.string().trim().min(1).max(150), description: z.string().trim().max(5000).nullable().optional(),
