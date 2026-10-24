@@ -64,8 +64,6 @@ describe("updateProfileSchema validation", () => {
     });
     expect(result.success).toBe(false);
   });
-});
-
   it("limits repeatable profile sections to 100 entries", () => {
     const workExperience = Array.from({ length: 101 }, (_, index) => ({
       id: `experience-${index}`,
@@ -84,3 +82,4 @@ describe("updateProfileSchema validation", () => {
     });
     expect(result.success).toBe(false);
   });
+});
