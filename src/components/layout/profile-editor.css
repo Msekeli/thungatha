@@ -1,0 +1,52 @@
+.th-profile-mobile-actions { display: none; }
+.th-profile-accordion > summary::marker { content: ""; }
+.th-profile-accordion > summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  margin-left: 4px;
+  color: var(--th-fg-muted);
+  font-size: 20px;
+  line-height: 1;
+}
+.th-profile-accordion[open] > summary::after { content: "−"; }
+.th-profile-accordion-content > section {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.th-profile-accordion-content > section > :first-child { display: none; }
+.th-profile-accordion-content > .grid > section {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.th-profile-accordion-content > .grid > section > :first-child { display: none; }
+.th-profile-accordion-content > section > form { margin-top: 0; }
+@media (max-width: 700px) {
+  .th-profile-mobile-actions { display: flex; }
+  .th-profile-editor-sidebar { display: none !important; }
+  .th-profile-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+  }
+  .th-profile-editor-fields {
+    grid-row: 1;
+    min-height: 0;
+    padding: 0 0 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  .th-profile-editor-heading > p:last-of-type {
+    margin-top: 0;
+    padding: 0;
+  }
+  .th-profile-accordion > summary { padding: 14px 12px; }
+  .th-profile-accordion-content { padding: 12px; }
+  .th-profile-accordion-content form { min-width: 0; }
+  .th-profile-accordion-content .flex.flex-col > button { width: 100%; }
+}
