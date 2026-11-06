@@ -72,6 +72,7 @@ ${themeRadii}
   --shadow-public-card: var(--th-public-card-shadow);
   --shadow-public-modal: var(--th-public-modal-shadow);
   --height-public-modal: var(--th-public-modal-height);
+  --border-width-public-band: 3px;
 ${typography}
 }
 `;
