@@ -9,7 +9,7 @@ const features = [
     description:
       "Build your profile so we can match jobs to your skills.",
     icon: ClipboardList,
-    iconClass: "text-fg-muted",
+    iconClass: "text-accent",
     action: "Create your profile",
   },
   {
@@ -17,7 +17,7 @@ const features = [
     description:
       "Keep interesting opportunities together for later.",
     icon: Bookmark,
-    iconClass: "text-accent-text",
+    iconClass: "text-accent",
     action: "Sign in to save jobs",
   },
   {
@@ -25,7 +25,7 @@ const features = [
     description:
       "Keep status and next steps in one place.",
     icon: ChartNoAxesColumn,
-    iconClass: "text-success",
+    iconClass: "text-accent",
     action: "Sign in to track",
   },
 ];
