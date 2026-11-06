@@ -2,9 +2,8 @@ import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import type { JobCardData } from "./job-opportunity-card";
 
-function ageTone(label: string) {
-  const days = Number(label.match(/\d+/)?.[0] ?? 0);
-  if (/unknown/i.test(label)) return "bg-tag text-fg-muted";
+function ageTone(days: number | null) {
+  if (days === null) return "bg-tag text-fg-muted";
   if (days <= 7) return "bg-age-fresh-bg text-age-fresh";
   if (days <= 14) return "bg-age-recent-bg text-age-recent";
   if (days <= 30) return "bg-age-aging-bg text-age-aging";
@@ -12,7 +11,7 @@ function ageTone(label: string) {
 }
 
 export function PublicJobOpportunityCard({
-  job, postedLabel, onSelect, actions,
+  job, postedLabel, ageDays, onSelect, actions,
 }: {
   job: JobCardData;
   postedLabel: string;
