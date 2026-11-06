@@ -17,7 +17,7 @@ export function JobDiscoveryCategoryControls({
   total,
   onTypeChange,
 }: {
-  selectedType: string;
+  prominent?: boolean;\n  selectedType: string;
   total: number;
   onTypeChange: (key: string, label: string) => void;
 }) {
@@ -25,7 +25,7 @@ export function JobDiscoveryCategoryControls({
     <div className="mt-3 min-w-0 pb-1">
       <div className="min-w-0 overflow-x-auto">
         <JobCategoryChips
-          activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
+          prominent={prominent}\n          activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
           counts={{ all: total }}
           showAllCount
           className="min-w-max flex-nowrap"
