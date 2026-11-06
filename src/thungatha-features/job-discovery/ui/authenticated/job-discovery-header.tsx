@@ -5,6 +5,7 @@ import type { Filters } from "../job-discovery-utils";
 import type { FormEvent } from "react";
 
 export function JobDiscoveryHeader({
+  prominent = false,
   draft,
   onQueryChange,
   onSubmit,
@@ -17,7 +18,8 @@ export function JobDiscoveryHeader({
   onSortOrderChange,
   isAuthenticated,
 }: {
-  prominent?: boolean;\n  draft: Filters;
+  prominent?: boolean;
+  draft: Filters;
   onQueryChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleFilters: (anchorEl: HTMLElement) => void;
@@ -32,7 +34,9 @@ export function JobDiscoveryHeader({
   return (
     <div className="w-full">
       <JobDiscoverySearchFilters
-        prominent={prominent}\n      query={draft.query}
+        prominent={prominent}
+        prominent={prominent}
+      query={draft.query}
         onQueryChange={onQueryChange}
         onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}
