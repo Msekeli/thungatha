@@ -24,7 +24,7 @@ export function JobDiscoveryCategoryControls({
   onTypeChange: (key: string, label: string) => void;
 }) {
   return (
-    <div className="mt-3 min-w-0 pb-1">
+    <div className={`${prominent ? "" : "mt-3"} min-w-0 pb-1`}>
       <div className="min-w-0 overflow-x-auto">
         <JobCategoryChips
           prominent={prominent}
