@@ -4,6 +4,8 @@ import { JobList } from "../shared/job-list";
 import { JobResultsState } from "../authenticated/job-results-state";
 import { PublicJobCardActions } from "./public-job-card-actions";
 import { PublicJobSortSelect } from "./public-job-sort-select";
+import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
+import { Button } from "@/components/ui/button";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
 
@@ -17,7 +19,7 @@ export function PublicJobResultsPanel({
   return (
     <section className="flex min-w-0 flex-col gap-4">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3 text-control text-fg-muted">
-        <span aria-live="polite" className="font-medium">{data.resultCount} opportunities</span>
+        <div className="flex items-center gap-3"><span aria-live="polite" className="font-medium">{data.resultCount} opportunities</span><ProtectedDiscoveryAction configured={data.configured} title="View dismissed opportunities" description="Sign in or create a free account to review jobs you have dismissed." onAction={() => data.onCategoryChange("dismissed", "Dismissed")}><Button variant="ghost" size="sm" className="text-accent-text">Dismissed ({data.dismissedCount})</Button></ProtectedDiscoveryAction></div>
         <PublicJobSortSelect value={data.sortOrder} onChange={data.onSortOrderChange} />
       </header>
       <JobResultsState loading={data.loading} hasFeed={Boolean(data.feed)} error={data.error} hasJobs={data.jobs.length > 0} hasFilters={data.hasFilters} onRetry={data.onRetryFeed} />
