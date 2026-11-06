@@ -25,6 +25,10 @@ export function PublicJobResultsPanel({
         <JobList
           jobs={data.jobs}
           variant="public"
+          postedAgeDays={(job) => {
+            const published = data.sourceFor(data.jobs.find((item) => item.id === job.id)!)?.published_at;
+            return published ? Math.max(0, Math.floor((Date.now() - new Date(published).getTime()) / 86_400_000)) : null;
+          }}
           postedLabel={(job) => {
             const fullJob = data.jobs.find((item) => item.id === job.id)!;
             const published = data.sourceFor(fullJob)?.published_at;
