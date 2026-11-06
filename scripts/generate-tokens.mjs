@@ -10,7 +10,7 @@ const themes = Object.fromEntries(["dark", "light"].map((name, index) => [
 ]));
 const vars = (values) =>
   Object.entries(values).map(([key, value]) => `  --th-${key}: ${value};`).join("\n");
-const nonColorTokens = new Set(["page-gradient", "shadow-card", "shadow-card-hover", "shadow-modal", "public-card-shadow", "public-modal-shadow"]);
+const nonColorTokens = new Set(["page-gradient", "shadow-card", "shadow-card-hover", "shadow-modal", "public-card-shadow", "public-modal-shadow", "public-modal-height"]);
 const colorMap = Object.keys(themes.dark)
   .filter((key) => !nonColorTokens.has(key))
   .map((key) => `  --color-${key === "tag-bg" ? "tag" : key}: var(--th-${key});`)
@@ -71,6 +71,7 @@ ${themeRadii}
   --shadow-modal: var(--th-shadow-modal);
   --shadow-public-card: var(--th-public-card-shadow);
   --shadow-public-modal: var(--th-public-modal-shadow);
+  --height-public-modal: var(--th-public-modal-height);
 ${typography}
 }
 `;
