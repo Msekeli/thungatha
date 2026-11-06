@@ -17,7 +17,7 @@ export function PublicDiscoveryShell({
       <header className="flex h-18 shrink-0 items-center justify-between gap-3 border-b border-public-nav-border bg-public-nav px-8 py-0 text-white max-[700px]:hidden">
         <BrandMark />
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeToggle className="h-11 w-11 !border-public-nav-border !bg-transparent !text-white hover:!bg-white/10" />
           <HomeAuthActions configured={configured} variant="nav" />
         </div>
       </header>
