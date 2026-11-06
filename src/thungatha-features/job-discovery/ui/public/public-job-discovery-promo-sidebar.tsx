@@ -41,10 +41,10 @@ export function PublicJobDiscoveryPromoSidebar({
       className="th-public-discovery-promo-sidebar flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto max-[1199px]:hidden"
     >
       <div>
-        <h2 className="text-title font-bold leading-snug">
+        <h2 className="text-card-title font-bold leading-snug">
           Make more of your job search
         </h2>
-        <p className="mt-1 text-control text-fg-muted">
+        <p className="mt-1 text-control leading-relaxed text-public-muted">
           Find opportunities and use Thungatha tools to move forward with
           confidence.
         </p>
