@@ -21,10 +21,10 @@ export function JobDiscoverySearchToolbar({
     >
       {hasLeadingColumn && (
         <div className="mx-auto mb-4 max-w-4xl">
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+          <h1 className="text-modal-title font-bold tracking-tight">
             Find your next <span className="text-accent-on-navy">opportunity</span>
           </h1>
-          <p className="mt-2 text-sm text-on-hero-muted md:text-base">
+          <p className="mt-2 text-job text-on-hero-muted">
             Explore jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track applications.
           </p>
         </div>
