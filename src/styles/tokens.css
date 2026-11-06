@@ -296,6 +296,7 @@
   --shadow-public-card: var(--th-public-card-shadow);
   --shadow-public-modal: var(--th-public-modal-shadow);
   --height-public-modal: var(--th-public-modal-height);
+  --height-public-card: var(--th-public-card-height);
   --border-width-public-band: 3px;
   --text-title: 18px;
   --text-title--line-height: 24px;
