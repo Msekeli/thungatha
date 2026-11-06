@@ -10,6 +10,7 @@ type JobListProps = {
   variant: "public" | "authenticated";
   selectedId?: string | null;
   postedLabel?: (job: JobCardData) => string | undefined;
+  postedAgeDays?: (job: JobCardData) => number | null;
   onSelect: (job: JobCardData) => void;
   saveAction?: (job: JobCardData) => ReactNode;
   secondaryAction?: (job: JobCardData) => ReactNode;
@@ -18,7 +19,7 @@ type JobListProps = {
 };
 
 export function JobList({
-  jobs, variant, selectedId, postedLabel, onSelect,
+  jobs, variant, selectedId, postedLabel, postedAgeDays, onSelect,
   emptyTitle = "No opportunities found",
   emptyMessage = "Try changing your search or filters.",
   saveAction, secondaryAction,
@@ -30,7 +31,7 @@ export function JobList({
         const actions = <>{saveAction?.(job)}{secondaryAction?.(job)}</>;
         const posted = postedLabel?.(job) ?? "Date unknown";
         return variant === "public" ? (
-          <PublicJobOpportunityCard key={job.id} job={job} postedLabel={posted} onSelect={() => onSelect(job)} actions={actions} />
+          <PublicJobOpportunityCard key={job.id} job={job} postedLabel={posted} ageDays={postedAgeDays?.(job) ?? null} onSelect={() => onSelect(job)} actions={actions} />
         ) : (
           <JobOpportunityCard key={job.id} job={job} variant={variant} selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)} saveAction={saveAction || secondaryAction ? actions : undefined} />
         );
