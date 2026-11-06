@@ -26,7 +26,7 @@ export function JobList({
 }: JobListProps) {
   if (!jobs.length) return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   return (
-    <div className={variant === "public" ? "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3" : "flex min-w-0 flex-col gap-2"}>
+    <div className={variant === "public" ? "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 min-[1200px]:grid-cols-3 min-[1200px]:gap-4.5" : "flex min-w-0 flex-col gap-2"}>
       {jobs.map((job) => {
         const actions = <>{saveAction?.(job)}{secondaryAction?.(job)}</>;
         const posted = postedLabel?.(job) ?? "Date unknown";
