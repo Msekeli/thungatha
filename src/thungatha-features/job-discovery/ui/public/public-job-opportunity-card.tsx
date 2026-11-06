@@ -16,6 +16,7 @@ export function PublicJobOpportunityCard({
 }: {
   job: JobCardData;
   postedLabel: string;
+  ageDays: number | null;
   onSelect: () => void;
   actions?: ReactNode;
 }) {
@@ -37,7 +38,7 @@ export function PublicJobOpportunityCard({
           <span className="break-words">{job.location_text || "Location not specified"}</span>
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-line pt-3">
-          <span className={`inline-flex items-center rounded-pill px-3 py-1 text-tag font-semibold ${ageTone(postedLabel)}`}>{postedLabel}</span>
+          <span className={`inline-flex items-center rounded-pill px-3 py-1 text-tag font-semibold ${ageTone(ageDays)}`}>{postedLabel}</span>
           <div className="flex shrink-0 items-center gap-1">{actions}</div>
         </div>
       </div>
