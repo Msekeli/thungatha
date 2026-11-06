@@ -21,7 +21,7 @@ export function PublicJobOpportunityCard({
 }) {
   const employer = job.employer_name?.trim() || "Employer not listed";
   return (
-    <article className="flex min-h-48 min-w-0 flex-col overflow-hidden rounded-2xl border border-public-card-border bg-public-card-bg shadow-public-card transition-all hover:-translate-y-0.5 hover:border-card-hover hover:shadow-card-hover">
+    <article className="flex min-h-public-card min-w-0 flex-col overflow-hidden rounded-2xl border border-public-card-border bg-public-card-bg shadow-public-card transition-all hover:-translate-y-0.5 hover:border-card-hover hover:shadow-card-hover">
       <button type="button" onClick={onSelect} aria-label={`View ${job.title} at ${employer}`} className="flex min-h-26 min-w-0 items-center gap-3 border-b-public-band border-public-band-border bg-gradient-to-br from-public-band-from to-public-band-to p-5 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-accent-on-navy">
         <span className="flex size-13 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-card-title font-bold text-logo-fg">
           {employer.slice(0, 1).toUpperCase()}
@@ -31,8 +31,8 @@ export function PublicJobOpportunityCard({
           <span className="mt-1 block truncate text-card-company text-on-band-muted">{employer}</span>
         </span>
       </button>
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <span className="inline-flex min-w-0 items-center gap-2 self-start rounded-lg bg-public-location-bg px-3 py-2 text-card-meta text-public-location-text">
+      <div className="flex flex-1 flex-col gap-3 px-5 pb-3 pt-4">
+        <span className="inline-flex min-w-0 items-center gap-2 self-start rounded-lg bg-public-location-bg px-2.5 py-1.5 text-card-meta text-public-location-text">
           <MapPin size={14} aria-hidden="true" />
           <span className="break-words">{job.location_text || "Location not specified"}</span>
         </span>
