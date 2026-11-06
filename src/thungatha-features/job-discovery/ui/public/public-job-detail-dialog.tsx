@@ -8,7 +8,6 @@ import { JobDetailDescription } from "../shared/job-detail-description";
 import { JobSalary } from "../shared/job-salary";
 import { JobDetailActions } from "../authenticated/job-detail-actions";
 import { JobDetailStatus } from "../authenticated/job-detail-status";
-import { JobDetailMatchSummary } from "../authenticated/job-detail-match-summary";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 
 export function PublicJobDetailDialog({
@@ -37,7 +36,6 @@ export function PublicJobDetailDialog({
               <p className="mt-1 text-control text-fg-muted sm:text-job">{employer}</p>
               {job && <JobDetailMeta location={job.location_text} employmentType={job.employment_type} workMode={job.work_mode} postedAt={data.selectedSource?.published_at || job.updated_at} formatDate={data.formatDate} />}
             </div>
-            {job && <div className="hidden shrink-0 sm:block"><JobDetailMatchSummary onViewMatch={data.onViewMatch} /></div>}
             <Dialog.Close render={<Button variant="ghost" size="icon" aria-label="Close job details"><X /></Button>} />
           </header>
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-7 sm:py-6">
