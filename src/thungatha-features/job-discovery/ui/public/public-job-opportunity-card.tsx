@@ -29,9 +29,9 @@ export function PublicJobOpportunityCard({
         type="button"
         onClick={onSelect}
         aria-label={`View ${job.title} at ${employer}`}
-        className="flex min-h-24 min-w-0 items-center gap-3 border-b-band border-band-line bg-gradient-to-br from-band-from to-band-to p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-accent-on-navy"
+        className="flex min-h-24 min-w-0 items-center gap-3 border-b-4 border-band-line bg-gradient-to-br from-band-from to-band-to p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-accent-on-navy"
       >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">
           {(employer || job.title).slice(0, 1).toUpperCase()}
         </span>
         <span className="min-w-0 flex-1">
