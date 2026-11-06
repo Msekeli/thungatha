@@ -46,7 +46,7 @@ export function PublicJobDetailDialog({
             ) : job ? (
               <div className="flex flex-col gap-4">
                 <JobSalary minimum={job.salary_min} maximum={job.salary_max} currency={job.salary_currency} hideWhenEmpty prefix="Salary: " locale="en-ZA" />
-                <JobDetailDescription description={job.description} descriptionIsPreview={data.selectedSource?.provider_key === "adzuna" || data.selectedSource?.provider_key === "jooble"} />
+                <JobDetailDescription description={job.description} descriptionIsPreview={data.selectedSource?.provider_key === "adzuna" || data.selectedSource?.provider_key === "jooble"} largeText />
               </div>
             ) : (
               <p className="py-8 text-sm text-fg-muted">Select an opportunity to view its details.</p>
