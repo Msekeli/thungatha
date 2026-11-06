@@ -29,7 +29,8 @@ export function PublicJobResultsPanel({
           variant="public"
           postedAgeDays={(job) => {
             const published = data.sourceFor(data.jobs.find((item) => item.id === job.id)!)?.published_at;
-            return published ? Math.max(0, Math.floor((Date.now() - new Date(published).getTime()) / 86_400_000)) : null;
+            const timestamp = published ? Date.parse(published) : NaN;
+            return Number.isFinite(timestamp) ? Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000)) : null;
           }}
           postedLabel={(job) => {
             const fullJob = data.jobs.find((item) => item.id === job.id)!;
