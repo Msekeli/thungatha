@@ -7,7 +7,9 @@ type JobSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
-  placeholder?: string;\n  prominent?: boolean;
+  placeholder?: string;
+  prominent?: boolean;
+  prominent?: boolean;
 };
 
 const RECENT_SEARCHES_KEY = "thungatha-recent-job-searches";
@@ -18,6 +20,7 @@ export function JobSearchBar({
   onChange,
   onSubmit,
   placeholder = "Job title, skill, or company",
+  prominent = false,
 }: JobSearchBarProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -65,7 +68,7 @@ export function JobSearchBar({
   return (
     <div className="w-full min-w-0">
       <form className="w-full" role="search" onSubmit={handleSubmit}>
-        <label className="flex h-11 min-w-0 items-center gap-3 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)] transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15">
+        <label className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-13 rounded-2xl border-public-search-border bg-public-search-bg px-4 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}>
           <Search size={18} aria-hidden="true" />
           <input
             aria-label="Search roles, skills, or companies"
