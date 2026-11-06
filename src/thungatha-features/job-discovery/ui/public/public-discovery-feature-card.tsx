@@ -27,9 +27,9 @@ export function PublicDiscoveryFeatureCard({
         <Icon size={20} aria-hidden="true" />
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
-        <h3 className="text-sm font-bold">{title}</h3>
-        <p className="text-sm text-fg-muted">{description}</p>
-        <p className="text-xs text-fg-muted">{note}</p>
+        <h3 className="text-job font-bold">{title}</h3>
+        <p className="text-control text-fg-muted">{description}</p>
+        <p className="text-detail text-fg-muted">{note}</p>
         <PublicAuthPrompt
           configured={configured}
           title={title}
