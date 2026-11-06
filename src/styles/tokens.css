@@ -93,6 +93,7 @@
   --th-public-action-bg: #38BDF8;
   --th-public-action-fg: #04121F;
   --th-public-modal-bg: #0D1A2E;
+  --th-public-modal-height: min(820px, calc(100dvh - 3rem));
   --th-radius-panel: 12px;
   --th-radius-control: 8px;
   --th-radius-tag: 6px;
@@ -193,6 +194,7 @@
   --th-public-action-bg: #38BDF8;
   --th-public-action-fg: #04121F;
   --th-public-modal-bg: #FFFFFF;
+  --th-public-modal-height: min(820px, calc(100dvh - 3rem));
 }
 
 @theme inline {
@@ -293,6 +295,7 @@
   --shadow-modal: var(--th-shadow-modal);
   --shadow-public-card: var(--th-public-card-shadow);
   --shadow-public-modal: var(--th-public-modal-shadow);
+  --height-public-modal: var(--th-public-modal-height);
   --text-title: 18px;
   --text-title--line-height: 24px;
   --text-title--font-weight: 500;
