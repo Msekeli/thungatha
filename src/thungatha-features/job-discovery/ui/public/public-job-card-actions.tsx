@@ -19,13 +19,13 @@ export function PublicJobCardActions({
   return (
     <>
       <ProtectedDiscoveryAction configured={configured} title="Save this opportunity" description="Sign in or create a free account to save this job and return to it later." onAction={() => onSave(job)}>
-        <Button variant="ghost" size="icon" aria-label={saved ? `Unsave ${job.title}` : `Save ${job.title}`} title={saved ? "Remove saved job" : "Save job"}>
-          <Bookmark size={18} fill={saved ? "currentColor" : "none"} />
+        <Button variant="ghost" size="icon" aria-label={saved ? `Unsave ${job.title}` : `Save ${job.title}`} title={saved ? "Remove saved job" : "Save job"} className="size-12 rounded-xl text-public-muted hover:bg-panel-2">
+          <Bookmark size={24} fill={saved ? "currentColor" : "none"} />
         </Button>
       </ProtectedDiscoveryAction>
       <ProtectedDiscoveryAction configured={configured} title="Dismiss this opportunity" description="Sign in or create a free account to dismiss jobs that are not right for you." onAction={() => onDismiss(job)}>
-        <Button variant="ghost" size="icon" aria-label={dismissed ? `Restore ${job.title}` : `Dismiss ${job.title}`} title={dismissed ? "Restore job" : "Not for me"} className="text-fg-muted hover:text-danger">
-          <ThumbsDown size={18} />
+        <Button variant="ghost" size="icon" aria-label={dismissed ? `Restore ${job.title}` : `Dismiss ${job.title}`} title={dismissed ? "Restore job" : "Not for me"} className="size-12 rounded-xl text-public-muted hover:bg-panel-2 hover:text-danger">
+          <ThumbsDown size={24} />
         </Button>
       </ProtectedDiscoveryAction>
     </>
