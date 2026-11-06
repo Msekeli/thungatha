@@ -30,6 +30,7 @@ export function JobDiscoverySearchToolbar({
         </div>
       )}
       <JobDiscoveryControls
+        prominent={hasLeadingColumn}
         isAuthenticated={s.isAuthenticated}
         draft={s.draft}
         filtersOpen={s.filtersOpen}
