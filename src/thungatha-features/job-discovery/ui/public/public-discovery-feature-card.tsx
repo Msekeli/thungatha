@@ -22,7 +22,7 @@ export function PublicDiscoveryFeatureCard({
   action: string;
 }) {
   return (
-    <article className="flex min-w-0 gap-3 rounded-xl border border-line bg-panel p-3">
+    <article className="flex min-w-0 gap-3 rounded-card border border-card-border bg-card p-4 shadow-card">
       <div className={`flex shrink-0 pt-0.5 ${iconClass}`}>
         <Icon size={20} aria-hidden="true" />
       </div>
