@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
 
-export function PublicJobResultsPanel({
+function postedAge(data: JobDiscoveryWorkspaceProps, id: string) {\n  const published = data.sourceFor(data.jobs.find((job) => job.id === id) ?? null)?.published_at;\n  const timestamp = published ? Date.parse(published) : NaN;\n  if (!Number.isFinite(timestamp)) return { label: "Date unknown", days: null };\n  const days = Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));\n  return { label: days === 0 ? "Today" : days === 1 ? "1 day ago" : `${days} days ago`, days };\n}\n\nexport function PublicJobResultsPanel({
   data,
   onSelect,
 }: {
