@@ -35,8 +35,7 @@ export function JobDiscoveryHeader({
     <div className="w-full">
       <JobDiscoverySearchFilters
         prominent={prominent}
-        prominent={prominent}
-      query={draft.query}
+        query={draft.query}
         onQueryChange={onQueryChange}
         onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}
