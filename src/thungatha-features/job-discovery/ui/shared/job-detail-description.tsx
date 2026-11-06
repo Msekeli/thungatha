@@ -3,6 +3,7 @@ import { JobDetailDesktopDescription } from "./job-detail-desktop-description";
 type Props = {
   description?: string | null;
   descriptionIsPreview?: boolean;
+  largeText?: boolean;
 };
 
 export function JobDetailDescription({
