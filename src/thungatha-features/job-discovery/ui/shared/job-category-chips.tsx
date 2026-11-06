@@ -38,7 +38,7 @@ export function JobCategoryChips({
             type="button"
             aria-pressed={active}
             onClick={() => onSelect(item.key, item.label)}
-            className={`h-9 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--th-accent)] ${prominent ? (active ? "border-btn bg-btn text-btn-fg" : "border-public-chip-border bg-public-chip-bg text-public-chip-text hover:brightness-110") : (active ? "border-transparent bg-[var(--th-accent-bg)] text-[var(--th-accent-text)]" : "border-[var(--th-line)] text-[var(--th-fg)] hover:bg-[var(--th-panel-2)]")}`}
+            className={`h-9 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--th-accent)] ${prominent ? (active ? "border-public-action-bg bg-public-action-bg text-public-action-fg" : "border-public-chip-border bg-public-chip-bg text-public-chip-text hover:brightness-110") : (active ? "border-transparent bg-[var(--th-accent-bg)] text-[var(--th-accent-text)]" : "border-[var(--th-line)] text-[var(--th-fg)] hover:bg-[var(--th-panel-2)]")}`}
           >
             {label}
           </button>
