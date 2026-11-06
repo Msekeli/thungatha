@@ -3,7 +3,9 @@
 import { JOB_TYPE_OPTIONS } from "./job-type-options";
 
 type Props = {
-  activeKey: string;\n  prominent?: boolean;
+  activeKey: string;
+  prominent?: boolean;
+  prominent?: boolean;
   counts?: Record<string, number | null>;
   showAllCount?: boolean;
   className?: string;
@@ -12,6 +14,7 @@ type Props = {
 
 export function JobCategoryChips({
   activeKey,
+  prominent = false,
   counts = {},
   showAllCount,
   className = "",
