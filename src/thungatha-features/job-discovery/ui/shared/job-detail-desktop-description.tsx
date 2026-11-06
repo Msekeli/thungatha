@@ -56,7 +56,7 @@ export function JobDetailDesktopDescription({
                 the complete details when available.
               </p>
             )}
-            <p className="whitespace-pre-wrap text-sm">
+            <p className={`whitespace-pre-wrap ${largeText ? "text-modal-body" : "text-sm"}`}>
               {description ||
                 "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
             </p>
