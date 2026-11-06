@@ -22,7 +22,7 @@ export function PublicJobDiscoveryWorkspace({
   }
   return (
     <>
-      <div className="grid min-h-0 min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(220px,290px)_minmax(0,1fr)]">
+      <div className="grid min-h-0 min-w-0 grid-cols-1 gap-5 min-[1200px]:grid-cols-[minmax(220px,290px)_minmax(0,1fr)]">
         {data.leadingColumn}
         <div className="min-w-0">
           <PublicJobResultsPanel data={data} onSelect={selectJob} />
