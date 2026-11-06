@@ -10,7 +10,9 @@ const themes = Object.fromEntries(["dark", "light"].map((name, index) => [
 ]));
 const vars = (values) =>
   Object.entries(values).map(([key, value]) => `  --th-${key}: ${value};`).join("\n");
+const nonColorTokens = new Set(["page-gradient", "shadow-card", "shadow-card-hover", "shadow-modal"]);
 const colorMap = Object.keys(themes.dark)
+  .filter((key) => !nonColorTokens.has(key))
   .map((key) => `  --color-${key === "tag-bg" ? "tag" : key}: var(--th-${key});`)
   .join("\n");
 const radii = ["panel", "control", "tag", "card", "modal", "pill"];
