@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import type { FormEvent } from "react";
+import { useRecentJobSearches } from "./use-recent-job-searches";
 import { Search, X } from "lucide-react";
 
 type JobSearchBarProps = {
@@ -9,11 +10,8 @@ type JobSearchBarProps = {
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   placeholder?: string;
   prominent?: boolean;
-  prominent?: boolean;
 };
 
-const RECENT_SEARCHES_KEY = "thungatha-recent-job-searches";
-const MAX_RECENT_SEARCHES = 5;
 
 export function JobSearchBar({
   value,
@@ -22,42 +20,8 @@ export function JobSearchBar({
   placeholder = "Job title, skill, or company",
   prominent = false,
 }: JobSearchBarProps) {
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(RECENT_SEARCHES_KEY);
-      if (stored) {
-        const parsed: unknown = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setRecentSearches(
-            parsed
-              .filter((item): item is string => typeof item === "string")
-              .slice(0, MAX_RECENT_SEARCHES),
-          );
-        }
-      }
-    } catch {
-      // Search history is optional; continue if browser storage is unavailable.
-    }
-  }, []);
-
-  function rememberSearch(search: string) {
-    const trimmed = search.trim();
-    if (!trimmed) return;
-    const next = [
-      trimmed,
-      ...recentSearches.filter(
-        (item) => item.toLowerCase() !== trimmed.toLowerCase(),
-      ),
-    ].slice(0, MAX_RECENT_SEARCHES);
-    setRecentSearches(next);
-    try {
-      window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
-    } catch {
-      // Search history is optional; continue if browser storage is unavailable.
-    }
-  }
+  const { recentSearches, rememberSearch, clearRecentSearches } = useRecentJobSearches();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -102,12 +66,7 @@ export function JobSearchBar({
             aria-label="Clear recent searches"
             title="Clear recent searches"
             onClick={() => {
-              setRecentSearches([]);
-              try {
-                window.localStorage.removeItem(RECENT_SEARCHES_KEY);
-              } catch {
-                /* optional storage */
-              }
+              clearRecentSearches()
             }}
             className="inline-flex size-6 items-center justify-center rounded-full text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
           >
