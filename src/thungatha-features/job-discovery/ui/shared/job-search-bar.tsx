@@ -7,7 +7,7 @@ type JobSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
-  placeholder?: string;
+  placeholder?: string;\n  prominent?: boolean;
 };
 
 const RECENT_SEARCHES_KEY = "thungatha-recent-job-searches";
@@ -73,7 +73,7 @@ export function JobSearchBar({
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
             autoComplete="off"
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-[var(--th-fg)] outline-none placeholder:text-[var(--th-fg-muted)]"
+            className={`h-full min-w-0 flex-1 bg-transparent text-sm text-[var(--th-fg)] outline-none ${prominent ? "placeholder:text-public-search-text" : "placeholder:text-[var(--th-fg-muted)]"}`}
           />
         </label>
       </form>
