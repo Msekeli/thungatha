@@ -7,7 +7,7 @@ const features = [
   {
     title: "CV matching",
     description:
-      "Build your profile so we can match opportunities to your skills and experience.",
+      "Build your profile so we can match jobs to your skills.",
     note: "Personalised recommendations",
     icon: ClipboardList,
     iconClass: "text-fg-muted",
@@ -16,7 +16,7 @@ const features = [
   {
     title: "Saved Jobs",
     description:
-      "Keep interesting opportunities together and return to them when you are ready.",
+      "Keep interesting opportunities together for later.",
     note: "Build your shortlist",
     icon: Bookmark,
     iconClass: "text-accent-text",
@@ -25,7 +25,7 @@ const features = [
   {
     title: "Track Applications",
     description:
-      "Keep application status, follow-ups and next steps organised in one place.",
+      "Keep status and next steps in one place.",
     note: "Stay on top of progress",
     icon: ChartNoAxesColumn,
     iconClass: "text-success",
