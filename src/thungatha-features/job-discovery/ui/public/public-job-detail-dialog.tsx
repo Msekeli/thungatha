@@ -26,8 +26,8 @@ export function PublicJobDetailDialog({
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-[1500] bg-overlay backdrop-blur-sm" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1501] flex max-h-[calc(100dvh-1.5rem)] w-[min(780px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-modal-border bg-modal text-fg shadow-modal outline-none sm:max-h-[calc(100dvh-3rem)]">
-          <header className="flex shrink-0 items-start gap-3 border-b border-modal-border bg-gradient-to-b from-accent-bg to-transparent px-4 py-4 sm:gap-5 sm:px-7 sm:py-6">
+        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1501] flex max-h-[calc(100dvh-1.5rem)] w-[min(780px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-modal text-fg shadow-modal outline-none sm:max-h-[calc(100dvh-3rem)]">
+          <header className="flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 sm:gap-5 sm:px-7 sm:py-6">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">{initials}</span>
             <div className="min-w-0 flex-1">
               <Dialog.Title className="text-title font-bold leading-tight text-fg sm:text-modal-title">
@@ -53,7 +53,7 @@ export function PublicJobDetailDialog({
             )}
           </div>
           {job && (
-            <footer className="flex shrink-0 flex-col gap-3 border-t border-modal-border bg-modal-footer px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <footer className="flex shrink-0 flex-col gap-3 border-t border-public-modal-border bg-public-modal-footer px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
               <JobDetailStatus activityError={data.activityError} detailError={data.detailError} applicationUrl={data.applicationUrl} onRetry={data.onRetryDetail} />
               <JobDetailActions configured={data.configured} job={job} applicationDestination={data.applicationDestination} applicationUrl={data.applicationUrl} jobSourceUrl={data.jobSourceUrl} busy={data.busy} detailLoading={data.detailLoading} onApply={data.onApply} onSave={data.onSave} onDismiss={data.onDismiss} />
             </footer>
