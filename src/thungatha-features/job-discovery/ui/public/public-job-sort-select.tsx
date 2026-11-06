@@ -19,13 +19,13 @@ export function PublicJobSortSelect({
   const label = options.find((item) => item.value === value)?.label ?? "Newest first";
   return (
     <Select.Root value={value} onValueChange={onChange}>
-      <Select.Trigger aria-label={`Sort opportunities: ${label}`} className="inline-flex h-10 items-center gap-2 rounded-control px-2 text-sm font-medium text-fg outline-none hover:bg-panel-2 focus-visible:ring-2 focus-visible:ring-accent/40">
+      <Select.Trigger aria-label={`Sort opportunities: ${label}`} className="inline-flex h-10 items-center gap-2 rounded-control px-2 text-control font-medium text-fg outline-none hover:bg-panel-2 focus-visible:ring-2 focus-visible:ring-accent/40">
         <Select.Value>{label}</Select.Value>
         <Select.Icon><ChevronDown size={16} /></Select.Icon>
       </Select.Trigger>
       <Select.Portal>
         <Select.Positioner className="z-50 outline-none" sideOffset={6} align="end">
-          <Select.Popup className="min-w-48 rounded-panel border border-line bg-panel p-1 text-sm text-fg shadow-lg">
+          <Select.Popup className="min-w-48 rounded-panel border border-line bg-panel p-1 text-control text-fg shadow-lg">
             <Select.List>
               {options.map((option) => (
                 <Select.Item key={option.value} value={option.value} className="flex cursor-default items-center justify-between gap-4 rounded-control px-3 py-2 outline-none data-[highlighted]:bg-panel-2">
