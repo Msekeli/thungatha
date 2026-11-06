@@ -26,7 +26,7 @@ export function PublicJobDetailDialog({
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-[1500] bg-overlay backdrop-blur-sm" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1501] flex max-h-[calc(100dvh-1.5rem)] w-[min(780px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-modal text-fg shadow-modal outline-none sm:max-h-[calc(100dvh-3rem)]">
+        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1501] flex max-h-[calc(100dvh-1.5rem)] w-[min(780px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-public-modal-bg text-fg shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)]">
           <header className="flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 sm:gap-5 sm:px-7 sm:py-6">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">{initials}</span>
             <div className="min-w-0 flex-1">
