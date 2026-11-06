@@ -1,8 +1,9 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { PublicJobOpportunityCard } from "../public/public-job-opportunity-card";
 import { JobOpportunityCard, type JobCardData } from "./job-opportunity-card";
 import { JobEmptyState } from "./job-empty-state";
-import type { ReactNode } from "react";
 
 type JobListProps = {
   jobs: JobCardData[];
@@ -17,39 +18,23 @@ type JobListProps = {
 };
 
 export function JobList({
-  jobs,
-  variant,
-  selectedId,
-  postedLabel,
-  onSelect,
+  jobs, variant, selectedId, postedLabel, onSelect,
   emptyTitle = "No opportunities found",
   emptyMessage = "Try changing your search or filters.",
-  saveAction,
-  secondaryAction,
+  saveAction, secondaryAction,
 }: JobListProps) {
-  if (!jobs.length) {
-    return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
-  }
+  if (!jobs.length) return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   return (
-    <div className="flex min-w-0 flex-col gap-2">
-      {jobs.map((job) => (
-        <JobOpportunityCard
-          key={job.id}
-          job={job}
-          variant={variant}
-          selected={job.id === selectedId}
-          postedLabel={postedLabel?.(job) ?? "Date unknown"}
-          onSelect={() => onSelect(job)}
-          saveAction={
-            saveAction || secondaryAction ? (
-              <>
-                {saveAction?.(job)}
-                {secondaryAction?.(job)}
-              </>
-            ) : undefined
-          }
-        />
-      ))}
+    <div className={variant === "public" ? "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3" : "flex min-w-0 flex-col gap-2"}>
+      {jobs.map((job) => {
+        const actions = <>{saveAction?.(job)}{secondaryAction?.(job)}</>;
+        const posted = postedLabel?.(job) ?? "Date unknown";
+        return variant === "public" ? (
+          <PublicJobOpportunityCard key={job.id} job={job} postedLabel={posted} onSelect={() => onSelect(job)} actions={actions} />
+        ) : (
+          <JobOpportunityCard key={job.id} job={job} variant={variant} selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)} saveAction={saveAction || secondaryAction ? actions : undefined} />
+        );
+      })}
     </div>
   );
 }
