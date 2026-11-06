@@ -24,9 +24,11 @@ const sections = [
 export function JobDetailDesktopDescription({
   description,
   descriptionIsPreview = false,
+  largeText = false,
 }: {
   description: string | null;
   descriptionIsPreview?: boolean;
+  largeText?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState("description");
   const section = sections.find((item) => item.value === activeTab);
