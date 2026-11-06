@@ -17,15 +17,15 @@ export function JobDiscoverySearchToolbar({
   const c = controller;
   return (
     <div
-      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-5 rounded-card bg-gradient-to-r from-hero-from to-hero-to px-4 py-5 text-center text-on-hero shadow-card md:px-8 md:py-6" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:w-full max-[900px]:max-w-none`}
+      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-6 text-center text-public-hero-text" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:w-full max-[900px]:max-w-none`}
     >
       {hasLeadingColumn && (
         <div className="mx-auto mb-4 max-w-4xl">
-          <h1 className="text-modal-title font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight">
             Find your next <span className="text-accent-on-navy">opportunity</span>
           </h1>
-          <p className="mt-2 text-job text-on-hero-muted">
-            Explore jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track applications.
+          <p className="mt-2 text-job text-public-hero-muted">
+            Explore thousands of jobs in South Africa and beyond. Create an account to tailor your CV, save jobs and track your applications.
           </p>
         </div>
       )}
