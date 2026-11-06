@@ -90,6 +90,9 @@
   --th-public-modal-footer: #0A1628;
   --th-public-modal-border: #1B2B47;
   --th-public-modal-shadow: 0 30px 70px -15px rgba(2,8,23,0.85);
+  --th-public-action-bg: #38BDF8;
+  --th-public-action-fg: #04121F;
+  --th-public-modal-bg: #0D1A2E;
   --th-radius-panel: 12px;
   --th-radius-control: 8px;
   --th-radius-tag: 6px;
@@ -187,6 +190,9 @@
   --th-public-modal-footer: #F3F8FE;
   --th-public-modal-border: #CFDDF0;
   --th-public-modal-shadow: 0 30px 70px -15px rgba(2,8,23,0.85);
+  --th-public-action-bg: #38BDF8;
+  --th-public-action-fg: #04121F;
+  --th-public-modal-bg: #FFFFFF;
 }
 
 @theme inline {
@@ -272,6 +278,9 @@
   --color-public-modal-header: var(--th-public-modal-header);
   --color-public-modal-footer: var(--th-public-modal-footer);
   --color-public-modal-border: var(--th-public-modal-border);
+  --color-public-action-bg: var(--th-public-action-bg);
+  --color-public-action-fg: var(--th-public-action-fg);
+  --color-public-modal-bg: var(--th-public-modal-bg);
   --radius-panel: var(--th-radius-panel);
   --radius-control: var(--th-radius-control);
   --radius-tag: var(--th-radius-tag);
@@ -282,6 +291,8 @@
   --shadow-card: var(--th-shadow-card);
   --shadow-card-hover: var(--th-shadow-card-hover);
   --shadow-modal: var(--th-shadow-modal);
+  --shadow-public-card: var(--th-public-card-shadow);
+  --shadow-public-modal: var(--th-public-modal-shadow);
   --text-title: 18px;
   --text-title--line-height: 24px;
   --text-title--font-weight: 500;
