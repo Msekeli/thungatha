@@ -38,7 +38,7 @@ export function PublicJobDetailDialog({
             </div>
             <Dialog.Close render={<Button variant="ghost" size="icon" aria-label="Close job details"><X /></Button>} />
           </header>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-7 sm:py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 text-modal-body sm:px-7 sm:py-6">
             {data.detailLoading && !job ? (
               <div role="status" className="flex items-center gap-3 py-8 text-sm text-fg-muted">
                 <LoaderCircle className="animate-spin" aria-hidden="true" /> Loading job details…
