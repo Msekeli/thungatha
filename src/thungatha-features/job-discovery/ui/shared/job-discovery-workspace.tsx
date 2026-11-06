@@ -3,8 +3,10 @@
 import { AuthenticatedJobResultsPanel } from "../authenticated/job-results-panel";
 import { AuthenticatedJobDetailPanel } from "../authenticated/job-detail-panel";
 import type { JobDiscoveryWorkspaceProps } from "./job-discovery-workspace-types";
+import { PublicJobDiscoveryWorkspace } from "../public/public-job-discovery-workspace";
 
 export function JobDiscoveryWorkspace(props: JobDiscoveryWorkspaceProps) {
+  if (!props.isAuthenticated) return <PublicJobDiscoveryWorkspace data={props} />;
   const hasLeadingColumn = Boolean(props.leadingColumn);
   return (
     <div
