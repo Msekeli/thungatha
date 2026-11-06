@@ -44,7 +44,7 @@ export function JobDiscoverySearchFilters(props: Props) {
           </Button>
         </div>
       </div>
-      <div className="mt-3 min-w-0 max-[700px]:hidden">
+      <div className={`mt-3 min-w-0 ${props.isAuthenticated ? "max-[700px]:hidden" : "block"}`}>
         <JobDiscoveryCategoryControls
           selectedType={props.category}
           total={props.resultCount}
