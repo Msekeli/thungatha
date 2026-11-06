@@ -17,7 +17,7 @@ export function JobDiscoveryHeader({
   onSortOrderChange,
   isAuthenticated,
 }: {
-  draft: Filters;
+  prominent?: boolean;\n  draft: Filters;
   onQueryChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleFilters: (anchorEl: HTMLElement) => void;
@@ -32,7 +32,7 @@ export function JobDiscoveryHeader({
   return (
     <div className="w-full">
       <JobDiscoverySearchFilters
-        query={draft.query}
+        prominent={prominent}\n      query={draft.query}
         onQueryChange={onQueryChange}
         onOpenFilters={onToggleFilters}
         onSubmit={onSubmit}
