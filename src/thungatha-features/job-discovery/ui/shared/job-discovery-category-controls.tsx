@@ -28,7 +28,6 @@ export function JobDiscoveryCategoryControls({
       <div className="min-w-0 overflow-x-auto">
         <JobCategoryChips
           prominent={prominent}
-          prominent={prominent}
           activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
           counts={{ all: total }}
           showAllCount
