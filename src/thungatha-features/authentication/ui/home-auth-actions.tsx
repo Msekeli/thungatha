@@ -31,10 +31,10 @@ export function HomeAuthActions({
               : "flex flex-wrap gap-2"
           }
         >
-          <ButtonLink href="/sign-up" variant="primary" size={size}>
+          <ButtonLink href="/sign-up" variant="primary" size={size} className={variant === "nav" ? "h-9 rounded-xl bg-public-action-bg px-4 text-public-action-fg shadow-none" : ""}>
             {signUpLabel}
           </ButtonLink>
-          <ButtonLink href="/sign-in" variant={signInVariant} size={size}>
+          <ButtonLink href="/sign-in" variant={signInVariant} size={size} className={variant === "nav" ? "h-9 px-3 text-white hover:bg-white/10 hover:text-white" : ""}>
             Sign in
           </ButtonLink>
         </div>
@@ -56,12 +56,12 @@ export function HomeAuthActions({
     >
       <Show when="signed-out">
         <SignUpButton mode="modal">
-          <Button variant="primary" size={size}>
+          <Button variant="primary" size={size} className={variant === "nav" ? "h-9 rounded-xl bg-public-action-bg px-4 text-public-action-fg shadow-none" : ""}>
             {signUpLabel}
           </Button>
         </SignUpButton>
         <SignInButton mode="modal">
-          <Button variant={signInVariant} size={size}>
+          <Button variant={signInVariant} size={size} className={variant === "nav" ? "h-9 px-3 text-white hover:bg-white/10 hover:text-white" : ""}>
             Sign in
           </Button>
         </SignInButton>
