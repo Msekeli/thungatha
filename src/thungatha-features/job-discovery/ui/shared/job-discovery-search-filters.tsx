@@ -35,7 +35,7 @@ export function JobDiscoverySearchFilters(props: Props) {
         <div className="flex shrink-0">
           <Button
             variant="primary"
-            className="h-11 shrink-0 gap-2 border-0 bg-[var(--th-btn)] px-3 text-[var(--th-btn-fg)] hover:brightness-110 sm:px-4"
+            className="h-13 shrink-0 gap-2 border-0 bg-btn px-3 text-btn-fg hover:brightness-110 sm:px-4"
             aria-label="Open filters"
             onClick={(event) => props.onOpenFilters(event.currentTarget)}
           >
