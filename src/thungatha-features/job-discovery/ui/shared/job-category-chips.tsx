@@ -5,7 +5,6 @@ import { JOB_TYPE_OPTIONS } from "./job-type-options";
 type Props = {
   activeKey: string;
   prominent?: boolean;
-  prominent?: boolean;
   counts?: Record<string, number | null>;
   showAllCount?: boolean;
   className?: string;
@@ -24,7 +23,7 @@ export function JobCategoryChips({
     <div
       role="group"
       aria-label="Opportunity categories"
-      className={`flex flex-wrap items-center justify-center gap-2.5 ${className}`}
+      className={`flex flex-wrap items-center gap-2.5 ${prominent ? "justify-center" : ""} ${className}`}
     >
       {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
