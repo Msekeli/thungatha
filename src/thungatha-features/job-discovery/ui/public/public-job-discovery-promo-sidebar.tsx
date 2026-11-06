@@ -8,7 +8,6 @@ const features = [
     title: "CV matching",
     description:
       "Build your profile so we can match jobs to your skills.",
-    note: "Personalised recommendations",
     icon: ClipboardList,
     iconClass: "text-fg-muted",
     action: "Create your profile",
@@ -17,7 +16,6 @@ const features = [
     title: "Saved Jobs",
     description:
       "Keep interesting opportunities together for later.",
-    note: "Build your shortlist",
     icon: Bookmark,
     iconClass: "text-accent-text",
     action: "Sign in to save jobs",
@@ -26,7 +24,6 @@ const features = [
     title: "Track Applications",
     description:
       "Keep status and next steps in one place.",
-    note: "Stay on top of progress",
     icon: ChartNoAxesColumn,
     iconClass: "text-success",
     action: "Sign in to track",
