@@ -29,22 +29,22 @@ export function PublicJobOpportunityCard({
         type="button"
         onClick={onSelect}
         aria-label={`View ${job.title} at ${employer}`}
-        className="flex min-h-24 min-w-0 items-center gap-3 border-b-4 border-band-line bg-gradient-to-br from-band-from to-band-to p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-accent-on-navy"
+        className="flex min-h-24 min-w-0 items-center gap-3 border-b-band border-band-line bg-gradient-to-br from-band-from to-band-to p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-accent-on-navy"
       >
         <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">
           {(employer || job.title).slice(0, 1).toUpperCase()}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="line-clamp-2 block text-card-title font-semibold leading-card-title text-on-band">
+          <span className="line-clamp-2 block text-card-title font-semibold text-on-band">
             {job.title}
           </span>
-          <span className="mt-1 block truncate text-card-company leading-card-company text-on-band-muted">
+          <span className="mt-1 block truncate text-card-company text-on-band-muted">
             {employer}
           </span>
         </span>
       </button>
       <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="flex min-w-0 flex-wrap gap-2 text-card-meta leading-card-meta text-fg-muted">
+        <div className="flex min-w-0 flex-wrap gap-2 text-card-meta text-fg-muted">
           <span className="inline-flex min-w-0 items-center gap-1">
             <MapPin size={14} aria-hidden="true" />
             <span className="break-words">{job.location_text || "Location not specified"}</span>
