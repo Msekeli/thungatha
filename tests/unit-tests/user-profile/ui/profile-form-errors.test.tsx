@@ -35,7 +35,7 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
-    const nameInput = await screen.findByLabelText("Full name");
+    const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
 
@@ -51,7 +51,7 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
-    const nameInput = await screen.findByLabelText("Full name");
+    const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
 
