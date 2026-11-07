@@ -3,7 +3,7 @@ import { JobDiscoveryDialogs } from "../authenticated/job-discovery-dialogs";
 import { useJobDiscoveryDialogAnchors } from "../hooks/use-job-discovery-dialog-anchors";
 import { useJobDiscoveryState } from "../hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "../hooks/use-job-discovery-controller";
-import { shown, sourceFor } from "../job-discovery-utils";
+import { shown } from "../job-discovery-utils";
 import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
 import { JobDiscoverySearchToolbar } from "./job-discovery-search-toolbar";
 
@@ -26,10 +26,7 @@ export function JobDiscoveryScreen({
   const s = state;
   const c = controller;
   useJobDiscoveryDialogAnchors(s, c.showApplicationPrompt);
-  const category =
-    s.category === "dismissed" || s.category === "saved"
-      ? s.category
-      : s.filters.employmentType || "all";
+  const category = s.category === "dismissed" || s.category === "saved" ? s.category : "all";
 
   return (
     <>
@@ -51,15 +48,12 @@ export function JobDiscoveryScreen({
           selectedId={s.selectedId}
           loadMoreRef={s.loadMoreRef}
           selectedDetail={c.selectedDetail}
-          selectedSource={c.selectedSource}
           applicationDestination={c.applicationDestination}
           applicationUrl={c.applicationUrl}
-          jobSourceUrl={c.jobSourceUrl}
           busy={s.stateBusy}
           detailLoading={s.detailLoading}
           activityError={s.activityError}
           detailError={s.detailError}
-          sourceFor={sourceFor}
           formatDate={c.formatDate}
           onRetryFeed={c.workspaceActions.retryFeed}
           onSaveJob={c.workspaceActions.saveJob}
