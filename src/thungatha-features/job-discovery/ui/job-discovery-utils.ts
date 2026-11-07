@@ -1,34 +1,23 @@
-export type JobSource = {
-  id: string;
-  provider_key: string;
-  provider_kind: string;
-  external_job_id: string;
-  source_url: string | null;
-  application_url: string | null;
-  published_at: string | null;
-  availability_status: string;
-};
-
 export type Job = {
   id: string;
+  scout_vacancy_id: string;
   title: string;
-  employer_name: string | null;
-  description: string | null;
-  location_text: string | null;
-  country_code: string | null;
-  work_mode: "onsite" | "hybrid" | "remote" | "unknown" | null;
-  employment_type: string | null;
-  salary_min: number | null;
-  salary_max: number | null;
-  salary_currency: string | null;
-  updated_at: string | null;
-  job_sources: JobSource[] | JobSource | null;
+  employer_name: string;
+  company_logo_url: string | null;
+  description: string;
+  location_text: string;
+  application_url: string;
+  published_at: string | null;
+  source_updated_at: string | null;
+  updated_at: string;
   state: "saved" | "dismissed" | null;
 };
+
 export type JobActivity = {
   application_link_opened_at: string | null;
   applied_at: string | null;
 };
+
 export type Feed = {
   jobs: Job[];
   page: number;
@@ -36,33 +25,26 @@ export type Feed = {
   total: number;
   totalPages: number;
 };
+
 export type Filters = {
   query: string;
   location: string;
-  workMode: string;
-  employmentType: string;
   publishedWithin: string;
 };
+
 type ApiError = { error?: string; requestId?: string };
 
 export const EMPTY_FILTERS: Filters = {
   query: "",
   location: "",
-  workMode: "",
-  employmentType: "",
   publishedWithin: "any",
 };
 export const PAGE_SIZE = 30;
 
-export function sourceFor(job: Job | null): JobSource | null {
-  if (!job?.job_sources) return null;
-  return Array.isArray(job.job_sources)
-    ? (job.job_sources[0] ?? null)
-    : job.job_sources;
-}
 export function shown(value: string | null | undefined): string {
   return value?.trim() || "Not provided";
 }
+
 export function safeExternalUrl(
   value: string | null | undefined,
 ): string | null {
@@ -76,6 +58,7 @@ export function safeExternalUrl(
     return null;
   }
 }
+
 export function formatDate(value: string | null | undefined): string | null {
   if (!value) return null;
   const date = new Date(value);
@@ -87,6 +70,7 @@ export function formatDate(value: string | null | undefined): string | null {
         day: "numeric",
       }).format(date);
 }
+
 export async function getApiError(response: Response): Promise<string> {
   let payload: ApiError = {};
   try {
@@ -94,16 +78,14 @@ export async function getApiError(response: Response): Promise<string> {
   } catch {
     /* non-JSON error */
   }
-  if (response.status === 401)
+  if (response.status === 401) {
     return "Your session is no longer available. Sign in again to continue.";
-  if (response.status === 503)
-    return (
-      payload.error || "Job Discovery is temporarily unavailable. Please retry."
-    );
+  }
+  if (response.status === 503) {
+    return payload.error || "Job Discovery is temporarily unavailable. Please retry.";
+  }
   if (response.status === 404) return "This listing is no longer available.";
-  return (
-    payload.error || "The request could not be completed. Please try again."
-  );
+  return payload.error || "The request could not be completed. Please try again.";
 }
 
 export function buildJobFeedParams(
@@ -142,7 +124,10 @@ export function isValidFeed(value: unknown): value is Feed {
       (job) =>
         Boolean(job) &&
         typeof job.id === "string" &&
-        typeof job.title === "string",
+        typeof job.scout_vacancy_id === "string" &&
+        typeof job.title === "string" &&
+        typeof job.description === "string" &&
+        typeof job.application_url === "string",
     )
   );
 }
