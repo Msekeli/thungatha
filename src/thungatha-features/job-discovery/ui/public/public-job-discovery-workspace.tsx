@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Job } from "../job-discovery-utils";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import { PublicJobResultsPanel } from "./public-job-results-panel";
+import { AuthenticatedJobResultsPanel } from "../authenticated/job-results-panel";
 import { PublicJobDetailDialog } from "./public-job-detail-dialog";
 
 export function PublicJobDiscoveryWorkspace({
@@ -27,7 +28,34 @@ export function PublicJobDiscoveryWorkspace({
         : "grid h-full min-h-0 min-w-0 grid-cols-1"}>
         {data.leadingColumn}
         <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
-          <PublicJobResultsPanel data={data} onSelect={selectJob} />
+          {data.isAuthenticated ? (
+            <AuthenticatedJobResultsPanel
+              jobs={data.jobs}
+              feed={data.feed}
+              loading={data.loading}
+              error={data.error}
+              hasFilters={data.hasFilters}
+              mobileDetail={data.mobileDetail}
+              selectedId={data.selectedId}
+              loadMoreRef={data.loadMoreRef}
+              sourceFor={data.sourceFor}
+              formatDate={data.formatDate}
+              onRetry={data.onRetryFeed}
+              onSelect={selectJob}
+              onSave={data.onSaveJob}
+              onDismiss={data.onDismissJob}
+              configured={data.configured}
+              resultCount={data.resultCount}
+              category={data.category}
+              dismissedCount={data.dismissedCount}
+              isAuthenticated={data.isAuthenticated}
+              sortOrder={data.sortOrder}
+              onSortOrderChange={data.onSortOrderChange}
+              onCategoryChange={data.onCategoryChange}
+            />
+          ) : (
+            <PublicJobResultsPanel data={data} onSelect={selectJob} />
+          )}
         </div>
       </div>
       <PublicJobDetailDialog data={data} open={detailOpen} onClose={closeDetails} />
