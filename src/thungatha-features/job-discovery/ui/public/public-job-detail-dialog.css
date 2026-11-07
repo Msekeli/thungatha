@@ -105,3 +105,53 @@
     }
   }
 }
+
+  .th-public-job-detail-dialog__identity {
+    flex: 1 1 auto;
+  }
+
+  .th-public-job-detail-dialog__meta {
+    flex: 0 1 auto;
+    max-width: 52%;
+    margin-left: auto;
+    padding-right: 3.25rem;
+  }
+
+  .th-public-job-detail-dialog__meta .th-job-detail-meta {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .th-public-job-detail-dialog__close {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  @media (max-width: 600px) {
+    .th-public-job-detail-dialog__header {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      padding-top: 1rem;
+      padding-right: 3.75rem;
+    }
+
+    .th-public-job-detail-dialog__identity {
+      padding-top: 0.1rem;
+    }
+
+    .th-public-job-detail-dialog__meta {
+      flex: 1 0 100%;
+      max-width: none;
+      margin-left: 3.5rem;
+      padding-right: 0;
+    }
+
+    .th-public-job-detail-dialog__meta .th-job-detail-meta {
+      justify-content: flex-start;
+    }
+
+    .th-public-job-detail-dialog__close {
+      top: 0.75rem;
+      right: 0.75rem;
+    }
+  }
