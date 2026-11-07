@@ -128,7 +128,7 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
       );
   }
   return records
-    .map((record, index) => {
+    .map<ExtractedExperience | null>((record, index) => {
       const range = record.heading.match(rangePattern);
       if (!range || range.index === undefined) return null;
       const heading = record.heading
@@ -170,7 +170,7 @@ function parseEducation(lines: string[]): ExtractedEducation[] {
     /^(work experience|professional experience|employment history|experience|skills|technical skills|certifications|projects|languages|references)$/i,
   );
   return section
-    .map((line, index) => {
+    .map<ExtractedEducation | null>((line, index) => {
       const parts = line.split(/\s+(?:at|@|\||—|–)\s+/i);
       const qualification = (parts[0] || "").trim();
       const institution = (parts[1] || "").trim();
