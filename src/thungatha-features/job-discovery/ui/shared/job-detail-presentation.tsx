@@ -12,7 +12,7 @@ export type JobDetailPresentationData = {
   employer_name: string;
   company_logo_url: string | null;
   description: string;
-  location_text: string;
+  location_text: string | null;
   published_at: string | null;
 };
 
