@@ -67,8 +67,18 @@ async function postVacanciesForImport(appBaseUrl: string, syncSecret: string, pa
     cache: "no-store",
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
-  const result = await response.json().catch(() => null) as { stored?: number; error?: string } | null;
-  if (!response.ok) throw new Error(result?.error ?? `Thungatha import endpoint returned HTTP ${response.status}.`);
+  const result = await response.json().catch(() => null) as {
+    stored?: number;
+    error?: string;
+    diagnostic?: { code?: string | null; message?: string | null; details?: string | null; hint?: string | null };
+  } | null;
+  if (!response.ok) {
+    const diagnostic = result?.diagnostic;
+    const detail = diagnostic
+      ? [diagnostic.code, diagnostic.message, diagnostic.details, diagnostic.hint].filter(Boolean).join(" | ")
+      : null;
+    throw new Error([result?.error ?? `Thungatha import endpoint returned HTTP ${response.status}.`, detail].filter(Boolean).join(" "));
+  }
   return result?.stored ?? 0;
 }
 
