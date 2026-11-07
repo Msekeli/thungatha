@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import { Bookmark, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
-import type { Job, JobSource } from "./job-results-types";
+import type { Job } from "./job-results-types";
 import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 
 export function JobResultsList({
@@ -11,7 +11,6 @@ export function JobResultsList({
   loading,
   feed,
   loadMoreRef,
-  sourceFor,
   formatDate,
   onSelect,
   onSave,
@@ -23,7 +22,6 @@ export function JobResultsList({
   loading: boolean;
   feed: { page: number; totalPages: number } | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
-  sourceFor: (job: Job | null) => JobSource | null;
   formatDate: (value: string | null | undefined) => string | null;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
@@ -36,11 +34,7 @@ export function JobResultsList({
         jobs={jobs}
         variant="authenticated"
         selectedId={selectedId}
-        postedLabel={(job) =>
-          sourceFor(job as Job)?.published_at
-            ? formatDate(sourceFor(job as Job)?.published_at) || "Date unknown"
-            : "Date unknown"
-        }
+        postedLabel={(job) => formatDate((job as Job).published_at) || "Date unknown"}
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;
@@ -58,9 +52,7 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={
-                    saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
-                  }
+                  aria-label={saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`}
                   title={saved ? "Remove from saved jobs" : "Save job"}
                 >
                   <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
@@ -76,17 +68,9 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={
-                    dismissed
-                      ? `Restore ${fullJob.title}`
-                      : `Dismiss ${fullJob.title}`
-                  }
+                  aria-label={dismissed ? `Restore ${fullJob.title}` : `Dismiss ${fullJob.title}`}
                   title={dismissed ? "Restore job" : "Not for me"}
-                  className={
-                    dismissed
-                      ? "text-[var(--th-accent)]"
-                      : "text-[var(--th-fg-muted)] hover:text-destructive"
-                  }
+                  className={dismissed ? "text-[var(--th-accent)]" : "text-[var(--th-fg-muted)] hover:text-destructive"}
                 >
                   <ThumbsDown size={16} />
                 </Button>
@@ -101,9 +85,7 @@ export function JobResultsList({
           aria-live="polite"
           className="px-2 py-4 text-center text-xs text-fg-muted"
         >
-          {loading
-            ? "Loading more opportunities…"
-            : "Scroll to load more opportunities"}
+          {loading ? "Loading more opportunities…" : "Scroll to load more opportunities"}
         </div>
       )}
     </>
