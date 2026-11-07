@@ -1,15 +1,17 @@
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight, Clock3, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import type { JobCardData } from "../shared/job-opportunity-card";
 
 export function PublicJobOpportunityCard({
   job,
   ageDays,
+  postedLabel,
   onSelect,
   actions,
 }: {
   job: JobCardData;
   ageDays: number | null;
+  postedLabel: string;
   onSelect: () => void;
   actions?: ReactNode;
 }) {
@@ -48,9 +50,14 @@ export function PublicJobOpportunityCard({
           </span>
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
-          {ageDays !== null && ageDays <= 3 && (
+          {ageDays !== null && ageDays <= 3 ? (
             <span className="inline-flex items-center rounded-md bg-success-bg px-2 py-1 text-[length:var(--text-tag)] font-semibold text-success">
-              NEW
+              {postedLabel}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-detail text-public-muted">
+              <Clock3 size={13} aria-hidden="true" />
+              {postedLabel}
             </span>
           )}
           <div className="pointer-events-auto relative z-20 flex shrink-0 items-center gap-1">
