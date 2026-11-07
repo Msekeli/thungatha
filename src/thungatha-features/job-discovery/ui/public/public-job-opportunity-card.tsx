@@ -4,10 +4,10 @@ import type { JobCardData } from "./job-opportunity-card";
 
 function ageTone(days: number | null) {
   if (days === null) return "bg-tag text-fg-muted";
-  if (days <= 7) return "bg-age-fresh-bg text-age-fresh";
-  if (days <= 14) return "bg-age-recent-bg text-age-recent";
-  if (days <= 30) return "bg-age-aging-bg text-age-aging";
-  return "bg-age-stale-bg text-age-stale";
+  if (days <= 7) return "bg-success-bg text-success";
+  if (days <= 14) return "bg-warn-bg text-warn";
+  if (days <= 30) return "bg-caution-bg text-caution";
+  return "bg-danger-bg text-danger";
 }
 
 export function PublicJobOpportunityCard({
