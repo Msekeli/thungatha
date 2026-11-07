@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 import { JobResultsState } from "../authenticated/job-results-state";
 import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 import { JobList } from "../shared/job-list";
+import type { RefObject } from "react";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
 import { PublicJobCardActions } from "./public-job-card-actions";
 import { PublicJobSortSelect } from "./public-job-sort-select";
 
-function postedAge(data: JobDiscoveryWorkspaceProps, id: string) {
+type ResultsData = Omit<JobDiscoveryWorkspaceProps, "loadMoreRef">;
+
+function postedAge(data: ResultsData, id: string) {
   const job = data.jobs.find((item) => item.id === id) ?? null;
   const published = data.sourceFor(job)?.published_at;
   const timestamp = published ? Date.parse(published) : NaN;
@@ -18,8 +21,9 @@ function postedAge(data: JobDiscoveryWorkspaceProps, id: string) {
   return { label: days === 0 ? "Today" : days === 1 ? "1 day ago" : `${days} days ago`, days };
 }
 
-export function PublicJobResultsPanel({ data, onSelect }: {
-  data: JobDiscoveryWorkspaceProps;
+export function PublicJobResultsPanel({ data, loadMoreRef, onSelect }: {
+  data: ResultsData;
+  loadMoreRef: RefObject<HTMLDivElement | null>;
   onSelect: (job: Job) => void;
 }) {
   return (
@@ -42,7 +46,7 @@ export function PublicJobResultsPanel({ data, onSelect }: {
           saveAction={(job) => <PublicJobCardActions job={data.jobs.find((item) => item.id === job.id)!}
             configured={data.configured} onSave={data.onSaveJob} onDismiss={data.onDismissJob} />} />}
         {data.feed && data.feed.page < data.feed.totalPages && (
-          <div ref={data.loadMoreRef} aria-live="polite" className="py-4 text-center text-detail text-fg-muted">
+          <div ref={loadMoreRef} aria-live="polite" className="py-4 text-center text-detail text-fg-muted">
             {data.loading ? "Loading more opportunities…" : "Scroll to load more opportunities"}
           </div>
         )}
