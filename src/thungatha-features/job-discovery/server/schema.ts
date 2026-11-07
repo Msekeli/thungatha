@@ -1,79 +1,71 @@
 import { z } from "zod";
 
-const optionalText = z.string().trim().min(1).nullable();
+const optionalHttpUrl = z
+  .string()
+  .url()
+  .refine((value) => {
+    const protocol = new URL(value).protocol;
+    return protocol === "http:" || protocol === "https:";
+  }, "Must be an HTTP or HTTPS URL.")
+  .nullable();
 
-const nullableUrl = z.string().url().nullable();
+const optionalDate = z.string().datetime({ offset: true }).nullable();
 
-const nullableDate = z.string().datetime({ offset: true }).nullable();
+function hasMeaningfulDescription(value: string) {
+  const visibleText = value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&#(?:x([\da-f]+)|(\d+));/gi, " ")
+    .replace(/&(?:amp|lt|gt|quot|apos);/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
-export const jobSourceKindSchema = z.enum([
-  "aggregator",
-  "ats",
-  "employer_site",
-  "feed",
-]);
+  return visibleText.length >= 20;
+}
 
-export const jobWorkModeSchema = z.enum([
-  "onsite",
-  "hybrid",
-  "remote",
-  "unknown",
-]);
-
-export const normalizedJobSchema = z
+/**
+ * Exact Scout-to-Thungatha vacancy contract.
+ * Description HTML is already sanitised by Scout and is stored unchanged.
+ */
+export const scoutVacancySchema = z
   .object({
-    providerKey: z.string().trim().min(1),
-    providerKind: jobSourceKindSchema,
-    externalJobId: z.string().trim().min(1),
-    upstreamSource: optionalText.default(null),
-    title: z.string().trim().min(1),
-    employerName: optionalText,
-    description: optionalText,
-    locationText: optionalText,
-    countryCode: z
+    scoutVacancyId: z.string().uuid(),
+    jobTitle: z.string().trim().min(2).max(300),
+    companyName: z.string().trim().min(2).max(300),
+    companyLogoUrl: optionalHttpUrl,
+    location: z.string().trim().min(2).max(500),
+    description: z.string().trim().min(1).refine(
+      hasMeaningfulDescription,
+      "Description must contain meaningful job information.",
+    ),
+    applicationUrl: z
       .string()
-      .regex(/^[A-Z]{2}$/)
-      .nullable(),
-
-    workMode: jobWorkModeSchema,
-    employmentType: optionalText,
-
-    salaryMin: z.number().finite().nonnegative().nullable(),
-    salaryMax: z.number().finite().nonnegative().nullable(),
-    salaryCurrency: z
-      .string()
-      .regex(/^[A-Z]{3}$/)
-      .nullable(),
-
-    publishedAt: nullableDate,
-    sourceUrl: nullableUrl,
-    applicationUrl: nullableUrl,
-  })
-  .strict()
-  .refine(
-    (job) =>
-      job.salaryMin === null ||
-      job.salaryMax === null ||
-      job.salaryMin <= job.salaryMax,
-    {
-      message: "Minimum salary cannot exceed maximum salary.",
-      path: ["salaryMin"],
-    },
-  );
-
-export type NormalizedJob = z.infer<typeof normalizedJobSchema>;
-
-export const jobSearchQuerySchema = z
-  .object({
-    query: z.string().trim().max(200).optional(),
-    location: z.string().trim().max(200).optional(),
-    countryCode: z
-      .string()
-      .regex(/^[A-Z]{2}$/)
-      .optional(),
-    page: z.number().int().min(1).max(100).default(1),
-    pageSize: z.number().int().min(1).max(100).default(25),
+      .url()
+      .refine((value) => {
+        const protocol = new URL(value).protocol;
+        return protocol === "http:" || protocol === "https:";
+      }, "Application URL must use HTTP or HTTPS."),
+    publishedAt: optionalDate,
+    updatedAt: optionalDate,
   })
   .strict();
 
-export type JobSearchQuery = z.infer<typeof jobSearchQuerySchema>;
+export const scoutVacancyBatchSchema = z
+  .array(scoutVacancySchema)
+  .min(1)
+  .max(100)
+  .superRefine((vacancies, context) => {
+    const ids = new Set<string>();
+    vacancies.forEach((vacancy, index) => {
+      if (ids.has(vacancy.scoutVacancyId)) {
+        context.addIssue({
+          code: "custom",
+          path: [index, "scoutVacancyId"],
+          message: "A Scout vacancy ID may appear only once per batch.",
+        });
+      }
+      ids.add(vacancy.scoutVacancyId);
+    });
+  });
+
+export type ScoutVacancy = z.infer<typeof scoutVacancySchema>;
