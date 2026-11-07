@@ -10,6 +10,7 @@ import {
   SupabaseConfigurationError,
 } from "@/lib/supabase/server";
 import { jobFeedQuerySchema } from "@/thungatha-features/job-discovery/server/job-feed-query-schema";
+import { syncScoutVacanciesIfDue } from "@/thungatha-features/job-discovery/server/scout-export-client";
 import { readJobFeed } from "@/thungatha-features/job-discovery/server/job-feed-reader";
 
 export async function GET(request: Request) {
@@ -32,6 +33,17 @@ export async function GET(request: Request) {
   if (statesOnly && !identity) return apiError("Authentication required", 401);
 
   try {
+    if (process.env.SCOUT_API_BASE_URL && process.env.SCOUT_EXPORT_API_KEY) {
+      try {
+        await syncScoutVacanciesIfDue();
+      } catch (syncError) {
+        console.error("[Scout vacancy sync] Failed before feed read:", {
+          errorName: syncError instanceof Error ? syncError.name : "unknown",
+          message: syncError instanceof Error ? syncError.message : "Unknown error",
+        });
+        return apiError("The job feed could not be refreshed from Scout.", 503);
+      }
+    }
     const db = identity
       ? await createAuthenticatedSupabaseClient(identity.getToken)
       : await createPublicSupabaseClient();
