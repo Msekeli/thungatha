@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import { PublicJobOpportunityCard } from "@/thungatha-features/job-discovery/ui/public/public-job-opportunity-card";
 
 const job = {
@@ -10,6 +10,8 @@ const job = {
   work_mode: "hybrid",
   employment_type: "full_time",
 };
+
+afterEach(() => cleanup());
 
 describe("PublicJobOpportunityCard freshness indicator", () => {
   it("shows the green NEW indicator for jobs posted within three days", () => {
