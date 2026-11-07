@@ -16,7 +16,6 @@ const features = [
     description:
       "Keep interesting opportunities together for later.",
     icon: Bookmark,
-    iconClass: "text-accent",
     action: "Sign in to save jobs",
   },
   {
