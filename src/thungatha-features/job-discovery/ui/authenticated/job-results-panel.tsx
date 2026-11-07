@@ -88,7 +88,7 @@ export function AuthenticatedJobResultsPanel({
               style={{ color: "var(--th-fg)" }}
               className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-[var(--th-fg)] outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"
             >
-              <Select.Value>{selectedSortLabel}</Select.Value>
+              <Select.Value style={{ color: "var(--th-fg)" }} className="text-[var(--th-fg)]">{selectedSortLabel}</Select.Value>
               <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
                 <ChevronDown size={16} aria-hidden="true" />
               </Select.Icon>
