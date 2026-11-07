@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
 
 vi.mock("next/navigation", () => ({
@@ -10,13 +11,10 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@clerk/nextjs", () => ({
   useAuth: () => ({ isLoaded: true, isSignedIn: false }),
-  Show: ({ when, children }: { when: string; children: React.ReactNode }) =>
+  Show: ({ when, children }: { when: string; children: ReactNode }) =>
     when === "signed-in" ? null : children,
 }));
 
-vi.mock("@/components/layout/workspace-shell", () => ({
-  WorkspaceShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
 
 const vacancy = {
   id: "123e4567-e89b-42d3-a456-426614174000",
@@ -93,10 +91,10 @@ describe("Scout-backed job discovery", () => {
       }),
     );
 
-    expect(await screen.findByRole("heading", { name: "About the role" })).toBeTruthy();
-    expect(screen.getByText("Build and support web services with the engineering team.")).toBeTruthy();
-    expect(screen.getByText("Use React.")).toBeTruthy();
-    expect(screen.getByText("Build APIs.")).toBeTruthy();
+    expect(screen.getAllByRole("heading", { name: "About the role" })).toHaveLength(2);
+    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(2);
+    expect(screen.getAllByText("Use React.")).toHaveLength(2);
+    expect(screen.getAllByText("Build APIs.")).toHaveLength(2);
   });
 
   it("uses employer initials when Scout has no company logo", async () => {
