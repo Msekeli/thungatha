@@ -27,8 +27,6 @@ alter table public.jobs
         and application_url ~ '^https?://'
       )
     ),
-  add constraint jobs_company_logo_url_http
-    check (company_logo_url is null or company_logo_url ~ '^https?://'),
   add constraint jobs_application_url_http
     check (application_url is null or application_url ~ '^https?://');
 
