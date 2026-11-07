@@ -24,11 +24,9 @@ const sections = [
 
 export function JobDetailDesktopDescription({
   description,
-  descriptionIsPreview = false,
   largeText = false,
 }: {
   description: string | null;
-  descriptionIsPreview?: boolean;
   largeText?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState("description");
@@ -38,10 +36,7 @@ export function JobDetailDesktopDescription({
     <div className="th-job-description-panel hidden min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-line bg-panel text-fg min-[601px]:flex">
       <JobDetailTabs
         tabs={[
-          {
-            label: descriptionIsPreview ? "Description preview" : "Job description",
-            value: "description",
-          },
+          { label: "Job description", value: "description" },
           { label: "Requirements", value: "requirements" },
           { label: "Benefits", value: "benefits" },
           { label: "About the company", value: "company" },
@@ -51,14 +46,7 @@ export function JobDetailDesktopDescription({
       />
       <div className="th-job-description-body min-h-0 min-w-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 text-[var(--th-fg)]">
         {activeTab === "description" ? (
-          <>
-            {descriptionIsPreview && (
-              <p className="text-sm text-fg-muted">
-                This source provides a preview. Open the original listing for the complete details when available.
-              </p>
-            )}
-            <JobDescriptionContent description={description} largeText={largeText} />
-          </>
+          <JobDescriptionContent description={description} largeText={largeText} />
         ) : section ? (
           <section>
             <h3 className="mb-2 text-base font-bold text-fg">{section.title}</h3>
