@@ -27,9 +27,9 @@ export function PublicJobResultsPanel({
   onSelect: (job: Job) => void;
 }) {
   return (
-    <section className="flex min-w-0 flex-col gap-2">
-      <header className="flex min-h-8 items-center justify-between gap-3 text-detail text-public-muted">
-        <span aria-live="polite" className="shrink-0 font-medium">{data.resultCount} opportunities</span>
+    <section className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden">
+      <header className="flex min-h-8 shrink-0 items-center justify-between gap-3 text-detail text-public-muted">
+        <div className="flex min-w-0 items-center gap-2"><span aria-live="polite" className="inline-flex shrink-0 items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-1 text-control font-bold text-accent-text shadow-sm">{data.resultCount} opportunities</span>
         <div className="flex items-center gap-2">
           <ProtectedDiscoveryAction configured={data.configured} title="View dismissed opportunities" description="Sign in or create a free account to review jobs you have dismissed." onAction={() => data.onCategoryChange("dismissed", "Dismissed")}>
             <Button variant="ghost" size="sm" className="h-7 px-2 text-detail text-accent-text">Dismissed ({data.dismissedCount})</Button>
