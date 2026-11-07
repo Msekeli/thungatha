@@ -26,7 +26,7 @@ export async function getReusablePublicFeed(
 ): Promise<Feed | null> {
   try {
     const cached = JSON.parse(
-      sessionStorage.getItem("thungatha-public-job-feed-v2") ?? "null",
+      sessionStorage.getItem("thungatha-public-job-feed-v3") ?? "null",
     ) as CachedFeed | null;
     if (
       !cached?.feed ||
