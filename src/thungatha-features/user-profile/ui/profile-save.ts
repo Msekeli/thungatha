@@ -1,18 +1,11 @@
-"use client";
-
 import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
 
 export async function saveProfileDraft(draft: UserProfileDto) {
   try {
-    const {
-      profileVersion,
-      createdAt,
-      updatedAt,
-      ...editable
-    } = draft;
-    void profileVersion;
-    void createdAt;
-    void updatedAt;
+    const editable = { ...draft };
+    delete editable.profileVersion;
+    delete editable.createdAt;
+    delete editable.updatedAt;
 
     const complete = profileCompletionSchema.safeParse(draft).success;
     const payload = {
