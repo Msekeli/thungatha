@@ -13,11 +13,11 @@ let activeSync: Promise<{ received: number; stored: number }> | null = null;
 
 function readScoutConfiguration() {
   const baseUrl = process.env.SCOUT_API_BASE_URL?.replace(/\/+$/, "");
-  const exportKey = process.env.SCOUT_EXPORT_API_KEY;
+  const exportKey = process.env.SCOUT_EXPORT_API_KEY?.trim() || null;
   const syncSecret = process.env.SCOUT_SYNC_SECRET;
   const locationScope = process.env.SCOUT_LOCATION_SCOPE ?? "south_africa";
 
-  if (!baseUrl || !exportKey) throw new Error("Set SCOUT_API_BASE_URL and SCOUT_EXPORT_API_KEY.");
+  if (!baseUrl) throw new Error("Set SCOUT_API_BASE_URL.");
   if (!syncSecret) throw new Error("Set SCOUT_SYNC_SECRET to protect the internal import endpoint.");
 
   const parsedUrl = new URL(baseUrl);
@@ -30,7 +30,7 @@ function readScoutConfiguration() {
   return { baseUrl, exportKey, syncSecret, locationScope };
 }
 
-async function fetchScoutExportPage(baseUrl: string, exportKey: string, locationScope: string, offset: number) {
+async function fetchScoutExportPage(baseUrl: string, exportKey: string | null, locationScope: string, offset: number) {
   const url = new URL(`${baseUrl}/vacancies/export`);
   url.searchParams.set("limit", String(EXPORT_PAGE_SIZE));
   url.searchParams.set("offset", String(offset));
@@ -38,7 +38,10 @@ async function fetchScoutExportPage(baseUrl: string, exportKey: string, location
 
   const response = await fetch(url, {
     method: "GET",
-    headers: { "X-Scout-Export-Key": exportKey, Accept: "application/json" },
+    headers: {
+      ...(exportKey ? { "X-Scout-Export-Key": exportKey } : {}),
+      Accept: "application/json",
+    },
     cache: "no-store",
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
