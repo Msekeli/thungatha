@@ -50,6 +50,7 @@ export function JobList({
             key={job.id}
             job={job}
             ageDays={postedAgeDays?.(job) ?? null}
+            postedLabel={postedLabel?.(job) ?? "Date unknown"}
             onSelect={() => onSelect(job)}
             actions={actions}
           />
