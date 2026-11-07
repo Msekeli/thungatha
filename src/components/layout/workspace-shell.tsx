@@ -16,8 +16,8 @@ import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
 
 const pages: Record<string, { title: string; subtitle: string }> = {
   "/jobs": {
-    title: "Job Discovery",
-    subtitle: "Explore real opportunities. Choose your next step.",
+    title: "Find opportunities",
+    subtitle: "Search roles, review the details, and keep track of the jobs worth pursuing.",
   },
   "/cv-studio": {
     title: "CV Studio",
