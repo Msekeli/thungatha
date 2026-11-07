@@ -16,7 +16,6 @@ type Props = {
   onApply: (anchorEl: HTMLElement) => void;
   onSave: () => void;
   onDismiss: () => void;
-  applyOnly?: boolean;
 };
 
 export function JobDetailActions({
@@ -29,32 +28,29 @@ export function JobDetailActions({
   onApply,
   onSave,
   onDismiss,
-  applyOnly = false,
 }: Props) {
   const disabled = busy || detailLoading;
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className={applyOnly ? "flex" : "th-job-detail-actions"}>
+    <div className="flex w-full flex-col gap-2">
       <Button
-        className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
+        className={`${actionClass} min-h-11 w-full justify-center text-base sm:min-h-10 sm:text-sm`}
         disabled={!applicationDestination || disabled}
         title={applicationUrl ? "Opens the employer's application page" : "No application link is available"}
         data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
       >
-        <ExternalLink size={14} aria-hidden="true" />
+        <ExternalLink size={16} aria-hidden="true" />
         Apply on company site
       </Button>
-      {!applyOnly && (
-        <JobDetailProtectedActions
-          configured={configured}
-          job={job}
-          disabled={disabled}
-          onSave={onSave}
-          onDismiss={onDismiss}
-        />
-      )}
+      <JobDetailProtectedActions
+        configured={configured}
+        job={job}
+        disabled={disabled}
+        onSave={onSave}
+        onDismiss={onDismiss}
+      />
     </div>
   );
 }
