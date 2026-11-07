@@ -28,13 +28,13 @@ export function PublicJobResultsPanel({
 }) {
   return (
     <section className="flex min-w-0 flex-col gap-2">
-      <header className="flex flex-wrap items-center justify-end gap-2 text-detail text-public-muted">
-        <div className="flex items-center gap-3">
-          <ProtectedDiscoveryAction configured={data.configured} title="View dismissed opportunities" description="Sign in or create a free account to review jobs you have dismissed." onAction={() => data.onCategoryChange("dismissed", "Dismissed")}>
-            <Button variant="ghost" size="sm" className="text-accent-text">Dismissed</Button>
-          </ProtectedDiscoveryAction>
+      <header className="flex flex-col items-end gap-1 text-detail text-public-muted">
+        <div className="rounded-control border border-public-card-border bg-public-card-bg px-2 shadow-sm">
+          <PublicJobSortSelect value={data.sortOrder} onChange={data.onSortOrderChange} />
         </div>
-        <PublicJobSortSelect value={data.sortOrder} onChange={data.onSortOrderChange} />
+        <ProtectedDiscoveryAction configured={data.configured} title="View dismissed opportunities" description="Sign in or create a free account to review jobs you have dismissed." onAction={() => data.onCategoryChange("dismissed", "Dismissed")}>
+          <Button variant="ghost" size="sm" className="h-7 px-2 text-detail text-accent-text">Dismissed</Button>
+        </ProtectedDiscoveryAction>
       </header>
       <JobResultsState loading={data.loading} hasFeed={Boolean(data.feed)} error={data.error} hasJobs={data.jobs.length > 0} hasFilters={data.hasFilters} onRetry={data.onRetryFeed} />
       {data.jobs.length > 0 && (
