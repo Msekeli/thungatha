@@ -40,8 +40,5 @@ export function buildJobDiscoveryViewModel(input: {
         : `1–${Math.min(feed.jobs.length, feed.total)} of ${feed.total}`,
     hasFilters,
     visibleJobs,
-    categories: [
-      { key: "all", label: "All opportunities", count: feed?.total ?? 0 },
-    ],
   };
 }
