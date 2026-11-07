@@ -31,10 +31,10 @@ export function HomeAuthActions({
               : "flex flex-wrap gap-2"
           }
         >
-          <ButtonLink href="/sign-up" variant="primary" size={size} className={variant === "nav" ? "h-9 rounded-md bg-public-action-bg px-4 text-public-action-fg shadow-none" : ""}>
+          <ButtonLink href="/sign-up" variant="primary" size={size} className={variant === "nav" ? "h-9 rounded-md bg-public-action-bg px-4 text-xs font-semibold text-public-action-fg shadow-none" : ""}>
             {signUpLabel}
           </ButtonLink>
-          <ButtonLink href="/sign-in" variant={signInVariant} size={size} className={variant === "nav" ? "h-9 rounded-md border border-[var(--th-accent-on-navy)] px-3 text-[var(--th-accent-on-navy)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]" : ""}>
+          <ButtonLink href="/sign-in" variant={signInVariant} size={size} className={variant === "nav" ? "h-9 rounded-md border border-[var(--th-accent-on-navy)] px-3 text-xs font-semibold text-[var(--th-accent-on-navy)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]" : ""}>
             Sign in
           </ButtonLink>
         </div>
