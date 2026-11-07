@@ -3,7 +3,7 @@ import "server-only";
 import { timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { scoutVacancyBatchSchema } from "@/thungatha-features/job-discovery/server/schema";
+import { scoutVacancyBatchSchema } from "@/thungatha-features/job-discovery/server/scout-vacancy-schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
