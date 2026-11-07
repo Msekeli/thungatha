@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 import type { JobCardData } from "./job-opportunity-card";
 
 function ageTone(days: number | null) {
-  if (days === null) return "border border-line bg-transparent text-fg-muted";
-  if (days <= 7) return "border border-success bg-transparent text-success";
-  if (days <= 14) return "border border-warn bg-transparent text-warn";
-  if (days <= 30) return "border border-caution bg-transparent text-caution";
-  return "border border-danger bg-transparent text-danger";
+  if (days === null) return "bg-tag text-fg-muted";
+  if (days <= 7) return "bg-age-fresh-bg text-age-fresh";
+  if (days <= 14) return "bg-age-recent-bg text-age-recent";
+  if (days <= 30) return "bg-age-aging-bg text-age-aging";
+  return "bg-age-stale-bg text-age-stale";
 }
 
 export function PublicJobOpportunityCard({
@@ -39,7 +39,7 @@ export function PublicJobOpportunityCard({
           <span className="break-words">{job.location_text || "Location not specified"}</span>
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
-          <span className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-detail font-semibold ${ageTone(ageDays)}`}><i aria-hidden="true" className="size-2 rounded-full bg-current" />{postedLabel}</span>
+          <span className={`inline-flex items-center gap-2 rounded-pill px-2.5 py-1 text-detail font-bold ${ageTone(ageDays)}`}><i aria-hidden="true" className="size-2 rounded-full bg-current" />{postedLabel}</span>
           <div className="pointer-events-auto relative z-20 flex shrink-0 items-center gap-1">{actions}</div>
         </div>
       </div>
