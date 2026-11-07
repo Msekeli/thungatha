@@ -15,7 +15,6 @@ type Props = {
   categories: { key: string; label: string; count: number | null }[];
   category: string;
   onCategoryChange: (key: string, label: string) => void;
-  resultCount: number;
   sortOrder: string;
   onSortOrderChange: (value: string) => void;
   isAuthenticated: boolean;
@@ -50,7 +49,6 @@ export function JobDiscoverySearchFilters(props: Props) {
         <JobDiscoveryCategoryControls
           prominent={props.prominent}
           selectedType={props.category}
-          total={props.resultCount}
           onTypeChange={props.onCategoryChange}
         />
       </div>
