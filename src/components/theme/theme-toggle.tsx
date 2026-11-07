@@ -53,7 +53,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       aria-label={label}
       title={label}
       aria-pressed={!isDark}
-      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-panel text-fg transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
+      className={`th-theme-toggle inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
     >
       {isDark ? (
         <Sun size={19} aria-hidden="true" />
