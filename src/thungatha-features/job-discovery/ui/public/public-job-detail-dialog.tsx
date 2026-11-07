@@ -43,14 +43,14 @@ export function PublicJobDetailDialog({
                 {initials || "?"}
               </span>
             )}
-            <div className="min-w-0 flex-1">
-              <Dialog.Title className="text-title font-bold leading-tight text-fg sm:text-modal-title">
+            <div className="th-public-job-detail-dialog__identity min-w-0 flex-1">
+              <Dialog.Title className="truncate text-title font-bold leading-tight text-[var(--th-workspace-header-text)] sm:text-modal-title">
                 {job?.title ?? "Job details"}
               </Dialog.Title>
-              <p className="mt-0.5 truncate text-control text-fg-muted sm:text-job">{employer}</p>
+              <p className="mt-0.5 truncate text-control text-[var(--th-workspace-header-muted)] sm:text-job">{employer}</p>
             </div>
             {job && (
-              <div className="hidden shrink-0 sm:block">
+              <div className="th-public-job-detail-dialog__meta min-w-0 shrink-0">
                 <JobDetailMeta
                   location={job.location_text}
                   postedAt={job.published_at}
@@ -64,21 +64,12 @@ export function PublicJobDetailDialog({
                   variant="outline"
                   size="icon"
                   aria-label="Close job details"
-                  className="absolute right-3 top-1/2 size-9 -translate-y-1/2 border-public-modal-border bg-public-modal-bg text-fg shadow-sm hover:bg-public-modal-footer focus-visible:outline-accent sm:right-4"
+                  className="th-public-job-detail-dialog__close absolute right-3 top-3 size-9 border-public-modal-border bg-public-modal-bg text-fg shadow-sm hover:bg-public-modal-footer focus-visible:outline-accent sm:right-4 sm:top-3"
                 >
                   <X className="size-5" />
                 </Button>
               }
             />
-            {job && (
-              <div className="th-public-job-detail-dialog__mobile-meta sm:hidden">
-                <JobDetailMeta
-                  location={job.location_text}
-                  postedAt={job.published_at}
-                  formatDate={data.formatDate}
-                />
-              </div>
-            )}
           </header>
 
           <div className="th-public-job-detail-dialog__content min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6 sm:py-5">
