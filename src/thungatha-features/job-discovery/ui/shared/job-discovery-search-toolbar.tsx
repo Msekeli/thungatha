@@ -35,14 +35,8 @@ export function JobDiscoverySearchToolbar({
         prominent={hasLeadingColumn}
         isAuthenticated={s.isAuthenticated}
         draft={s.draft}
-        filtersOpen={s.filtersOpen}
-        categories={c.categories}
         category={category}
-        resultCount={s.feed?.total ?? 0}
-        sortOrder={s.sortOrder}
-        onSortOrderChange={s.setSortOrder}
         onQueryChange={(value) => c.changeDraft("query", value)}
-        onLocationChange={(value) => c.changeDraft("location", value)}
         onSubmit={c.submitFilters}
         onToggleFilters={(anchorEl) => {
           s.setFilterAnchorEl(anchorEl);
