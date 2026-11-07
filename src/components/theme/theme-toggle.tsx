@@ -33,11 +33,8 @@ const getServerSnapshot = (): Theme | null => null;
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const isDark = theme !== "light";
-  const label = `Switch to ${isDark ? "light" : "dark"} mode`;
 
-  function toggle() {
-    const next: Theme = isDark ? "light" : "dark";
+  function setTheme(next: Theme) {
     document.documentElement.setAttribute("data-theme", next);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
@@ -47,19 +44,41 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={label}
-      title={label}
-      aria-pressed={!isDark}
-      className={`th-theme-toggle inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
+    <div
+      role="group"
+      aria-label="Colour theme"
+      className={`th-theme-toggle inline-flex h-10 w-fit shrink-0 items-center gap-0.5 rounded-lg border border-[var(--th-line)] bg-[var(--th-panel)] p-1 transition-colors ${className}`}
     >
-      {isDark ? (
-        <Sun size={19} aria-hidden="true" />
-      ) : (
-        <Moon size={19} aria-hidden="true" />
-      )}
-    </button>
+      <button
+        type="button"
+        onClick={() => setTheme("light")}
+        aria-label="Light theme"
+        aria-pressed={theme === "light"}
+        title="Light theme"
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+          theme === "light"
+            ? "border border-[var(--th-line)] bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm"
+            : "border border-transparent text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
+        }`}
+      >
+        <Sun size={15} aria-hidden="true" />
+        <span>Light</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setTheme("dark")}
+        aria-label="Dark theme"
+        aria-pressed={theme === "dark"}
+        title="Dark theme"
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+          theme === "dark"
+            ? "border border-[var(--th-line)] bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm"
+            : "border border-transparent text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
+        }`}
+      >
+        <Moon size={15} aria-hidden="true" />
+        <span>Dark</span>
+      </button>
+    </div>
   );
 }
