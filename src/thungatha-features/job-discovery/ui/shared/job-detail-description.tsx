@@ -12,11 +12,10 @@ export function JobDetailDescription({
   descriptionIsPreview = false,
   largeText = false,
 }: Props) {
-  const content = description?.trim() ?? null;
   return (
     <>
       <JobDetailDesktopDescription
-        description={content}
+        description={description ?? null}
         descriptionIsPreview={descriptionIsPreview}
         largeText={largeText}
       />
@@ -30,7 +29,7 @@ export function JobDetailDescription({
             complete details when available.
           </p>
         )}
-        <JobDescriptionContent description={content} largeText={largeText} />
+        <JobDescriptionContent description={description} largeText={largeText} />
       </section>
     </>
   );
