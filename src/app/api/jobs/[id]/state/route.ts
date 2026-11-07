@@ -1,45 +1,20 @@
-import { connection, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
-import {
-  getAuthenticatedIdentity,
-  hasClerkConfiguration,
-} from "@/thungatha-features/authentication/server/identity";
 import { apiError, apiFailure } from "@/lib/http/api-response";
 import {
   createAuthenticatedSupabaseClient,
   SupabaseConfigurationError,
 } from "@/lib/supabase/server";
+import { resolveJobDiscoveryUser } from "@/thungatha-features/job-discovery/server/job-discovery-identity";
 
 const idSchema = z.string().uuid();
 const bodySchema = z.object({ state: z.enum(["saved", "dismissed"]) }).strict();
-
-async function resolveUser() {
-  await connection();
-  if (!hasClerkConfiguration()) {
-    return {
-      user: null,
-      response: apiError("Authentication is not configured", 503),
-    };
-  }
-  try {
-    const user = await getAuthenticatedIdentity();
-    if (!user) {
-      return { user: null, response: apiError("Authentication required", 401) };
-    }
-    return { user, response: null };
-  } catch {
-    return {
-      user: null,
-      response: apiError("Authentication could not be verified", 503),
-    };
-  }
-}
 
 export async function PUT(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { user, response } = await resolveUser();
+  const { user, response } = await resolveJobDiscoveryUser();
   if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
@@ -86,7 +61,7 @@ export async function DELETE(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { user, response } = await resolveUser();
+  const { user, response } = await resolveJobDiscoveryUser();
   if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
