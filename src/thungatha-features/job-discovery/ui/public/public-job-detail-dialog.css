@@ -1,0 +1,21 @@
+@layer components {
+  .th-public-job-detail-dialog {
+    isolation: isolate;
+    opacity: 1;
+    background-color: var(--th-public-modal-bg, var(--th-modal));
+    color: var(--th-fg);
+  }
+
+  .th-public-job-detail-dialog__header {
+    background-color: var(--th-public-modal-header);
+  }
+
+  .th-public-job-detail-dialog__content {
+    background-color: var(--th-public-modal-bg, var(--th-modal));
+    opacity: 1;
+  }
+
+  .th-public-job-detail-dialog__footer {
+    background-color: var(--th-public-modal-footer);
+  }
+}
