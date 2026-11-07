@@ -5,7 +5,7 @@
 }
 .th-workspace-nav-label {
   margin: 0 10px 5px;
-  color: var(--th-nav-text);
+  color: var(--th-workspace-nav-label);
   font-size: 10px;
   line-height: 18px;
   font-weight: 700;
@@ -22,7 +22,7 @@
   min-height: 42px;
   padding: 9px 11px;
   border-radius: 9px;
-  color: var(--th-nav-text);
+  color: var(--th-workspace-nav-text);
   font-size: 13px;
   line-height: 20px;
   font-weight: 600;
@@ -36,8 +36,8 @@
   color: var(--th-fg);
 }
 .th-workspace-nav-link[data-active="true"] {
-  background: var(--th-nav-active-bg);
-  color: var(--th-nav-active-fg);
+  background: var(--th-workspace-nav-active-bg);
+  color: var(--th-workspace-nav-active-fg);
   font-weight: 700;
 }
 .th-workspace-nav-icon {
@@ -65,10 +65,10 @@
   width: 100%;
   min-height: 42px;
   padding: 9px 12px;
-  border: 1px solid color-mix(in srgb, var(--th-accent) 65%, white 10%);
+  border: 1px solid var(--th-workspace-signout-border);
   border-radius: 11px;
-  background: var(--th-accent-bg);
-  color: var(--th-nav-active-fg);
+  background: transparent;
+  color: var(--th-workspace-nav-text);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -78,9 +78,9 @@
 }
 .th-workspace-sidebar-footer .th-btn:hover,
 .th-workspace-sign-in:hover {
-  background: var(--th-accent);
-  border-color: var(--th-accent);
-  color: var(--th-btn-fg);
+  background: var(--th-workspace-nav-active-bg);
+  border-color: var(--th-workspace-signout-border);
+  color: var(--th-workspace-nav-active-fg);
   box-shadow: 0 6px 16px rgb(0 0 0 / 20%);
   transform: translateY(-1px);
 }
