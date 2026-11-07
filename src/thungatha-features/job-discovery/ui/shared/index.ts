@@ -6,8 +6,6 @@ export { JobList } from "./job-list";
 export { JobOpportunityCard } from "./job-opportunity-card";
 export type { JobCardData } from "./job-opportunity-card";
 export { JobOpportunityDetailPanel } from "./job-opportunity-detail-panel";
-export { JobDetailTabs } from "./job-detail-tabs";
-export type { JobDetailTab } from "./job-detail-tabs";
 export { JobEmptyState } from "./job-empty-state";
 export { JobMetadata } from "./job-metadata";
 export {
