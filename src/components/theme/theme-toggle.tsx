@@ -47,7 +47,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <div
       role="group"
       aria-label="Colour theme"
-      className={`th-theme-toggle inline-flex h-10 w-fit shrink-0 items-center gap-0.5 rounded-md border border-[var(--th-workspace-toggle-border)] bg-[var(--th-nav)] p-1 transition-colors ${className}`}
+      className={`th-theme-toggle inline-flex h-10 w-fit shrink-0 items-center gap-0.5 rounded-md border border-[var(--th-workspace-toggle-border)] bg-transparent p-1 transition-colors max-[700px]:h-8 max-[700px]:gap-0 max-[700px]:p-0.5 ${className}`}
     >
       <button
         type="button"
@@ -55,13 +55,13 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         aria-label="Light theme"
         aria-pressed={theme === "light"}
         title="Light theme"
-        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold max-[700px]:h-6 max-[700px]:gap-1 max-[700px]:px-1.5 max-[700px]:text-[11px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm max-[700px]:h-6 ${
           theme === "light"
-            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-nav-active-bg)] text-[var(--th-accent-on-navy)]"
+            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-workspace-nav-active-bg)] text-[var(--th-accent-on-navy)]"
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
-        <Sun size={15} aria-hidden="true" />
+        <Sun size={15} className="max-[700px]:h-3.5 max-[700px]:w-3.5" aria-hidden="true" />
         <span>Light</span>
       </button>
       <button
@@ -76,7 +76,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
-        <Moon size={15} aria-hidden="true" />
+        <Moon size={15} className="max-[700px]:h-3.5 max-[700px]:w-3.5" aria-hidden="true" />
         <span>Dark</span>
       </button>
     </div>
