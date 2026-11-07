@@ -7,7 +7,7 @@ Thungatha consumes the published Scout vacancy export. Scout owns extraction, pu
 Set these server-only environment variables:
 
 - `SCOUT_API_BASE_URL`: Scout API base URL, including `/api/v1` (for local development: `http://localhost:8000/api/v1`).
-- `SCOUT_EXPORT_API_KEY`: value configured in Scout as `SCOUT_EXPORT_API_KEY`.
+- `SCOUT_EXPORT_API_KEY`: optional when Scout is running with `APP_ENV=development` or `APP_ENV=test` and no export key is configured. If Scout has a key configured (including production), set the matching value here; Thungatha sends it as `X-Scout-Export-Key`.
 - `SCOUT_LOCATION_SCOPE`: `cape_town`, `western_cape`, `south_africa` or `all`.
 - `SUPABASE_SECRET_KEY`: Thungatha's server-only Supabase secret key.
 - `SCOUT_SYNC_SECRET`: a separate secret used only to protect manual sync requests.
