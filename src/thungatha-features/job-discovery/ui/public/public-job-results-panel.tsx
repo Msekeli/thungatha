@@ -12,16 +12,12 @@ import { PublicJobSortSelect } from "./public-job-sort-select";
 
 type ResultsData = Omit<JobDiscoveryWorkspaceProps, "loadMoreRef">;
 
-function postedAge(data: ResultsData, id: string) {
+function postedAgeDays(data: ResultsData, id: string) {
   const job = data.jobs.find((item) => item.id === id) ?? null;
   const published = data.sourceFor(job)?.published_at;
   const timestamp = published ? Date.parse(published) : NaN;
-  if (!Number.isFinite(timestamp)) return { label: "Date unknown", days: null };
-  const days = Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
-  return {
-    label: days === 0 ? "Today" : days === 1 ? "1 day ago" : `${days} days ago`,
-    days,
-  };
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
 }
 
 export function PublicJobResultsPanel({
@@ -76,8 +72,7 @@ export function PublicJobResultsPanel({
           <JobList
             jobs={data.jobs}
             variant="public"
-            postedAgeDays={(job) => postedAge(data, job.id).days}
-            postedLabel={(job) => postedAge(data, job.id).label}
+            postedAgeDays={(job) => postedAgeDays(data, job.id)}
             onSelect={(job) =>
               onSelect(data.jobs.find((item) => item.id === job.id)!)
             }
