@@ -1,5 +1,7 @@
 "use client";
 
+import { JOB_TYPE_OPTIONS } from "./job-type-options";
+
 type Props = {
   activeKey: string;
   prominent?: boolean;
@@ -13,14 +15,13 @@ export function JobCategoryChips({
   className = "",
   onSelect,
 }: Props) {
-  const categories = [{ key: "all", label: "All opportunities" }];
   return (
     <div
       role="group"
       aria-label="Opportunity categories"
       className={`flex flex-wrap items-center gap-2.5 ${prominent ? "justify-center" : ""} ${className}`}
     >
-      {categories.map((item) => {
+      {JOB_TYPE_OPTIONS.map((item) => {
         const active = activeKey === item.key;
         return (
           <button
