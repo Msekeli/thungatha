@@ -102,7 +102,10 @@ export function ProfileForm({
                 : fields.workExperience,
               education: draft.education.length
                 ? draft.education
-                : fields.education,
+                : fields.education.map((item) => ({
+                    ...item,
+                    isCurrent: false,
+                  })),
             });
             setMode("edit");
           }}
