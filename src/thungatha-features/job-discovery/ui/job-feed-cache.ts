@@ -9,8 +9,6 @@ export function canReusePublicJobFeed(
   filters: {
     query: string;
     location: string;
-    workMode: string;
-    employmentType: string;
     publishedWithin: string;
   },
 ) {
@@ -19,8 +17,6 @@ export function canReusePublicJobFeed(
     category === "new" &&
     !filters.query.trim() &&
     !filters.location.trim() &&
-    !filters.workMode.trim() &&
-    !filters.employmentType.trim() &&
     filters.publishedWithin === "any"
   );
 }
@@ -37,8 +33,7 @@ export async function getReusablePublicFeed(
       typeof cached.savedAt !== "number" ||
       Date.now() - cached.savedAt >= 5 * 60 * 1000 ||
       !Array.isArray(cached.feed.jobs)
-    )
-      return null;
+    ) return null;
 
     const response = await fetch("/api/jobs?state=all&statesOnly=1", {
       headers: { Accept: "application/json" },
@@ -59,12 +54,9 @@ export async function getReusablePublicFeed(
         signal,
       );
       dismissedCount = dismissedFeed.total;
-      if (
-        cached.feed.jobs.some((job) =>
-          dismissed.some((item) => item.job_id === job.id),
-        )
-      )
+      if (cached.feed.jobs.some((job) => dismissed.some((item) => item.job_id === job.id))) {
         return null;
+      }
     }
 
     const stateById = new Map(states.map((item) => [item.job_id, item.state]));
