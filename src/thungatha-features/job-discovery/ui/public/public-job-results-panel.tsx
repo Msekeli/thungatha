@@ -14,8 +14,7 @@ type ResultsData = Omit<JobDiscoveryWorkspaceProps, "loadMoreRef">;
 
 function postedAge(data: ResultsData, id: string) {
   const job = data.jobs.find((item) => item.id === id) ?? null;
-  const published = data.sourceFor(job)?.published_at;
-  const timestamp = published ? Date.parse(published) : NaN;
+  const timestamp = job?.published_at ? Date.parse(job.published_at) : NaN;
   if (!Number.isFinite(timestamp)) return { label: "Date unknown", days: null };
   const days = Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
   return {

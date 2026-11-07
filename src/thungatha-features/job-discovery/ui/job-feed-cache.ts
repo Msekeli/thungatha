@@ -1,4 +1,4 @@
-import type { Feed } from "./job-discovery-utils";
+import { isValidFeed, type Feed } from "./job-discovery-utils";
 import { requestJobFeed } from "./request-job-feed";
 
 type CachedFeed = { savedAt?: number; feed?: Feed };
@@ -9,8 +9,6 @@ export function canReusePublicJobFeed(
   filters: {
     query: string;
     location: string;
-    workMode: string;
-    employmentType: string;
     publishedWithin: string;
   },
 ) {
@@ -19,8 +17,6 @@ export function canReusePublicJobFeed(
     category === "new" &&
     !filters.query.trim() &&
     !filters.location.trim() &&
-    !filters.workMode.trim() &&
-    !filters.employmentType.trim() &&
     filters.publishedWithin === "any"
   );
 }
@@ -30,13 +26,13 @@ export async function getReusablePublicFeed(
 ): Promise<Feed | null> {
   try {
     const cached = JSON.parse(
-      sessionStorage.getItem("thungatha-public-job-feed-v2") ?? "null",
+      sessionStorage.getItem("thungatha-public-job-feed-v3") ?? "null",
     ) as CachedFeed | null;
     if (
       !cached?.feed ||
       typeof cached.savedAt !== "number" ||
       Date.now() - cached.savedAt >= 5 * 60 * 1000 ||
-      !Array.isArray(cached.feed.jobs)
+      !isValidFeed(cached.feed)
     )
       return null;
 
@@ -63,8 +59,9 @@ export async function getReusablePublicFeed(
         cached.feed.jobs.some((job) =>
           dismissed.some((item) => item.job_id === job.id),
         )
-      )
+      ) {
         return null;
+      }
     }
 
     const stateById = new Map(states.map((item) => [item.job_id, item.state]));

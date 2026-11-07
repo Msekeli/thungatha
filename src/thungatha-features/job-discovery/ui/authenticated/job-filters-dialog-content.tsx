@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { JobLocationSelect } from "../shared/job-location-select";
-import { EMPLOYMENT_TYPE_OPTIONS } from "../shared/job-filter-options";
-import { JobFilterFields } from "../shared/job-filter-fields";
+import { PUBLISHED_WITHIN_OPTIONS } from "../shared/job-filter-options";
 import type { JobFiltersDraft } from "./job-filters-dialog";
 
 type Props = {
@@ -14,18 +13,6 @@ type Props = {
   onReset: () => void;
   onApply: () => void;
 };
-
-function canonicalEmploymentType(value: string) {
-  if (!value) return "all";
-  const normalized = value.toLowerCase().replace(/[ -]+/g, "_");
-  if (normalized.includes("graduate")) return "graduate";
-  if (normalized.includes("learnership")) return "learnership";
-  if (normalized.includes("intern")) return "internship";
-  return (
-    EMPLOYMENT_TYPE_OPTIONS.find((option) => option.value === normalized)
-      ?.value ?? normalized
-  );
-}
 
 export function JobFiltersDialogContent({
   draft,
@@ -55,16 +42,20 @@ export function JobFiltersDialogContent({
           ariaLabel="Filter by location"
         />
       </div>
-      <JobFilterFields
-        workMode={draft.workMode}
-        onWorkModeChange={(value) => onChange("workMode", String(value))}
-        employmentType={canonicalEmploymentType(draft.employmentType)}
-        onEmploymentTypeChange={(value) =>
-          onChange("employmentType", value === "all" ? "" : value)
-        }
-        publishedWithin={draft.publishedWithin}
-        onPublishedWithinChange={(value) => onChange("publishedWithin", value)}
-      />
+      <label className="flex flex-col gap-1 text-sm font-medium">
+        Published within
+        <select
+          value={draft.publishedWithin}
+          onChange={(event) => onChange("publishedWithin", event.target.value)}
+          className="min-h-10 rounded-lg border border-line bg-panel px-3 text-sm text-fg"
+        >
+          {PUBLISHED_WITHIN_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <footer className="mt-3 flex justify-between gap-2 border-t border-line pt-3">
         <Button type="button" variant="secondary" onClick={onReset}>
           Reset

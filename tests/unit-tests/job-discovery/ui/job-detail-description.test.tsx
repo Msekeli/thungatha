@@ -3,30 +3,24 @@ import { describe, expect, it } from "vitest";
 import { JobDetailDescription } from "@/thungatha-features/job-discovery/ui/shared/job-detail-description";
 
 describe("JobDetailDescription", () => {
-  it("labels provider snippets as previews and preserves all supplied text", () => {
-    const description = `${"A complete source paragraph.\n".repeat(40)}Final source line.`;
+  it("renders Scout's sanitised HTML structure without flattening it", () => {
+    const description =
+      "<h2>About the role</h2><p>Build and support web services with the engineering team.</p><ul><li>Use React.</li><li>Build APIs.</li></ul>";
     const { container } = render(
-      <JobDetailDescription
-        description={description}
-        descriptionIsPreview
-      />,
+      <JobDetailDescription description={description} />,
     );
 
-    expect(screen.getAllByText("Description preview")).toHaveLength(2);
-    expect(
-      screen.getAllByText(/This source provides a preview/),
-    ).toHaveLength(2);
-    const renderedDescriptions = container.querySelectorAll(".whitespace-pre-wrap");
-    expect([...renderedDescriptions].map((node) => node.textContent)).toEqual([
-      description,
-      description,
-    ]);
+    expect(screen.getAllByRole("heading", { name: "About the role" })).toHaveLength(2);
+    expect(container.querySelectorAll(".th-job-description-html h2")).toHaveLength(2);
+    expect(container.querySelectorAll(".th-job-description-html ul")).toHaveLength(2);
+    expect(container.querySelectorAll(".th-job-description-html li")).toHaveLength(4);
+    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(2);
   });
 
-  it("keeps the missing-description fallback when the source supplies no text", () => {
+  it("shows a clear fallback when no description is available", () => {
     render(<JobDetailDescription description={null} />);
     expect(
-      screen.getAllByText(/A full job description has not been supplied/),
+      screen.getAllByText("The employer has not supplied a job description."),
     ).toHaveLength(2);
   });
 });
