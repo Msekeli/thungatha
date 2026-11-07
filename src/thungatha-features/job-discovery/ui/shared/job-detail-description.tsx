@@ -7,8 +7,8 @@ type Props = {
 
 export function JobDetailDescription({ description, largeText = false }: Props) {
   return (
-    <section className="th-job-detail-description min-w-0 text-fg">
-      <h3 className="mb-3 text-base font-semibold text-fg">Job description</h3>
+    <section className="th-job-description-panel min-w-0 rounded-lg border border-line bg-panel p-4 text-fg sm:p-5">
+      <h3 className="mb-3 text-base font-bold text-fg">Job description</h3>
       <JobDescriptionContent description={description} largeText={largeText} />
     </section>
   );
