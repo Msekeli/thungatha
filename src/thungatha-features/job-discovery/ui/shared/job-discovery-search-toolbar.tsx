@@ -17,10 +17,10 @@ export function JobDiscoverySearchToolbar({
   const c = controller;
   return (
     <div
-      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-4 text-center text-public-hero-text" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:w-full max-[900px]:max-w-none`}
+      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-3 text-center text-public-hero-text" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:w-full max-[900px]:max-w-none`}
     >
       {hasLeadingColumn && (
-        <div className="mx-auto mb-2 max-w-none">
+        <div className="mx-auto mb-1 max-w-none">
           <h1 className="text-2xl font-bold tracking-tight">
             Find your next <span className="text-accent-on-navy">opportunity</span>
           </h1>
