@@ -5,7 +5,7 @@ import { PublicJobDiscoveryPromoSidebar } from "./public-job-discovery-promo-sid
 export function PublicJobDiscoveryPage({ configured }: { configured: boolean }) {
   return (
     <PublicDiscoveryShell configured={configured}>
-      <main className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-gradient-to-b from-public-page-start to-public-page-end pb-0 pt-0 md:gap-0">
+      <main className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-page-gradient pb-0 pt-0 md:gap-0">
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <JobsDiscovery
             configured={configured}
