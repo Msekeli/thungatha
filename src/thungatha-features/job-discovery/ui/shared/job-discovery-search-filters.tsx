@@ -42,7 +42,7 @@ export function JobDiscoverySearchFilters(props: Props) {
           <span>Filters</span>
         </Button>
       </div>
-      <div className={`mt-3 min-w-0 ${props.isAuthenticated ? "max-[700px]:hidden" : "block"}`}>
+      <div className="mt-3 min-w-0">
         <JobDiscoveryCategoryControls
           prominent={props.prominent}
           selectedType={props.category}
