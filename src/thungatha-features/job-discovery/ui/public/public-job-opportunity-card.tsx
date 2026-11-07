@@ -1,6 +1,6 @@
 import { ArrowUpRight, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
-import type { JobCardData } from "./job-opportunity-card";
+import type { JobCardData } from "../shared/job-opportunity-card";
 
 function ageTone(days: number | null) {
   if (days === null) return "bg-tag text-fg-muted";
