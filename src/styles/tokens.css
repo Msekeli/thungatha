@@ -52,7 +52,7 @@
   --th-logo-border: #d5e1f0;
   --th-shadow-card: 0 16px 34px -12px rgba(2, 8, 23, 0.95);
   --th-shadow-card-hover: 0 20px 40px -12px rgba(2, 8, 23, 1), 0 0 22px -6px rgba(56, 189, 248, 0.3);
-  --th-page-gradient: var(--th-page);
+  --th-page-gradient: linear-gradient(180deg, #050a14 0%, #0b1a30 100%);
   --th-hero-from: #070d18;
   --th-hero-to: #0b1a30;
   --th-on-hero: #f1f6ff;
@@ -200,6 +200,7 @@
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-page: var(--th-page);
+  --background-image-page-gradient: var(--th-page-gradient);
   --color-detail: var(--th-detail);
   --color-nav: var(--th-nav);
   --color-panel: var(--th-panel);
