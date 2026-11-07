@@ -54,7 +54,7 @@ Configure the server-only variables in `.env.local`:
 - `SUPABASE_SECRET_KEY`: server-only Supabase key for persisting Scout vacancies.
 - `SCOUT_SYNC_SECRET`: separate secret protecting the manual sync endpoint.
 
-The public job feed refreshes from Scout when the Scout connection variables are configured. A successful refresh is throttled for 60 seconds per running server process. The integration follows all pages from `GET /vacancies/export` and upserts by `scout_vacancy_id`.
+The server-side sync retrieves every page from Scout using `GET /vacancies/export`, then sends each page using `POST /api/internal/scout/vacancies/import`. Thungatha's protected import endpoint validates, maps and persists the records in its own Supabase `public.jobs` table, upserting by `scout_vacancy_id`. The sync client does not write to Supabase directly. Feed-triggered refreshes are throttled for 60 seconds per running server process.
 
 To force a refresh during local development:
 
