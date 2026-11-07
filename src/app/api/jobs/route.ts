@@ -35,7 +35,7 @@ export async function GET(request: Request) {
   try {
     if (process.env.SCOUT_API_BASE_URL && process.env.SCOUT_EXPORT_API_KEY) {
       try {
-        await syncScoutVacanciesIfDue();
+        await syncScoutVacanciesIfDue(new URL(request.url).origin);
       } catch (syncError) {
         console.error("[Scout vacancy sync] Failed before feed read:", {
           errorName: syncError instanceof Error ? syncError.name : "unknown",
