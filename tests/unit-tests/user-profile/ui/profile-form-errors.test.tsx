@@ -37,7 +37,7 @@ describe("ProfileForm error recovery", () => {
 
     const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Save draft" })[0]);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
   });
@@ -53,7 +53,7 @@ describe("ProfileForm error recovery", () => {
 
     const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Save draft" })[0]);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
   });
