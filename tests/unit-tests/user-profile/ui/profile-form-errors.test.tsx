@@ -35,9 +35,9 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
-    const nameInput = await screen.findByLabelText("Display name");
+    const nameInput = await screen.findByLabelText("Full name");
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save profile" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
   });
@@ -51,9 +51,9 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
-    const nameInput = await screen.findByLabelText("Display name");
+    const nameInput = await screen.findByLabelText("Full name");
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save profile" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
   });
