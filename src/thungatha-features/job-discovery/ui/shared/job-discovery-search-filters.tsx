@@ -12,12 +12,8 @@ type Props = {
   onQueryChange: (value: string) => void;
   onOpenFilters: (anchorEl: HTMLElement) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
-  categories: { key: string; label: string; count: number | null }[];
   category: string;
   onCategoryChange: (key: string, label: string) => void;
-  resultCount: number;
-  sortOrder: string;
-  onSortOrderChange: (value: string) => void;
   isAuthenticated: boolean;
 };
 
@@ -26,9 +22,7 @@ export function JobDiscoverySearchFilters(props: Props) {
     <header
       className={`mx-auto w-full ${props.prominent ? "mb-0 max-w-none pt-3" : "mb-4 max-w-5xl"} max-[900px]:mx-0 max-[900px]:mb-3 max-[900px]:max-w-none max-[700px]:mt-4`}
     >
-      <div
-        className={`mx-auto flex w-full ${props.prominent ? "max-w-4xl" : "max-w-4xl"} flex-row items-center gap-2 max-[900px]:max-w-none`}
-      >
+      <div className={`mx-auto flex w-full ${props.prominent ? "max-w-4xl" : "max-w-4xl"} flex-row items-center gap-2 max-[900px]:max-w-none`}>
         <div className="min-w-0 flex-1">
           <JobSearchBar
             prominent={props.prominent}
@@ -38,21 +32,17 @@ export function JobDiscoverySearchFilters(props: Props) {
             placeholder="Job title, skill, or company"
           />
         </div>
-        <div className="flex shrink-0">
-          <Button
-            variant="primary"
-            className="h-11 shrink-0 gap-2 rounded-xl border-0 bg-public-action-bg px-3 text-public-action-fg hover:brightness-110"
-            aria-label="Open filters"
-            onClick={(event) => props.onOpenFilters(event.currentTarget)}
-          >
-            <SlidersHorizontal size={16} aria-hidden="true" />
-            <span>Filters</span>
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          className="h-11 shrink-0 gap-2 rounded-xl border-0 bg-public-action-bg px-3 text-public-action-fg hover:brightness-110"
+          aria-label="Open filters"
+          onClick={(event) => props.onOpenFilters(event.currentTarget)}
+        >
+          <SlidersHorizontal size={16} aria-hidden="true" />
+          <span>Filters</span>
+        </Button>
       </div>
-      <div
-        className={`mt-3 min-w-0 ${props.isAuthenticated ? "max-[700px]:hidden" : "block"}`}
-      >
+      <div className={`mt-3 min-w-0 ${props.isAuthenticated ? "max-[700px]:hidden" : "block"}`}>
         <JobDiscoveryCategoryControls
           prominent={props.prominent}
           selectedType={props.category}
