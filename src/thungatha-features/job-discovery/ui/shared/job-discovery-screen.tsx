@@ -28,7 +28,7 @@ export function JobDiscoveryScreen({
   return (
     <>
       <JobDiscoverySearchToolbar state={s} controller={c} hasLeadingColumn={Boolean(workspaceLeadingColumn)} />
-      <div className={`min-h-0 flex-1 ${workspaceLeadingColumn ? "px-8 pb-7 pt-5 max-[900px]:px-0 max-[900px]:pb-4 max-[900px]:pt-0" : ""} max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col`}>
+      <div className={`min-h-0 flex-1 ${workspaceLeadingColumn ? "px-8 pb-7 pt-3 max-[900px]:px-0 max-[900px]:pb-4 max-[900px]:pt-0" : ""} max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col`}>
         <JobDiscoveryWorkspace
           jobs={c.visibleJobs} feed={s.feed} loading={s.loading} error={s.error}
           hasFilters={c.hasFilters} mobileDetail={s.mobileDetail} selectedId={s.selectedId}
