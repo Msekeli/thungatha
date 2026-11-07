@@ -79,7 +79,6 @@ describe("profile API persistence and validation", () => {
     const payload = {
       personalDetails: { fullName: "Lerato", email: "l@example.com", country: "South Africa" },
       skills: ["React"],
-      confirmedAt: "2026-10-24T08:00:00.000Z",
     };
     save.mockResolvedValue({
       data: { display_name: "Lerato", country: "South Africa", profile_version: 2, skills: ["React"] },
