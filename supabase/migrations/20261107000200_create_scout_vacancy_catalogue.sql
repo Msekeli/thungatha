@@ -7,6 +7,8 @@ alter table public.jobs
   add column if not exists published_at timestamptz,
   add column if not exists source_updated_at timestamptz;
 
+alter table public.jobs alter column location_text drop not null;
+
 create unique index if not exists jobs_scout_vacancy_id_unique
   on public.jobs (scout_vacancy_id)
   where scout_vacancy_id is not null;
@@ -19,8 +21,6 @@ alter table public.jobs
         char_length(trim(title)) >= 2
         and employer_name is not null
         and char_length(trim(employer_name)) >= 2
-        and location_text is not null
-        and char_length(trim(location_text)) >= 2
         and description is not null
         and char_length(trim(regexp_replace(description, '<[^>]*>', ' ', 'g'))) >= 20
         and application_url is not null
