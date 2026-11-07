@@ -15,6 +15,7 @@ type Props = {
   categories: { key: string; label: string; count: number | null }[];
   category: string;
   onCategoryChange: (key: string, label: string) => void;
+  resultCount: number;
   sortOrder: string;
   onSortOrderChange: (value: string) => void;
   isAuthenticated: boolean;
