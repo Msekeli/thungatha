@@ -72,6 +72,18 @@ create policy "Public users can read Scout vacancies"
   to anon
   using (scout_vacancy_id is not null);
 
+drop policy if exists "Authenticated users can read jobs"
+  on public.jobs;
+
+create policy "Authenticated users can read Scout vacancies"
+  on public.jobs
+  for select
+  to authenticated
+  using (
+    scout_vacancy_id is not null
+    and (select auth.jwt() ->> 'sub') is not null
+  );
+
 create or replace view public.job_discovery_feed
 with (security_invoker = true)
 as
