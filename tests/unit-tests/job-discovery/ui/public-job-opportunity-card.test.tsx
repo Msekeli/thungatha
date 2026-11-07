@@ -43,7 +43,7 @@ describe("PublicJobOpportunityCard job age", () => {
     expect(screen.getByText("4 days ago").className).not.toContain("text-success");
   });
 
-  it("does not show an age indicator when the publication date is unknown", () => {
+  it("shows Date unknown in neutral styling when the publication date is missing", () => {
     render(
       <PublicJobOpportunityCard
         job={job}
