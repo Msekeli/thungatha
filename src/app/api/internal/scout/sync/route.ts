@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import { syncScoutVacanciesNow } from "@/thungatha-features/job-discovery/server/scout-export-client";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 function isAuthorised(request: Request) {
   const expectedSecret = process.env.SCOUT_SYNC_SECRET;
