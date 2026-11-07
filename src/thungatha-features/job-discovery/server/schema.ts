@@ -25,7 +25,8 @@ function hasMeaningfulDescription(value: string) {
 
 /**
  * Exact Scout-to-Thungatha vacancy contract.
- * Description HTML is already sanitised by Scout and is stored unchanged.
+ * Scout sanitises description HTML before sending it; Thungatha stores the
+ * original sanitised string without trimming or rewriting its markup.
  */
 export const scoutVacancySchema = z
   .object({
@@ -34,7 +35,7 @@ export const scoutVacancySchema = z
     companyName: z.string().trim().min(2).max(300),
     companyLogoUrl: optionalHttpUrl,
     location: z.string().trim().min(2).max(500),
-    description: z.string().trim().min(1).refine(
+    description: z.string().min(1).refine(
       hasMeaningfulDescription,
       "Description must contain meaningful job information.",
     ),
