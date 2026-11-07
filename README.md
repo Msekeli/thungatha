@@ -24,9 +24,11 @@ These capabilities are delivered incrementally through the project's milestone p
 
 ## Architecture Overview
 
-Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/features/`; generic shared UI stays under `src/components/`; and existing shared helpers/infrastructure remain under `src/lib/` unless a concrete, reviewed refactor warrants moving them. The agreed target is documented in [`folder-structure.txt`](folder-structure.txt) and [`Project Documentation/ARCHITECTURE.md`](<Project Documentation/ARCHITECTURE.md>). This target is being adopted incrementally; it does not imply all files have already moved.
+Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/thungatha-features/`; generic shared UI stays under `src/components/`; and shared helpers/infrastructure remain under `src/lib/`.
 
-For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. We will extract only code that is genuinely shared and preserve existing behavior and API contracts. Job Tracking is authenticated; CV Studio can expose public introductory content while authoring remains authenticated. Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
+For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. Thungatha receives approved vacancy records from the separate **Thungatha Scout** extraction system. Scout owns employer-source retrieval, vacancy validation and sanitisation of employer-supplied description HTML. Thungatha owns the authenticated receiving endpoint, persistence, job discovery, job details, saved/dismissed state and application tracking. Thungatha does not run independent job-board or ATS provider adapters.
+
+Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
 
 ## Getting Started
 
@@ -40,22 +42,19 @@ npm run dev
 
 Configure the required environment variables in `.env.local` before using authenticated features. If `.env.local` already exists, preserve it and add only missing variables from `.env.example`. Never commit secrets.
 
-### Job ingestion
+## Scout vacancy integration
 
-The job catalogue is populated by a protected server-side runner; visiting the feed does not trigger provider calls. Configure at least one provider (Adzuna or Jooble), `NEXT_PUBLIC_SUPABASE_URL`, and the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Also set `INGESTION_CRON_SECRET` to a long random secret. Do not expose the Supabase secret key to the browser or commit it.
+The job catalogue is populated by **Thungatha Scout** through the protected receiver:
 
-With the app running locally, trigger one ingestion run from a trusted terminal:
+`POST /api/internal/scout/vacancies`
 
-```bash
-curl -X POST http://localhost:3000/api/internal/jobs/ingest \
-  -H "Authorization: Bearer $INGESTION_CRON_SECRET"
-```
+Configure `SCOUT_INGESTION_SECRET` in Thungatha and the matching secret in Scout. The receiver requires an `Authorization: Bearer` header and a JSON array containing up to 100 vacancy records. Each record must contain exactly the nine fields documented in [the Scout integration contract](docs/scout-integration-contract.md). The receiver rejects additional payload fields, validates required values and upserts by `scoutVacancyId`.
 
-The endpoint returns per-provider received/inserted/updated/skipped counts. HTTP 207 indicates that at least one provider reported a failure; inspect the response before treating the run as successful. A missing server key or missing provider configuration returns HTTP 503. For production, schedule this endpoint using a server-side scheduler and store the same secret in its protected configuration.
+Scout remains responsible for retrieving and sanitising the original employer description. Thungatha stores that sanitised HTML string unchanged and renders its permitted structure. A missing company logo or employer publication/update date is accepted as `null`; Thungatha does not substitute its collection or database timestamp for an unknown publication date.
 
-See [Local Development](#local-development) below for the database and verification commands.
+The Supabase service key is server-only and is used only by the receiving endpoint. It must never be exposed to the browser.
 
-### Local Development (using the cloud Supabase project)
+## Local Development (using the cloud Supabase project)
 
 Thungatha uses the configured cloud Supabase project for this workflow; you do not need to start a local Supabase stack or Docker.
 
@@ -76,7 +75,7 @@ Thungatha uses the configured cloud Supabase project for this workflow; you do n
    npx supabase db push --dry-run
    ```
 
-   Confirm the preview targets the intended project and includes the new `20261017000100_job_application_activity.sql` migration. If it lists unrelated pending migrations, review them before proceeding. Then apply the reviewed pending migrations:
+   Confirm the preview targets the intended project and includes `20261107000100_switch_to_scout_vacancies.sql`. Review any other pending migrations before applying:
 
    ```bash
    npx supabase db push
@@ -91,13 +90,13 @@ Thungatha uses the configured cloud Supabase project for this workflow; you do n
    npm run build
    ```
 
-Open [http://localhost:3000](http://localhost:3000), sign in through Clerk, and test with a job that has an active application URL. The activity API uses the signed-in user's Clerk token and Supabase RLS; do not substitute a service-role key for normal user requests.
+Open [http://localhost:3000](http://localhost:3000), sign in through Clerk, and test discovery, saving, dismissing and application tracking with Scout vacancies. The activity API uses the signed-in user's Clerk token and Supabase RLS; do not substitute a service-role key for normal user requests.
 
 If the migration preview or application fails, stop and inspect the error rather than manually changing the hosted schema.
 
 ## Project Status
 
-**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. Known job-source access and usage limitations remain documented in the M1 milestone record; this does not imply unrestricted production approval for every provider.
+**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. The Scout receiving contract is being implemented separately on the feature branch.
 
 Development continues with M2 — Profile and CV Import, followed by job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone status and acceptance evidence are tracked in IMPLEMENTATION-PLAN.md and the relevant document under milestones/.
 
@@ -106,8 +105,8 @@ Development continues with M2 — Profile and CV Import, followed by job-fit ana
 - **[Folder Structure](folder-structure.txt):** Agreed target structure and incremental migration boundaries.
 - **[Product Specification](<Project Documentation/PRODUCT-SPECIFICATION.md>):** Authoritative product requirements, workflows, and rules.
 - **[Architecture](<Project Documentation/ARCHITECTURE.md>):** Application structure, module boundaries, request flows, authentication, and data access.
+- **[Scout Integration Contract](docs/scout-integration-contract.md):** Exact payload, validation rules, authentication and receiving endpoint.
 - **[Folder Naming and API Route Map](<Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md>):** Naming conventions, current API inventory, and URL-preserving route organisation.
-- **[Public Job Discovery Plan](<Project Documentation/PUBLIC-JOB-DISCOVERY-IMPLEMENTATION-PLAN.md>):** Existing public discovery implementation scope and verification record.
 - **[Technical Decisions](DECISIONS.md):** Confirmed decisions, provisional choices, and unresolved questions.
 - **[Implementation Plan](IMPLEMENTATION-PLAN.md):** Milestones, checkpoints, acceptance criteria, and progress.
 - **[Agent Instructions](AGENTS.md):** Development rules and guidance for AI coding assistants.
