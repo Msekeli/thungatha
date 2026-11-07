@@ -19,25 +19,19 @@ const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
 const client = vi.mocked(createAuthenticatedSupabaseClient);
 const jobId = "123e4567-e89b-42d3-a456-426614174000";
+const context = { params: Promise.resolve({ id: jobId }) };
 
 function query(result: unknown) {
-  // The Supabase fluent query builder is mocked only to exercise endpoint contracts.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
-  for (const method of ["select", "eq", "upsert"])
+  for (const method of ["select", "eq", "not", "upsert"])
     builder[method] = vi.fn(() => builder);
   builder.maybeSingle = vi.fn(async () => result);
   builder.single = vi.fn(async () => result);
-  builder.then = (
-    resolve: (value: unknown) => unknown,
-    reject: (reason: unknown) => unknown,
-  ) => Promise.resolve(result).then(resolve, reject);
   return builder;
 }
 
-const context = { params: Promise.resolve({ id: jobId }) };
-
-describe("/api/jobs/[id]/activity", () => {
+describe("Scout vacancy application activity", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     configured.mockReturnValue(true);
@@ -46,32 +40,26 @@ describe("/api/jobs/[id]/activity", () => {
 
   it("requires an authenticated identity", async () => {
     identity.mockResolvedValue(null);
-    const response = await GET(
-      new Request(`http://localhost/api/jobs/${jobId}/activity`),
-      context,
-    );
+    const response = await GET(new Request("http://localhost"), context);
     expect(response.status).toBe(401);
     expect(client).not.toHaveBeenCalled();
   });
 
-  it("returns only the current user's activity for a job", async () => {
+  it("returns only the current user's activity for a vacancy", async () => {
     const activityQuery = query({
       data: {
-        application_link_opened_at: "2026-10-17T10:00:00Z",
+        application_link_opened_at: "2026-11-07T10:00:00Z",
         applied_at: null,
       },
       error: null,
     });
     const from = vi.fn().mockReturnValue(activityQuery);
     client.mockResolvedValue({ from } as never);
-    const response = await GET(
-      new Request(`http://localhost/api/jobs/${jobId}/activity`),
-      context,
-    );
+    const response = await GET(new Request("http://localhost"), context);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       activity: {
-        application_link_opened_at: "2026-10-17T10:00:00Z",
+        application_link_opened_at: "2026-11-07T10:00:00Z",
         applied_at: null,
       },
     });
@@ -80,47 +68,36 @@ describe("/api/jobs/[id]/activity", () => {
     expect(activityQuery.eq).toHaveBeenCalledWith("job_id", jobId);
   });
 
-  it("records an application-link visit without marking the job applied", async () => {
-    const jobQuery = query({ data: { id: jobId }, error: null });
-    const sourceQuery = query({
-      data: [
-        {
-          application_url: "https://careers.example.test/apply",
-          availability_status: "active",
-        },
-      ],
+  it("records an application-page visit from the Scout application URL", async () => {
+    const vacancyQuery = query({
+      data: { id: jobId, application_url: "https://careers.example.test/apply" },
       error: null,
     });
     const existingQuery = query({ data: null, error: null });
     const writeQuery = query({
       data: {
-        application_link_opened_at: "2026-10-17T10:00:00Z",
+        application_link_opened_at: "2026-11-07T10:00:00Z",
         applied_at: null,
       },
       error: null,
     });
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(jobQuery)
-      .mockReturnValueOnce(sourceQuery)
+    const from = vi.fn()
+      .mockReturnValueOnce(vacancyQuery)
       .mockReturnValueOnce(existingQuery)
       .mockReturnValueOnce(writeQuery);
     client.mockResolvedValue({ from } as never);
+
     const response = await POST(
-      new Request(`http://localhost/api/jobs/${jobId}/activity`, {
+      new Request("http://localhost", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "opened_application" }),
       }),
       context,
     );
+
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      activity: {
-        application_link_opened_at: "2026-10-17T10:00:00Z",
-        applied_at: null,
-      },
-    });
+    expect(vacancyQuery.not).toHaveBeenCalledWith("scout_vacancy_id", "is", null);
     expect(writeQuery.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: "user_alice",
@@ -132,86 +109,50 @@ describe("/api/jobs/[id]/activity", () => {
     );
   });
 
-  it("records an application visit when only the source listing URL is available", async () => {
-    const jobQuery = query({ data: { id: jobId }, error: null });
-    const sourceQuery = query({
-      data: [
-        {
-          application_url: null,
-          source_url: "https://jobs.example.test/role",
-          availability_status: "active",
-        },
-      ],
-      error: null,
-    });
-    const existingQuery = query({ data: null, error: null });
-    const writeQuery = query({
-      data: {
-        application_link_opened_at: "2026-10-17T10:00:00Z",
-        applied_at: null,
-      },
-      error: null,
-    });
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(jobQuery)
-      .mockReturnValueOnce(sourceQuery)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(writeQuery);
+  it("does not record an application visit without a direct application URL", async () => {
+    const vacancyQuery = query({ data: { id: jobId, application_url: null }, error: null });
+    const from = vi.fn().mockReturnValue(vacancyQuery);
     client.mockResolvedValue({ from } as never);
+
     const response = await POST(
-      new Request("http://localhost/api/jobs/" + jobId + "/activity", {
+      new Request("http://localhost", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "opened_application" }),
       }),
       context,
     );
-    expect(response.status).toBe(200);
-    expect(sourceQuery.select).toHaveBeenCalledWith(
-      "application_url,source_url,availability_status",
-    );
-    expect(writeQuery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user_id: "user_alice",
-        job_id: jobId,
-        applied_at: null,
-        application_link_opened_at: expect.any(String),
-      }),
-      { onConflict: "user_id,job_id" },
-    );
+
+    expect(response.status).toBe(409);
+    expect(from).toHaveBeenCalledTimes(1);
   });
+
   it("preserves an existing applied timestamp on duplicate confirmation", async () => {
-    const appliedAt = "2026-10-16T08:30:00Z";
-    const jobQuery = query({ data: { id: jobId }, error: null });
+    const appliedAt = "2026-11-06T08:30:00Z";
+    const vacancyQuery = query({ data: { id: jobId, application_url: null }, error: null });
     const existingQuery = query({
-      data: {
-        application_link_opened_at: "2026-10-16T08:00:00Z",
-        applied_at: appliedAt,
-      },
+      data: { application_link_opened_at: "2026-11-06T08:00:00Z", applied_at: appliedAt },
       error: null,
     });
     const writeQuery = query({
-      data: {
-        application_link_opened_at: "2026-10-16T08:00:00Z",
-        applied_at: appliedAt,
-      },
+      data: { application_link_opened_at: "2026-11-06T08:00:00Z", applied_at: appliedAt },
       error: null,
     });
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(jobQuery)
+    const from = vi.fn()
+      .mockReturnValueOnce(vacancyQuery)
       .mockReturnValueOnce(existingQuery)
       .mockReturnValueOnce(writeQuery);
     client.mockResolvedValue({ from } as never);
+
     const response = await POST(
-      new Request(`http://localhost/api/jobs/${jobId}/activity`, {
+      new Request("http://localhost", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "confirm_applied" }),
       }),
       context,
     );
+
     expect(response.status).toBe(200);
     expect(writeQuery.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ applied_at: appliedAt }),
