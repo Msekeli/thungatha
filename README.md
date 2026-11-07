@@ -26,7 +26,7 @@ These capabilities are delivered incrementally through the project's milestone p
 
 Thungatha uses a single-repository modular-monolith architecture with feature-based organization. Next.js routes and HTTP Route Handlers stay under `src/app/`; feature-owned code is organized under `src/thungatha-features/`; generic shared UI stays under `src/components/`; and shared helpers/infrastructure remain under `src/lib/`.
 
-For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. Thungatha receives approved vacancy records from the separate **Thungatha Scout** extraction system. Scout owns employer-source retrieval, vacancy validation and sanitisation of employer-supplied description HTML. Thungatha owns the authenticated receiving endpoint, persistence, job discovery, job details, saved/dismissed state and application tracking. Thungatha does not run independent job-board or ATS provider adapters.
+For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. Thungatha consumes approved vacancy records from the separate **Thungatha Scout** extraction system through Scout's authenticated, paginated GET export API. Scout owns employer-source retrieval, vacancy validation and sanitisation of employer-supplied description HTML. Thungatha owns server-side export consumption, persistence, job discovery, job details, saved/dismissed state and application tracking. Thungatha does not run independent job-board or ATS provider adapters.
 
 Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
 
@@ -44,15 +44,28 @@ Configure the required environment variables in `.env.local` before using authen
 
 ## Scout vacancy integration
 
-The job catalogue is populated by **Thungatha Scout** through the protected receiver:
+Thungatha pulls published vacancies from **Thungatha Scout**. Scout owns the export contract and is not changed to match Thungatha.
 
-`POST /api/internal/scout/vacancies`
+Configure the server-only variables in `.env.local`:
 
-Configure `SCOUT_INGESTION_SECRET` in Thungatha and the matching secret in Scout. The receiver requires an `Authorization: Bearer` header and a JSON array containing up to 100 vacancy records. Each record must contain exactly the nine fields documented in [the Scout integration contract](docs/scout-integration-contract.md). The receiver rejects additional payload fields, validates required values and upserts by `scoutVacancyId`.
+- `SCOUT_API_BASE_URL`: Scout API base URL, including `/api/v1` (local default: `http://localhost:8000/api/v1`).
+- `SCOUT_EXPORT_API_KEY`: must match Scout's configured `SCOUT_EXPORT_API_KEY`; sent as `X-Scout-Export-Key`.
+- `SCOUT_LOCATION_SCOPE`: `cape_town`, `western_cape`, `south_africa` or `all`.
+- `SUPABASE_SECRET_KEY`: server-only Supabase key for persisting Scout vacancies.
+- `SCOUT_SYNC_SECRET`: separate secret protecting the manual sync endpoint.
 
-Scout remains responsible for retrieving and sanitising the original employer description. Thungatha stores that sanitised HTML string unchanged and renders its permitted structure. A missing company logo or employer publication/update date is accepted as `null`; Thungatha does not substitute its collection or database timestamp for an unknown publication date.
+The public job feed refreshes from Scout when the Scout connection variables are configured. A successful refresh is throttled for 60 seconds per running server process. The integration follows all pages from `GET /vacancies/export` and upserts by `scout_vacancy_id`.
 
-The Supabase service key is server-only and is used only by the receiving endpoint. It must never be exposed to the browser.
+To force a refresh during local development:
+
+```bash
+curl -X POST http://localhost:3000/api/internal/scout/sync \
+  -H "Authorization: Bearer $SCOUT_SYNC_SECRET"
+```
+
+Scout's `first_seen_at` is discovery metadata. It is never substituted for `published_at` or `source_updated_at`. Scout sanitises job-description HTML before export; Thungatha stores it unchanged and renders its permitted structure. Missing logos, locations and employer dates remain nullable.
+
+See [Scout integration](docs/scout-integration.md) for the field mapping and operational details. Never expose Scout or Supabase secrets through `NEXT_PUBLIC_*` variables.
 
 ## Local Development (using the cloud Supabase project)
 
@@ -75,7 +88,7 @@ Thungatha uses the configured cloud Supabase project for this workflow; you do n
    npx supabase db push --dry-run
    ```
 
-   Confirm the preview targets the intended project and includes `20261107000100_switch_to_scout_vacancies.sql`. Review any other pending migrations before applying:
+   Confirm the preview targets the intended project and includes the two `20261107000100_remove_legacy_job_ingestion.sql` and `20261107000200_create_scout_vacancy_catalogue.sql` migrations. Review any other pending migrations before applying:
 
    ```bash
    npx supabase db push
@@ -96,7 +109,7 @@ If the migration preview or application fails, stop and inspect the error rather
 
 ## Project Status
 
-**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. The Scout receiving contract is being implemented separately on the feature branch.
+**Milestone 1 — Job Discovery and Job Feed: Accepted, complete, and closed (2026-10-24).** The user has confirmed implementation testing is complete and accepted all nine M1 checkpoints. The Scout export integration is being implemented separately on the feature branch.
 
 Development continues with M2 — Profile and CV Import, followed by job-fit analysis, CV Studio, application tracking, and account/release readiness. Milestone status and acceptance evidence are tracked in IMPLEMENTATION-PLAN.md and the relevant document under milestones/.
 
@@ -105,7 +118,7 @@ Development continues with M2 — Profile and CV Import, followed by job-fit ana
 - **[Folder Structure](folder-structure.txt):** Agreed target structure and incremental migration boundaries.
 - **[Product Specification](<Project Documentation/PRODUCT-SPECIFICATION.md>):** Authoritative product requirements, workflows, and rules.
 - **[Architecture](<Project Documentation/ARCHITECTURE.md>):** Application structure, module boundaries, request flows, authentication, and data access.
-- **[Scout Integration Contract](docs/scout-integration-contract.md):** Exact payload, validation rules, authentication and receiving endpoint.
+- **[Scout Integration](docs/scout-integration.md):** Scout export API, authentication, pagination and Thungatha field mapping.
 - **[Folder Naming and API Route Map](<Project Documentation/FOLDER-NAMING-AND-API-ROUTE-MAP.md>):** Naming conventions, current API inventory, and URL-preserving route organisation.
 - **[Technical Decisions](DECISIONS.md):** Confirmed decisions, provisional choices, and unresolved questions.
 - **[Implementation Plan](IMPLEMENTATION-PLAN.md):** Milestones, checkpoints, acceptance criteria, and progress.
