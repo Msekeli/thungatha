@@ -58,7 +58,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold max-[700px]:h-6 max-[700px]:gap-1 max-[700px]:px-1.5 max-[700px]:text-[11px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm max-[700px]:h-6 ${
           theme === "light"
             ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-workspace-nav-active-bg)] text-[var(--th-accent-on-navy)]"
-            : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
+            : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-workspace-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
         <Sun size={15} className="max-[700px]:h-3.5 max-[700px]:w-3.5" aria-hidden="true" />
@@ -70,9 +70,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         aria-label="Dark theme"
         aria-pressed={theme === "dark"}
         title="Dark theme"
-        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold max-[700px]:h-6 max-[700px]:gap-1 max-[700px]:px-1.5 max-[700px]:text-[11px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
           theme === "dark"
-            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-nav-active-bg)] text-[var(--th-accent-on-navy)]"
+            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-workspace-nav-active-bg)] text-[var(--th-accent-on-navy)]"
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
