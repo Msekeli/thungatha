@@ -14,19 +14,6 @@ export const scoutVacancyRecord = {
   updated_at: "2026-11-07T10:00:00Z",
 };
 
-export const scoutVacancyPayload = {
-  scoutVacancyId: "123e4567-e89b-42d3-a456-426614174000",
-  jobTitle: "Software Engineer",
-  companyName: "Example Technologies",
-  companyLogoUrl: null,
-  location: "Cape Town, South Africa",
-  description:
-    "<h2>About the role</h2>\n<p>Build and maintain software applications with the engineering team.</p>\n<ul><li>Use React and TypeScript.</li></ul>",
-  applicationUrl: "https://careers.example.test/jobs/123",
-  publishedAt: null,
-  updatedAt: null,
-};
-
 export function createQueryMock(result: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
