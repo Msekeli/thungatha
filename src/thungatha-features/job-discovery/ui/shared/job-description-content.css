@@ -16,10 +16,18 @@
     line-height: 1.3;
   }
 
-  .th-job-description-html h1 { font-size: 1.35rem; }
-  .th-job-description-html h2 { font-size: 1.2rem; }
-  .th-job-description-html h3 { font-size: 1.05rem; }
-  .th-job-description-html h4 { font-size: 0.95rem; }
+  .th-job-description-html h1 {
+    font-size: 1.35rem;
+  }
+  .th-job-description-html h2 {
+    font-size: 1.2rem;
+  }
+  .th-job-description-html h3 {
+    font-size: 1.05rem;
+  }
+  .th-job-description-html h4 {
+    font-size: 0.95rem;
+  }
 
   .th-job-description-html p {
     margin: 0.65rem 0;
@@ -31,14 +39,27 @@
     padding-left: 1.5rem;
   }
 
-  .th-job-description-html ul { list-style: disc; }
-  .th-job-description-html ol { list-style: decimal; }
-  .th-job-description-html li { margin: 0.25rem 0; padding-left: 0.15rem; }
+  .th-job-description-html ul {
+    list-style: disc;
+  }
+  .th-job-description-html ol {
+    list-style: decimal;
+  }
+  .th-job-description-html li {
+    margin: 0.25rem 0;
+    padding-left: 0.15rem;
+  }
   .th-job-description-html strong,
-  .th-job-description-html b { font-weight: 700; }
+  .th-job-description-html b {
+    font-weight: 700;
+  }
   .th-job-description-html em,
-  .th-job-description-html i { font-style: italic; }
-  .th-job-description-html u { text-decoration: underline; }
+  .th-job-description-html i {
+    font-style: italic;
+  }
+  .th-job-description-html u {
+    text-decoration: underline;
+  }
 
   .th-job-description-html blockquote {
     margin: 0.85rem 0;
@@ -53,6 +74,11 @@
     text-underline-offset: 2px;
   }
 
-  .th-job-description-html a:hover { text-decoration-thickness: 2px; }
-  .th-job-description-html-large { font-size: 1rem; line-height: 1.8; }
+  .th-job-description-html a:hover {
+    text-decoration-thickness: 2px;
+  }
+  .th-job-description-html-large {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
 }

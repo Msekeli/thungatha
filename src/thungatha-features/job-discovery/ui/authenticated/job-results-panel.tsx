@@ -48,9 +48,13 @@ export function AuthenticatedJobResultsPanel({
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3 max-[700px]:flex-nowrap max-[700px]:gap-2 max-[700px]:pb-2">
         <div className="flex min-w-0 items-center gap-3 text-sm text-[var(--th-fg-muted)] max-[700px]:flex-1 max-[700px]:gap-2 max-[700px]:whitespace-nowrap">
           <span aria-live="polite" className="max-[700px]:hidden">
-            {resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}
+            {resultCount > 0
+              ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities`
+              : "0 opportunities"}
           </span>
-          <span aria-live="polite" className="hidden max-[700px]:inline">{resultCount} jobs</span>
+          <span aria-live="polite" className="hidden max-[700px]:inline">
+            {resultCount} jobs
+          </span>
           {isAuthenticated && category === "dismissed" ? (
             <button
               type="button"
@@ -71,23 +75,44 @@ export function AuthenticatedJobResultsPanel({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2 max-[700px]:gap-1">
-          <ArrowDownWideNarrow size={16} className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden" aria-hidden="true" />
-          <Select.Root value={sortOrder} onValueChange={(value) => value !== null && onSortOrderChange(value)}>
+          <ArrowDownWideNarrow
+            size={16}
+            className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden"
+            aria-hidden="true"
+          />
+          <Select.Root
+            value={sortOrder}
+            onValueChange={(value) =>
+              value !== null && onSortOrderChange(value)
+            }
+          >
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
               className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-fg outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"
             >
               <Select.Value>{selectedSortLabel}</Select.Value>
-              <Select.Icon className="inline-flex text-[var(--th-fg-muted)]"><ChevronDown size={16} aria-hidden="true" /></Select.Icon>
+              <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
+                <ChevronDown size={16} aria-hidden="true" />
+              </Select.Icon>
             </Select.Trigger>
             <Select.Portal>
-              <Select.Positioner className="z-50 outline-none" sideOffset={6} align="end">
+              <Select.Positioner
+                className="z-50 outline-none"
+                sideOffset={6}
+                align="end"
+              >
                 <Select.Popup className="min-w-52 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-1 text-sm text-[var(--th-fg)] shadow-lg outline-none">
                   <Select.List>
                     {sortOptions.map((option) => (
-                      <Select.Item key={option.value} value={option.value} className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50">
+                      <Select.Item
+                        key={option.value}
+                        value={option.value}
+                        className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50"
+                      >
                         <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator><Check size={14} aria-hidden="true" /></Select.ItemIndicator>
+                        <Select.ItemIndicator>
+                          <Check size={14} aria-hidden="true" />
+                        </Select.ItemIndicator>
                       </Select.Item>
                     ))}
                   </Select.List>

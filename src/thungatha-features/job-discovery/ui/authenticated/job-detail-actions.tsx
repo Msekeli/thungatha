@@ -37,7 +37,11 @@ export function JobDetailActions({
       <Button
         className={`${actionClass} th-job-detail-apply-button`}
         disabled={!applicationDestination || disabled}
-        title={applicationUrl ? "Opens the employer's application page" : "No application link is available"}
+        title={
+          applicationUrl
+            ? "Opens the employer's application page"
+            : "No application link is available"
+        }
         data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
       >
@@ -46,11 +50,11 @@ export function JobDetailActions({
       </Button>
       <div className="th-job-detail-secondary-actions">
         <JobDetailProtectedActions
-        configured={configured}
-        job={job}
-        disabled={disabled}
-        onSave={onSave}
-        onDismiss={onDismiss}
+          configured={configured}
+          job={job}
+          disabled={disabled}
+          onSave={onSave}
+          onDismiss={onDismiss}
         />
       </div>
     </div>

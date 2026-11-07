@@ -26,7 +26,9 @@ export async function GET(request: Request) {
   }
 
   const params = new URL(request.url).searchParams;
-  const parsed = jobFeedQuerySchema.safeParse(Object.fromEntries(params.entries()));
+  const parsed = jobFeedQuerySchema.safeParse(
+    Object.fromEntries(params.entries()),
+  );
   if (!parsed.success) return apiError("Invalid job discovery parameters", 400);
 
   const statesOnly = params.get("statesOnly") === "1";
@@ -39,7 +41,8 @@ export async function GET(request: Request) {
       } catch (syncError) {
         console.error("[Scout vacancy sync] Failed before feed read:", {
           errorName: syncError instanceof Error ? syncError.name : "unknown",
-          message: syncError instanceof Error ? syncError.message : "Unknown error",
+          message:
+            syncError instanceof Error ? syncError.message : "Unknown error",
         });
         return apiError("The job feed could not be refreshed from Scout.", 503);
       }

@@ -34,7 +34,10 @@ export function JobDetailPresentation({
   afterDescription,
 }: Props) {
   return (
-    <div className="th-jobs-detail-content flex min-h-0 min-w-0 flex-1 flex-col gap-3" key={job.id}>
+    <div
+      className="th-jobs-detail-content flex min-h-0 min-w-0 flex-1 flex-col gap-3"
+      key={job.id}
+    >
       {beforeContent}
       <JobDetailHeading
         title={job.title}

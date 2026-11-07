@@ -11,7 +11,9 @@ export function JobDetailMeta({ location, postedAt, formatDate }: Props) {
   const postedDate = formatDate(postedAt);
   const items = [
     location?.trim() ? { icon: MapPin, label: location.trim() } : null,
-    postedDate ? { icon: CalendarDays, label: `Published ${postedDate}` } : null,
+    postedDate
+      ? { icon: CalendarDays, label: `Published ${postedDate}` }
+      : null,
   ].filter((item) => item !== null);
 
   if (items.length === 0) return null;

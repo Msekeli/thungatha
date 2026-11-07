@@ -33,7 +33,10 @@ export async function recordUserJobActivity(
   if (!job) return { status: "not-found" as const };
   if (
     action === "opened_application" &&
-    !(typeof job.application_url === "string" && /^https?:\/\//i.test(job.application_url))
+    !(
+      typeof job.application_url === "string" &&
+      /^https?:\/\//i.test(job.application_url)
+    )
   ) {
     return { status: "application-url-missing" as const };
   }

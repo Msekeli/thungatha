@@ -5,7 +5,10 @@ type Props = {
   largeText?: boolean;
 };
 
-export function JobDescriptionContent({ description, largeText = false }: Props) {
+export function JobDescriptionContent({
+  description,
+  largeText = false,
+}: Props) {
   if (!description) {
     return (
       <p className="text-sm leading-6 text-fg-muted">

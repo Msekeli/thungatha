@@ -21,14 +21,18 @@ export function isValidFeed(value: unknown): value is Feed {
         typeof job.scout_vacancy_id === "string" &&
         typeof job.title === "string" &&
         typeof job.employer_name === "string" &&
-        (job.company_logo_url === null || typeof job.company_logo_url === "string") &&
+        (job.company_logo_url === null ||
+          typeof job.company_logo_url === "string") &&
         (job.location_text === null || typeof job.location_text === "string") &&
         typeof job.description === "string" &&
         typeof job.application_url === "string" &&
         (job.published_at === null || typeof job.published_at === "string") &&
-        (job.source_updated_at === null || typeof job.source_updated_at === "string") &&
+        (job.source_updated_at === null ||
+          typeof job.source_updated_at === "string") &&
         typeof job.updated_at === "string" &&
-        (job.state === null || job.state === "saved" || job.state === "dismissed"),
+        (job.state === null ||
+          job.state === "saved" ||
+          job.state === "dismissed"),
     )
   );
 }

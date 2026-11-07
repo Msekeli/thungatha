@@ -26,7 +26,8 @@ export function JobDiscoveryScreen({
   const s = state;
   const c = controller;
   useJobDiscoveryDialogAnchors(s, c.showApplicationPrompt);
-  const category = s.category === "dismissed" || s.category === "saved" ? s.category : "all";
+  const category =
+    s.category === "dismissed" || s.category === "saved" ? s.category : "all";
 
   return (
     <>

@@ -1,8 +1,4 @@
-import {
-  EMPTY_FILTERS,
-  PAGE_SIZE,
-  type Filters,
-} from "./job-discovery-types";
+import { EMPTY_FILTERS, PAGE_SIZE, type Filters } from "./job-discovery-types";
 
 export {
   EMPTY_FILTERS,
@@ -57,10 +53,14 @@ export async function getApiError(response: Response): Promise<string> {
     return "Your session is no longer available. Sign in again to continue.";
   }
   if (response.status === 503) {
-    return payload.error || "Job Discovery is temporarily unavailable. Please retry.";
+    return (
+      payload.error || "Job Discovery is temporarily unavailable. Please retry."
+    );
   }
   if (response.status === 404) return "This listing is no longer available.";
-  return payload.error || "The request could not be completed. Please try again.";
+  return (
+    payload.error || "The request could not be completed. Please try again."
+  );
 }
 
 export function buildJobFeedParams(

@@ -25,7 +25,12 @@ export function JobFiltersDialogContent({
     <>
       <header className="mb-3 flex items-center justify-between gap-2 border-b border-line pb-3">
         <strong>Filter opportunities</strong>
-        <Button variant="ghost" size="sm" aria-label="Close filters" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label="Close filters"
+          onClick={onClose}
+        >
           <X size={16} />
         </Button>
       </header>
@@ -45,13 +50,19 @@ export function JobFiltersDialogContent({
           className="min-h-10 rounded-lg border border-line bg-panel px-3 text-sm text-fg"
         >
           {PUBLISHED_WITHIN_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
           ))}
         </select>
       </label>
       <footer className="mt-3 flex justify-between gap-2 border-t border-line pt-3">
-        <Button type="button" variant="secondary" onClick={onReset}>Reset</Button>
-        <Button type="button" variant="primary" onClick={onApply}>Apply filters</Button>
+        <Button type="button" variant="secondary" onClick={onReset}>
+          Reset
+        </Button>
+        <Button type="button" variant="primary" onClick={onApply}>
+          Apply filters
+        </Button>
       </footer>
     </>
   );

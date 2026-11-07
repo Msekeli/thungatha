@@ -34,7 +34,9 @@ export function JobResultsList({
         jobs={jobs}
         variant="authenticated"
         selectedId={selectedId}
-        postedLabel={(job) => formatDate((job as Job).published_at) || "Date unknown"}
+        postedLabel={(job) =>
+          formatDate((job as Job).published_at) || "Date unknown"
+        }
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;
@@ -52,7 +54,9 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`}
+                  aria-label={
+                    saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
+                  }
                   title={saved ? "Remove from saved jobs" : "Save job"}
                 >
                   <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
@@ -68,9 +72,17 @@ export function JobResultsList({
                   variant="ghost"
                   size="sm"
                   type="button"
-                  aria-label={dismissed ? `Restore ${fullJob.title}` : `Dismiss ${fullJob.title}`}
+                  aria-label={
+                    dismissed
+                      ? `Restore ${fullJob.title}`
+                      : `Dismiss ${fullJob.title}`
+                  }
                   title={dismissed ? "Restore job" : "Not for me"}
-                  className={dismissed ? "text-[var(--th-accent)]" : "text-[var(--th-fg-muted)] hover:text-destructive"}
+                  className={
+                    dismissed
+                      ? "text-[var(--th-accent)]"
+                      : "text-[var(--th-fg-muted)] hover:text-destructive"
+                  }
                 >
                   <ThumbsDown size={16} />
                 </Button>
@@ -85,7 +97,9 @@ export function JobResultsList({
           aria-live="polite"
           className="px-2 py-4 text-center text-xs text-fg-muted"
         >
-          {loading ? "Loading more opportunities…" : "Scroll to load more opportunities"}
+          {loading
+            ? "Loading more opportunities…"
+            : "Scroll to load more opportunities"}
         </div>
       )}
     </>

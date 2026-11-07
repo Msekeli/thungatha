@@ -33,11 +33,18 @@ export function PublicJobDetailDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="th-public-job-detail-dialog__backdrop fixed inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} />
+        <Dialog.Backdrop
+          className="th-public-job-detail-dialog__backdrop fixed inset-0 bg-overlay backdrop-blur-sm"
+          onClick={onClose}
+        />
         <Dialog.Popup className="th-public-job-detail-dialog fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
           <header className="th-public-job-detail-dialog__header relative flex shrink-0 items-center gap-3 border-b border-public-modal-border px-4 py-3 pr-14 sm:gap-4 sm:px-6 sm:py-4 sm:pr-16">
             {job?.company_logo_url ? (
-              <img src={job.company_logo_url} alt="" className="size-11 shrink-0 rounded-xl border border-logo-border bg-white object-contain p-1 sm:size-12" />
+              <img
+                src={job.company_logo_url}
+                alt=""
+                className="size-11 shrink-0 rounded-xl border border-logo-border bg-white object-contain p-1 sm:size-12"
+              />
             ) : (
               <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg sm:size-12">
                 {initials || "?"}
@@ -47,7 +54,9 @@ export function PublicJobDetailDialog({
               <Dialog.Title className="truncate text-title font-bold leading-tight text-[var(--th-workspace-header-text)] sm:text-modal-title">
                 {job?.title ?? "Job details"}
               </Dialog.Title>
-              <p className="mt-0.5 truncate text-control text-[var(--th-workspace-header-muted)] sm:text-job">{employer}</p>
+              <p className="mt-0.5 truncate text-control text-[var(--th-workspace-header-muted)] sm:text-job">
+                {employer}
+              </p>
             </div>
             {job && (
               <div className="th-public-job-detail-dialog__meta min-w-0 shrink-0">
@@ -74,14 +83,19 @@ export function PublicJobDetailDialog({
 
           <div className="th-public-job-detail-dialog__content min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6 sm:py-5">
             {data.detailLoading && !job ? (
-              <div role="status" className="flex items-center gap-3 py-8 text-sm text-fg-muted">
+              <div
+                role="status"
+                className="flex items-center gap-3 py-8 text-sm text-fg-muted"
+              >
                 <LoaderCircle className="animate-spin" aria-hidden="true" />
                 Loading job details…
               </div>
             ) : job ? (
               <JobDetailDescription description={job.description} largeText />
             ) : (
-              <p className="py-8 text-sm text-fg-muted">Select an opportunity to view its details.</p>
+              <p className="py-8 text-sm text-fg-muted">
+                Select an opportunity to view its details.
+              </p>
             )}
           </div>
 

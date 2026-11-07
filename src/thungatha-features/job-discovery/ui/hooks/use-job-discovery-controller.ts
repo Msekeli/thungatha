@@ -54,10 +54,10 @@ export function useJobDiscoveryController(s: DiscoveryState) {
   );
   const showApplicationPrompt = Boolean(
     view.selectedDetail &&
-      (s.forceAppliedPrompt ||
-        (Boolean(view.selectedActivity?.application_link_opened_at) &&
-          !view.selectedActivity?.applied_at &&
-          s.dismissedPromptForJobId !== s.selectedId)),
+    (s.forceAppliedPrompt ||
+      (Boolean(view.selectedActivity?.application_link_opened_at) &&
+        !view.selectedActivity?.applied_at &&
+        s.dismissedPromptForJobId !== s.selectedId)),
   );
 
   return {

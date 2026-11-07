@@ -4,7 +4,6 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { syncScoutVacanciesNow } from "@/thungatha-features/job-discovery/server/scout-export-client";
 
-
 function isAuthorised(request: Request) {
   const expectedSecret = process.env.SCOUT_SYNC_SECRET;
   if (!expectedSecret) return false;
@@ -14,7 +13,9 @@ function isAuthorised(request: Request) {
     : "";
   const expected = Buffer.from(expectedSecret);
   const supplied = Buffer.from(suppliedSecret);
-  return supplied.length === expected.length && timingSafeEqual(supplied, expected);
+  return (
+    supplied.length === expected.length && timingSafeEqual(supplied, expected)
+  );
 }
 
 export async function POST(request: Request) {

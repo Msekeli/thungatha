@@ -33,7 +33,8 @@ export async function getReusablePublicFeed(
       typeof cached.savedAt !== "number" ||
       Date.now() - cached.savedAt >= 5 * 60 * 1000 ||
       !isValidFeed(cached.feed)
-    ) return null;
+    )
+      return null;
 
     const response = await fetch("/api/jobs?state=all&statesOnly=1", {
       headers: { Accept: "application/json" },
@@ -54,7 +55,11 @@ export async function getReusablePublicFeed(
         signal,
       );
       dismissedCount = dismissedFeed.total;
-      if (cached.feed.jobs.some((job) => dismissed.some((item) => item.job_id === job.id))) {
+      if (
+        cached.feed.jobs.some((job) =>
+          dismissed.some((item) => item.job_id === job.id),
+        )
+      ) {
         return null;
       }
     }
