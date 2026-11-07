@@ -30,6 +30,7 @@ export type ExtractedCvFields = {
     endDate?: string | null;
   }>;
 };
+
 export function ProfileCvExtraction({
   filename,
   storagePath,
@@ -42,10 +43,8 @@ export function ProfileCvExtraction({
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [warnings, setWarnings] = useState<string[]>([]);
+
   async function extract() {
-    setBusy(true);
-    setError("");
-    setWarnings([]);
     try {
       const response = await fetch("/api/profile/cv-extract", {
         method: "POST",
@@ -54,6 +53,7 @@ export function ProfileCvExtraction({
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "CV extraction failed.");
+
       const result = body.extraction as {
         status: string;
         fields: ExtractedCvFields;
@@ -64,6 +64,7 @@ export function ProfileCvExtraction({
         setError("We couldn’t read enough information from this CV.");
         return;
       }
+      setError("");
       onExtracted(result.fields);
     } catch (cause) {
       setError(
@@ -75,11 +76,13 @@ export function ProfileCvExtraction({
       setBusy(false);
     }
   }
+
   useEffect(() => {
     void extract();
-    // Extract once whenever a newly uploaded file is staged.
+    // The staged file identifies a single extraction request.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filename, storagePath]);
+
   if (busy)
     return (
       <p
@@ -105,7 +108,16 @@ export function ProfileCvExtraction({
           {warning}
         </p>
       ))}
-      <Button className="mt-3" type="button" onClick={() => void extract()}>
+      <Button
+        className="mt-3"
+        type="button"
+        onClick={() => {
+          setBusy(true);
+          setError("");
+          setWarnings([]);
+          void extract();
+        }}
+      >
         Retry extraction
       </Button>
     </div>
