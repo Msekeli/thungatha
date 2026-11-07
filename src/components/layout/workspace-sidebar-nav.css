@@ -57,7 +57,6 @@
   margin-top: auto;
   padding-top: 16px;
 }
-.th-workspace-sidebar-footer .th-btn,
 .th-workspace-sign-in {
   display: flex;
   justify-content: center;
@@ -66,21 +65,48 @@
   min-height: 42px;
   padding: 9px 12px;
   border: 1px solid var(--th-workspace-signout-border);
-  border-radius: 11px;
+  border-radius: 5px;
   background: transparent;
   color: var(--th-workspace-nav-text);
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.01em;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 14%);
-  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
   text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
-.th-workspace-sidebar-footer .th-btn:hover,
 .th-workspace-sign-in:hover {
   background: var(--th-workspace-nav-active-bg);
-  border-color: var(--th-workspace-signout-border);
+  border-color: var(--th-workspace-nav-active-fg);
   color: var(--th-workspace-nav-active-fg);
-  box-shadow: 0 6px 16px rgb(0 0 0 / 20%);
+}
+
+/* Authenticated sign-out action: deliberately prominent and only applied to SignOutControl. */
+.th-workspace-sidebar-footer .th-workspace-signout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 2px solid var(--th-danger);
+  border-radius: 5px;
+  background: var(--th-danger-bg);
+  color: var(--th-danger);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  line-height: 1.25;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 18%);
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.th-workspace-sidebar-footer .th-workspace-signout:hover {
+  border-color: var(--th-danger);
+  background: var(--th-danger);
+  color: #ffffff;
+  box-shadow: 0 5px 14px rgb(0 0 0 / 24%);
   transform: translateY(-1px);
+}
+.th-workspace-sidebar-footer .th-workspace-signout:focus-visible {
+  outline: 2px solid var(--th-danger);
+  outline-offset: 3px;
 }
