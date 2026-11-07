@@ -4,8 +4,9 @@ import { useJobFilterActions } from "./use-job-filter-actions";
 import { useJobDiscoveryWorkspaceActions } from "./use-job-discovery-workspace-actions";
 import { useJobDiscoveryData } from "./use-job-discovery-data";
 import { buildJobDiscoveryViewModel } from "../job-discovery-view-model";
-import { formatDate, shown, sourceFor } from "../job-discovery-utils";
+import { formatDate, shown } from "../job-discovery-utils";
 import type { useJobDiscoveryState } from "./use-job-discovery-state";
+
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
 export function useJobDiscoveryController(s: DiscoveryState) {
@@ -53,11 +54,12 @@ export function useJobDiscoveryController(s: DiscoveryState) {
   );
   const showApplicationPrompt = Boolean(
     view.selectedDetail &&
-    (s.forceAppliedPrompt ||
-      (Boolean(view.selectedActivity?.application_link_opened_at) &&
-        !view.selectedActivity?.applied_at &&
-        s.dismissedPromptForJobId !== s.selectedId)),
+      (s.forceAppliedPrompt ||
+        (Boolean(view.selectedActivity?.application_link_opened_at) &&
+          !view.selectedActivity?.applied_at &&
+          s.dismissedPromptForJobId !== s.selectedId)),
   );
+
   return {
     ...data,
     ...view,
@@ -68,6 +70,5 @@ export function useJobDiscoveryController(s: DiscoveryState) {
     ...filters,
     formatDate,
     shown,
-    sourceFor,
   };
 }
