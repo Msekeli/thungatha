@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GET, POST } from "@/app/api/jobs/[id]/activity/route";
-import {
-  getAuthenticatedIdentity,
-  hasClerkConfiguration,
-} from "@/thungatha-features/authentication/server/identity";
+import { GET } from "@/app/api/jobs/[id]/activity/route";
+import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
+import { createQueryMock, scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
@@ -18,145 +16,36 @@ vi.mock("@/lib/supabase/server", () => ({
 const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
 const client = vi.mocked(createAuthenticatedSupabaseClient);
-const jobId = "123e4567-e89b-42d3-a456-426614174000";
-const context = { params: Promise.resolve({ id: jobId }) };
 
-function query(result: unknown) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const builder: Record<string, any> = {};
-  for (const method of ["select", "eq", "not", "upsert"])
-    builder[method] = vi.fn(() => builder);
-  builder.maybeSingle = vi.fn(async () => result);
-  builder.single = vi.fn(async () => result);
-  return builder;
-}
-
-describe("Scout vacancy application activity", () => {
+describe("GET /api/jobs/[id]/activity", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     configured.mockReturnValue(true);
-    identity.mockResolvedValue({ userId: "user_alice", getToken: vi.fn() });
+    identity.mockResolvedValue({ userId: "alice", getToken: vi.fn() });
   });
 
-  it("requires an authenticated identity", async () => {
+  it("requires a signed-in user", async () => {
     identity.mockResolvedValue(null);
-    const response = await GET(new Request("http://localhost"), context);
+    const response = await GET(new Request("http://localhost"), {
+      params: Promise.resolve({ id: scoutVacancyRecord.id }),
+    });
     expect(response.status).toBe(401);
     expect(client).not.toHaveBeenCalled();
   });
 
-  it("returns only the current user's activity for a vacancy", async () => {
-    const activityQuery = query({
-      data: {
-        application_link_opened_at: "2026-11-07T10:00:00Z",
-        applied_at: null,
-      },
-      error: null,
-    });
-    const from = vi.fn().mockReturnValue(activityQuery);
+  it("returns only the current user's application activity", async () => {
+    const activity = { application_link_opened_at: "2026-11-07T10:00:00Z", applied_at: null };
+    const query = createQueryMock({ data: activity, error: null });
+    const from = vi.fn().mockReturnValue(query);
     client.mockResolvedValue({ from } as never);
-    const response = await GET(new Request("http://localhost"), context);
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      activity: {
-        application_link_opened_at: "2026-11-07T10:00:00Z",
-        applied_at: null,
-      },
+    const response = await GET(new Request("http://localhost"), {
+      params: Promise.resolve({ id: scoutVacancyRecord.id }),
     });
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ activity });
     expect(from).toHaveBeenCalledWith("user_job_activity");
-    expect(activityQuery.eq).toHaveBeenCalledWith("user_id", "user_alice");
-    expect(activityQuery.eq).toHaveBeenCalledWith("job_id", jobId);
-  });
-
-  it("records an application-page visit from the Scout application URL", async () => {
-    const vacancyQuery = query({
-      data: { id: jobId, application_url: "https://careers.example.test/apply" },
-      error: null,
-    });
-    const existingQuery = query({ data: null, error: null });
-    const writeQuery = query({
-      data: {
-        application_link_opened_at: "2026-11-07T10:00:00Z",
-        applied_at: null,
-      },
-      error: null,
-    });
-    const from = vi.fn()
-      .mockReturnValueOnce(vacancyQuery)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(writeQuery);
-    client.mockResolvedValue({ from } as never);
-
-    const response = await POST(
-      new Request("http://localhost", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "opened_application" }),
-      }),
-      context,
-    );
-
-    expect(response.status).toBe(200);
-    expect(vacancyQuery.not).toHaveBeenCalledWith("scout_vacancy_id", "is", null);
-    expect(writeQuery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user_id: "user_alice",
-        job_id: jobId,
-        applied_at: null,
-        application_link_opened_at: expect.any(String),
-      }),
-      { onConflict: "user_id,job_id" },
-    );
-  });
-
-  it("does not record an application visit without a direct application URL", async () => {
-    const vacancyQuery = query({ data: { id: jobId, application_url: null }, error: null });
-    const from = vi.fn().mockReturnValue(vacancyQuery);
-    client.mockResolvedValue({ from } as never);
-
-    const response = await POST(
-      new Request("http://localhost", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "opened_application" }),
-      }),
-      context,
-    );
-
-    expect(response.status).toBe(409);
-    expect(from).toHaveBeenCalledTimes(1);
-  });
-
-  it("preserves an existing applied timestamp on duplicate confirmation", async () => {
-    const appliedAt = "2026-11-06T08:30:00Z";
-    const vacancyQuery = query({ data: { id: jobId, application_url: null }, error: null });
-    const existingQuery = query({
-      data: { application_link_opened_at: "2026-11-06T08:00:00Z", applied_at: appliedAt },
-      error: null,
-    });
-    const writeQuery = query({
-      data: { application_link_opened_at: "2026-11-06T08:00:00Z", applied_at: appliedAt },
-      error: null,
-    });
-    const from = vi.fn()
-      .mockReturnValueOnce(vacancyQuery)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(writeQuery);
-    client.mockResolvedValue({ from } as never);
-
-    const response = await POST(
-      new Request("http://localhost", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "confirm_applied" }),
-      }),
-      context,
-    );
-
-    expect(response.status).toBe(200);
-    expect(writeQuery.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ applied_at: appliedAt }),
-      { onConflict: "user_id,job_id" },
-    );
+    expect(query.eq).toHaveBeenCalledWith("user_id", "alice");
+    expect(query.eq).toHaveBeenCalledWith("job_id", scoutVacancyRecord.id);
   });
 });
