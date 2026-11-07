@@ -34,7 +34,7 @@ export function PublicJobResultsPanel({ data, onSelect }: {
         <PublicJobSortSelect value={data.sortOrder} onChange={data.onSortOrderChange} />
       </header>
       <JobResultsState loading={data.loading} hasFeed={Boolean(data.feed)} error={data.error} hasJobs={data.jobs.length > 0} hasFilters={data.hasFilters} onRetry={data.onRetryFeed} />
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable]">
+      <div className="th-job-results-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable]">
         {data.jobs.length > 0 && <JobList jobs={data.jobs} variant="public"
           postedAgeDays={(job) => postedAge(data, job.id).days}
           postedLabel={(job) => postedAge(data, job.id).label}
