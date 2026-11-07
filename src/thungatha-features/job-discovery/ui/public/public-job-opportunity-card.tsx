@@ -16,7 +16,7 @@ export function PublicJobOpportunityCard({
   actions?: ReactNode;
 }) {
   const employer = job.employer_name?.trim() || "Employer not listed";
-  const initials = employer.split(/\\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  const initials = employer.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 
   return (
     <article className="group/card relative flex w-[98%] min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover hover:cursor-pointer motion-reduce:transition-none motion-reduce:hover:transform-none">
