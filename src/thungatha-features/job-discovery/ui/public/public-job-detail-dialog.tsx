@@ -57,14 +57,28 @@ export function PublicJobDetailDialog({
             <Dialog.Close render={<Button variant="ghost" size="icon" aria-label="Close job details"><X /></Button>} />
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
             {data.detailLoading && !job ? (
               <div role="status" className="flex items-center gap-3 py-8 text-sm text-fg-muted">
                 <LoaderCircle className="animate-spin" aria-hidden="true" />
                 Loading job details…
               </div>
             ) : job ? (
-              <JobDetailDescription description={job.description} largeText />
+              <div className="space-y-5">
+                <JobDetailActions
+                  applyOnly
+                  configured={data.configured}
+                  job={job}
+                  applicationDestination={data.applicationDestination}
+                  applicationUrl={data.applicationUrl}
+                  busy={data.busy}
+                  detailLoading={data.detailLoading}
+                  onApply={data.onApply}
+                  onSave={data.onSave}
+                  onDismiss={data.onDismiss}
+                />
+                <JobDetailDescription description={job.description} largeText />
+              </div>
             ) : (
               <p className="py-8 text-sm text-fg-muted">Select an opportunity to view its details.</p>
             )}
