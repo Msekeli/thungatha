@@ -8,7 +8,7 @@ afterEach(() => {
 });
 
 describe("ProfileForm flow", () => {
-  it("renders empty state and allows manual entry and saving", async () => {
+  it("renders empty state and allows manual entry and saving a draft", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -19,14 +19,31 @@ describe("ProfileForm flow", () => {
           JSON.stringify({
             profile: {
               displayName: "Sam",
-              personalDetails: { fullName: "Sam", email: "sam@example.com" },
+              nextRole: null,
+              personalDetails: {
+                fullName: "Sam",
+                email: "sam@example.com",
+                phone: null,
+                location: null,
+                country: null,
+                residentialSuburb: null,
+                residentialCity: null,
+                residentialProvince: null,
+                residentialPostalCode: null,
+                linkedinUrl: null,
+                portfolioUrl: null,
+              },
+              summary: null,
               workExperience: [],
               education: [],
               skills: ["TypeScript"],
               certifications: [],
               projects: [],
+              languages: [],
+              personalAttributes: [],
               masterCv: null,
-              confirmedAt: "2026-10-24T10:00:00.000Z",
+              confirmedAt: null,
+              profileVersion: 1,
             },
           }),
           { status: 200 },
@@ -39,13 +56,14 @@ describe("ProfileForm flow", () => {
     const manualBtn = await screen.findByRole("button", { name: "Enter details manually" });
     fireEvent.click(manualBtn);
 
-    const nameInput = await screen.findByLabelText("Display name");
+    const nameInput = await screen.findByLabelText("Full name");
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save profile" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
 
     await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent("Profile saved.");
+      expect(screen.getByText(/Draft saved\./)).toBeInTheDocument();
     });
-    expect(await screen.findByRole("button", { name: "Edit profile" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save draft" })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
