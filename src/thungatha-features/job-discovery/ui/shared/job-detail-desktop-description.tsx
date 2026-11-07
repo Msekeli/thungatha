@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { JobDetailTabs } from "./job-detail-tabs";
+import { JobDescriptionContent } from "./job-description-content";
 
 const sections = [
   {
@@ -38,9 +39,7 @@ export function JobDetailDesktopDescription({
       <JobDetailTabs
         tabs={[
           {
-            label: descriptionIsPreview
-              ? "Description preview"
-              : "Job description",
+            label: descriptionIsPreview ? "Description preview" : "Job description",
             value: "description",
           },
           { label: "Requirements", value: "requirements" },
@@ -55,22 +54,14 @@ export function JobDetailDesktopDescription({
           <>
             {descriptionIsPreview && (
               <p className="text-sm text-fg-muted">
-                This source provides a preview. Open the original listing for
-                the complete details when available.
+                This source provides a preview. Open the original listing for the complete details when available.
               </p>
             )}
-            <p
-              className={`whitespace-pre-wrap text-[var(--th-fg)] ${largeText ? "text-modal-body" : "text-sm"}`}
-            >
-              {description ||
-                "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
-            </p>
+            <JobDescriptionContent description={description} largeText={largeText} />
           </>
         ) : section ? (
           <section>
-            <h3 className="mb-2 text-base font-bold text-fg">
-              {section.title}
-            </h3>
+            <h3 className="mb-2 text-base font-bold text-fg">{section.title}</h3>
             <p className="text-sm leading-6 text-fg-muted">{section.text}</p>
           </section>
         ) : null}
