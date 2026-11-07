@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await syncScoutVacanciesNow();
+    const result = await syncScoutVacanciesNow(new URL(request.url).origin);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("[Scout vacancy sync] Manual sync failed:", {
