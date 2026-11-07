@@ -56,6 +56,6 @@ describe("ProfileForm saved view", () => {
     expect(screen.getByText("React")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Edit profile" }));
-    expect(await screen.findByLabelText("Full name")).toHaveValue("Lerato Naidoo");
+    expect(await screen.findByLabelText(/^Full name/)).toHaveValue("Lerato Naidoo");
   });
 });
