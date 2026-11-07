@@ -13,30 +13,34 @@ const job = {
 
 afterEach(() => cleanup());
 
-describe("PublicJobOpportunityCard freshness indicator", () => {
-  it("shows the green NEW indicator for jobs posted within three days", () => {
+describe("PublicJobOpportunityCard job age", () => {
+  it("shows the job age with green styling for jobs posted within three days", () => {
     render(
       <PublicJobOpportunityCard
         job={job}
         ageDays={3}
+        postedLabel="3 days ago"
         onSelect={vi.fn()}
       />,
     );
 
-    expect(screen.getByText("NEW")).toBeTruthy();
+    expect(screen.getByText("3 days ago")).toBeTruthy();
+    expect(screen.getByText("3 days ago").className).toContain("text-success");
   });
 
-  it("does not show an age indicator for older jobs", () => {
+  it("keeps the age visible in neutral styling for older jobs", () => {
     render(
       <PublicJobOpportunityCard
         job={job}
         ageDays={4}
+        postedLabel="4 days ago"
         onSelect={vi.fn()}
       />,
     );
 
-    expect(screen.queryByText("NEW")).toBeNull();
-    expect(screen.queryByText(/days ago/)).toBeNull();
+    expect(screen.getByText("4 days ago")).toBeTruthy();
+    expect(screen.getByText("4 days ago").className).toContain("text-public-muted");
+    expect(screen.getByText("4 days ago").className).not.toContain("text-success");
   });
 
   it("does not show an age indicator when the publication date is unknown", () => {
@@ -44,11 +48,11 @@ describe("PublicJobOpportunityCard freshness indicator", () => {
       <PublicJobOpportunityCard
         job={job}
         ageDays={null}
+        postedLabel="Date unknown"
         onSelect={vi.fn()}
       />,
     );
 
-    expect(screen.queryByText("NEW")).toBeNull();
-    expect(screen.queryByText(/Date unknown/)).toBeNull();
+    expect(screen.getByText("Date unknown")).toBeTruthy();
   });
 });
