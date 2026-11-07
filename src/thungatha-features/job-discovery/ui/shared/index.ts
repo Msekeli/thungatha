@@ -9,7 +9,6 @@ export { JobOpportunityDetailPanel } from "./job-opportunity-detail-panel";
 export { JobDetailTabs } from "./job-detail-tabs";
 export type { JobDetailTab } from "./job-detail-tabs";
 export { JobEmptyState } from "./job-empty-state";
-export { JobSalary } from "./job-salary";
 export { JobMetadata } from "./job-metadata";
 export {
   shown,
