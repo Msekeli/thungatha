@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   scoutVacancyBatchSchema,
   scoutVacancySchema,
-} from "@/thungatha-features/job-discovery/server/schema";
+} from "@/thungatha-features/job-discovery/server/scout-vacancy-schema";
 
 const validVacancy = {
   scoutVacancyId: "123e4567-e89b-42d3-a456-426614174000",
