@@ -19,11 +19,7 @@ export function useProfile() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [mode, setMode] = useState<"empty" | "view" | "edit">("empty");
 
-  const loadProfile = useCallback(async () => {
-    setLoading(true);
-    setLoadFailed(false);
-    setError("");
-    setMessage("");
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch("/api/profile");
       if (!res.ok) throw new Error("Load failed");
@@ -32,6 +28,8 @@ export function useProfile() {
       setProfile(p);
       setDraft(p);
       setMode(isProfileEmpty(p) ? "empty" : "view");
+      setLoadFailed(false);
+      setError("");
     } catch {
       setLoadFailed(true);
       setError(
@@ -41,6 +39,14 @@ export function useProfile() {
       setLoading(false);
     }
   }, []);
+
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    setLoadFailed(false);
+    setError("");
+    setMessage("");
+    await fetchProfile();
+  }, [fetchProfile]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -71,8 +77,8 @@ export function useProfile() {
   };
 
   useEffect(() => {
-    void loadProfile();
-  }, [loadProfile]);
+    void fetchProfile();
+  }, [fetchProfile]);
 
   return {
     profile,
