@@ -18,6 +18,8 @@ export async function readJobFeed(
   if (statesOnly) return { states };
   if (!userId && input.state !== "all")
     return emptyFeed(input.page, input.pageSize);
+  if (userId && input.state !== "all" && !states.length)
+    return emptyFeed(input.page, input.pageSize);
 
   const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
   let query = db
@@ -56,7 +58,6 @@ export async function readJobFeed(
 
   if (userId && input.state !== "all") {
     const ids = states.map((item) => item.job_id);
-    if (!ids.length) return emptyFeed(input.page, input.pageSize);
     query = query.in("id", ids);
   } else if (userId) {
     const dismissed = states

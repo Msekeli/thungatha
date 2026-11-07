@@ -15,6 +15,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@/tests": path.resolve(import.meta.dirname, "./tests"),
       "@": path.resolve(import.meta.dirname, "./src"),
       "server-only": path.resolve(
         import.meta.dirname,

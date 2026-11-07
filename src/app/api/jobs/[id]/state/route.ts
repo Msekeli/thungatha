@@ -14,10 +14,10 @@ export async function PUT(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { user, response } = await resolveJobDiscoveryUser();
-  if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
+  const { user, response } = await resolveJobDiscoveryUser();
+  if (response) return response;
 
   let body: unknown;
   try {
@@ -61,10 +61,10 @@ export async function DELETE(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { user, response } = await resolveJobDiscoveryUser();
-  if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
+  const { user, response } = await resolveJobDiscoveryUser();
+  if (response) return response;
 
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);

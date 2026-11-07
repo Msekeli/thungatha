@@ -1,7 +1,13 @@
 import { z } from "zod";
 
 const nullableDate = z.string().datetime({ offset: true }).nullable();
-const nullableUrl = z.string().nullable();
+const nullableUrl = z.string().url().nullable();
+const httpUrl = z
+  .string()
+  .url()
+  .refine((value) => /^https?:\/\//i.test(value), {
+    message: "URL must use HTTP or HTTPS",
+  });
 
 export const scoutExportVacancySchema = z
   .object({
@@ -11,7 +17,7 @@ export const scoutExportVacancySchema = z
     title: z.string(),
     description: z.string(),
     location_text: z.string().nullable(),
-    application_url: z.string().min(1),
+    application_url: httpUrl,
     published_at: nullableDate,
     source_updated_at: nullableDate,
     first_seen_at: z.string().datetime({ offset: true }),

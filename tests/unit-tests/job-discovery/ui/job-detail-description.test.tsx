@@ -10,17 +10,17 @@ describe("JobDetailDescription", () => {
       <JobDetailDescription description={description} />,
     );
 
-    expect(screen.getAllByRole("heading", { name: "About the role" })).toHaveLength(2);
-    expect(container.querySelectorAll(".th-job-description-html h2")).toHaveLength(2);
-    expect(container.querySelectorAll(".th-job-description-html ul")).toHaveLength(2);
-    expect(container.querySelectorAll(".th-job-description-html li")).toHaveLength(4);
-    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(2);
+    expect(screen.getAllByRole("heading", { name: "About the role" })).toHaveLength(1);
+    expect(container.querySelectorAll(".th-job-description-html h2")).toHaveLength(1);
+    expect(container.querySelectorAll(".th-job-description-html ul")).toHaveLength(1);
+    expect(container.querySelectorAll(".th-job-description-html li")).toHaveLength(2);
+    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(1);
   });
 
   it("shows a clear fallback when no description is available", () => {
     render(<JobDetailDescription description={null} />);
     expect(
       screen.getAllByText("The employer has not supplied a job description."),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
   });
 });

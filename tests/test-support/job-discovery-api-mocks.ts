@@ -12,6 +12,7 @@ export const scoutVacancyRecord = {
   published_at: null,
   source_updated_at: null,
   updated_at: "2026-11-07T10:00:00Z",
+  state: null,
 };
 
 export function createQueryMock(result: unknown) {

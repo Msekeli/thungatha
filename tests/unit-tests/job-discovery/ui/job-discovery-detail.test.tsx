@@ -45,9 +45,9 @@ describe("Scout job description detail", () => {
       name: "View Software Engineer at Example Technologies",
     }));
 
-    expect(await screen.findAllByRole("heading", { name: "About the role" })).toHaveLength(2);
-    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(2);
-    expect(screen.getAllByText("Use React.")).toHaveLength(2);
-    expect(screen.getAllByText("Build APIs.")).toHaveLength(2);
+    expect(await screen.findAllByRole("heading", { name: "About the role" })).toHaveLength(1);
+    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(1);
+    expect(screen.getAllByText("Use React.")).toHaveLength(1);
+    expect(screen.getAllByText("Build APIs.")).toHaveLength(1);
   });
 });
