@@ -1,4 +1,5 @@
 import { JobDetailDesktopDescription } from "./job-detail-desktop-description";
+import { JobDescriptionContent } from "./job-description-content";
 
 type Props = {
   description?: string | null;
@@ -11,11 +12,11 @@ export function JobDetailDescription({
   descriptionIsPreview = false,
   largeText = false,
 }: Props) {
-  const content = description?.trim();
+  const content = description?.trim() ?? null;
   return (
     <>
       <JobDetailDesktopDescription
-        description={content ?? null}
+        description={content}
         descriptionIsPreview={descriptionIsPreview}
         largeText={largeText}
       />
@@ -29,10 +30,7 @@ export function JobDetailDescription({
             complete details when available.
           </p>
         )}
-        <div className="whitespace-pre-wrap break-words text-sm leading-6 text-fg">
-          {content ||
-            "A full job description has not been supplied by the source. Open the employer's application page to review the role requirements before applying."}
-        </div>
+        <JobDescriptionContent description={content} largeText={largeText} />
       </section>
     </>
   );
