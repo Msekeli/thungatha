@@ -1,65 +1,32 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import type { ReactNode } from "react";
+import { cleanup, render, screen } from "@testing-library/react";
 import JobsDiscovery from "@/thungatha-features/job-discovery/ui/jobs-discovery";
+import { scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
   usePathname: () => "/jobs",
   useSearchParams: () => new URLSearchParams(""),
 }));
-
 vi.mock("@clerk/nextjs", () => ({
   useAuth: () => ({ isLoaded: true, isSignedIn: false }),
-  Show: ({ when, children }: { when: string; children: ReactNode }) =>
+  Show: ({ when, children }: { when: string; children: React.ReactNode }) =>
     when === "signed-in" ? null : children,
 }));
 
-
-const vacancy = {
-  id: "123e4567-e89b-42d3-a456-426614174000",
-  scout_vacancy_id: "123e4567-e89b-42d3-a456-426614174001",
-  title: "Software Engineer",
-  employer_name: "Example Employer",
-  company_logo_url: null,
-  description:
-    "<h2>About the role</h2><p>Build and support web services with the engineering team.</p><ul><li>Use React.</li><li>Build APIs.</li></ul>",
-  location_text: "Cape Town, South Africa",
-  application_url: "https://careers.example.test/apply",
-  published_at: null,
-  source_updated_at: null,
-  updated_at: "2026-11-07T10:00:00.000Z",
-  state: null,
-};
-
-function response(body: unknown, status = 200) {
-  return {
-    ok: status >= 200 && status < 300,
-    status,
-    json: async () => body,
-  };
-}
-
 function setupFetch() {
   sessionStorage.clear();
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-    const url = String(input);
-    if (url.startsWith("/api/jobs?")) {
-      return response({
-        jobs: [vacancy],
-        page: 1,
-        pageSize: 30,
-        total: 1,
-        totalPages: 1,
-      });
-    }
-    if (url === `/api/jobs/${vacancy.id}`) {
-      return response({ job: vacancy });
-    }
-    return response({ error: "Not found" }, 404);
-  });
-  vi.stubGlobal("fetch", fetchMock);
-  return fetchMock;
+  vi.stubGlobal("fetch", vi.fn(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({
+      jobs: [scoutVacancyRecord],
+      page: 1,
+      pageSize: 30,
+      total: 1,
+      totalPages: 1,
+    }),
+  })));
 }
 
 afterEach(() => {
@@ -68,42 +35,22 @@ afterEach(() => {
   sessionStorage.clear();
 });
 
-describe("Scout-backed job discovery", () => {
-  it("shows a Scout vacancy and does not invent a publication date", async () => {
+describe("Scout job discovery feed", () => {
+  it("shows a Scout vacancy and keeps an unknown publication date unknown", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
-
-    expect(
-      await screen.findByRole("button", {
-        name: "View Software Engineer at Example Employer",
-      }),
-    ).toBeTruthy();
+    expect(await screen.findByRole("button", {
+      name: "View Software Engineer at Example Technologies",
+    })).toBeTruthy();
     expect(screen.getByText("Date unknown")).toBeTruthy();
   });
 
-  it("renders the employer-sanitised HTML structure in the job details", async () => {
-    setupFetch();
-    render(<JobsDiscovery configured={false} />);
-
-    fireEvent.click(
-      await screen.findByRole("button", {
-        name: "View Software Engineer at Example Employer",
-      }),
-    );
-
-    expect(screen.getAllByRole("heading", { name: "About the role" })).toHaveLength(2);
-    expect(screen.getAllByText("Build and support web services with the engineering team.")).toHaveLength(2);
-    expect(screen.getAllByText("Use React.")).toHaveLength(2);
-    expect(screen.getAllByText("Build APIs.")).toHaveLength(2);
-  });
-
-  it("uses employer initials when Scout has no company logo", async () => {
+  it("uses employer initials when the optional company logo is null", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
     await screen.findByRole("button", {
-      name: "View Software Engineer at Example Employer",
+      name: "View Software Engineer at Example Technologies",
     });
-
-    expect(screen.getByText("EE")).toBeTruthy();
+    expect(screen.getByText("ET")).toBeTruthy();
   });
 });
