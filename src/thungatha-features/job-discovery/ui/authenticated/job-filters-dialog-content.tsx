@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { JobLocationSelect } from "../shared/job-location-select";
-import { JobFilterDropdown } from "../shared/job-filter-dropdown";
 import { PUBLISHED_WITHIN_OPTIONS } from "../shared/job-filter-options";
 import type { JobFiltersDraft } from "./job-filters-dialog";
 
@@ -38,14 +37,18 @@ export function JobFiltersDialogContent({
           ariaLabel="Filter by location"
         />
       </div>
-      <JobFilterDropdown
-        label="Published within"
-        value={draft.publishedWithin}
-        options={PUBLISHED_WITHIN_OPTIONS}
-        onChange={(value) => onChange("publishedWithin", value)}
-        open={false}
-        onToggle={() => undefined}
-      />
+      <label className="flex flex-col gap-1 text-sm font-medium">
+        Published within
+        <select
+          value={draft.publishedWithin}
+          onChange={(event) => onChange("publishedWithin", event.target.value)}
+          className="min-h-10 rounded-lg border border-line bg-panel px-3 text-sm text-fg"
+        >
+          {PUBLISHED_WITHIN_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+      </label>
       <footer className="mt-3 flex justify-between gap-2 border-t border-line pt-3">
         <Button type="button" variant="secondary" onClick={onReset}>Reset</Button>
         <Button type="button" variant="primary" onClick={onApply}>Apply filters</Button>
