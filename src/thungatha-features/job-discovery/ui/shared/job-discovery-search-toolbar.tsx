@@ -17,7 +17,7 @@ export function JobDiscoverySearchToolbar({
   const c = controller;
   return (
     <div
-      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-3 text-center text-public-hero-text max-[700px]:px-4 max-[700px]:py-4" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:w-full max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : ""}`}
+      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-3 text-center text-public-hero-text max-[700px]:px-4 max-[700px]:py-4" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : "max-[900px]:w-full"}`}
     >
       {hasLeadingColumn && (
         <div className="mx-auto mb-1 max-w-4xl">
