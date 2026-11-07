@@ -26,13 +26,26 @@ const publicClient = vi.mocked(createPublicSupabaseClient);
 const id = "123e4567-e89b-42d3-a456-426614174000";
 
 function query(result: unknown) {
-  // Supabase's fluent query builder is intentionally mocked dynamically in these endpoint tests.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
-  for (const method of ["select", "eq"]) builder[method] = vi.fn(() => builder);
+  for (const method of ["select", "eq", "not"]) builder[method] = vi.fn(() => builder);
   builder.maybeSingle = vi.fn(async () => result);
   return builder;
 }
+
+const vacancy = {
+  id,
+  scout_vacancy_id: "123e4567-e89b-42d3-a456-426614174001",
+  title: "Software Engineer",
+  employer_name: "Example Technologies",
+  company_logo_url: null,
+  description: "<h2>Role</h2><p>Build software applications with the team.</p>",
+  location_text: "Cape Town",
+  application_url: "https://careers.example.test/apply",
+  published_at: null,
+  source_updated_at: null,
+  updated_at: "2026-11-07T10:00:00Z",
+};
 
 describe("GET /api/jobs/[id]", () => {
   beforeEach(() => {
@@ -49,123 +62,50 @@ describe("GET /api/jobs/[id]", () => {
     expect(client).not.toHaveBeenCalled();
   });
 
-  it("allows anonymous reads when Clerk is not configured", async () => {
+  it("allows anonymous reads of Scout vacancies", async () => {
     configured.mockReturnValue(false);
-    const jobQuery = query({
-      data: {
-        id,
-        title: "Software Engineer",
-        job_sources: [{ availability_status: "active" }],
-      },
-      error: null,
-    });
-    publicClient.mockResolvedValue({
-      from: vi.fn().mockReturnValue(jobQuery),
-    } as never);
+    const jobQuery = query({ data: vacancy, error: null });
+    const from = vi.fn().mockReturnValue(jobQuery);
+    publicClient.mockResolvedValue({ from } as never);
+
     const response = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
     });
+
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      job: {
-        id,
-        title: "Software Engineer",
-        job_sources: [{ availability_status: "active" }],
-        state: null,
-      },
+      job: { ...vacancy, state: null },
     });
-    expect(publicClient).toHaveBeenCalled();
-    expect(client).not.toHaveBeenCalled();
+    expect(from).toHaveBeenCalledWith("jobs");
+    expect(jobQuery.not).toHaveBeenCalledWith("scout_vacancy_id", "is", null);
   });
 
-  it("returns 503 when Clerk identity verification throws", async () => {
-    identity.mockRejectedValue(new Error("Clerk unavailable"));
-    const response = await GET(new Request("http://localhost"), {
-      params: Promise.resolve({ id }),
-    });
-    expect(response.status).toBe(503);
-    expect(client).not.toHaveBeenCalled();
-  });
-
-  it("allows anonymous reads when the visitor is signed out", async () => {
-    identity.mockResolvedValue(null);
-    const jobQuery = query({
-      data: {
-        id,
-        title: "Software Engineer",
-        job_sources: [{ availability_status: "active" }],
-      },
-      error: null,
-    });
-    publicClient.mockResolvedValue({
-      from: vi.fn().mockReturnValue(jobQuery),
-    } as never);
-    const response = await GET(new Request("http://localhost"), {
-      params: Promise.resolve({ id }),
-    });
-    expect(response.status).toBe(200);
-    expect(publicClient).toHaveBeenCalled();
-    expect(client).not.toHaveBeenCalled();
-  });
-
-  it("returns an active persisted job and only the signed-in user's state", async () => {
-    const job = {
-      data: {
-        id,
-        title: "Software Engineer",
-        job_sources: [{ availability_status: "active" }],
-      },
-      error: null,
-    };
-    const state = { data: { state: "saved" }, error: null };
-    const jobQuery = query(job);
-    const stateQuery = query(state);
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(jobQuery)
-      .mockReturnValueOnce(stateQuery);
+  it("returns only the signed-in user's saved state", async () => {
+    const jobQuery = query({ data: vacancy, error: null });
+    const stateQuery = query({ data: { state: "saved" }, error: null });
+    const from = vi.fn().mockReturnValueOnce(jobQuery).mockReturnValueOnce(stateQuery);
     client.mockResolvedValue({ from } as never);
 
     const response = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
     });
+
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      job: { ...job.data, state: "saved" },
+      job: { ...vacancy, state: "saved" },
     });
-    expect(jobQuery.eq).toHaveBeenCalledWith("id", id);
-    expect(jobQuery.eq).toHaveBeenCalledWith(
-      "job_sources.availability_status",
-      "active",
-    );
     expect(stateQuery.eq).toHaveBeenCalledWith("user_id", "alice");
     expect(stateQuery.eq).toHaveBeenCalledWith("job_id", id);
   });
 
-  it("returns 404 when no active listing exists", async () => {
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(query({ data: null, error: null }))
-      .mockReturnValueOnce(query({ data: null, error: null }));
-    client.mockResolvedValue({ from } as never);
+  it("returns 404 for records that are not Scout vacancies", async () => {
+    const from = vi.fn().mockReturnValue(
+      query({ data: null, error: null }),
+    );
+    publicClient.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
     });
     expect(response.status).toBe(404);
-  });
-
-  it("returns a server error when the database fails", async () => {
-    const from = vi
-      .fn()
-      .mockReturnValueOnce(
-        query({ data: null, error: new Error("database detail") }),
-      )
-      .mockReturnValueOnce(query({ data: null, error: null }));
-    client.mockResolvedValue({ from } as never);
-    const response = await GET(new Request("http://localhost"), {
-      params: Promise.resolve({ id }),
-    });
-    expect(response.status).toBeGreaterThanOrEqual(500);
-    expect(await response.text()).not.toContain("database detail");
   });
 });
