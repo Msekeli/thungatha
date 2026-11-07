@@ -85,6 +85,7 @@ export function AuthenticatedJobResultsPanel({
           }}>
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
+              style={{ color: "var(--th-fg)" }}
               className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-[var(--th-fg)] outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"
             >
               <Select.Value>{selectedSortLabel}</Select.Value>
@@ -98,12 +99,16 @@ export function AuthenticatedJobResultsPanel({
                 sideOffset={6}
                 align="end"
               >
-                <Select.Popup className="min-w-52 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-1 text-sm text-[var(--th-fg)] shadow-lg outline-none">
+                <Select.Popup
+                  style={{ color: "var(--th-fg)" }}
+                  className="min-w-52 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] p-1 text-sm text-[var(--th-fg)] shadow-lg outline-none"
+                >
                   <Select.List>
                     {sortOptions.map((option) => (
                       <Select.Item
                         key={option.value}
                         value={option.value}
+                        style={{ color: "var(--th-fg)" }}
                         className="flex cursor-default items-center justify-between gap-4 rounded-lg px-3 py-2 outline-none data-[highlighted]:bg-[var(--th-line)]/50"
                       >
                         <Select.ItemText>{option.label}</Select.ItemText>
