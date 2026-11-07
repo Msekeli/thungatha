@@ -5,7 +5,7 @@ export type Job = {
   employer_name: string;
   company_logo_url: string | null;
   description: string;
-  location_text: string;
+  location_text: string | null;
   application_url: string;
   published_at: string | null;
   source_updated_at: string | null;
