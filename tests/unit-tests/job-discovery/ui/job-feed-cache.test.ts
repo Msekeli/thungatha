@@ -8,24 +8,22 @@ vi.mock("@/thungatha-features/job-discovery/ui/request-job-feed", () => ({
 
 const job = (id: string) => ({
   id,
+  scout_vacancy_id: "123e4567-e89b-42d3-a456-426614174000",
   title: "Engineer",
-  employer_name: null,
-  description: null,
-  location_text: null,
-  country_code: null,
-  work_mode: "unknown",
-  employment_type: null,
-  salary_min: null,
-  salary_max: null,
-  salary_currency: null,
-  updated_at: null,
-  job_sources: [],
+  employer_name: "Example Employer",
+  company_logo_url: null,
+  description: "<p>Build software with the team.</p>",
+  location_text: "Cape Town",
+  application_url: "https://careers.example.test/apply",
+  published_at: null,
+  source_updated_at: null,
+  updated_at: "2026-11-07T10:00:00Z",
   state: null,
 });
 
 function cacheFeed(jobs: ReturnType<typeof job>[]) {
   sessionStorage.setItem(
-    "thungatha-public-job-feed-v2",
+    "thungatha-public-job-feed-v3",
     JSON.stringify({
       savedAt: Date.now(),
       feed: { jobs, page: 1, pageSize: 30, total: 10, totalPages: 1 },
@@ -33,7 +31,7 @@ function cacheFeed(jobs: ReturnType<typeof job>[]) {
   );
 }
 
-describe("public feed cache reconciliation", () => {
+describe("Scout vacancy feed cache", () => {
   beforeEach(() => {
     sessionStorage.clear();
     vi.clearAllMocks();
@@ -51,7 +49,7 @@ describe("public feed cache reconciliation", () => {
     );
   });
 
-  it("reuses a complete page and reconciles states and the filtered total", async () => {
+  it("reuses a complete page and reconciles user states and totals", async () => {
     cacheFeed([job("saved")]);
     vi.mocked(requestJobFeed).mockResolvedValue({
       jobs: [],
@@ -69,7 +67,7 @@ describe("public feed cache reconciliation", () => {
     );
   });
 
-  it("fetches a complete authenticated page when a cached row was dismissed", async () => {
+  it("rejects a cached page containing a dismissed Scout vacancy", async () => {
     cacheFeed([job("dismissed-outside-page")]);
     vi.mocked(requestJobFeed).mockResolvedValue({
       jobs: [],
