@@ -22,7 +22,7 @@ export function isValidFeed(value: unknown): value is Feed {
         typeof job.title === "string" &&
         typeof job.employer_name === "string" &&
         (job.company_logo_url === null || typeof job.company_logo_url === "string") &&
-        typeof job.location_text === "string" &&
+        (job.location_text === null || typeof job.location_text === "string") &&
         typeof job.description === "string" &&
         typeof job.application_url === "string" &&
         (job.published_at === null || typeof job.published_at === "string") &&
