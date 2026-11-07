@@ -9,7 +9,6 @@ const features = [
     description:
       "Build your profile so we can match jobs to your skills.",
     icon: ClipboardList,
-    iconClass: "text-accent",
     action: "Create your profile",
   },
   {
