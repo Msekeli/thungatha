@@ -44,13 +44,15 @@ export function JobDetailActions({
         <ExternalLink size={16} aria-hidden="true" />
         Apply on company site
       </Button>
-      <JobDetailProtectedActions
+      <div className="th-job-detail-secondary-actions">
+        <JobDetailProtectedActions
         configured={configured}
         job={job}
         disabled={disabled}
         onSave={onSave}
         onDismiss={onDismiss}
-      />
+        />
+      </div>
     </div>
   );
 }
