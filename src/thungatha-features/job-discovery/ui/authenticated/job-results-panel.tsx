@@ -80,9 +80,12 @@ export function AuthenticatedJobResultsPanel({
             className="shrink-0 text-[var(--th-fg-muted)] max-[700px]:hidden"
             aria-hidden="true"
           />
-          <Select.Root value={sortOrder} onValueChange={(value) => {
-            if (value !== null) onSortOrderChange(value);
-          }}>
+          <Select.Root
+            value={sortOrder}
+            onValueChange={(value) => {
+              if (value !== null) onSortOrderChange(value);
+            }}
+          >
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
               className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-fg outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"

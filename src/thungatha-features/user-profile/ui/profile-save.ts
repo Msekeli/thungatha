@@ -1,4 +1,7 @@
-import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
+import {
+  profileCompletionSchema,
+  type UserProfileDto,
+} from "../server/user-profile-schema";
 
 export async function saveProfileDraft(draft: UserProfileDto) {
   try {
