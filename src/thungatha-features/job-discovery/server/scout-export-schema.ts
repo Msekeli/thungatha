@@ -5,11 +5,11 @@ const nullableUrl = z.string().nullable();
 
 export const scoutExportVacancySchema = z.object({
   scout_vacancy_id: z.string().uuid(),
-  employer_name: z.string().trim().min(2).max(300),
+  employer_name: z.string(),
   logo_url: nullableUrl,
-  title: z.string().trim().min(2).max(300),
-  description: z.string().min(1),
-  location_text: z.string().trim().min(2).max(500).nullable(),
+  title: z.string(),
+  description: z.string(),
+  location_text: z.string().nullable(),
   application_url: z.string().min(1),
   published_at: nullableDate,
   source_updated_at: nullableDate,
