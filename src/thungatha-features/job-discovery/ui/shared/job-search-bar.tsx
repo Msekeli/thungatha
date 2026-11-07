@@ -32,7 +32,7 @@ export function JobSearchBar({
   return (
     <div className="w-full min-w-0">
       <form className="w-full" role="search" onSubmit={handleSubmit}>
-        <label className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-13 rounded-2xl border-public-search-border bg-public-search-bg px-4 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}>
+        <label className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-11 rounded-xl border-public-search-border bg-public-search-bg px-3 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}>
           <Search size={18} aria-hidden="true" />
           <input
             aria-label="Search roles, skills, or companies"
