@@ -32,8 +32,8 @@
     color 0.15s ease;
 }
 .th-workspace-nav-link:hover {
-  background: var(--th-tag-bg);
-  color: var(--th-fg);
+  background: var(--th-workspace-nav-active-bg);
+  color: var(--th-workspace-nav-text);
 }
 .th-workspace-nav-link[data-active="true"] {
   background: var(--th-workspace-nav-active-bg);
