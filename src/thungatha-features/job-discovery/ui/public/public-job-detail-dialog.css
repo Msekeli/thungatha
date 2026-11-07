@@ -93,11 +93,16 @@
     .th-job-detail-actions-layout {
       flex-direction: column;
       align-items: stretch;
-      gap: 0.5rem;
+      gap: 0;
+    }
+
+    .th-job-detail-secondary-actions {
+      display: none;
     }
 
     .th-job-detail-apply-button {
       width: 100%;
+      min-height: 3rem;
     }
 
     .th-public-job-detail-dialog__content {
