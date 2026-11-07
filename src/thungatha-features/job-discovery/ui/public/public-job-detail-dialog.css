@@ -1,5 +1,13 @@
 @layer components {
+  .th-public-job-detail-dialog__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+  }
+
   .th-public-job-detail-dialog {
+    position: fixed;
+    z-index: 1501;
     isolation: isolate;
     opacity: 1;
     background-color: var(--th-public-modal-bg, var(--th-modal));
