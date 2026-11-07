@@ -1,5 +1,7 @@
 "use client";
 
+import "./public-job-detail-dialog.css";
+
 import { Dialog } from "@base-ui/react/dialog";
 import { LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,8 +34,8 @@ export function PublicJobDetailDialog({
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-[1500] bg-overlay backdrop-blur-sm" onClick={onClose} />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-public-modal-bg text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
-          <header className="relative flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 pr-14 sm:gap-5 sm:px-7 sm:py-6 sm:pr-16">
+        <Dialog.Popup className="th-public-job-detail-dialog fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-public-modal-bg text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
+          <header className="th-public-job-detail-dialog__header relative flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 pr-14 sm:gap-5 sm:px-7 sm:py-6 sm:pr-16">
             {job?.company_logo_url ? (
               <img src={job.company_logo_url} alt="" className="size-12 shrink-0 rounded-xl border border-logo-border bg-white object-contain p-1" />
             ) : (
@@ -68,7 +70,7 @@ export function PublicJobDetailDialog({
             />
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
+          <div className="th-public-job-detail-dialog__content min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
             {data.detailLoading && !job ? (
               <div role="status" className="flex items-center gap-3 py-8 text-sm text-fg-muted">
                 <LoaderCircle className="animate-spin" aria-hidden="true" />
@@ -82,7 +84,7 @@ export function PublicJobDetailDialog({
           </div>
 
           {job && (
-            <footer className="flex shrink-0 flex-col gap-3 border-t border-public-modal-border bg-public-modal-footer px-4 py-3 sm:gap-3 sm:px-7 sm:py-4">
+            <footer className="th-public-job-detail-dialog__footer flex shrink-0 flex-col gap-3 border-t border-public-modal-border bg-public-modal-footer px-4 py-3 sm:gap-3 sm:px-7 sm:py-4">
               <JobDetailStatus
                 activityError={data.activityError}
                 detailError={data.detailError}
