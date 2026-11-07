@@ -45,12 +45,10 @@ export function JobList({
             {secondaryAction?.(job)}
           </>
         );
-        const posted = postedLabel?.(job) ?? "Date unknown";
         return variant === "public" ? (
           <PublicJobOpportunityCard
             key={job.id}
             job={job}
-            postedLabel={posted}
             ageDays={postedAgeDays?.(job) ?? null}
             onSelect={() => onSelect(job)}
             actions={actions}
@@ -61,7 +59,7 @@ export function JobList({
             job={job}
             variant={variant}
             selected={job.id === selectedId}
-            postedLabel={posted}
+            postedLabel={postedLabel?.(job) ?? "Date unknown"}
             onSelect={() => onSelect(job)}
             saveAction={saveAction || secondaryAction ? actions : undefined}
           />
