@@ -11,7 +11,6 @@ type Props = {
   job: Job;
   applicationDestination: string | null;
   applicationUrl: string | null;
-  jobSourceUrl: string | null;
   busy: boolean;
   detailLoading: boolean;
   onApply: (anchorEl: HTMLElement) => void;
@@ -24,7 +23,6 @@ export function JobDetailActions({
   job,
   applicationDestination,
   applicationUrl,
-  jobSourceUrl,
   busy,
   detailLoading,
   onApply,
@@ -32,11 +30,6 @@ export function JobDetailActions({
   onDismiss,
 }: Props) {
   const disabled = busy || detailLoading;
-  const applyTitle = applicationUrl
-    ? "Opens the supplied application destination"
-    : jobSourceUrl
-      ? "Opens the available source listing; it may not be the employer application page"
-      : "No job or application link is available";
   const actionClass = "th-job-detail-action-button";
 
   return (
@@ -44,12 +37,12 @@ export function JobDetailActions({
       <Button
         className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
         disabled={!applicationDestination || disabled}
-        title={applyTitle}
+        title={applicationUrl ? "Opens the employer's application page" : "No application link is available"}
         data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
       >
         <ExternalLink size={14} aria-hidden="true" />
-        {applicationUrl ? "Apply on company site" : "Open job listing"}
+        Apply on company site
       </Button>
       <JobDetailProtectedActions
         configured={configured}
