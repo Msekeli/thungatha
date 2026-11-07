@@ -16,7 +16,7 @@ Scout export requests use `GET /vacancies/export`, query parameters `limit`, `of
 
 ## Synchronisation
 
-The public job feed performs a server-side Scout refresh when Scout connection variables are configured. Successful refreshes are throttled for 60 seconds per running server process. The sync reads every export page and upserts by `scout_vacancy_id`.
+The public job feed may trigger a server-side refresh when Scout connection variables are configured. Successful refreshes are throttled for 60 seconds per running server process. The sync client retrieves every page from Scout with GET, then POSTs each page to Thungatha's protected `/api/internal/scout/vacancies/import` endpoint. That endpoint validates the payload, maps Scout fields to Thungatha columns and upserts into Thungatha's own `public.jobs` table by `scout_vacancy_id`. The sync client does not write to Supabase directly.
 
 For a forced manual refresh:
 
@@ -46,3 +46,4 @@ Scout's response remains unchanged. Thungatha maps:
 `first_seen_at` is Scout discovery metadata and is deliberately not substituted for an employer publication or update date.
 
 Scout may return a null location, logo, publication date or source update date. The Thungatha catalogue and presentation must preserve those nulls. The description is stored unchanged because Scout sanitises it before export; the applicant UI renders the permitted HTML structure.
+\n\nThe import endpoint accepts the published Scout export page JSON and requires `Authorization: Bearer <SCOUT_SYNC_SECRET>`. It is an internal server-to-server boundary; never call it from the browser.\n
