@@ -29,7 +29,7 @@ export function JobDetailStatus({
           </Button>
         </div>
       )}
-      <div className="th-jobs-source-status">
+      <div className="th-jobs-application-status">
         <span data-available={Boolean(applicationUrl)}>
           {applicationUrl
             ? "✓ Application destination available"
