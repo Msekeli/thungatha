@@ -48,6 +48,7 @@ export function SignOutControl() {
       <Button
         variant="secondary"
         size="md"
+        className="th-workspace-signout"
         onClick={() => {
           setError(null);
           setIsOpen(true);
