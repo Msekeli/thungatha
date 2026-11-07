@@ -58,12 +58,12 @@ describe("ProfileForm flow", () => {
 
     const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Save draft" })[0]);
 
     await waitFor(() => {
       expect(screen.getByText(/Draft saved\./)).toBeInTheDocument();
     });
-    expect(screen.getByRole("button", { name: "Save draft" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Save draft" })[0]).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
