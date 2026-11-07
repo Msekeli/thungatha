@@ -5,19 +5,18 @@ import { Button } from "@/components/ui/button";
 import { PublicAuthPrompt } from "./public-auth-prompt";
 
 export function PublicDiscoveryFeatureCard({
-  configured, title, description, icon: Icon, iconClass, action,
+  configured, title, description, icon: Icon, action,
 }: {
   configured: boolean;
   title: string;
   description: string;
   icon: LucideIcon;
-  iconClass: string;
   action: string;
 }) {
   return (
     <article className="flex min-w-0 gap-2 rounded-2xl border border-public-card-border bg-public-card-bg p-3 shadow-public-card">
-      <div className={`flex shrink-0 pt-0.5 ${iconClass}`}>
-        <Icon size={18} aria-hidden="true" />
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-accent-bg text-accent-text">
+        <Icon size={19} strokeWidth={2.25} aria-hidden="true" />
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
         <h3 className="text-control font-bold text-fg">{title}</h3>
