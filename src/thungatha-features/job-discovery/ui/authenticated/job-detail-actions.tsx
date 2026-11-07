@@ -33,9 +33,9 @@ export function JobDetailActions({
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="th-job-detail-actions-layout">
       <Button
-        className={`${actionClass} min-h-11 w-full justify-center text-base sm:min-h-10 sm:text-sm`}
+        className={`${actionClass} th-job-detail-apply-button`}
         disabled={!applicationDestination || disabled}
         title={applicationUrl ? "Opens the employer's application page" : "No application link is available"}
         data-job-application-trigger
