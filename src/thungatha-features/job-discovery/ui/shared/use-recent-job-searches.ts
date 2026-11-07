@@ -11,7 +11,12 @@ let cachedRaw: string | null | undefined;
 let cachedSearches: string[] = EMPTY_SEARCHES;
 
 function getSnapshot(): string[] {
-  const raw = window.localStorage.getItem(STORAGE_KEY);
+  let raw: string | null;
+  try {
+    raw = window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return EMPTY_SEARCHES;
+  }
   if (raw === cachedRaw) return cachedSearches;
 
   cachedRaw = raw;
@@ -37,10 +42,18 @@ function subscribe(callback: () => void) {
   };
 }
 
-function publishSearches(searches: string[]) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
-  cachedRaw = null;
+function notifyChange() {
+  cachedRaw = undefined;
   window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
+function publishSearches(searches: string[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
+    notifyChange();
+  } catch {
+    // Search history is optional when browser storage is unavailable.
+  }
 }
 
 export function useRecentJobSearches() {
@@ -66,9 +79,12 @@ export function useRecentJobSearches() {
   );
 
   const clearRecentSearches = useCallback(() => {
-    window.localStorage.removeItem(STORAGE_KEY);
-    cachedRaw = null;
-    window.dispatchEvent(new Event(CHANGE_EVENT));
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+      notifyChange();
+    } catch {
+      // Search history is optional when browser storage is unavailable.
+    }
   }, []);
 
   return { recentSearches, rememberSearch, clearRecentSearches };
