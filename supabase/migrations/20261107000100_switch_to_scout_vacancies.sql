@@ -65,8 +65,6 @@ drop policy if exists "Anonymous users can read jobs with recent active sources"
   on public.jobs;
 drop policy if exists "Anonymous visitors can read jobs with active sources"
   on public.jobs;
-drop policy if exists "Anonymous users can read jobs with recent active sources"
-  on public.jobs;
 
 create policy "Public users can read Scout vacancies"
   on public.jobs
