@@ -16,6 +16,14 @@ export function PublicJobOpportunityCard({
   actions?: ReactNode;
 }) {
   const employer = job.employer_name?.trim() || "Employer not listed";
+  const initials = employer
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
   return (
     <article className="group/card relative flex w-[98%] min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover hover:cursor-pointer motion-reduce:transition-none motion-reduce:hover:transform-none">
       <button
@@ -25,9 +33,17 @@ export function PublicJobOpportunityCard({
         className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent-on-navy"
       />
       <div className="pointer-events-none relative z-10 flex min-h-16 min-w-0 items-center gap-2 border-b-public-band border-public-band-border bg-gradient-to-br from-public-band-from to-public-band-to p-2.5 text-left transition-[filter] duration-200 group-hover/card:brightness-110">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-job font-bold text-logo-fg transition-transform duration-200 group-hover/card:scale-105">
-          {employer.slice(0, 1).toUpperCase()}
-        </span>
+        {job.company_logo_url ? (
+          <img
+            src={job.company_logo_url}
+            alt=""
+            className="size-9 shrink-0 rounded-panel border border-logo-border bg-white object-contain p-0.5"
+          />
+        ) : (
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-job font-bold text-logo-fg">
+            {initials || "?"}
+          </span>
+        )}
         <span className="min-w-0 flex-1">
           <span className="line-clamp-2 block text-job font-semibold text-on-band decoration-accent-on-navy/60 underline-offset-4 group-hover/card:underline">
             {job.title}

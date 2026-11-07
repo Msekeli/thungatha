@@ -12,14 +12,8 @@ type Props = {
   prominent?: boolean;
   isAuthenticated: boolean;
   draft: Filters;
-  filtersOpen: boolean;
-  categories: { key: string; label: string; count: number | null }[];
   category: string;
-  resultCount: number;
-  sortOrder: string;
-  onSortOrderChange: (value: string) => void;
   onQueryChange: (value: string) => void;
-  onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleFilters: (anchorEl: HTMLElement) => void;
   onCategoryChange: (key: string, label: string) => void;
@@ -42,12 +36,8 @@ export function JobDiscoveryControls(props: Props) {
         onQueryChange={props.onQueryChange}
         onSubmit={props.onSubmit}
         onToggleFilters={props.onToggleFilters}
-        categories={props.categories}
         category={props.category}
         onCategoryChange={props.onCategoryChange}
-        resultCount={props.resultCount}
-        sortOrder={props.sortOrder}
-        onSortOrderChange={props.onSortOrderChange}
         isAuthenticated={props.isAuthenticated}
       />
       <JobDiscoveryFeedback

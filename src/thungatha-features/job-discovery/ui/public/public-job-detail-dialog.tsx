@@ -1,11 +1,12 @@
 "use client";
 
+import "./public-job-detail-dialog.css";
+
 import { Dialog } from "@base-ui/react/dialog";
 import { LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobDetailMeta } from "../shared/job-detail-meta";
 import { JobDetailDescription } from "../shared/job-detail-description";
-import { JobSalary } from "../shared/job-salary";
 import { JobDetailActions } from "../authenticated/job-detail-actions";
 import { JobDetailStatus } from "../authenticated/job-detail-status";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
@@ -20,54 +21,67 @@ export function PublicJobDetailDialog({
   onClose: () => void;
 }) {
   const job = data.selectedDetail;
-  const employer = job?.employer_name?.trim() || "Employer not listed";
-  const initials = (job?.employer_name?.trim() || job?.title || "T")
-    .slice(0, 1)
+  const employer = job?.employer_name || "Employer not listed";
+  const initials = employer
+    .split(/\\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
     .toUpperCase();
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop
-          className="fixed inset-0 z-[1500] bg-overlay backdrop-blur-sm"
+          className="th-public-job-detail-dialog__backdrop fixed inset-0 bg-overlay backdrop-blur-sm"
           onClick={onClose}
         />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1501] flex h-public-modal max-h-[calc(100dvh-1.5rem)] w-[min(780px,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-public-modal-bg text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)]">
-          <header className="flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 sm:gap-5 sm:px-7 sm:py-6">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg">
-              {initials}
-            </span>
-            <div className="min-w-0 flex-1">
-              <Dialog.Title className="text-title font-bold leading-tight text-fg sm:text-modal-title">
+        <Dialog.Popup className="th-public-job-detail-dialog fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
+          <header className="th-public-job-detail-dialog__header relative flex shrink-0 items-center gap-3 border-b border-public-modal-border px-4 py-3 pr-14 sm:gap-4 sm:px-6 sm:py-4 sm:pr-16">
+            {job?.company_logo_url ? (
+              <img
+                src={job.company_logo_url}
+                alt=""
+                className="size-11 shrink-0 rounded-xl border border-logo-border bg-white object-contain p-1 sm:size-12"
+              />
+            ) : (
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-logo-bg text-xl font-bold text-logo-fg sm:size-12">
+                {initials || "?"}
+              </span>
+            )}
+            <div className="th-public-job-detail-dialog__identity min-w-0 flex-1">
+              <Dialog.Title className="truncate text-title font-bold leading-tight text-[var(--th-workspace-header-text)] sm:text-modal-title">
                 {job?.title ?? "Job details"}
               </Dialog.Title>
-              <p className="mt-1 text-control text-fg-muted sm:text-job">
+              <p className="mt-0.5 truncate text-control text-[var(--th-workspace-header-muted)] sm:text-job">
                 {employer}
               </p>
-              {job && (
+            </div>
+            {job && (
+              <div className="th-public-job-detail-dialog__meta min-w-0 shrink-0">
                 <JobDetailMeta
                   location={job.location_text}
-                  employmentType={job.employment_type}
-                  workMode={job.work_mode}
-                  postedAt={data.selectedSource?.published_at || job.updated_at}
+                  postedAt={job.published_at}
                   formatDate={data.formatDate}
                 />
-              )}
-            </div>
+              </div>
+            )}
             <Dialog.Close
               render={
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
                   aria-label="Close job details"
+                  className="th-public-job-detail-dialog__close absolute right-3 top-3 size-9 border-public-modal-border bg-public-modal-bg text-fg shadow-sm hover:bg-public-modal-footer focus-visible:outline-accent sm:right-4 sm:top-3"
                 >
-                  <X />
+                  <X className="size-5" />
                 </Button>
               }
             />
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
+          <div className="th-public-job-detail-dialog__content min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6 sm:py-5">
             {data.detailLoading && !job ? (
               <div
                 role="status"
@@ -77,24 +91,7 @@ export function PublicJobDetailDialog({
                 Loading job details…
               </div>
             ) : job ? (
-              <div className="flex min-h-0 flex-col gap-4">
-                <JobSalary
-                  minimum={job.salary_min}
-                  maximum={job.salary_max}
-                  currency={job.salary_currency}
-                  hideWhenEmpty
-                  prefix="Salary: "
-                  locale="en-ZA"
-                />
-                <JobDetailDescription
-                  description={job.description}
-                  descriptionIsPreview={
-                    data.selectedSource?.provider_key === "adzuna" ||
-                    data.selectedSource?.provider_key === "jooble"
-                  }
-                  largeText
-                />
-              </div>
+              <JobDetailDescription description={job.description} largeText />
             ) : (
               <p className="py-8 text-sm text-fg-muted">
                 Select an opportunity to view its details.
@@ -103,7 +100,7 @@ export function PublicJobDetailDialog({
           </div>
 
           {job && (
-            <footer className="flex shrink-0 flex-col gap-3 border-t border-public-modal-border bg-public-modal-footer px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <footer className="th-public-job-detail-dialog__footer flex shrink-0 flex-col gap-2 border-t border-public-modal-border px-4 py-3 sm:px-6 sm:py-3">
               <JobDetailStatus
                 activityError={data.activityError}
                 detailError={data.detailError}
@@ -115,7 +112,6 @@ export function PublicJobDetailDialog({
                 job={job}
                 applicationDestination={data.applicationDestination}
                 applicationUrl={data.applicationUrl}
-                jobSourceUrl={data.jobSourceUrl}
                 busy={data.busy}
                 detailLoading={data.detailLoading}
                 onApply={data.onApply}

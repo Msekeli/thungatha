@@ -19,6 +19,7 @@ export async function GET(
 ) {
   await connection();
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>> = null;
+
   if (hasClerkConfiguration()) {
     try {
       identity = await getAuthenticatedIdentity();
@@ -26,22 +27,26 @@ export async function GET(
       return apiError("Authentication could not be verified", 503);
     }
   }
+
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
+
   try {
     const db = identity
       ? await createAuthenticatedSupabaseClient(identity.getToken)
       : await createPublicSupabaseClient();
-    const jobResult = await db
+    const { data, error } = await db
       .from("jobs")
       .select(
-        "id,title,employer_name,description,location_text,country_code,work_mode,employment_type,salary_min,salary_max,salary_currency,updated_at,job_sources!inner(id,provider_key,provider_kind,external_job_id,source_url,application_url,published_at,availability_status)",
+        "id,scout_vacancy_id,title,employer_name,company_logo_url,description,location_text,application_url,published_at,source_updated_at,updated_at",
       )
       .eq("id", id)
-      .eq("job_sources.availability_status", "active")
+      .not("scout_vacancy_id", "is", null)
       .maybeSingle();
-    if (jobResult.error) throw jobResult.error;
-    if (!jobResult.data) return apiError("Job not found", 404);
+
+    if (error) throw error;
+    if (!data) return apiError("Job not found", 404);
+
     let state: "saved" | "dismissed" | null = null;
     if (identity) {
       const stateResult = await db
@@ -53,10 +58,12 @@ export async function GET(
       if (stateResult.error) throw stateResult.error;
       state = stateResult.data?.state ?? null;
     }
-    return NextResponse.json({ job: { ...jobResult.data, state } });
+
+    return NextResponse.json({ job: { ...data, state } });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError)
+    if (error instanceof SupabaseConfigurationError) {
       return apiError("Job storage is not configured", 503);
+    }
     return apiFailure(error);
   }
 }

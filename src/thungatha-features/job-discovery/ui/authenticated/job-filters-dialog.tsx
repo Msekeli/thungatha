@@ -2,14 +2,9 @@
 
 import { AnchoredPopover } from "@/components/ui/anchored-popover";
 import { JobFiltersDialogContent } from "./job-filters-dialog-content";
+import type { Filters } from "../job-discovery-utils";
 
-export type JobFiltersDraft = {
-  query: string;
-  location: string;
-  workMode: string;
-  employmentType: string;
-  publishedWithin: string;
-};
+export type JobFiltersDraft = Filters;
 
 type Props = {
   open: boolean;

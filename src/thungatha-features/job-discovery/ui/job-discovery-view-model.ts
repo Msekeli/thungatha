@@ -1,6 +1,5 @@
 import {
   safeExternalUrl,
-  sourceFor,
   EMPTY_FILTERS,
   type Feed,
   type Filters,
@@ -22,11 +21,9 @@ export function buildJobDiscoveryViewModel(input: {
     detail?.id === selectedId
       ? detail
       : (feed?.jobs.find((job) => job.id === selectedId) ?? null);
-  const selectedSource = sourceFor(selectedDetail);
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
-  const applicationUrl = safeExternalUrl(selectedSource?.application_url);
-  const jobSourceUrl = safeExternalUrl(selectedSource?.source_url);
+  const applicationUrl = safeExternalUrl(selectedDetail?.application_url);
   const visibleJobs = sortJobDiscoveries(
     feed?.jobs ?? [],
     sortOrder,
@@ -35,27 +32,17 @@ export function buildJobDiscoveryViewModel(input: {
   const hasFilters = Object.entries(filters).some(
     ([key, value]) => value !== EMPTY_FILTERS[key as keyof Filters],
   );
+
   return {
     selectedDetail,
-    selectedSource,
     selectedActivity,
     applicationUrl,
-    jobSourceUrl,
-    applicationDestination: applicationUrl ?? jobSourceUrl,
+    applicationDestination: applicationUrl,
     range:
       !feed || feed.total === 0
         ? "0 jobs"
         : `1–${Math.min(feed.jobs.length, feed.total)} of ${feed.total}`,
     hasFilters,
     visibleJobs,
-    categories: [
-      { key: "all", label: "All opportunities", count: feed?.total ?? 0 },
-      { key: "full-time", label: "Full-time", count: null },
-      { key: "part-time", label: "Part-time", count: null },
-      { key: "contract", label: "Contract", count: null },
-      { key: "internship", label: "Internships", count: null },
-      { key: "learnership", label: "Learnerships", count: null },
-      { key: "graduate", label: "Graduate programmes", count: null },
-    ],
   };
 }

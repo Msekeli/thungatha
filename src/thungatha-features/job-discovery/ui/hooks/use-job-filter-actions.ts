@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { FormEvent, Dispatch, SetStateAction } from "react";
 import { EMPTY_FILTERS, type Filters } from "../job-discovery-utils";
-import { employmentTypeForJobType } from "../shared/job-type-options";
 
 export function useJobFilterActions(
   draft: Filters,
@@ -28,7 +27,6 @@ export function useJobFilterActions(
   const changeDraft = useCallback(
     (key: keyof Filters, value: string) => {
       setDraft((current) => ({ ...current, [key]: value }));
-
       if (key === "query") {
         if (searchTimer.current) clearTimeout(searchTimer.current);
         searchTimer.current = setTimeout(() => {
@@ -64,18 +62,10 @@ export function useJobFilterActions(
 
   const changeCategory = useCallback(
     (key: string) => {
-      if (key === "saved" || key === "dismissed") {
-        setCategory(key);
-        resetResultsView();
-        return;
-      }
-      const employmentType = employmentTypeForJobType(key);
-      setCategory("new");
-      setDraft((current) => ({ ...current, employmentType }));
-      setFilters((current) => ({ ...current, employmentType }));
+      setCategory(key === "saved" || key === "dismissed" ? key : "new");
       resetResultsView();
     },
-    [setCategory, setDraft, setFilters, resetResultsView],
+    [setCategory, resetResultsView],
   );
 
   return {
