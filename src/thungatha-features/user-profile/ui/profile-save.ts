@@ -2,10 +2,13 @@ import { profileCompletionSchema, type UserProfileDto } from "../server/user-pro
 
 export async function saveProfileDraft(draft: UserProfileDto) {
   try {
-    const editable = { ...draft };
-    delete editable.profileVersion;
-    delete editable.createdAt;
-    delete editable.updatedAt;
+    const {
+      profileVersion: _profileVersion,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...editable
+    } = draft;
+    void [_profileVersion, _createdAt, _updatedAt];
 
     const complete = profileCompletionSchema.safeParse(draft).success;
     const payload = {
