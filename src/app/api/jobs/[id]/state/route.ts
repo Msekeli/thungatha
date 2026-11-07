@@ -15,15 +15,17 @@ const bodySchema = z.object({ state: z.enum(["saved", "dismissed"]) }).strict();
 
 async function resolveUser() {
   await connection();
-  if (!hasClerkConfiguration())
+  if (!hasClerkConfiguration()) {
     return {
       user: null,
       response: apiError("Authentication is not configured", 503),
     };
+  }
   try {
     const user = await getAuthenticatedIdentity();
-    if (!user)
+    if (!user) {
       return { user: null, response: apiError("Authentication required", 401) };
+    }
     return { user, response: null };
   } catch {
     return {
@@ -41,6 +43,7 @@ export async function PUT(
   if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
+
   let body: unknown;
   try {
     body = await request.json();
@@ -49,16 +52,18 @@ export async function PUT(
   }
   const parsed = bodySchema.safeParse(body);
   if (!parsed.success) return apiError("State must be saved or dismissed", 400);
+
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
     const { data: job, error: jobError } = await db
       .from("jobs")
-      .select("id,job_sources!inner(availability_status)")
+      .select("id")
       .eq("id", id)
-      .eq("job_sources.availability_status", "active")
+      .not("scout_vacancy_id", "is", null)
       .maybeSingle();
     if (jobError) throw jobError;
     if (!job) return apiError("Job not found", 404);
+
     const { data, error } = await db
       .from("user_job_states")
       .upsert(
@@ -70,8 +75,9 @@ export async function PUT(
     if (error) throw error;
     return NextResponse.json({ state: data });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError)
+    if (error instanceof SupabaseConfigurationError) {
       return apiError("Job storage is not configured", 503);
+    }
     return apiFailure(error);
   }
 }
@@ -84,6 +90,7 @@ export async function DELETE(
   if (response) return response;
   const { id } = await context.params;
   if (!idSchema.safeParse(id).success) return apiError("Invalid job ID", 400);
+
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
     const { error } = await db
@@ -94,8 +101,9 @@ export async function DELETE(
     if (error) throw error;
     return NextResponse.json({ state: null });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError)
+    if (error instanceof SupabaseConfigurationError) {
       return apiError("Job storage is not configured", 503);
+    }
     return apiFailure(error);
   }
 }
