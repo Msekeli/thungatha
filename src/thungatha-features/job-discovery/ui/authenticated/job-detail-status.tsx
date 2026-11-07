@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 export function JobDetailStatus({
   activityError,
   detailError,
-  applicationUrl,
   onRetry,
 }: {
   activityError: string | null;
   detailError: string | null;
-  applicationUrl: string | null;
+  applicationUrl?: string | null;
   onRetry: () => void;
 }) {
   return (
@@ -20,7 +19,7 @@ export function JobDetailStatus({
       )}
       {detailError && (
         <div
-          className="flex items-center gap-2 text-sm text-destructive"
+          className="flex flex-wrap items-center gap-2 text-sm text-destructive"
           role="status"
         >
           <span>{detailError}</span>
@@ -29,13 +28,6 @@ export function JobDetailStatus({
           </Button>
         </div>
       )}
-      <div className="th-jobs-application-status">
-        <span data-available={Boolean(applicationUrl)}>
-          {applicationUrl
-            ? "✓ Application destination available"
-            : "! Employer application link not verified"}
-        </span>
-      </div>
     </>
   );
 }
