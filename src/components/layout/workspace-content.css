@@ -235,17 +235,3 @@
   }
 }
 
-/* Authenticated workspace header controls follow the reference's circular treatment. */
-.th-workspace-theme-toggle {
-  width: 44px;
-  height: 44px;
-  border-color: var(--th-workspace-toggle-border);
-  background: transparent;
-  color: var(--th-workspace-toggle-text);
-  border-radius: 999px;
-}
-.th-workspace-theme-toggle:hover {
-  border-color: var(--th-accent);
-  background: color-mix(in srgb, var(--th-accent) 12%, transparent);
-  color: var(--th-accent);
-}
