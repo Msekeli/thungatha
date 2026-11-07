@@ -208,3 +208,19 @@
     min-height: 40px;
   }
 }
+
+/* Job discovery is a fixed viewport workspace; only its results list scrolls. */
+.th-workspace-page-content:has(.th-jobs-page) {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.th-workspace-page-content:has(.th-jobs-page) > .th-jobs-page {
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
