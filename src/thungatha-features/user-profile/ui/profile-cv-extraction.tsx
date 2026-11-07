@@ -78,7 +78,7 @@ export function ProfileCvExtraction({
   }
 
   useEffect(() => {
-    void extract();
+    void Promise.resolve().then(extract);
     // The staged file identifies a single extraction request.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filename, storagePath]);
