@@ -8,7 +8,7 @@ export type JobCardData = {
   title: string;
   employer_name: string;
   company_logo_url: string | null;
-  location_text: string;
+  location_text: string | null;
 };
 
 type Props = {
