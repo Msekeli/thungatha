@@ -47,7 +47,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <div
       role="group"
       aria-label="Colour theme"
-      className={`th-theme-toggle inline-flex h-10 w-fit shrink-0 items-center gap-0.5 rounded-lg border border-[var(--th-line)] bg-[var(--th-panel)] p-1 transition-colors ${className}`}
+      className={`th-theme-toggle inline-flex h-10 w-fit shrink-0 items-center gap-0.5 rounded-md border border-[var(--th-workspace-toggle-border)] bg-[var(--th-nav)] p-1 transition-colors ${className}`}
     >
       <button
         type="button"
@@ -55,10 +55,10 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         aria-label="Light theme"
         aria-pressed={theme === "light"}
         title="Light theme"
-        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
           theme === "light"
-            ? "border border-[var(--th-line)] bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm"
-            : "border border-transparent text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
+            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-nav-active-bg)] text-[var(--th-accent-on-navy)]"
+            : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
         <Sun size={15} aria-hidden="true" />
@@ -72,8 +72,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         title="Dark theme"
         className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
           theme === "dark"
-            ? "border border-[var(--th-line)] bg-[var(--th-panel-2)] text-[var(--th-fg)] shadow-sm"
-            : "border border-transparent text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
+            ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-nav-active-bg)] text-[var(--th-accent-on-navy)]"
+            : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
         <Moon size={15} aria-hidden="true" />
