@@ -1,22 +1,16 @@
 import { z } from "zod";
 
 const nullableDate = z.string().datetime({ offset: true }).nullable();
-const nullableHttpUrl = z.string().url().refine((value) => {
-  const protocol = new URL(value).protocol;
-  return protocol === "http:" || protocol === "https:";
-}).nullable();
+const nullableUrl = z.string().nullable();
 
 export const scoutExportVacancySchema = z.object({
   scout_vacancy_id: z.string().uuid(),
   employer_name: z.string().trim().min(2).max(300),
-  logo_url: nullableHttpUrl,
+  logo_url: nullableUrl,
   title: z.string().trim().min(2).max(300),
   description: z.string().min(1),
   location_text: z.string().trim().min(2).max(500).nullable(),
-  application_url: z.string().url().refine((value) => {
-    const protocol = new URL(value).protocol;
-    return protocol === "http:" || protocol === "https:";
-  }),
+  application_url: z.string().min(1),
   published_at: nullableDate,
   source_updated_at: nullableDate,
   first_seen_at: z.string().datetime({ offset: true }),
