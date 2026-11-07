@@ -5,7 +5,6 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { scoutExportPageSchema } from "@/thungatha-features/job-discovery/server/scout-export-schema";
 
-export const runtime = "nodejs";
 
 function isAuthorised(request: Request) {
   const expectedSecret = process.env.SCOUT_SYNC_SECRET;
