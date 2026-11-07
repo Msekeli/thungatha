@@ -39,7 +39,7 @@ export function PublicJobOpportunityCard({
           <span className="break-words">{job.location_text || "Location not specified"}</span>
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
-          <span className={`inline-flex items-center gap-2 rounded-pill px-2.5 py-1 text-detail font-bold ${ageTone(ageDays)}`}><i aria-hidden="true" className="size-2 rounded-full bg-current" />{postedLabel}</span>
+          <span className={`inline-flex items-center gap-2 rounded-pill px-3 py-1.5 text-control font-bold ${ageTone(ageDays)}`}><i aria-hidden="true" className="size-2 rounded-full bg-current" />{postedLabel}</span>
           <div className="pointer-events-auto relative z-20 flex shrink-0 items-center gap-1">{actions}</div>
         </div>
       </div>
