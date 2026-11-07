@@ -57,4 +57,4 @@ describe("profile repository ownership and partial updates", () => {
     }));
     expect(q.insert).not.toHaveBeenCalled();
   });
-}
+});
