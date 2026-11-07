@@ -23,7 +23,6 @@ const features = [
     description:
       "Keep status and next steps in one place.",
     icon: ChartNoAxesColumn,
-    iconClass: "text-accent",
     action: "Sign in to track",
   },
 ];
@@ -42,7 +41,7 @@ export function PublicJobDiscoveryPromoSidebar({
         <h2 className="text-job font-bold leading-snug">
           Make more of your job search
         </h2>
-        <p className="mt-1 text-detail leading-relaxed text-public-muted">
+        <p className="mt-1 text-control leading-relaxed text-fg-muted">
           Find opportunities and use Thungatha tools to move forward with
           confidence.
         </p>
