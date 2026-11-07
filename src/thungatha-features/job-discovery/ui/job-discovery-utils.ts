@@ -1,45 +1,20 @@
-export type Job = {
-  id: string;
-  scout_vacancy_id: string;
-  title: string;
-  employer_name: string;
-  company_logo_url: string | null;
-  description: string;
-  location_text: string;
-  application_url: string;
-  published_at: string | null;
-  source_updated_at: string | null;
-  updated_at: string;
-  state: "saved" | "dismissed" | null;
-};
+import {
+  EMPTY_FILTERS,
+  PAGE_SIZE,
+  type Filters,
+} from "./job-discovery-types";
 
-export type JobActivity = {
-  application_link_opened_at: string | null;
-  applied_at: string | null;
-};
-
-export type Feed = {
-  jobs: Job[];
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-};
-
-export type Filters = {
-  query: string;
-  location: string;
-  publishedWithin: string;
-};
+export {
+  EMPTY_FILTERS,
+  PAGE_SIZE,
+  type Feed,
+  type Filters,
+  type Job,
+  type JobActivity,
+} from "./job-discovery-types";
+export { isValidFeed } from "./job-feed-validation";
 
 type ApiError = { error?: string; requestId?: string };
-
-export const EMPTY_FILTERS: Filters = {
-  query: "",
-  location: "",
-  publishedWithin: "any",
-};
-export const PAGE_SIZE = 30;
 
 export function shown(value: string | null | undefined): string {
   return value?.trim() || "Not provided";
@@ -104,37 +79,4 @@ export function buildJobFeedParams(
     if (value.trim()) search.set(key, value.trim());
   }
   return search.toString();
-}
-
-export function isValidFeed(value: unknown): value is Feed {
-  if (!value || typeof value !== "object") return false;
-  const data = value as Partial<Feed>;
-  return (
-    Array.isArray(data.jobs) &&
-    Number.isInteger(data.page) &&
-    data.page! >= 1 &&
-    Number.isInteger(data.pageSize) &&
-    data.pageSize! >= 1 &&
-    Number.isInteger(data.total) &&
-    data.total! >= 0 &&
-    Number.isInteger(data.totalPages) &&
-    data.totalPages! >= 0 &&
-    data.totalPages === Math.ceil(data.total! / data.pageSize!) &&
-    data.jobs.every(
-      (job) =>
-        Boolean(job) &&
-        typeof job.id === "string" &&
-        typeof job.scout_vacancy_id === "string" &&
-        typeof job.title === "string" &&
-        typeof job.employer_name === "string" &&
-        (job.company_logo_url === null || typeof job.company_logo_url === "string") &&
-        typeof job.location_text === "string" &&
-        typeof job.description === "string" &&
-        typeof job.application_url === "string" &&
-        (job.published_at === null || typeof job.published_at === "string") &&
-        (job.source_updated_at === null || typeof job.source_updated_at === "string") &&
-        typeof job.updated_at === "string" &&
-        (job.state === null || job.state === "saved" || job.state === "dismissed"),
-    )
-  );
 }
