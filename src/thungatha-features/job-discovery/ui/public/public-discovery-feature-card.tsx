@@ -15,15 +15,15 @@ export function PublicDiscoveryFeatureCard({
   action: string;
 }) {
   return (
-    <article className="flex min-w-0 gap-3 rounded-2xl border border-public-card-border bg-public-card-bg p-4 shadow-public-card">
+    <article className="flex min-w-0 gap-2 rounded-2xl border border-public-card-border bg-public-card-bg p-3 shadow-public-card">
       <div className={`flex shrink-0 pt-0.5 ${iconClass}`}>
-        <Icon size={20} aria-hidden="true" />
+        <Icon size={18} aria-hidden="true" />
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
-        <h3 className="text-job font-bold text-fg">{title}</h3>
-        <p className="text-control text-public-muted">{description}</p>
+        <h3 className="text-control font-bold text-fg">{title}</h3>
+        <p className="text-detail text-public-muted">{description}</p>
         <PublicAuthPrompt configured={configured} title={title} description={`Sign in or create a free account to access ${title.toLowerCase()} and keep your job search organised.`}>
-          <Button variant="outline" size="sm" className="whitespace-normal rounded-xl border-accent-text px-4 text-left text-accent-text">{action}</Button>
+          <Button variant="outline" size="sm" className="whitespace-normal rounded-xl border-accent-text px-3 text-left text-detail text-accent-text">{action}</Button>
         </PublicAuthPrompt>
       </div>
     </article>
