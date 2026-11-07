@@ -70,7 +70,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         aria-label="Dark theme"
         aria-pressed={theme === "dark"}
         title="Dark theme"
-        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
+        className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-sm px-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent sm:h-8 sm:px-2.5 sm:text-sm ${
           theme === "dark"
             ? "border border-[var(--th-accent-on-navy)] bg-[var(--th-nav-active-bg)] text-[var(--th-accent-on-navy)]"
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
