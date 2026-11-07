@@ -16,6 +16,7 @@ type Props = {
   onApply: (anchorEl: HTMLElement) => void;
   onSave: () => void;
   onDismiss: () => void;
+  applyOnly?: boolean;
 };
 
 export function JobDetailActions({
@@ -28,12 +29,13 @@ export function JobDetailActions({
   onApply,
   onSave,
   onDismiss,
+  applyOnly = false,
 }: Props) {
   const disabled = busy || detailLoading;
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className="th-job-detail-actions">
+    <div className={applyOnly ? "flex" : "th-job-detail-actions"}>
       <Button
         className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
         disabled={!applicationDestination || disabled}
@@ -44,13 +46,15 @@ export function JobDetailActions({
         <ExternalLink size={14} aria-hidden="true" />
         Apply on company site
       </Button>
-      <JobDetailProtectedActions
-        configured={configured}
-        job={job}
-        disabled={disabled}
-        onSave={onSave}
-        onDismiss={onDismiss}
-      />
+      {!applyOnly && (
+        <JobDetailProtectedActions
+          configured={configured}
+          job={job}
+          disabled={disabled}
+          onSave={onSave}
+          onDismiss={onDismiss}
+        />
+      )}
     </div>
   );
 }
