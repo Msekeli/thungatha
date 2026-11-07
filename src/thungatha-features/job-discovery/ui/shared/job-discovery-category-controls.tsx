@@ -15,12 +15,10 @@ const typeKeyByValue: Record<string, string> = {
 export function JobDiscoveryCategoryControls({
   prominent = false,
   selectedType,
-  total,
   onTypeChange,
 }: {
   prominent?: boolean;
   selectedType: string;
-  total: number;
   onTypeChange: (key: string, label: string) => void;
 }) {
   return (
@@ -29,8 +27,6 @@ export function JobDiscoveryCategoryControls({
         <JobCategoryChips
           prominent={prominent}
           activeKey={typeKeyByValue[selectedType] ?? selectedType ?? "all"}
-          counts={{ all: total }}
-          showAllCount
           className="min-w-max flex-nowrap"
           onSelect={onTypeChange}
         />
