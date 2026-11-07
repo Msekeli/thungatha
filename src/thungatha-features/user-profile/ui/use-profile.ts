@@ -77,7 +77,7 @@ export function useProfile() {
   };
 
   useEffect(() => {
-    void fetchProfile();
+    void Promise.resolve().then(fetchProfile);
   }, [fetchProfile]);
 
   return {
