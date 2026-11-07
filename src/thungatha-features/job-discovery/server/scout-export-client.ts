@@ -79,6 +79,7 @@ function mapScoutVacancy(vacancy: ScoutExportVacancy) {
     application_url: vacancy.application_url,
     published_at: vacancy.published_at,
     source_updated_at: vacancy.source_updated_at,
+    updated_at: new Date().toISOString(),
   };
 }
 
