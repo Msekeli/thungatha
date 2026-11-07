@@ -1,9 +1,9 @@
 # M2 — Profile and CV Import
 
-**Status:** Not started  
-**Planning note:** Plan updated 2026-10-24; ready to begin at M2-C01.  
-**Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.  
-**Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.  
+**Status:** In progress — C02 and C03 accepted; C04 in review.
+**Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has now been accepted by the user.
+**Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
+**Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
 
 ## Purpose and scope
@@ -14,7 +14,7 @@ The CV Studio design expects the master CV to load from Profile when one exists.
 
 ## M2 start plan and engineering constraints
 
-M2 is planned and implementation has not started. Do not assume a functional backend, Profile API, database schema, migrations, data-access layer, CV storage, or extraction service exists. Inspect the checked-out branch and verify what is real, placeholder, or absent. Existing Profile UI/scaffolding is not evidence of a working backend. Start with M2-C00 (audit only), then build the agreed backend/data foundation before connecting the designed UI. Preserve the established Clerk/Supabase architecture where confirmed, but do not invent or assume a pre-existing API/database contract.
+C01 implemented the profile data contract and backend foundation, including bounded repeatable sections, server-maintained profile version history, residential-area fields (suburb, city/town, province and optional postal code; no street address), languages, personal attributes and work achievements. C02 implemented the user-facing manual profile editing increment. The extension is profession-neutral and remains optional where appropriate.
 
 ### Required execution order
 
@@ -30,10 +30,6 @@ M2 is planned and implementation has not started. Do not assume a functional bac
 C00 is a planning/audit checkpoint and does not require an application-code commit. Every checkpoint from C01 onward must deliver a meaningful, reviewable increment that can be committed. Tests and verification are evidence for a code checkpoint, not standalone implementation checkpoints. After each code checkpoint, report the focused commit hash, changed files, actual test results and remaining issues; wait for approval before proceeding to the next checkpoint.
 
 See [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md) for the detailed agent instructions and acceptance evidence.
-
-- **Component reuse before creation:** Before building a UI component, inspect the current feature's existing components first, then the global/shared component library. Reuse or extend a suitable component at either level. Create a new component only if neither level has a suitable fit.
-- **Respect feature boundaries:** Do not use another feature's private component as a shortcut. If multiple features need the same capability, consider whether a generic component belongs in the global/shared library. Keep feature-specific components inside their owning feature.
-- **Explain genuine gaps:** If neither level has a suitable component, briefly identify what was checked and why the available options do not fit. Do not force-fit components or introduce abstractions just because two UI elements look alike.
 
 ### UI and component rules for M2
 
@@ -129,16 +125,60 @@ The first implementation should attempt conventional text extraction and determi
 
 Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accepted**. Record actual changes, tests, evidence, unresolved issues, next action and user review for each checkpoint.
 
-Checkpoint meanings, commit expectations, detailed exit evidence and Antigravity's first-task instruction are maintained in [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md).
+Checkpoint meanings, commit expectations, local-only agent workflow, detailed exit evidence and first-task instruction are maintained in [M2 Antigravity Execution Brief](M2-ANTIGRAVITY-EXECUTION-BRIEF.md).
 
 ## Checkpoints
 
-- **M2-C00 — Repository and backend readiness audit:** audit only; no application-code changes and no implementation commit required.
-- **M2-C01 — Profile data contract and backend foundation:** meaningful backend/data-contract increment; commit required.
-- **M2-C02 — Profile view and manual editing:** meaningful user-facing profile increment; commit required.
-- **M2-C03 — CV upload and private storage:** upload/storage increment; commit required.
-- **M2-C04 — Deterministic extraction and progress/failure states:** extraction increment; commit required.
-- **M2-C05 — Review and confirmation workflow:** reviewed, user-confirmed profile data increment; commit required.
-- **M2-C06 — Master CV lifecycle and replacement safety:** file lifecycle increment; commit required.
-- **M2-C07 — End-to-end acceptance and closeout:** completed acceptance evidence and any meaningful fixes/final documentation; commit changes where applicable and obtain explicit user acceptance.
+- **M2-C00 — Repository and backend readiness audit:** Accepted / planning baseline; no application-code changes and no implementation commit required.
+- **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
+- **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
+- **M2-C03 — CV upload and private storage:** **Accepted by user (2026-10-24)** — PDF/DOCX, 5 MB limit, private Supabase Storage and staged replacement safety. User applied the migration and reported local testing complete. Commit: `8828f04cbfe31662da841a7c4738d31d294c1bf0`.
+- **M2-C04 — Deterministic extraction and progress/failure states:** **In review** — server-side PDF/DOCX text extraction and deterministic candidate parsing added; results remain unconfirmed and are not persisted.
+- **M2-C05 — Review and confirmation workflow:** Not started.
+- **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
+- **M2-C07 — End-to-end acceptance and closeout:** Not started.
 
+## M2-C02 execution record — 2026-10-24
+
+- **Status:** Accepted by user.
+- **Changes made:** Improved manual profile editing for profession-neutral use; added residential-area fields, language and personal-attribute lists, and work-experience description/achievements entry; updated saved profile details display.
+- **Commit:** `e3534b3948a69e2a10cbea6fd962745b85ac29f2` — `feat(profile): extend manual profile editing`.
+- **Files changed:** `src/thungatha-features/user-profile/ui/profile-personal-details-form.tsx`, `src/thungatha-features/user-profile/ui/profile-language-attributes-editor.tsx` (new), `src/thungatha-features/user-profile/ui/profile-editor-view.tsx`, `src/thungatha-features/user-profile/ui/profile-saved-details-card.tsx`, `src/thungatha-features/user-profile/ui/profile-experience-editor.tsx`.
+- **Verification evidence:** User reported that the local result was all well and explicitly asked to close C02. ChatGPT did not run tests, lint, build or browser checks, per the user's standing instruction.
+- **Remaining scope:** Education, certification and project editor enhancements may be addressed if a concrete gap appears during later review; C02 is accepted by user and is not reopened by default.
+- **Next action:** Start C03 only after the user approves the upload/storage decisions and implementation plan.
+- **Reviewed/accepted by user:** Yes, 2026-10-24.
+
+
+## M2-C03 execution record — 2026-10-24
+
+- **Status:** In review; implementation prepared for user review.
+- **Approved decisions:** PDF and DOCX only; 5 MB maximum; retain the current master CV until the user removes or replaces it; keep the existing CV until a replacement upload succeeds and the user confirms replacement.
+- **Implemented scope:** private `profile-cvs` Supabase Storage bucket; storage policies scoped to the authenticated Clerk subject and per-user staged path; authenticated upload endpoint with extension/MIME, size, empty-file and basic file-signature validation; responsive file-selection, drag/drop, remove-selection, upload, retryable error and staged-success UI on empty and saved profile views.
+- **Safety boundary:** uploaded objects are staged under a unique per-user path. This checkpoint does not update `profiles.master_cv`, replace/delete an existing master CV, or extract CV contents. No public URLs or service-role key are used.
+- **Verification:** no tests, lint, build, browser checks, or Vercel operations were run, per user instruction. The migration has not been applied by ChatGPT; the user must apply it to the linked Supabase project before storage works.
+- **Known limitation:** staged upload state is returned to the client and is not yet promoted to master-CV metadata. Extraction/review and safe promotion belong to later checkpoints. Staged-object cleanup policy needs to be addressed before lifecycle closeout.
+- **Next action:** user pulls/reviews the focused commit, applies the migration, and reports acceptance or defects. Do not begin C04 until C03 is accepted.
+
+
+## M2-C04 — Deterministic extraction and progress/failure states (2026-10-24)
+
+**Status:** In review — implementation committed to `dev`; user review pending.
+
+**Implemented:** Authenticated server-side text extraction for staged PDF/DOCX files using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Deterministic parsing proposes name, email, phone, LinkedIn URL, portfolio URL, summary and skills where recognizable. The UI exposes an explicit extraction action, busy state, retry, partial/failure messages and warnings.
+
+**Trust boundary:** Candidate values are display-only; they are not written to the profile or master-CV metadata and are not confirmed. Scanned PDFs/OCR, complex layouts, work-history/education extraction, and the C05 review/save workflow remain unsupported or future work.
+
+**Verification:** No tests, lint, build, browser checks or Vercel operations were run, per user instruction. The user installed extraction packages locally; package manifest/lockfile synchronization must be included with local dependency changes.
+
+**Next action:** user pulls/reconciles the checkpoint, reviews representative CV output, and reports acceptance or defects. Do not start C05 until C04 is accepted.
+
+
+## Profile role-preference extension — 2026-10-24
+
+- **Status:** Implemented in source; user review pending.
+- **Scope:** Added the optional “What’s your next role?” preference, with suggested titles and custom text entry. Industry remains excluded.
+- **Persistence:** Added forward migration `20261024000700_add_profile_next_role.sql`; the migration adds `profiles.next_role` and includes `nextRole` in profile-version snapshots. The earlier migrations remain unchanged.
+- **Architecture:** Updated the profile schema, mapper, repository select list, blank-profile state and editor. The role preference is persisted but is not yet wired into job ranking; M3/matching work should use it as a soft relevance signal rather than a hard filter.
+- **Verification:** No tests, lint, build, browser checks or live migration commands were run by ChatGPT, per user instruction. The user must apply the new migration with the existing linked Supabase CLI workflow before this field can persist remotely.
+- **Next action:** Pull `dev`, apply the new migration, review the role field and confirm persistence before expanding the remaining profile editor sections.

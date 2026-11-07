@@ -9,6 +9,7 @@ import {
 import type { Filters } from "../job-discovery-utils";
 
 type Props = {
+  prominent?: boolean;
   isAuthenticated: boolean;
   draft: Filters;
   filtersOpen: boolean;
@@ -36,6 +37,7 @@ export function JobDiscoveryControls(props: Props) {
   return (
     <>
       <JobDiscoveryHeader
+        prominent={props.prominent}
         draft={props.draft}
         onQueryChange={props.onQueryChange}
         onSubmit={props.onSubmit}

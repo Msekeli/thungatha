@@ -1,6 +1,39 @@
 import "server-only";
 
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
+import { mapInputToRow } from "./user-profile-mapper";
+import type { ProfileDatabaseRow } from "./profile-database-row";
+import type { UpdateProfileInput } from "./user-profile-schema";
+
+export const PROFILE_SELECT_COLUMNS = [
+  "user_id",
+  "display_name",
+  "next_role",
+  "full_name",
+  "email",
+  "phone",
+  "location",
+  "country",
+  "residential_suburb",
+  "residential_city",
+  "residential_province",
+  "residential_postal_code",
+  "linkedin_url",
+  "portfolio_url",
+  "summary",
+  "experience",
+  "education",
+  "skills",
+  "certifications",
+  "projects",
+  "languages",
+  "personal_attributes",
+  "master_cv",
+  "confirmed_at",
+  "profile_version",
+  "created_at",
+  "updated_at",
+].join(", ");
 
 export async function readProfile(
   userId: string,
@@ -9,23 +42,40 @@ export async function readProfile(
   const supabase = await createAuthenticatedSupabaseClient(getToken);
   return supabase
     .from("profiles")
-    .select("display_name")
+    .select(PROFILE_SELECT_COLUMNS)
     .eq("user_id", userId)
-    .maybeSingle();
+    .maybeSingle<ProfileDatabaseRow>();
 }
 
 export async function saveProfile(
   userId: string,
-  displayName: string,
+  input: UpdateProfileInput | string,
   getToken: () => Promise<string | null>,
 ) {
   const supabase = await createAuthenticatedSupabaseClient(getToken);
+  const row = mapInputToRow(userId, input);
+  const { user_id: ownerId, ...patch } = row;
+  const updated = await supabase
+    .from("profiles")
+    .update(patch)
+    .eq("user_id", ownerId)
+    .select(PROFILE_SELECT_COLUMNS)
+    .maybeSingle<ProfileDatabaseRow>();
+
+  if (updated.error || updated.data) return updated;
+
+  const inserted = await supabase
+    .from("profiles")
+    .insert(row)
+    .select(PROFILE_SELECT_COLUMNS)
+    .single<ProfileDatabaseRow>();
+
+  if (!inserted.error || inserted.error.code !== "23505") return inserted;
+
   return supabase
     .from("profiles")
-    .upsert(
-      { user_id: userId, display_name: displayName },
-      { onConflict: "user_id" },
-    )
-    .select("display_name")
-    .single();
+    .update(patch)
+    .eq("user_id", ownerId)
+    .select(PROFILE_SELECT_COLUMNS)
+    .single<ProfileDatabaseRow>();
 }

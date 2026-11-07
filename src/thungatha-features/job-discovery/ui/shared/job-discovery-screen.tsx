@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { JobDiscoveryDialogs } from "../authenticated/job-discovery-dialogs";
-import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
-import { JobDiscoverySearchToolbar } from "./job-discovery-search-toolbar";
 import { useJobDiscoveryDialogAnchors } from "../hooks/use-job-discovery-dialog-anchors";
 import { useJobDiscoveryState } from "../hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "../hooks/use-job-discovery-controller";
 import { shown, sourceFor } from "../job-discovery-utils";
+import { JobDiscoveryWorkspace } from "./job-discovery-workspace";
+import { JobDiscoverySearchToolbar } from "./job-discovery-search-toolbar";
 
 type State = ReturnType<typeof useJobDiscoveryState>;
 type Controller = ReturnType<typeof useJobDiscoveryController>;
@@ -30,7 +30,6 @@ export function JobDiscoveryScreen({
     s.category === "dismissed" || s.category === "saved"
       ? s.category
       : s.filters.employmentType || "all";
-  const dismissedCount = s.dismissedCount;
 
   return (
     <>
@@ -39,7 +38,9 @@ export function JobDiscoveryScreen({
         controller={c}
         hasLeadingColumn={Boolean(workspaceLeadingColumn)}
       />
-      <div className="min-h-0 flex-1 max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col">
+      <div
+        className={`flex min-h-0 flex-1 flex-col overflow-hidden ${workspaceLeadingColumn ? "px-8 pb-0 pt-3 max-[900px]:px-0 max-[900px]:pb-4 max-[900px]:pt-0" : ""} max-[900px]:mx-auto max-[900px]:w-[94%] max-[900px]:max-w-none max-[700px]:flex max-[700px]:flex-col`}
+      >
         <JobDiscoveryWorkspace
           jobs={c.visibleJobs}
           feed={s.feed}
@@ -74,7 +75,7 @@ export function JobDiscoveryScreen({
           leadingColumn={workspaceLeadingColumn}
           resultCount={s.feed?.total ?? 0}
           category={category}
-          dismissedCount={dismissedCount}
+          dismissedCount={s.dismissedCount}
           isAuthenticated={s.isAuthenticated}
           sortOrder={s.sortOrder}
           onSortOrderChange={(value) => {

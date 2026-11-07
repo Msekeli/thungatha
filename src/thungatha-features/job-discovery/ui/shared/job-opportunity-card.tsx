@@ -25,7 +25,7 @@ export function JobOpportunityCard({
   saveAction,
 }: Props) {
   return (
-    <div className="relative w-full min-w-0">
+    <div className="relative w-[98%] min-w-0">
       <JobCardButton
         job={job}
         selected={selected}

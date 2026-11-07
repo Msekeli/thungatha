@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   /* config options here */
+  serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

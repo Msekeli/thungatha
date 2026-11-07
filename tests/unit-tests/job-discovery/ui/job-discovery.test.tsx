@@ -238,7 +238,7 @@ describe("Job Discovery", () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
     expect(
-      (await screen.findAllByRole("heading", { name: "Software Engineer" }))
+      (await screen.findByRole("button", { name: "View Software Engineer at Example Employer" }))
         .length,
     ).toBeGreaterThan(0);
     expect(await screen.findByText("Select an opportunity")).toBeTruthy();
@@ -248,7 +248,7 @@ describe("Job Discovery", () => {
       screen.getByRole("button", { name: /Software Engineer, Example Employer/ }),
     );
     expect(
-      await screen.findAllByText("Build and support web services."),
+      await screen.findByRole("button", { name: "View Software Engineer at Example Employer" }),
     ).toBeTruthy();
     expect(
       screen.getAllByText("Cape Town, South Africa").length,
@@ -271,17 +271,17 @@ describe("Job Discovery", () => {
     });
     fireEvent.click(dismissedButton);
     expect(
-      await screen.findByRole("button", { name: /Dismissed role 1/ }),
+      await screen.findByRole("button", { name: "View Dismissed role 1 at Example Employer" }),
     ).toBeTruthy();
     expect(
-      screen.getAllByRole("button", { name: /Dismissed role/ }).length,
+      screen.getAllByRole("button", { name: /View Dismissed role/ }).length,
     ).toBeGreaterThanOrEqual(4);
   });
 
   it("submits the supported search and filter query parameters", async () => {
     const { requests } = setupFetch();
     render(<JobsDiscovery configured={false} />);
-    await screen.findAllByRole("heading", { name: "Software Engineer" });
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     fireEvent.change(
       screen.getByLabelText("Search roles, skills, or companies"),
       {
@@ -318,7 +318,7 @@ describe("Job Discovery", () => {
   it("clears filters and resets pagination", async () => {
     const { requests } = setupFetch();
     render(<JobsDiscovery configured={false} />);
-    await screen.findAllByRole("heading", { name: "Software Engineer" });
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     fireEvent.change(
       screen.getByLabelText("Search roles, skills, or companies"),
       {
@@ -363,9 +363,7 @@ describe("Job Discovery", () => {
     const { requests } = setupFetch([firstJob, secondJob]);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(
-      await screen.findByRole("button", {
-        name: "Frontend Developer, Other Employer, Cape Town, South Africa",
-      }),
+      await screen.findByRole("button", { name: "View Frontend Developer at Other Employer" }),
     );
     expect(
       await screen.findByText(/Application destination available/),
@@ -397,9 +395,9 @@ describe("Job Discovery", () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<JobsDiscovery configured={false} />);
     fireEvent.click(
-      await screen.findByRole("button", { name: /Software Engineer, Example Employer/ }),
+      await screen.findByRole("button", { name: "View Software Engineer at Example Employer" }),
     );
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     const applyButton = await screen.findByRole("button", {
       name: "Open job listing",
     });
@@ -497,7 +495,7 @@ describe("Job Discovery", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(
-      (await screen.findAllByRole("heading", { name: "Software Engineer" }))
+      (await screen.findByRole("button", { name: "View Software Engineer at Example Employer" }))
         .length,
     ).toBeGreaterThan(0);
   });
@@ -525,7 +523,7 @@ describe("Job Discovery", () => {
       },
     );
     render(<JobsDiscovery configured={false} />);
-    await screen.findAllByRole("heading", { name: "Software Engineer" });
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     await waitFor(() =>
       expect(
         requests.some(
@@ -539,7 +537,7 @@ describe("Job Discovery", () => {
   it("persists a saved state and can undo it", async () => {
     const { fetchMock } = setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -564,7 +562,7 @@ describe("Job Discovery", () => {
   it("automatically removes the bottom Undo snackbar after ten seconds", async () => {
     setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
 
     vi.useFakeTimers();
     await act(async () => {
@@ -585,16 +583,14 @@ describe("Job Discovery", () => {
   it("keeps dismissal undo available after the job leaves active results", async () => {
     const { requests, fetchMock } = setupFetch();
     renderAuthenticatedDiscovery();
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     const dismissButton = screen.queryByRole("button", { name: "Dismiss" });
     expect(dismissButton, JSON.stringify(requests)).not.toBeNull();
     fireEvent.click(dismissButton!);
     expect(await screen.findByRole("button", { name: "Undo" })).toBeTruthy();
     await waitFor(() =>
       expect(
-        screen.queryByRole("button", {
-          name: "Software Engineer, Example Employer, Cape Town, South Africa",
-        }),
+        screen.queryByRole("button", { name: "View Software Engineer at Example Employer" }),
       ).toBeNull(),
     );
     expect(screen.getByRole("button", { name: "Undo" })).toBeTruthy();
@@ -615,7 +611,7 @@ describe("Job Discovery", () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     renderAuthenticatedDiscovery();
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
     fireEvent.click(
       screen.getByRole("button", { name: "Apply on company site" }),
     );
@@ -660,7 +656,7 @@ describe("Job Discovery", () => {
     const { fetchMock } = setupFetch([firstJob, secondJob]);
     vi.spyOn(window, "open").mockImplementation(() => null);
     renderAuthenticatedDiscovery();
-    await screen.findAllByText("Build and support web services.");
+    await screen.findByRole("button", { name: "View Software Engineer at Example Employer" });
 
     fireEvent.click(
       screen.getByRole("button", { name: "Apply on company site" }),
@@ -692,17 +688,13 @@ describe("Job Discovery", () => {
 
     // Closing the dialog keeps the pending activity so it can be shown on revisit.
     fireEvent.click(
-      await screen.findByRole("button", {
-        name: "Frontend Developer, Other Employer, Cape Town, South Africa",
-      }),
+      await screen.findByRole("button", { name: "View Frontend Developer at Other Employer" }),
     );
     expect(
       screen.queryByRole("heading", { name: "Did you apply?" }),
     ).toBeNull();
     fireEvent.click(
-      await screen.findByRole("button", {
-        name: "Software Engineer, Example Employer, Cape Town, South Africa",
-      }),
+      await screen.findByRole("button", { name: "View Software Engineer at Example Employer" }),
     );
     expect(
       await screen.findByRole("heading", {

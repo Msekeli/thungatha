@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import type { FormEvent } from "react";
+import { useRecentJobSearches } from "./use-recent-job-searches";
 import { Search, X } from "lucide-react";
 
 type JobSearchBarProps = {
@@ -8,53 +9,18 @@ type JobSearchBarProps = {
   onChange: (value: string) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   placeholder?: string;
+  prominent?: boolean;
 };
-
-const RECENT_SEARCHES_KEY = "thungatha-recent-job-searches";
-const MAX_RECENT_SEARCHES = 5;
 
 export function JobSearchBar({
   value,
   onChange,
   onSubmit,
   placeholder = "Job title, skill, or company",
+  prominent = false,
 }: JobSearchBarProps) {
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(RECENT_SEARCHES_KEY);
-      if (stored) {
-        const parsed: unknown = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setRecentSearches(
-            parsed
-              .filter((item): item is string => typeof item === "string")
-              .slice(0, MAX_RECENT_SEARCHES),
-          );
-        }
-      }
-    } catch {
-      // Search history is optional; continue if browser storage is unavailable.
-    }
-  }, []);
-
-  function rememberSearch(search: string) {
-    const trimmed = search.trim();
-    if (!trimmed) return;
-    const next = [
-      trimmed,
-      ...recentSearches.filter(
-        (item) => item.toLowerCase() !== trimmed.toLowerCase(),
-      ),
-    ].slice(0, MAX_RECENT_SEARCHES);
-    setRecentSearches(next);
-    try {
-      window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
-    } catch {
-      // Search history is optional; continue if browser storage is unavailable.
-    }
-  }
+  const { recentSearches, rememberSearch, clearRecentSearches } =
+    useRecentJobSearches();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,15 +31,21 @@ export function JobSearchBar({
   return (
     <div className="w-full min-w-0">
       <form className="w-full" role="search" onSubmit={handleSubmit}>
-        <label className="flex h-11 min-w-0 items-center gap-3 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)] transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15">
-          <Search size={18} aria-hidden="true" />
+        <label
+          className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-11 rounded-xl border-public-search-border bg-public-search-bg px-3 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}
+        >
+          <Search
+            size={22}
+            aria-hidden="true"
+            className={`shrink-0 ${prominent ? "text-[var(--th-public-search-text)]" : "text-[var(--th-fg-muted)]"}`}
+          />
           <input
             aria-label="Search roles, skills, or companies"
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
             autoComplete="off"
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-[var(--th-fg)] outline-none placeholder:text-[var(--th-fg-muted)]"
+            className={`h-full min-w-0 flex-1 bg-transparent text-sm text-[var(--th-fg)] outline-none ${prominent ? "placeholder:text-public-search-text" : "placeholder:text-[var(--th-fg-muted)]"}`}
           />
         </label>
       </form>
@@ -99,12 +71,7 @@ export function JobSearchBar({
             aria-label="Clear recent searches"
             title="Clear recent searches"
             onClick={() => {
-              setRecentSearches([]);
-              try {
-                window.localStorage.removeItem(RECENT_SEARCHES_KEY);
-              } catch {
-                /* optional storage */
-              }
+              clearRecentSearches();
             }}
             className="inline-flex size-6 items-center justify-center rounded-full text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
           >

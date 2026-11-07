@@ -12,24 +12,25 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  min-height: 76px;
+  min-height: 92px;
   padding: 14px 24px;
   border-bottom: 1px solid var(--th-line);
-  background: var(--th-page);
+  background: var(--th-workspace-header);
+  border-bottom-color: var(--th-workspace-header-border);
 }
 .th-workspace-heading {
   min-width: 0;
 }
 .th-workspace-heading h1 {
   margin: 0;
-  color: var(--th-fg);
+  color: var(--th-workspace-header-text);
   font-size: 22px;
   font-weight: 650;
   line-height: 1.3;
 }
 .th-workspace-heading p {
   margin: 3px 0 0;
-  color: var(--th-fg-muted);
+  color: var(--th-workspace-header-muted);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -37,9 +38,199 @@
   flex: 0 0 auto;
 }
 .th-workspace-page-content {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
   padding: 20px 24px;
+}
+
+/* The workspace content is fixed; scrolling is delegated to the inner form region. */
+.th-workspace-page-content:has(.th-profile-page) {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+/* Fixed page frame; only the inner form region scrolls. */
+.th-profile-page {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.th-profile-form-scroll {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.th-profile-form-scroll > .py-6 {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.th-profile-form-state--edit {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.th-profile-editor-layout {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  gap: 18px;
+}
+.th-profile-editor-heading {
+  flex: 0 0 auto;
+}
+.th-profile-editor-grid {
+  display: grid;
+  flex: 1 1 0%;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 24px;
+  min-width: 0;
+  min-height: 0;
+}
+.th-profile-editor-fields {
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 8px 12px 0;
+}
+.th-profile-editor-sidebar {
+  align-self: start;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Keep profile inputs consistent and comfortably tappable on phones. */
+.th-profile-page input:not([type="checkbox"]):not([type="radio"]),
+.th-profile-page textarea,
+.th-profile-page select {
+  box-sizing: border-box;
+  min-height: 44px;
+  border: 1px solid var(--th-line);
+  border-radius: 10px;
+  background: var(--th-panel-2);
+  padding: 10px 12px;
+  color: var(--th-fg);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.th-profile-page input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+.th-profile-page textarea:focus-visible,
+.th-profile-page select:focus-visible {
+  border-color: var(--th-accent);
+  outline: 2px solid color-mix(in srgb, var(--th-accent) 28%, transparent);
+  outline-offset: 1px;
+}
+.th-profile-page textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+@media (max-width: 700px) {
+  .th-profile-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .th-profile-form-scroll > .py-6 {
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
+  .th-profile-editor-layout {
+    gap: 12px;
+  }
+  .th-profile-editor-heading h1 {
+    font-size: 1.5rem;
+  }
+  .th-profile-editor-heading > p:last-child {
+    margin-top: 8px;
+    padding: 10px;
+  }
+  .th-profile-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .th-profile-editor-fields {
+    grid-row: 1;
+    padding-right: 2px;
+    padding-bottom: 8px;
+  }
+  .th-profile-editor-sidebar {
+    grid-row: 2;
+    align-self: stretch;
+  }
+  .th-profile-editor-sidebar > div {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .th-profile-editor-sidebar > div > div:first-child,
+  .th-profile-editor-sidebar > div > p {
+    display: none;
+  }
+  .th-profile-editor-sidebar > div > div:last-child {
+    flex-direction: row;
+    gap: 8px;
+    padding-top: 0;
+  }
+  .th-profile-editor-sidebar button {
+    min-height: 40px;
+  }
+}
+
+/* Job discovery is a fixed viewport workspace; only its results list scrolls. */
+.th-workspace-page-content:has(.th-jobs-page) {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.th-workspace-page-content:has(.th-jobs-page) > .th-jobs-page {
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.th-job-results-scroll {
+  padding-bottom: 16px;
+}
+@media (max-width: 700px) {
+  .th-job-results-scroll {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
 }

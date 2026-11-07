@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
-**Branch:** `ui-fixing`  
-**Status:** Planning only. Implement only after the user approves each checkpoint.
+**Working branch:** `dev`  
+**Status:** In progress — C02/C03 accepted; C04 implementation prepared on 2026-10-24 and awaiting user review. Continue one approved checkpoint at a time.
 
 ## Read first
 
@@ -47,13 +47,17 @@ These are responsive compositions and UI states, not separate routes. Match the 
 - Begin with conventional text extraction and deterministic parsing. AI is optional; propose it only if representative CV testing shows a meaningful quality gap, then obtain approval for provider, privacy/consent, cost and adapter design.
 - Do not implement CV tailoring or Matching as part of M2.
 
+## Local workflow and remote safety
+
+The user-approved workflow as of 2026-10-24 is to commit each approved C01+ checkpoint directly to the existing remote `dev` branch. The user pulls those commits into the local checkout and runs the requested verification there. Before each remote write, inspect the current `dev` state and use an expected-head/lease check so concurrent changes are not overwritten. Do not create branches or PRs, force-push, deploy, or write to production data. Do not commit a checkpoint without the user's explicit approval. C00 remains audit-only and must not change application code or create a commit.
+
 ## Checkpoint and commit rules
 
 **C00 is audit/planning only.** No application-code changes, migrations, dependency installs, API changes, or implementation commit. Inspect and report; wait for approval.
 
 **C01 onward must each deliver a meaningful, reviewable increment that can be committed.** A test run, inspection, or verification alone is not an implementation checkpoint. Tests are evidence attached to the relevant code increment.
 
-After each code checkpoint, make a focused commit and report its hash, changed files, actual test commands/results, unresolved issues and next checkpoint. Do not push, merge, deploy, or continue to the next checkpoint without explicit user approval.
+After each code checkpoint, commit the coherent changes to remote `dev` and report the commit hash, changed files, actual test commands/results, unresolved issues and next checkpoint. The user pulls and tests locally. Do not deploy or continue to the next checkpoint without explicit user approval.
 
 ## Execution order
 
@@ -78,17 +82,15 @@ After C00 approval, define and implement the minimum agreed backend for user-own
 
 Exit evidence: setup/migration instructions, validation and persistence tests, ownership/access-control tests where feasible, API contract documentation and a focused commit. Do not claim isolation unless tested.
 
-### C02 — Profile view and manual editing (commit required)
+### C02 — Profile view and manual editing (accepted 2026-10-24)
 
-Build the approved empty/saved profile and manual editing experience within the existing workspace shell, connected only to the agreed C01 contract. Include loading, empty, validation, save/cancel, success and recoverable load/save failure states.
-
-Exit evidence: create/edit/save/reload behaviour, relevant tests, responsive/browser evidence and a focused commit.
+The user reviewed the local result and confirmed it was satisfactory. The increment is committed on `dev` as `e3534b3948a69e2a10cbea6fd962745b85ac29f2` (`feat(profile): extend manual profile editing`). It includes residential-area fields, languages and personal attributes, work achievements entry, and saved-profile display updates. ChatGPT did not run tests, lint, builds or browser checks, per the user's standing instruction. Do not claim these checks passed. C02 is accepted by the user; proceed to C03 only after upload/storage decisions are agreed.
 
 ### C03 — CV upload and private storage (commit required)
 
-First agree supported formats, size limits, private storage, access policy, retention/deletion expectations and validation. Implement upload and selected-file state only; do not add extraction in this checkpoint.
+Approved by the user on 2026-10-24: PDF and DOCX only; maximum 5 MB; retain the current master CV until the user removes or replaces it; keep the existing CV until a new upload succeeds and the user confirms replacement. The implementation uses a private Supabase Storage bucket, Clerk-subject-scoped storage policies, authenticated upload endpoint, file validation, and selected-file/upload states only. Uploads are staged under a unique user-owned path and do not change `profiles.master_cv`; no extraction, public URL, or service-role key is used. The user must apply the migration to the linked Supabase project. Do not run tests, lint, builds, browser checks or Vercel operations unless the user changes that instruction.
 
-Exit evidence: valid/invalid file tests, private ownership/access checks, failure handling, configuration docs and a focused commit.
+Exit evidence: user review of valid/invalid upload states, private ownership/access policy review, failure handling and a focused commit. The user has explicitly paused automated checks and browser checks, so do not run them. Document that security isolation has not been tested.
 
 ### C04 — Deterministic extraction and progress/failure states (commit required)
 
@@ -117,3 +119,12 @@ Exit evidence: actual test results, visual comparison evidence, security/privacy
 ## Required first response from Antigravity
 
 Perform **C00 only**. Return the audit and proposed C01 implementation plan. Do not edit application code, create migrations, change API contracts, install dependencies, or commit until the user approves C00.
+
+
+## M2-C04 implementation record — 2026-10-24
+
+C04 adds server-side text extraction for staged PDF/DOCX files using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Deterministic parsing returns candidate fields only; it does not write to confirmed Profile or master-CV data. The UI provides an explicit extraction action, busy state, retry, partial/failure messaging and warnings for unreadable/scanned PDFs. Scanned PDFs require OCR and are not supported by this checkpoint.
+
+The extraction endpoint derives identity on the server, validates that the staged storage path is under that user's prefix, downloads through the authenticated Supabase client and limits the object to 5 MB. No AI API is called.
+
+No tests, lint, build, browser checks or Vercel operations were run, per the user's standing instruction. Synchronize local `package.json` and `package-lock.json` changes with the remote checkpoint before a clean install.

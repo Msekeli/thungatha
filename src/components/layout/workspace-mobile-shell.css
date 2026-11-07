@@ -1,6 +1,6 @@
 @media (max-width: 1199px) {
-  .th-workspace-shell .th-workspace-header--jobs {
-    display: none;
+  .th-workspace-shell .th-workspace-header {
+    display: none !important;
   }
 }
 
@@ -20,7 +20,7 @@
   }
   .th-workspace-sidebar {
     display: flex;
-    flex: 0 0 218px;
+    flex: 0 0 260px;
     height: 100dvh;
   }
   .th-workspace-content {
@@ -61,5 +61,11 @@
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
+  }
+  .th-workspace-content:has(.th-profile-page) {
+    flex: 0 0 auto;
+    height: calc(100dvh - 116px - env(safe-area-inset-bottom));
+    min-height: 0;
+    overflow: hidden;
   }
 }

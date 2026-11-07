@@ -1,0 +1,79 @@
+import { describe, expect, it } from "vitest";
+import { updateProfileSchema } from "@/thungatha-features/user-profile/server/user-profile-schema";
+
+describe("updateProfileSchema validation", () => {
+  it("validates all seven sections and metadata", () => {
+    const fullProfile = {
+      personalDetails: {
+        fullName: "Lerato Naidoo",
+        email: "lerato.naidoo@example.com",
+        phone: "+27 82 123 4567",
+        location: "Cape Town",
+        country: "South Africa",
+        residentialSuburb: "Mfuleni",
+        residentialCity: "Cape Town",
+        residentialProvince: "Western Cape",
+        residentialPostalCode: "7100",
+        linkedinUrl: "https://linkedin.com/in/lerato-naidoo",
+        portfolioUrl: "https://lerato-example.dev",
+      },
+      summary: "Software engineer with 4 years experience.",
+      workExperience: [
+        {
+          id: "exp-1",
+          jobTitle: "Frontend Engineer",
+          employer: "Brightloop",
+          startDate: "Mar 2022",
+          isCurrent: true,
+          achievements: ["Improved a team workflow"],
+        },
+      ],
+      education: [
+        {
+          id: "edu-1",
+          qualification: "BSc CS",
+          institution: "Westbrook",
+        },
+      ],
+      skills: ["React", "TypeScript"],
+      certifications: [{ id: "cert-1", name: "Cloud Fundamentals" }],
+      projects: [{ id: "proj-1", name: "Community initiative" }],
+      languages: ["English", "isiXhosa"],
+      personalAttributes: ["Reliable", "Team collaboration"],
+      masterCv: {
+        filename: "Lerato_CV.pdf",
+        fileSize: 188416,
+        uploadedAt: "2026-10-24T08:00:00.000Z",
+      },
+      confirmedAt: "2026-10-24T08:30:00.000Z",
+    };
+
+    const result = updateProfileSchema.safeParse(fullProfile);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid email formats in personal details", () => {
+    const result = updateProfileSchema.safeParse({
+      personalDetails: { email: "not-an-email" },
+    });
+    expect(result.success).toBe(false);
+  });
+  it("limits repeatable profile sections to 100 entries", () => {
+    const workExperience = Array.from({ length: 101 }, (_, index) => ({
+      id: `experience-${index}`,
+      jobTitle: "Engineer",
+      employer: "Example",
+      startDate: "2024",
+    }));
+    const result = updateProfileSchema.safeParse({ workExperience });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects client-supplied profile version metadata", () => {
+    const result = updateProfileSchema.safeParse({
+      displayName: "Lerato",
+      profileVersion: 99,
+    });
+    expect(result.success).toBe(false);
+  });
+});
