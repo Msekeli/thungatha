@@ -55,10 +55,26 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ success: true, received: rows.length, stored: rows.length });
   } catch (error) {
+    const databaseError = error && typeof error === "object"
+      ? error as { code?: string; message?: string; details?: string; hint?: string }
+      : null;
     console.error("[Scout vacancy import] Persistence failed:", {
       errorName: error instanceof Error ? error.name : "unknown",
-      message: error instanceof Error ? error.message : "Unknown error",
+      code: databaseError?.code ?? null,
+      message: databaseError?.message ?? (error instanceof Error ? error.message : "Unknown error"),
+      details: databaseError?.details ?? null,
+      hint: databaseError?.hint ?? null,
     });
-    return NextResponse.json({ error: "Thungatha could not persist the imported vacancies." }, { status: 500 });
+    return NextResponse.json({
+      error: "Thungatha could not persist the imported vacancies.",
+      ...(process.env.NODE_ENV === "development" ? {
+        diagnostic: {
+          code: databaseError?.code ?? null,
+          message: databaseError?.message ?? (error instanceof Error ? error.message : "Unknown error"),
+          details: databaseError?.details ?? null,
+          hint: databaseError?.hint ?? null,
+        },
+      } : {}),
+    }, { status: 500 });
   }
 }
