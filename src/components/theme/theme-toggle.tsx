@@ -61,7 +61,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-workspace-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
-        <Sun size={15} className="max-[700px]:h-3.5 max-[700px]:w-3.5" aria-hidden="true" />
+        <Sun
+          size={15}
+          className="max-[700px]:h-3.5 max-[700px]:w-3.5"
+          aria-hidden="true"
+        />
         <span>Light</span>
       </button>
       <button
@@ -76,7 +80,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             : "border border-transparent text-[var(--th-workspace-toggle-text)] hover:bg-[var(--th-nav-active-bg)] hover:text-[var(--th-accent-on-navy)]"
         }`}
       >
-        <Moon size={15} className="max-[700px]:h-3.5 max-[700px]:w-3.5" aria-hidden="true" />
+        <Moon
+          size={15}
+          className="max-[700px]:h-3.5 max-[700px]:w-3.5"
+          aria-hidden="true"
+        />
         <span>Dark</span>
       </button>
     </div>

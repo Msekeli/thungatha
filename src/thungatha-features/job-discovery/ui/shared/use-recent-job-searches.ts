@@ -13,7 +13,11 @@ export function useRecentJobSearches() {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       const parsed: unknown = stored ? JSON.parse(stored) : [];
       if (Array.isArray(parsed)) {
-        setRecentSearches(parsed.filter((item): item is string => typeof item === "string").slice(0, MAX_SEARCHES));
+        setRecentSearches(
+          parsed
+            .filter((item): item is string => typeof item === "string")
+            .slice(0, MAX_SEARCHES),
+        );
       }
     } catch {
       // Search history is optional.
@@ -23,7 +27,12 @@ export function useRecentJobSearches() {
   function rememberSearch(search: string) {
     const value = search.trim();
     if (!value) return;
-    const next = [value, ...recentSearches.filter((item) => item.toLowerCase() !== value.toLowerCase())].slice(0, MAX_SEARCHES);
+    const next = [
+      value,
+      ...recentSearches.filter(
+        (item) => item.toLowerCase() !== value.toLowerCase(),
+      ),
+    ].slice(0, MAX_SEARCHES);
     setRecentSearches(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));

@@ -12,7 +12,6 @@ type JobSearchBarProps = {
   prominent?: boolean;
 };
 
-
 export function JobSearchBar({
   value,
   onChange,
@@ -20,8 +19,8 @@ export function JobSearchBar({
   placeholder = "Job title, skill, or company",
   prominent = false,
 }: JobSearchBarProps) {
-
-  const { recentSearches, rememberSearch, clearRecentSearches } = useRecentJobSearches();
+  const { recentSearches, rememberSearch, clearRecentSearches } =
+    useRecentJobSearches();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +31,9 @@ export function JobSearchBar({
   return (
     <div className="w-full min-w-0">
       <form className="w-full" role="search" onSubmit={handleSubmit}>
-        <label className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-11 rounded-xl border-public-search-border bg-public-search-bg px-3 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}>
+        <label
+          className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-11 rounded-xl border-public-search-border bg-public-search-bg px-3 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}
+        >
           <Search
             size={22}
             aria-hidden="true"
@@ -70,7 +71,7 @@ export function JobSearchBar({
             aria-label="Clear recent searches"
             title="Clear recent searches"
             onClick={() => {
-              clearRecentSearches()
+              clearRecentSearches();
             }}
             className="inline-flex size-6 items-center justify-center rounded-full text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
           >

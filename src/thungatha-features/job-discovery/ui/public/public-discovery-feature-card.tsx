@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { PublicAuthPrompt } from "./public-auth-prompt";
 
 export function PublicDiscoveryFeatureCard({
-  configured, title, description, icon: Icon, action,
+  configured,
+  title,
+  description,
+  icon: Icon,
+  action,
 }: {
   configured: boolean;
   title: string;
@@ -20,9 +24,21 @@ export function PublicDiscoveryFeatureCard({
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
         <h3 className="text-job font-bold leading-snug text-fg">{title}</h3>
-        <p className="text-control leading-relaxed text-fg-muted">{description}</p>
-        <PublicAuthPrompt configured={configured} title={title} description={`Sign in or create a free account to access ${title.toLowerCase()} and keep your job search organised.`}>
-          <Button variant="outline" size="sm" className="min-h-9 whitespace-normal rounded-xl border-accent-text px-3 text-left text-control font-semibold text-accent-text">{action}</Button>
+        <p className="text-control leading-relaxed text-fg-muted">
+          {description}
+        </p>
+        <PublicAuthPrompt
+          configured={configured}
+          title={title}
+          description={`Sign in or create a free account to access ${title.toLowerCase()} and keep your job search organised.`}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="min-h-9 whitespace-normal rounded-xl border-accent-text px-3 text-left text-control font-semibold text-accent-text"
+          >
+            {action}
+          </Button>
         </PublicAuthPrompt>
       </div>
     </article>

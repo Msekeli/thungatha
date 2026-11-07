@@ -71,7 +71,10 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 }
 .th-workspace-sign-in:hover {
   background: var(--th-workspace-nav-active-bg);
@@ -97,7 +100,12 @@
   letter-spacing: 0.015em;
   line-height: 1.25;
   box-shadow: 0 3px 10px rgb(0 0 0 / 18%);
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 .th-workspace-sidebar-footer .th-workspace-signout:hover {
   border-color: var(--th-workspace-nav-active-fg);

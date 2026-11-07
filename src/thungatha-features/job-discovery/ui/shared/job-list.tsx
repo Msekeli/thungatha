@@ -19,21 +19,52 @@ type JobListProps = {
 };
 
 export function JobList({
-  jobs, variant, selectedId, postedLabel, postedAgeDays, onSelect,
+  jobs,
+  variant,
+  selectedId,
+  postedLabel,
+  postedAgeDays,
+  onSelect,
   emptyTitle = "No opportunities found",
   emptyMessage = "Try changing your search or filters.",
-  saveAction, secondaryAction,
+  saveAction,
+  secondaryAction,
 }: JobListProps) {
-  if (!jobs.length) return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
+  if (!jobs.length)
+    return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   return (
-    <div className={"grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"}>
+    <div
+      className={
+        "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
+      }
+    >
       {jobs.map((job) => {
-        const actions = <>{saveAction?.(job)}{secondaryAction?.(job)}</>;
+        const actions = (
+          <>
+            {saveAction?.(job)}
+            {secondaryAction?.(job)}
+          </>
+        );
         const posted = postedLabel?.(job) ?? "Date unknown";
         return variant === "public" ? (
-          <PublicJobOpportunityCard key={job.id} job={job} postedLabel={posted} ageDays={postedAgeDays?.(job) ?? null} onSelect={() => onSelect(job)} actions={actions} />
+          <PublicJobOpportunityCard
+            key={job.id}
+            job={job}
+            postedLabel={posted}
+            ageDays={postedAgeDays?.(job) ?? null}
+            onSelect={() => onSelect(job)}
+            actions={actions}
+          />
         ) : (
-          <JobOpportunityCard key={job.id} job={job} variant={variant} selected={job.id === selectedId} postedLabel={posted} onSelect={() => onSelect(job)} saveAction={saveAction || secondaryAction ? actions : undefined} />
+          <JobOpportunityCard
+            key={job.id}
+            job={job}
+            variant={variant}
+            selected={job.id === selectedId}
+            postedLabel={posted}
+            onSelect={() => onSelect(job)}
+            saveAction={saveAction || secondaryAction ? actions : undefined}
+          />
         );
       })}
     </div>

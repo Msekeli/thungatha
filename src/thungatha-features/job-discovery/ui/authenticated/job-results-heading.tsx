@@ -21,7 +21,10 @@ export function JobResultsHeading({
 
   return (
     <div className="flex min-w-0 flex-row flex-nowrap items-center justify-between gap-2">
-      <p className="min-w-0 truncate text-xs text-fg-muted sm:text-sm" aria-live="polite">
+      <p
+        className="min-w-0 truncate text-xs text-fg-muted sm:text-sm"
+        aria-live="polite"
+      >
         {label}
       </p>
       <div className="relative inline-flex shrink-0 items-center">

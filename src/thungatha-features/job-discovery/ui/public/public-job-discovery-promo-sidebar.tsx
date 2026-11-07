@@ -6,22 +6,19 @@ import { PublicDiscoveryFeatureCard } from "./public-discovery-feature-card";
 const features = [
   {
     title: "CV matching",
-    description:
-      "Build your profile so we can match jobs to your skills.",
+    description: "Build your profile so we can match jobs to your skills.",
     icon: ClipboardList,
     action: "Create your profile",
   },
   {
     title: "Saved Jobs",
-    description:
-      "Keep interesting opportunities together for later.",
+    description: "Keep interesting opportunities together for later.",
     icon: Bookmark,
     action: "Sign in to save jobs",
   },
   {
     title: "Track Applications",
-    description:
-      "Keep status and next steps in one place.",
+    description: "Keep status and next steps in one place.",
     icon: ChartNoAxesColumn,
     action: "Sign in to track",
   },

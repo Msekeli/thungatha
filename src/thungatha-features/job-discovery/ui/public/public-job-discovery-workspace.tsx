@@ -23,15 +23,27 @@ export function PublicJobDiscoveryWorkspace({
   }
   return (
     <>
-      <div className={data.leadingColumn
-        ? "grid h-full min-h-0 min-w-0 grid-cols-1 gap-5 min-[1200px]:grid-cols-[261px_minmax(0,1fr)]"
-        : "grid h-full min-h-0 min-w-0 grid-cols-1"}>
+      <div
+        className={
+          data.leadingColumn
+            ? "grid h-full min-h-0 min-w-0 grid-cols-1 gap-5 min-[1200px]:grid-cols-[261px_minmax(0,1fr)]"
+            : "grid h-full min-h-0 min-w-0 grid-cols-1"
+        }
+      >
         {data.leadingColumn}
         <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
-          <PublicJobResultsPanel data={resultsData} loadMoreRef={loadMoreRef} onSelect={selectJob} />
+          <PublicJobResultsPanel
+            data={resultsData}
+            loadMoreRef={loadMoreRef}
+            onSelect={selectJob}
+          />
         </div>
       </div>
-      <PublicJobDetailDialog data={data} open={detailOpen} onClose={closeDetails} />
+      <PublicJobDetailDialog
+        data={data}
+        open={detailOpen}
+        onClose={closeDetails}
+      />
     </>
   );
 }

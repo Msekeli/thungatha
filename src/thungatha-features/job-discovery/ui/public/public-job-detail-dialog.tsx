@@ -21,7 +21,9 @@ export function PublicJobDetailDialog({
 }) {
   const job = data.selectedDetail;
   const employer = job?.employer_name?.trim() || "Employer not listed";
-  const initials = (job?.employer_name?.trim() || job?.title || "T").slice(0, 1).toUpperCase();
+  const initials = (job?.employer_name?.trim() || job?.title || "T")
+    .slice(0, 1)
+    .toUpperCase();
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
@@ -39,7 +41,9 @@ export function PublicJobDetailDialog({
               <Dialog.Title className="text-title font-bold leading-tight text-fg sm:text-modal-title">
                 {job?.title ?? "Job details"}
               </Dialog.Title>
-              <p className="mt-1 text-control text-fg-muted sm:text-job">{employer}</p>
+              <p className="mt-1 text-control text-fg-muted sm:text-job">
+                {employer}
+              </p>
               {job && (
                 <JobDetailMeta
                   location={job.location_text}
@@ -52,7 +56,11 @@ export function PublicJobDetailDialog({
             </div>
             <Dialog.Close
               render={
-                <Button variant="ghost" size="icon" aria-label="Close job details">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Close job details"
+                >
                   <X />
                 </Button>
               }
@@ -61,7 +69,10 @@ export function PublicJobDetailDialog({
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 text-modal-body text-[var(--th-fg)] sm:px-7 sm:py-6">
             {data.detailLoading && !job ? (
-              <div role="status" className="flex items-center gap-3 py-8 text-sm text-fg-muted">
+              <div
+                role="status"
+                className="flex items-center gap-3 py-8 text-sm text-fg-muted"
+              >
                 <LoaderCircle className="animate-spin" aria-hidden="true" />
                 Loading job details…
               </div>
@@ -85,7 +96,9 @@ export function PublicJobDetailDialog({
                 />
               </div>
             ) : (
-              <p className="py-8 text-sm text-fg-muted">Select an opportunity to view its details.</p>
+              <p className="py-8 text-sm text-fg-muted">
+                Select an opportunity to view its details.
+              </p>
             )}
           </div>
 
