@@ -2,23 +2,13 @@ import { ArrowUpRight, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import type { JobCardData } from "../shared/job-opportunity-card";
 
-function ageTone(days: number | null) {
-  if (days === null) return "bg-tag text-fg-muted";
-  if (days <= 7) return "bg-age-fresh-bg text-age-fresh";
-  if (days <= 14) return "bg-age-recent-bg text-age-recent";
-  if (days <= 30) return "bg-age-aging-bg text-age-aging";
-  return "bg-age-stale-bg text-age-stale";
-}
-
 export function PublicJobOpportunityCard({
   job,
-  postedLabel,
   ageDays,
   onSelect,
   actions,
 }: {
   job: JobCardData;
-  postedLabel: string;
   ageDays: number | null;
   onSelect: () => void;
   actions?: ReactNode;
@@ -58,12 +48,11 @@ export function PublicJobOpportunityCard({
           </span>
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
-          <span
-            className={`inline-flex items-center gap-2 rounded-pill px-3 py-1.5 text-control font-bold ${ageTone(ageDays)}`}
-          >
-            <i aria-hidden="true" className="size-2 rounded-full bg-current" />
-            {postedLabel}
-          </span>
+          {ageDays !== null && ageDays <= 3 && (
+            <span className="inline-flex items-center rounded-md bg-success-bg px-2 py-1 text-tag font-semibold text-success">
+              NEW
+            </span>
+          )}
           <div className="pointer-events-auto relative z-20 flex shrink-0 items-center gap-1">
             {actions}
           </div>
