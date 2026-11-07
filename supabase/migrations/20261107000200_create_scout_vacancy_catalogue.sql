@@ -10,8 +10,7 @@ alter table public.jobs
 alter table public.jobs alter column location_text drop not null;
 
 create unique index if not exists jobs_scout_vacancy_id_unique
-  on public.jobs (scout_vacancy_id)
-  where scout_vacancy_id is not null;
+  on public.jobs (scout_vacancy_id);
 
 alter table public.jobs
   add constraint jobs_scout_vacancy_required_fields
