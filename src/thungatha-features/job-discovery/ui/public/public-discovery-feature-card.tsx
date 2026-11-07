@@ -14,8 +14,8 @@ export function PublicDiscoveryFeatureCard({
   action: string;
 }) {
   return (
-    <article className="flex min-w-0 gap-2 rounded-2xl border border-public-card-border bg-public-card-bg p-3 shadow-public-card">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-accent-bg text-accent-text">
+    <article className="group/promo flex min-w-0 gap-2 rounded-2xl border border-public-card-border bg-public-card-bg p-3 shadow-public-card transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-card-hover hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:transform-none">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-logo-border bg-gradient-to-br from-public-band-from to-public-band-to text-on-band shadow-public-card transition-transform duration-200 group-hover/promo:scale-105">
         <Icon size={19} strokeWidth={2.25} aria-hidden="true" />
       </div>
       <div className="flex min-w-0 flex-col items-start gap-2">
