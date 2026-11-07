@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { JobLocationSelect } from "../shared/job-location-select";
-import { EMPLOYMENT_TYPE_OPTIONS } from "../shared/job-filter-options";
-import { JobFilterFields } from "../shared/job-filter-fields";
+import { JobFilterDropdown } from "../shared/job-filter-dropdown";
+import { PUBLISHED_WITHIN_OPTIONS } from "../shared/job-filter-options";
 import type { JobFiltersDraft } from "./job-filters-dialog";
 
 type Props = {
@@ -14,18 +14,6 @@ type Props = {
   onReset: () => void;
   onApply: () => void;
 };
-
-function canonicalEmploymentType(value: string) {
-  if (!value) return "all";
-  const normalized = value.toLowerCase().replace(/[ -]+/g, "_");
-  if (normalized.includes("graduate")) return "graduate";
-  if (normalized.includes("learnership")) return "learnership";
-  if (normalized.includes("intern")) return "internship";
-  return (
-    EMPLOYMENT_TYPE_OPTIONS.find((option) => option.value === normalized)
-      ?.value ?? normalized
-  );
-}
 
 export function JobFiltersDialogContent({
   draft,
@@ -38,12 +26,7 @@ export function JobFiltersDialogContent({
     <>
       <header className="mb-3 flex items-center justify-between gap-2 border-b border-line pb-3">
         <strong>Filter opportunities</strong>
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-label="Close filters"
-          onClick={onClose}
-        >
+        <Button variant="ghost" size="sm" aria-label="Close filters" onClick={onClose}>
           <X size={16} />
         </Button>
       </header>
@@ -55,23 +38,17 @@ export function JobFiltersDialogContent({
           ariaLabel="Filter by location"
         />
       </div>
-      <JobFilterFields
-        workMode={draft.workMode}
-        onWorkModeChange={(value) => onChange("workMode", String(value))}
-        employmentType={canonicalEmploymentType(draft.employmentType)}
-        onEmploymentTypeChange={(value) =>
-          onChange("employmentType", value === "all" ? "" : value)
-        }
-        publishedWithin={draft.publishedWithin}
-        onPublishedWithinChange={(value) => onChange("publishedWithin", value)}
+      <JobFilterDropdown
+        label="Published within"
+        value={draft.publishedWithin}
+        options={PUBLISHED_WITHIN_OPTIONS}
+        onChange={(value) => onChange("publishedWithin", value)}
+        open={false}
+        onToggle={() => undefined}
       />
       <footer className="mt-3 flex justify-between gap-2 border-t border-line pt-3">
-        <Button type="button" variant="secondary" onClick={onReset}>
-          Reset
-        </Button>
-        <Button type="button" variant="primary" onClick={onApply}>
-          Apply filters
-        </Button>
+        <Button type="button" variant="secondary" onClick={onReset}>Reset</Button>
+        <Button type="button" variant="primary" onClick={onApply}>Apply filters</Button>
       </footer>
     </>
   );
