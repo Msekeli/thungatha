@@ -67,14 +67,12 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({
       error: "Thungatha could not persist the imported vacancies.",
-      ...(process.env.NODE_ENV === "development" ? {
-        diagnostic: {
-          code: databaseError?.code ?? null,
-          message: databaseError?.message ?? (error instanceof Error ? error.message : "Unknown error"),
-          details: databaseError?.details ?? null,
-          hint: databaseError?.hint ?? null,
-        },
-      } : {}),
+      diagnostic: {
+        code: databaseError?.code ?? null,
+        message: databaseError?.message ?? (error instanceof Error ? error.message : "Unknown error"),
+        details: databaseError?.details ?? null,
+        hint: databaseError?.hint ?? null,
+      },
     }, { status: 500 });
   }
 }
