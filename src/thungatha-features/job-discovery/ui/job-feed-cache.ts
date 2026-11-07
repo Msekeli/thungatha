@@ -1,4 +1,4 @@
-import type { Feed } from "./job-discovery-utils";
+import { isValidFeed, type Feed } from "./job-discovery-utils";
 import { requestJobFeed } from "./request-job-feed";
 
 type CachedFeed = { savedAt?: number; feed?: Feed };
@@ -32,7 +32,7 @@ export async function getReusablePublicFeed(
       !cached?.feed ||
       typeof cached.savedAt !== "number" ||
       Date.now() - cached.savedAt >= 5 * 60 * 1000 ||
-      !Array.isArray(cached.feed.jobs)
+      !isValidFeed(cached.feed)
     ) return null;
 
     const response = await fetch("/api/jobs?state=all&statesOnly=1", {
