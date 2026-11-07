@@ -27,12 +27,11 @@ export function PublicJobResultsPanel({
   onSelect: (job: Job) => void;
 }) {
   return (
-    <section className="flex min-w-0 flex-col gap-4">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-public-card-border pb-3 text-job text-public-muted">
+    <section className="flex min-w-0 flex-col gap-2">
+      <header className="flex flex-wrap items-center justify-end gap-2 text-detail text-public-muted">
         <div className="flex items-center gap-3">
-          <span aria-live="polite" className="font-medium">{data.resultCount} opportunities</span>
           <ProtectedDiscoveryAction configured={data.configured} title="View dismissed opportunities" description="Sign in or create a free account to review jobs you have dismissed." onAction={() => data.onCategoryChange("dismissed", "Dismissed")}>
-            <Button variant="ghost" size="sm" className="text-accent-text">Dismissed ({data.dismissedCount})</Button>
+            <Button variant="ghost" size="sm" className="text-accent-text">Dismissed</Button>
           </ProtectedDiscoveryAction>
         </div>
         <PublicJobSortSelect value={data.sortOrder} onChange={data.onSortOrderChange} />
