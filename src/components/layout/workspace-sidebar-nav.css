@@ -79,7 +79,7 @@
   color: var(--th-workspace-nav-active-fg);
 }
 
-/* Authenticated sign-out action: deliberately prominent and only applied to SignOutControl. */
+/* Authenticated sign-out keeps its outlined treatment in the workspace palette. */
 .th-workspace-sidebar-footer .th-workspace-signout {
   display: flex;
   justify-content: center;
@@ -88,10 +88,10 @@
   width: 100%;
   min-height: 46px;
   padding: 10px 14px;
-  border: 2px solid var(--th-danger);
+  border: 2px solid var(--th-workspace-signout-border);
   border-radius: 5px;
-  background: var(--th-danger-bg);
-  color: var(--th-danger);
+  background: transparent;
+  color: var(--th-workspace-nav-text);
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.015em;
@@ -100,13 +100,13 @@
   transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 .th-workspace-sidebar-footer .th-workspace-signout:hover {
-  border-color: var(--th-danger);
-  background: var(--th-danger);
-  color: #ffffff;
+  border-color: var(--th-workspace-nav-active-fg);
+  background: var(--th-workspace-nav-active-bg);
+  color: var(--th-workspace-nav-active-fg);
   box-shadow: 0 5px 14px rgb(0 0 0 / 24%);
   transform: translateY(-1px);
 }
 .th-workspace-sidebar-footer .th-workspace-signout:focus-visible {
-  outline: 2px solid var(--th-danger);
+  outline: 2px solid var(--th-workspace-nav-active-fg);
   outline-offset: 3px;
 }
