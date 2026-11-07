@@ -49,7 +49,7 @@ export function PublicJobOpportunityCard({
         </span>
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
           {ageDays !== null && ageDays <= 3 && (
-            <span className="inline-flex items-center rounded-md bg-success-bg px-2 py-1 text-tag font-semibold text-success">
+            <span className="inline-flex items-center rounded-md bg-success-bg px-2 py-1 text-[length:var(--text-tag)] font-semibold text-success">
               NEW
             </span>
           )}
