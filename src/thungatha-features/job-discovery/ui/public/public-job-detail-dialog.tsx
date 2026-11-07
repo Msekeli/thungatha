@@ -33,7 +33,7 @@ export function PublicJobDetailDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-[1500] bg-overlay backdrop-blur-sm" onClick={onClose} />
+        <Dialog.Backdrop className="th-public-job-detail-dialog__backdrop fixed inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} />
         <Dialog.Popup className="th-public-job-detail-dialog fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-public-modal-bg text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
           <header className="th-public-job-detail-dialog__header relative flex shrink-0 items-start gap-3 border-b border-public-modal-border bg-gradient-to-b from-public-modal-header to-transparent px-4 py-4 pr-14 sm:gap-5 sm:px-7 sm:py-6 sm:pr-16">
             {job?.company_logo_url ? (
