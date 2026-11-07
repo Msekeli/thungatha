@@ -26,7 +26,7 @@ export function JobResultsState({
       <div role="status" aria-label="Loading opportunities" className="w-full">
         <span className="sr-only">Loading opportunities</span>
         <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }, (_, index) => (
+          {Array.from({ length: 9 }, (_, index) => (
             <div
               key={index}
               className="flex min-w-0 flex-col gap-3 rounded-2xl border border-line bg-panel p-4"
