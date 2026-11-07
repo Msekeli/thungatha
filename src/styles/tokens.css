@@ -94,6 +94,19 @@
   --th-public-action-fg: #04121F;
   --th-public-modal-bg: #0D1A2E;
   --th-public-modal-height: min(820px, calc(100dvh - 3rem));
+  --th-workspace-nav: #050C18;
+  --th-workspace-nav-border: #1B2B47;
+  --th-workspace-nav-text: #C5D5EA;
+  --th-workspace-nav-label: #8DA6C4;
+  --th-workspace-nav-active-bg: #123766;
+  --th-workspace-nav-active-fg: #38BDF8;
+  --th-workspace-header: #060E1B;
+  --th-workspace-header-border: #1B2B47;
+  --th-workspace-header-text: #F1F6FD;
+  --th-workspace-header-muted: #9FB3CC;
+  --th-workspace-toggle-border: #1B2B47;
+  --th-workspace-toggle-text: #EAF2FC;
+  --th-workspace-signout-border: #2A3E5E;
   --th-radius-panel: 12px;
   --th-radius-control: 8px;
   --th-radius-tag: 6px;
@@ -195,6 +208,19 @@
   --th-public-action-fg: #04121F;
   --th-public-modal-bg: #FFFFFF;
   --th-public-modal-height: min(820px, calc(100dvh - 3rem));
+  --th-workspace-nav: #0B1B33;
+  --th-workspace-nav-border: #1B2B47;
+  --th-workspace-nav-text: #C5D5EA;
+  --th-workspace-nav-label: #8DA6C4;
+  --th-workspace-nav-active-bg: #123766;
+  --th-workspace-nav-active-fg: #38BDF8;
+  --th-workspace-header: linear-gradient(135deg, #0B1B33 0%, #123766 100%);
+  --th-workspace-header-border: #1B2B47;
+  --th-workspace-header-text: #F1F6FD;
+  --th-workspace-header-muted: #B7C8DE;
+  --th-workspace-toggle-border: #1B2B47;
+  --th-workspace-toggle-text: #EAF2FC;
+  --th-workspace-signout-border: #2A3E5E;
 }
 
 @theme inline {
