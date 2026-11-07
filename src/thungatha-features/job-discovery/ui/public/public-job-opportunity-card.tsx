@@ -21,8 +21,8 @@ export function PublicJobOpportunityCard({
 }) {
   const employer = job.employer_name?.trim() || "Employer not listed";
   return (
-    <article className="group/card relative flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:transform-none">
-      <button type="button" onClick={onSelect} aria-label={`View ${job.title} at ${employer}`} className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent-on-navy" />
+    <article className="group/card relative flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover hover:cursor-pointer motion-reduce:transition-none motion-reduce:hover:transform-none">
+      <button type="button" onClick={onSelect} aria-label={`View ${job.title} at ${employer}`} className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent-on-navy" />
       <div className="pointer-events-none relative z-10 flex min-h-16 min-w-0 items-center gap-2 border-b-public-band border-public-band-border bg-gradient-to-br from-public-band-from to-public-band-to p-2.5 text-left transition-[filter] duration-200 group-hover/card:brightness-110">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-job font-bold text-logo-fg transition-transform duration-200 group-hover/card:scale-105">
           {employer.slice(0, 1).toUpperCase()}
