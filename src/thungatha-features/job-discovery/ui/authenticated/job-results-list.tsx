@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import { Bookmark, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
-import type { Job, JobSource } from "./job-results-types";
+import type { Job } from "./job-results-types";
 import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 
 export function JobResultsList({
@@ -11,7 +11,6 @@ export function JobResultsList({
   loading,
   feed,
   loadMoreRef,
-  sourceFor,
   formatDate,
   onSelect,
   onSave,
@@ -23,7 +22,6 @@ export function JobResultsList({
   loading: boolean;
   feed: { page: number; totalPages: number } | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
-  sourceFor: (job: Job | null) => JobSource | null;
   formatDate: (value: string | null | undefined) => string | null;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
@@ -37,9 +35,7 @@ export function JobResultsList({
         variant="authenticated"
         selectedId={selectedId}
         postedLabel={(job) =>
-          sourceFor(job as Job)?.published_at
-            ? formatDate(sourceFor(job as Job)?.published_at) || "Date unknown"
-            : "Date unknown"
+          formatDate((job as Job).published_at) || "Date unknown"
         }
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {

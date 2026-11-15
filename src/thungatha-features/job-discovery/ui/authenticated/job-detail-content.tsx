@@ -11,10 +11,8 @@ import { JobDetailMatchSummary } from "./job-detail-match-summary";
 export function AuthenticatedJobDetailContent({
   configured,
   job,
-  source,
   applicationDestination,
   applicationUrl,
-  jobSourceUrl,
   busy,
   detailLoading,
   activityError,
@@ -30,10 +28,6 @@ export function AuthenticatedJobDetailContent({
   return (
     <JobDetailPresentation
       job={job}
-      descriptionIsPreview={
-        source?.provider_key === "adzuna" || source?.provider_key === "jooble"
-      }
-      postedAt={source?.published_at || null}
       formatDate={formatDate}
       headingAction={<JobDetailMatchSummary onViewMatch={onViewMatch} />}
       actions={
@@ -43,7 +37,6 @@ export function AuthenticatedJobDetailContent({
             job={job}
             applicationDestination={applicationDestination}
             applicationUrl={applicationUrl}
-            jobSourceUrl={jobSourceUrl}
             busy={busy}
             detailLoading={detailLoading}
             onApply={onApply}

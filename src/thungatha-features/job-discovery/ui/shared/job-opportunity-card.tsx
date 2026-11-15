@@ -1,14 +1,16 @@
 "use client";
+
 import type { ReactNode } from "react";
 import { JobCardButton } from "./job-card-button";
+
 export type JobCardData = {
   id: string;
   title: string;
-  employer_name: string | null;
+  employer_name: string;
+  company_logo_url: string | null;
   location_text: string | null;
-  work_mode: string | null;
-  employment_type: string | null;
 };
+
 type Props = {
   job: JobCardData;
   variant?: "public" | "authenticated";
@@ -17,6 +19,7 @@ type Props = {
   onSelect: () => void;
   saveAction?: ReactNode;
 };
+
 export function JobOpportunityCard({
   job,
   selected,

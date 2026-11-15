@@ -1,4 +1,5 @@
 "use client";
+
 import { Select } from "@base-ui/react/select";
 import { ArrowDownWideNarrow, ChevronDown, Check } from "lucide-react";
 import { JobResultsState } from "./job-results-state";
@@ -20,7 +21,6 @@ export function AuthenticatedJobResultsPanel({
   mobileDetail,
   selectedId,
   loadMoreRef,
-  sourceFor,
   formatDate,
   onRetry,
   onSelect,
@@ -37,7 +37,7 @@ export function AuthenticatedJobResultsPanel({
 }: JobResultsPanelProps) {
   const selectedSortLabel =
     sortOptions.find((option) => option.value === sortOrder)?.label ??
-    "Most relevant";
+    "Newest first";
 
   return (
     <section
@@ -82,9 +82,9 @@ export function AuthenticatedJobResultsPanel({
           />
           <Select.Root
             value={sortOrder}
-            onValueChange={(value) => {
-              if (value !== null) onSortOrderChange(value);
-            }}
+            onValueChange={(value) =>
+              value !== null && onSortOrderChange(value)
+            }
           >
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
@@ -138,7 +138,6 @@ export function AuthenticatedJobResultsPanel({
             loading={loading}
             feed={feed}
             loadMoreRef={loadMoreRef}
-            sourceFor={sourceFor}
             formatDate={formatDate}
             onSelect={onSelect}
             onSave={onSave}

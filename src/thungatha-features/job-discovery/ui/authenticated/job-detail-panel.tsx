@@ -3,6 +3,7 @@
 import { AuthenticatedJobDetailContent } from "./job-detail-content";
 import type { JobDetailContentProps } from "./job-detail-types";
 import { JobOpportunityDetailPanel } from "../shared/job-opportunity-detail-panel";
+
 type Props = JobDetailContentProps & {
   mobileDetail: boolean;
 };
@@ -10,10 +11,8 @@ type Props = JobDetailContentProps & {
 export function AuthenticatedJobDetailPanel({
   configured,
   job,
-  source,
   applicationDestination,
   applicationUrl,
-  jobSourceUrl,
   busy,
   detailLoading,
   mobileDetail,
@@ -36,10 +35,8 @@ export function AuthenticatedJobDetailPanel({
       <AuthenticatedJobDetailContent
         configured={configured}
         job={job}
-        source={source}
         applicationDestination={applicationDestination}
         applicationUrl={applicationUrl}
-        jobSourceUrl={jobSourceUrl}
         busy={busy}
         detailLoading={detailLoading}
         activityError={activityError}

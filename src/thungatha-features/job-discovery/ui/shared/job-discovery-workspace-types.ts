@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from "react";
-import { sourceFor, type Feed, type Job } from "../job-discovery-utils";
+import type { Feed, Job } from "../job-discovery-utils";
 
 export type JobDiscoveryWorkspaceProps = {
   jobs: Job[];
@@ -11,15 +11,12 @@ export type JobDiscoveryWorkspaceProps = {
   selectedId: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
   selectedDetail: Job | null;
-  selectedSource: ReturnType<typeof sourceFor>;
   applicationDestination: string | null;
   applicationUrl: string | null;
-  jobSourceUrl: string | null;
   busy: boolean;
   detailLoading: boolean;
   activityError: string | null;
   detailError: string | null;
-  sourceFor: typeof sourceFor;
   formatDate: (value: string | null | undefined) => string | null;
   onRetryFeed: () => void;
   onSelect: (job: Job) => void;

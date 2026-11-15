@@ -29,25 +29,14 @@ export function useUndoJobState(
       detail?.id === undoAction.jobId
         ? detail
         : feed?.jobs.find((item) => item.id === undoAction.jobId);
-    const job: Job = {
-      ...(existingJob ?? {
-        id: undoAction.jobId,
-        title: undoAction.title,
-        employer_name: null,
-        description: null,
-        location_text: null,
-        country_code: null,
-        work_mode: null,
-        employment_type: null,
-        salary_min: null,
-        salary_max: null,
-        salary_currency: null,
-        updated_at: null,
-        job_sources: null,
-        state: undoAction.nextState,
-      }),
-      state: undoAction.nextState,
-    };
+
+    if (!existingJob) {
+      setStateMessage("This opportunity is no longer available to restore.");
+      setUndoAction(null);
+      return;
+    }
+
+    const job: Job = { ...existingJob, state: undoAction.nextState };
     if (await updateJobState(job, undoAction.previousState, false)) {
       setUndoAction(null);
       setStateMessage(

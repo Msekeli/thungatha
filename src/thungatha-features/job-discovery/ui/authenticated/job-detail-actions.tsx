@@ -11,7 +11,6 @@ type Props = {
   job: Job;
   applicationDestination: string | null;
   applicationUrl: string | null;
-  jobSourceUrl: string | null;
   busy: boolean;
   detailLoading: boolean;
   onApply: (anchorEl: HTMLElement) => void;
@@ -24,7 +23,6 @@ export function JobDetailActions({
   job,
   applicationDestination,
   applicationUrl,
-  jobSourceUrl,
   busy,
   detailLoading,
   onApply,
@@ -32,32 +30,33 @@ export function JobDetailActions({
   onDismiss,
 }: Props) {
   const disabled = busy || detailLoading;
-  const applyTitle = applicationUrl
-    ? "Opens the supplied application destination"
-    : jobSourceUrl
-      ? "Opens the available source listing; it may not be the employer application page"
-      : "No job or application link is available";
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className="th-job-detail-actions">
+    <div className="th-job-detail-actions-layout">
       <Button
-        className={`${actionClass} max-[600px]:h-11 max-[600px]:w-full max-[600px]:text-base`}
+        className={`${actionClass} th-job-detail-apply-button`}
         disabled={!applicationDestination || disabled}
-        title={applyTitle}
+        title={
+          applicationUrl
+            ? "Opens the employer's application page"
+            : "No application link is available"
+        }
         data-job-application-trigger
         onClick={(event) => onApply(event.currentTarget)}
       >
-        <ExternalLink size={14} aria-hidden="true" />
-        {applicationUrl ? "Apply on company site" : "Open job listing"}
+        <ExternalLink size={16} aria-hidden="true" />
+        Apply on company site
       </Button>
-      <JobDetailProtectedActions
-        configured={configured}
-        job={job}
-        disabled={disabled}
-        onSave={onSave}
-        onDismiss={onDismiss}
-      />
+      <div className="th-job-detail-secondary-actions">
+        <JobDetailProtectedActions
+          configured={configured}
+          job={job}
+          disabled={disabled}
+          onSave={onSave}
+          onDismiss={onDismiss}
+        />
+      </div>
     </div>
   );
 }
