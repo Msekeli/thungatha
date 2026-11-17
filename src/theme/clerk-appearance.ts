@@ -1,13 +1,10 @@
 /*
- * Maps Clerk's variable and element names onto the Thungatha tokens and the
- * shared component classes (src/styles/components.css), so the sign-in modal,
- * sign-in and sign-up pages follow dark and light and use the same buttons
- * and inputs as the rest of the app. Passed to ClerkProvider in auth-providers.tsx.
+ * Maps Clerk's variable and element names onto the Thungatha design tokens
+ * and shared component classes. Clerk's built-in authentication components
+ * use the Thungatha icon, colours, typography, buttons, and inputs.
  *
- * cssLayerName puts Clerk's own styles in a "clerk" layer. globals.css declares
- * that layer before "components", so our classes win without !important
- * (Clerk's documented setup for Tailwind v4).
- * No red exists in the design spec, so "danger" uses the warning colour.
+ * cssLayerName places Clerk styles in the "clerk" layer. globals.css declares
+ * that layer before "components", allowing our classes to take precedence.
  */
 export const clerkAppearance = {
   cssLayerName: "clerk",
@@ -40,5 +37,10 @@ export const clerkAppearance = {
     dividerLine: { background: "var(--th-line)" },
     dividerText: { color: "var(--th-fg-muted)" },
     footerActionLink: { color: "var(--th-accent-text)", fontWeight: 500 },
+  },
+  options: {
+    logoImageUrl: "/brand/thungatha-icon.svg",
+    logoLinkUrl: "/",
+    logoPlacement: "inside" as const,
   },
 };
