@@ -35,6 +35,7 @@ export function JobUndoNotice({
     <Toast
       key={`${action.jobId}-${action.nextState ?? "none"}-${action.dismissalScope}`}
       message={message}
+      tone={action.nextState === "dismissed" ? "warning" : "success"}
       durationMs={10000}
       onDismiss={onDismiss}
       action={
