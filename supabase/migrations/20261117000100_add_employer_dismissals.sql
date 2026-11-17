@@ -56,14 +56,14 @@ select
   scout_vacancy_id,
   title,
   employer_name,
-  employer_key,
   company_logo_url,
   description,
   location_text,
   application_url,
   published_at,
   source_updated_at,
-  updated_at
+  updated_at,
+  employer_key
 from public.jobs
 where scout_vacancy_id is not null;
 
