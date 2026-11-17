@@ -15,37 +15,28 @@ export function JobDiscoverySearchToolbar({
 }: Props) {
   const s = state;
   const c = controller;
-  const category =
-    s.category === "dismissed" || s.category === "saved" ? s.category : "all";
 
   return (
     <div
-      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-3 text-center text-public-hero-text max-[700px]:px-4 max-[700px]:py-4" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-4 max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : "max-[900px]:w-full"}`}
+      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-2 text-center text-public-hero-text max-[700px]:px-4 max-[700px]:py-2" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-2 max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : "max-[900px]:w-full"}`}
     >
       {hasLeadingColumn && (
         <div className="mx-auto mb-1 max-w-4xl">
-          <h1 className="text-2xl font-bold tracking-tight max-[700px]:text-xl">
-            Find your next{" "}
-            <span className="text-accent-on-navy">opportunity</span>
+          <h1 className="text-xl font-bold tracking-tight max-[700px]:text-lg">
+            Find your next <span className="text-accent-on-navy">opportunity</span>
           </h1>
-          <p className="mx-auto mt-1 max-w-3xl text-control leading-relaxed text-public-hero-muted max-[700px]:text-xs">
-            Explore opportunities from verified employer sources. Create an
-            account to tailor your CV, save jobs and track your applications.
+          <p className="mx-auto mt-0.5 max-w-3xl text-xs leading-relaxed text-public-hero-muted">
+            Explore opportunities from verified employer sources.
           </p>
         </div>
       )}
       <JobDiscoveryControls
         prominent={hasLeadingColumn}
-        isAuthenticated={s.isAuthenticated}
+        isAuthenticated={s.userSignedIn}
         draft={s.draft}
-        category={category}
         onQueryChange={(value) => c.changeDraft("query", value)}
+        onLocationChange={(value) => c.changeDraft("location", value)}
         onSubmit={c.submitFilters}
-        onToggleFilters={(anchorEl) => {
-          s.setFilterAnchorEl(anchorEl);
-          s.setFiltersOpen((value) => !value);
-        }}
-        onCategoryChange={c.changeCategory}
         undoAction={s.undoAction}
         stateBusy={s.stateBusy}
         onUndo={() => void c.undoLastStateChange()}
