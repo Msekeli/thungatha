@@ -1,9 +1,7 @@
 import type { RefObject } from "react";
-import { Bookmark, ThumbsDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { JobList } from "../shared/job-list";
 import type { Job } from "./job-results-types";
-import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
+import { JobCardActions } from "../shared/job-card-actions";
 
 export function JobResultsList({
   jobs,
@@ -35,59 +33,18 @@ export function JobResultsList({
         variant="authenticated"
         selectedId={selectedId}
         postedLabel={(job) =>
-          formatDate((job as Job).published_at) || "Date unknown"
+          formatDate((job as Job).published_at) ?? undefined
         }
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;
-          const saved = fullJob.state === "saved";
-          const dismissed = fullJob.state === "dismissed";
           return (
-            <>
-              <ProtectedDiscoveryAction
-                configured={configured}
-                title="Save this opportunity"
-                description="Sign in or create a free account to save this job and return to it later."
-                onAction={() => onSave(fullJob)}
-              >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  type="button"
-                  aria-label={
-                    saved ? `Unsave ${fullJob.title}` : `Save ${fullJob.title}`
-                  }
-                  title={saved ? "Remove from saved jobs" : "Save job"}
-                >
-                  <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
-                </Button>
-              </ProtectedDiscoveryAction>
-              <ProtectedDiscoveryAction
-                configured={configured}
-                title="Dismiss this opportunity"
-                description="Sign in or create a free account to dismiss jobs that are not right for you."
-                onAction={() => onDismiss(fullJob)}
-              >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  type="button"
-                  aria-label={
-                    dismissed
-                      ? `Restore ${fullJob.title}`
-                      : `Dismiss ${fullJob.title}`
-                  }
-                  title={dismissed ? "Restore job" : "Not for me"}
-                  className={
-                    dismissed
-                      ? "text-[var(--th-accent)]"
-                      : "text-[var(--th-fg-muted)] hover:text-destructive"
-                  }
-                >
-                  <ThumbsDown size={16} />
-                </Button>
-              </ProtectedDiscoveryAction>
-            </>
+            <JobCardActions
+              job={fullJob}
+              configured={configured}
+              onSave={onSave}
+              onHide={onDismiss}
+            />
           );
         }}
       />
