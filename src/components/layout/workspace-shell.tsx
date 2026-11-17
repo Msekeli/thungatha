@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import "./workspace-shell.css";
 import "./workspace-sidebar-nav.css";
 import "./workspace-content.css";
@@ -46,7 +47,22 @@ export function WorkspaceShell({
   configured: boolean;
   children: ReactNode;
 }) {
-  const page = pages[active] ?? pages["/jobs"];
+  const searchParams = useSearchParams();
+  const jobsStatus =
+    active === "/jobs" &&
+    (searchParams.get("status") === "saved" ||
+      searchParams.get("status") === "dismissed")
+      ? searchParams.get("status")
+      : null;
+  const page =
+    jobsStatus === "saved"
+      ? { title: "Saved Jobs", subtitle: "Opportunities you have saved for later." }
+      : jobsStatus === "dismissed"
+        ? { title: "Dismissed Jobs", subtitle: "Opportunities you have chosen to hide." }
+        : pages[active] ?? pages["/jobs"];
+  const activeDestination = jobsStatus
+    ? `/jobs?status=${jobsStatus}`
+    : active;
   return (
     <div className="th-workspace-shell">
       <MobileWorkspaceNav configured={configured} />
@@ -54,7 +70,7 @@ export function WorkspaceShell({
         <div className="th-workspace-brand">
           <BrandMark />
         </div>
-        <WorkspaceSidebarNav active={active} />
+        <WorkspaceSidebarNav active={activeDestination} />
         <div className="th-workspace-sidebar-footer">
           {configured ? (
             <SignOutControl />
