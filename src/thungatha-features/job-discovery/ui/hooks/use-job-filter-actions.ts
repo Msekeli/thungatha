@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { FormEvent, Dispatch, SetStateAction } from "react";
-import { EMPTY_FILTERS, type Filters } from "../job-discovery-utils";
+import type { Filters } from "../job-discovery-utils";
 
 export function useJobFilterActions(
   draft: Filters,
@@ -56,13 +56,6 @@ export function useJobFilterActions(
     [applyFilters],
   );
 
-  const clearFilters = useCallback(() => {
-    if (searchTimer.current) clearTimeout(searchTimer.current);
-    setDraft(EMPTY_FILTERS);
-    setFilters(EMPTY_FILTERS);
-    resetResultsView();
-  }, [setDraft, setFilters, resetResultsView]);
-
   const changeCategory = useCallback(
     (key: string) => {
       setCategory(key === "saved" || key === "dismissed" ? key : "new");
@@ -74,8 +67,6 @@ export function useJobFilterActions(
   return {
     changeDraft,
     submitFilters,
-    applyFilters,
-    clearFilters,
     resetResultsView,
     changeCategory,
   };
