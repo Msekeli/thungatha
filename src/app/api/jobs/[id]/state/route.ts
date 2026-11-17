@@ -8,7 +8,10 @@ import {
 import { resolveJobDiscoveryUser } from "@/thungatha-features/job-discovery/server/job-discovery-identity";
 
 const idSchema = z.string().uuid();
-const bodySchema = z.object({ state: z.enum(["saved", "dismissed"]) }).strict();
+const bodySchema = z.object({
+  state: z.enum(["saved", "dismissed"]),
+  scope: z.enum(["job", "employer"]).optional(),
+}).strict();
 
 export async function PUT(
   request: Request,
@@ -32,12 +35,28 @@ export async function PUT(
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
     const { data: job, error: jobError } = await db
       .from("jobs")
-      .select("id")
+      .select("id,employer_name,employer_key")
       .eq("id", id)
       .not("scout_vacancy_id", "is", null)
       .maybeSingle();
     if (jobError) throw jobError;
     if (!job) return apiError("Job not found", 404);
+
+    if (parsed.data.state === "dismissed" && parsed.data.scope === "employer") {
+      if (!job.employer_name?.trim() || !job.employer_key?.trim())
+        return apiError("An employer name is not available for this job", 422);
+      const { error: employerError } = await db
+        .from("user_employer_dismissals")
+        .upsert(
+          {
+            user_id: user!.userId,
+            employer_key: job.employer_key,
+            employer_name: job.employer_name.trim(),
+          },
+          { onConflict: "user_id,employer_key" },
+        );
+      if (employerError) throw employerError;
+    }
 
     const { data, error } = await db
       .from("user_job_states")
