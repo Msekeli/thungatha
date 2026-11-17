@@ -48,15 +48,15 @@ export function MobileWorkspaceBottomNav({
             <SignInButton
               key={item.href}
               mode="modal"
-              fallbackRedirectUrl="/jobs?welcome=1"
+              fallbackRedirectUrl={item.href}
             >
-              <a
-                href={item.href}
+              <button
+                type="button"
                 aria-label={`Sign in to access ${item.label}`}
               >
                 <item.icon size={19} strokeWidth={1.8} />
                 <span>{item.label}</span>
-              </a>
+              </button>
             </SignInButton>
           ))}
         </>

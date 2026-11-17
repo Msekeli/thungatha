@@ -61,7 +61,9 @@
     background: var(--th-nav);
   }
   .th-mobile-bottom-nav--workspace a,
-  .th-mobile-bottom-nav--public a {
+  .th-mobile-bottom-nav--public a,
+  .th-mobile-bottom-nav--workspace button,
+  .th-mobile-bottom-nav--public button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,6 +72,8 @@
     min-width: 0;
     min-height: 48px;
     border-radius: 8px;
+    border: 0;
+    background: transparent;
     color: var(--th-nav-text, var(--th-fg-muted));
     font-size: 10px;
     text-decoration: none;

@@ -21,7 +21,12 @@ function isProtectedPath(path: string) {
 
 const clerkHandler = clerkMiddleware(async (auth, request) => {
   if (isProtectedPath(request.nextUrl.pathname)) {
-    await auth.protect();
+    const returnPath =
+      request.nextUrl.pathname +
+      (request.nextUrl.search ? request.nextUrl.search : "");
+    await auth.protect({
+      unauthenticatedUrl: `/sign-in?redirect_url=${encodeURIComponent(returnPath)}`,
+    });
   }
 });
 

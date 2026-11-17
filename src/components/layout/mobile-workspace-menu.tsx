@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import {
   BriefcaseBusiness,
   UserRound,
@@ -10,7 +10,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
-import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 const secondary = [
   {
     href: "/jobs?status=dismissed",
@@ -44,24 +44,18 @@ export function MobileWorkspaceMenu({
               <House size={17} />
               Discover jobs
             </Link>
-            <ButtonLink
-              href="/sign-in"
-              variant="secondary"
-              size="md"
-              onClick={onClose}
-            >
-              <LogIn size={17} />
-              Sign in
-            </ButtonLink>
-            <ButtonLink
-              href="/sign-up"
-              variant="primary"
-              size="md"
-              onClick={onClose}
-            >
-              <UserRoundPlus size={17} />
-              Create account
-            </ButtonLink>
+            <SignInButton mode="modal" fallbackRedirectUrl="/jobs">
+              <Button variant="secondary" size="md" onClick={onClose}>
+                <LogIn size={17} />
+                Sign in
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal" fallbackRedirectUrl="/jobs">
+              <Button variant="primary" size="md" onClick={onClose}>
+                <UserRoundPlus size={17} />
+                Create account
+              </Button>
+            </SignUpButton>
           </>
         ) : (
           <>
