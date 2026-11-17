@@ -82,13 +82,6 @@ export function JobDiscoveryScreen({
         />
       </div>
       <JobDiscoveryDialogs
-        filtersOpen={s.filtersOpen}
-        filterAnchorEl={s.filterAnchorEl}
-        draft={s.draft}
-        changeDraft={c.changeDraft}
-        clearFilters={c.clearFilters}
-        applyFilters={c.applyFilters}
-        setFiltersOpen={s.setFiltersOpen}
         profileSetupPrompt={s.profileSetupPrompt}
         setProfileSetupPrompt={s.setProfileSetupPrompt}
         profileSetupAnchorEl={s.profileSetupAnchorEl}
