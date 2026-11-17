@@ -14,8 +14,18 @@ export async function readJobFeed(
   statesOnly: boolean,
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
+  const { data: employerDismissals, error: employerDismissalsError } = userId
+    ? await db
+        .from("user_employer_dismissals")
+        .select("employer_key,employer_name")
+        .eq("user_id", userId)
+    : { data: [], error: null };
+  if (employerDismissalsError) throw employerDismissalsError;
+  const dismissedEmployerKeys = (employerDismissals ?? []).map(
+    (item) => item.employer_key,
+  );
 
-  if (statesOnly) return { states };
+  if (statesOnly) return { states, employerDismissals: employerDismissals ?? [] };
   if (!userId && input.state !== "all")
     return emptyFeed(input.page, input.pageSize);
   if (userId && input.state !== "all" && !states.length)
@@ -25,7 +35,7 @@ export async function readJobFeed(
   let query = db
     .from("job_discovery_feed")
     .select(
-      "id,scout_vacancy_id,title,employer_name,company_logo_url,description,location_text,application_url,published_at,source_updated_at,updated_at",
+      "id,scout_vacancy_id,title,employer_name,employer_key,company_logo_url,description,location_text,application_url,published_at,source_updated_at,updated_at",
       { count: "exact" },
     );
 
@@ -53,6 +63,14 @@ export async function readJobFeed(
     query = query.gte(
       "published_at",
       new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
+    );
+  }
+
+  if (userId && dismissedEmployerKeys.length) {
+    query = query.not(
+      "employer_key",
+      "in",
+      `(${dismissedEmployerKeys.join(",")})`,
     );
   }
 
