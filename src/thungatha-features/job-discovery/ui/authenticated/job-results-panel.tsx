@@ -43,13 +43,10 @@ export function AuthenticatedJobResultsPanel({
     >
       <div className="mb-3 flex shrink-0 items-center justify-between gap-2 border-b border-[var(--th-line)] pb-3 max-[700px]:mb-2 max-[700px]:pb-2">
         <div className="min-w-0 text-sm text-[var(--th-fg-muted)]">
-          <span aria-live="polite" className="max-[700px]:hidden">
+          <span aria-live="polite" className="whitespace-nowrap">
             {resultCount > 0
               ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities`
               : "0 opportunities"}
-          </span>
-          <span aria-live="polite" className="hidden whitespace-nowrap max-[700px]:inline">
-            {resultCount} jobs
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-2 max-[700px]:gap-1">
@@ -68,12 +65,7 @@ export function AuthenticatedJobResultsPanel({
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
               className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-2 text-sm font-medium text-fg outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-10 max-[700px]:gap-1 max-[700px]:px-1 max-[700px]:text-xs"
             >
-              <Select.Value>
-                <span className="max-[700px]:hidden">{selectedSortLabel}</span>
-                <span className="hidden max-[700px]:inline">
-                  {sortOrder === "oldest" ? "Oldest" : sortOrder === "relevance" ? "Relevant" : "Newest"}
-                </span>
-              </Select.Value>
+              <Select.Value>{selectedSortLabel}</Select.Value>
               <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
                 <ChevronDown size={16} aria-hidden="true" />
               </Select.Icon>
