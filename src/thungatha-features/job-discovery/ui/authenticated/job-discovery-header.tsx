@@ -8,19 +8,15 @@ export function JobDiscoveryHeader({
   prominent = false,
   draft,
   onQueryChange,
+  onLocationChange,
   onSubmit,
-  onToggleFilters,
-  category,
-  onCategoryChange,
   isAuthenticated,
 }: {
   prominent?: boolean;
   draft: Filters;
   onQueryChange: (value: string) => void;
+  onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onToggleFilters: (anchorEl: HTMLElement) => void;
-  category: string;
-  onCategoryChange: (key: string, label: string) => void;
   isAuthenticated: boolean;
 }) {
   return (
@@ -28,11 +24,10 @@ export function JobDiscoveryHeader({
       <JobDiscoverySearchFilters
         prominent={prominent}
         query={draft.query}
+        location={draft.location}
         onQueryChange={onQueryChange}
-        onOpenFilters={onToggleFilters}
+        onLocationChange={onLocationChange}
         onSubmit={onSubmit}
-        category={category}
-        onCategoryChange={onCategoryChange}
         isAuthenticated={isAuthenticated}
       />
     </div>
