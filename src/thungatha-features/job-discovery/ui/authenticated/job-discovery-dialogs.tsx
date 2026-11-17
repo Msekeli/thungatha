@@ -5,6 +5,8 @@ import { ProfileSetupDialog } from "./profile-setup-dialog";
 import { MatchBreakdownDialog } from "../shared/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./application-confirmation-dialog";
 import { JobFiltersDialog } from "./job-filters-dialog";
+import { JobDismissalDialog } from "./job-dismissal-dialog";
+import type { Job } from "../job-discovery-utils";
 import type { Filters } from "../job-discovery-utils";
 
 type Props = {
@@ -30,6 +32,9 @@ type Props = {
   employer: string;
   onCloseApplicationPrompt: () => void;
   onConfirmApplied: () => void;
+  pendingDismissJob: Job | null;
+  onCloseDismissDialog: () => void;
+  onConfirmDismiss: (scope: "job" | "employer") => void;
 };
 
 export function JobDiscoveryDialogs(props: Props) {
@@ -64,6 +69,12 @@ export function JobDiscoveryDialogs(props: Props) {
         open={props.matchOpen}
         anchorEl={props.matchAnchorEl}
         onClose={() => props.setMatchOpen(false)}
+      />
+      <JobDismissalDialog
+        job={props.pendingDismissJob}
+        busy={props.stateBusy}
+        onClose={props.onCloseDismissDialog}
+        onConfirm={props.onConfirmDismiss}
       />
       <ApplicationConfirmationDialog
         open={props.showApplicationPrompt}
