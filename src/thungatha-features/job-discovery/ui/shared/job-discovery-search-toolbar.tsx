@@ -18,7 +18,7 @@ export function JobDiscoverySearchToolbar({
 
   return (
     <div
-      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-2 text-center text-public-hero-text max-[700px]:relative max-[700px]:left-1/2 max-[700px]:mb-2 max-[700px]:w-screen max-[700px]:-translate-x-1/2 max-[700px]:px-4 max-[700px]:py-3" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-2 max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : "max-[900px]:w-full"}`}
+      className={`w-full min-w-0 ${hasLeadingColumn ? "mb-0 bg-gradient-to-r from-public-hero-from to-public-hero-to px-8 py-2 text-center text-public-hero-text max-[700px]:relative max-[700px]:left-1/2 max-[700px]:mb-2 max-[700px]:!w-screen max-[700px]:-translate-x-1/2 max-[700px]:px-4 max-[700px]:py-3" : ""} ${s.mobileDetail ? "max-[900px]:hidden" : ""} max-[900px]:mx-auto max-[900px]:mb-2 max-[900px]:max-w-none ${s.isAuthenticated ? "max-[900px]:w-[94%]" : "max-[900px]:w-full"}`}
     >
       {hasLeadingColumn && (
         <div className="mx-auto mb-1 max-w-4xl">
