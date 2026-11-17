@@ -45,7 +45,12 @@ export function useUpdateJobState(
               ...(nextState ? { "Content-Type": "application/json" } : {}),
             },
             ...(nextState
-              ? { body: JSON.stringify({ state: nextState }) }
+              ? {
+                  body: JSON.stringify({
+                    state: nextState,
+                    ...(nextState === "dismissed" ? { scope: dismissalScope } : {}),
+                  }),
+                }
               : {}),
             cache: "no-store",
           },
