@@ -33,9 +33,12 @@ export async function PUT(
 
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
+    const needsEmployerKey =
+      parsed.data.scope === "employer" ||
+      parsed.data.state === "saved";
     const { data: job, error: jobError } = await db
       .from("jobs")
-      .select("id,employer_name,employer_key")
+      .select(needsEmployerKey ? "id,employer_name,employer_key" : "id,employer_name")
       .eq("id", id)
       .not("scout_vacancy_id", "is", null)
       .maybeSingle();
