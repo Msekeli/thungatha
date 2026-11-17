@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { Check, Circle, X } from "lucide-react";
 import { AnchoredPopover } from "@/components/ui/anchored-popover";
 import { Button } from "@/components/ui/button";
 import type { Job } from "../job-discovery-utils";
+
+type DismissalScope = "job" | "employer";
 
 export function JobDismissalDialog({
   job,
@@ -15,12 +17,14 @@ export function JobDismissalDialog({
   job: Job | null;
   busy: boolean;
   onClose: () => void;
-  onConfirm: (scope: "job" | "employer") => void;
+  onConfirm: (scope: DismissalScope) => void;
 }) {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const [selectedScope, setSelectedScope] = useState<DismissalScope | null>(null);
   const employer = job?.employer_name?.trim() || "this employer";
 
   useEffect(() => {
+    setSelectedScope(null);
     if (job) {
       const activeElement = document.activeElement;
       setAnchor(activeElement instanceof HTMLElement ? activeElement : null);
@@ -29,19 +33,29 @@ export function JobDismissalDialog({
     }
   }, [job]);
 
+  const optionClass = (selected: boolean) =>
+    [
+      "flex w-full items-start gap-3 rounded-xl border-2 p-3 text-left transition-colors",
+      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+      selected
+        ? "border-accent bg-accent/10 ring-2 ring-accent/20"
+        : "border-line bg-panel hover:border-accent/70 hover:bg-panel-2",
+      "disabled:cursor-not-allowed disabled:opacity-50",
+    ].join(" ");
+
   return (
     <AnchoredPopover
       open={Boolean(job)}
       anchor={anchor}
       onClose={onClose}
       label="Dismiss job options"
-      className="relative w-[min(380px,calc(100vw-24px))] rounded-xl border border-line bg-panel p-4 text-fg shadow-xl"
+      className="relative w-[min(400px,calc(100vw-24px))] rounded-xl border border-line bg-panel p-4 text-fg shadow-xl"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="m-0 text-base font-semibold">What would you like to dismiss?</h2>
           <p className="mb-0 mt-1 text-sm leading-5 text-fg-muted">
-            Choose whether this applies only to this vacancy or to every job from {employer}.
+            Select one option. You can review it before confirming.
           </p>
         </div>
         <Button
@@ -55,34 +69,56 @@ export function JobDismissalDialog({
         </Button>
       </div>
 
-      <div className="mt-4 grid gap-2">
+      <div className="mt-4 grid gap-2" role="radiogroup" aria-label="Dismissal scope">
         <button
           type="button"
+          role="radio"
+          aria-checked={selectedScope === "job"}
           disabled={busy || !job}
-          onClick={() => onConfirm("job")}
-          className="rounded-lg border border-line bg-panel p-3 text-left transition hover:border-accent hover:bg-panel-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50"
+          onClick={() => setSelectedScope("job")}
+          className={optionClass(selectedScope === "job")}
         >
-          <span className="block text-sm font-semibold">Dismiss this job only</span>
-          <span className="mt-1 block text-sm leading-5 text-fg-muted">
-            Hide “{job?.title ?? "this vacancy"}”. Other jobs from {employer} may still appear.
+          <span className={selectedScope === "job" ? "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground" : "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-fg-muted"}>
+            {selectedScope === "job" ? <Check size={13} strokeWidth={3} /> : <Circle size={9} />}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">Dismiss this job only</span>
+            <span className="mt-1 block text-sm leading-5 text-fg-muted">
+              Hide “{job?.title ?? "this vacancy"}”. Other jobs from {employer} may still appear.
+            </span>
           </span>
         </button>
+
         <button
           type="button"
+          role="radio"
+          aria-checked={selectedScope === "employer"}
           disabled={busy || !job || !job.employer_name?.trim()}
-          onClick={() => onConfirm("employer")}
-          className="rounded-lg border border-line bg-panel p-3 text-left transition hover:border-accent hover:bg-panel-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50"
+          onClick={() => setSelectedScope("employer")}
+          className={optionClass(selectedScope === "employer")}
         >
-          <span className="block text-sm font-semibold">Dismiss {employer}</span>
-          <span className="mt-1 block text-sm leading-5 text-fg-muted">
-            Hide all current and future jobs from this employer.
+          <span className={selectedScope === "employer" ? "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground" : "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-fg-muted"}>
+            {selectedScope === "employer" ? <Check size={13} strokeWidth={3} /> : <Circle size={9} />}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">Dismiss {employer}</span>
+            <span className="mt-1 block text-sm leading-5 text-fg-muted">
+              Hide all current and future jobs from this employer.
+            </span>
           </span>
         </button>
       </div>
 
-      <div className="mt-3 flex justify-end">
+      <div className="mt-4 flex justify-end gap-2">
         <Button variant="outline" size="sm" disabled={busy} onClick={onClose}>
           Cancel
+        </Button>
+        <Button
+          size="sm"
+          disabled={busy || !selectedScope}
+          onClick={() => selectedScope && onConfirm(selectedScope)}
+        >
+          {busy ? "Dismissing…" : "Confirm dismissal"}
         </Button>
       </div>
     </AnchoredPopover>
