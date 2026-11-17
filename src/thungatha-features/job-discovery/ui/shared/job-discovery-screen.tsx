@@ -104,6 +104,9 @@ export function JobDiscoveryScreen({
         employer={shown(c.selectedDetail?.employer_name)}
         onCloseApplicationPrompt={c.workspaceActions.dismissAppliedPrompt}
         onConfirmApplied={() => void c.confirmApplied()}
+        pendingDismissJob={s.pendingDismissJob}
+        onCloseDismissDialog={c.workspaceActions.closeDismissDialog}
+        onConfirmDismiss={(scope) => void c.workspaceActions.confirmDismissJob(scope)}
       />
     </>
   );
