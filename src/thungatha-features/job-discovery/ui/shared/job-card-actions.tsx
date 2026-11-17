@@ -29,7 +29,9 @@ export function JobCardActions({
         <button
           type="button"
           className="th-job-card__action th-job-card__action--save"
-          aria-label={saved ? `Remove ${job.title} from saved jobs` : `Save ${job.title}`}
+          aria-label={
+            saved ? `Remove ${job.title} from saved jobs` : `Save ${job.title}`
+          }
           aria-pressed={saved}
         >
           <Bookmark size={16} aria-hidden="true" />

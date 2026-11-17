@@ -56,13 +56,17 @@ export function WorkspaceShell({
       : null;
   const page =
     jobsStatus === "saved"
-      ? { title: "Saved Jobs", subtitle: "Opportunities you have saved for later." }
+      ? {
+          title: "Saved Jobs",
+          subtitle: "Opportunities you have saved for later.",
+        }
       : jobsStatus === "dismissed"
-        ? { title: "Dismissed Jobs", subtitle: "Opportunities you have chosen to hide." }
-        : pages[active] ?? pages["/jobs"];
-  const activeDestination = jobsStatus
-    ? `/jobs?status=${jobsStatus}`
-    : active;
+        ? {
+            title: "Dismissed Jobs",
+            subtitle: "Opportunities you have chosen to hide.",
+          }
+        : (pages[active] ?? pages["/jobs"]);
+  const activeDestination = jobsStatus ? `/jobs?status=${jobsStatus}` : active;
   return (
     <div className="th-workspace-shell">
       <MobileWorkspaceNav configured={configured} />

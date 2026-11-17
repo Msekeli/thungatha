@@ -7,7 +7,10 @@ function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
 }
 
-function isMissingEmployerDismissalsSchema(error: { code?: string; message?: string }) {
+function isMissingEmployerDismissalsSchema(error: {
+  code?: string;
+  message?: string;
+}) {
   return (
     error.code === "42P01" ||
     error.code === "42703" ||
@@ -24,7 +27,8 @@ export async function readJobFeed(
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
 
-  let employerDismissals: { employer_key: string; employer_name: string }[] = [];
+  let employerDismissals: { employer_key: string; employer_name: string }[] =
+    [];
   let employerDismissalsAvailable = false;
 
   if (userId) {
@@ -48,24 +52,7 @@ export async function readJobFeed(
     return emptyFeed(input.page, input.pageSize);
 
   const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
-  const fields = [
-    "id",
-    "scout_vacancy_id",
-    "title",
-    "employer_name",
-    ...(employerDismissalsAvailable ? ["employer_key"] : []),
-    "company_logo_url",
-    "description",
-    "location_text",
-    "application_url",
-    "published_at",
-    "source_updated_at",
-    "updated_at",
-  ].join(",");
-
-  let query = db
-    .from("job_discovery_feed")
-    .select(fields, { count: "exact" });
+  let query = db.from("job_discovery_feed").select("*", { count: "exact" });
 
   if (input.query) {
     const term = sanitizeJobSearchTerm(input.query);
@@ -94,7 +81,9 @@ export async function readJobFeed(
     );
   }
 
-  const dismissedEmployerKeys = employerDismissals.map((item) => item.employer_key);
+  const dismissedEmployerKeys = employerDismissals.map(
+    (item) => item.employer_key,
+  );
   if (
     employerDismissalsAvailable &&
     userId &&

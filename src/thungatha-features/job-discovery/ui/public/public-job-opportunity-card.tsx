@@ -34,7 +34,11 @@ export function PublicJobOpportunityCard({
       />
       <div className="th-job-card__header">
         {job.company_logo_url ? (
-          <img src={job.company_logo_url} alt="" className="th-job-card__logo" />
+          <img
+            src={job.company_logo_url}
+            alt=""
+            className="th-job-card__logo"
+          />
         ) : (
           <span className="th-job-card__logo">{initials || "?"}</span>
         )}
@@ -42,7 +46,11 @@ export function PublicJobOpportunityCard({
           <span className="th-job-card__title">{job.title}</span>
           <span className="th-job-card__employer">{employer}</span>
         </span>
-        <ArrowUpRight size={22} aria-hidden="true" className="th-job-card__external" />
+        <ArrowUpRight
+          size={22}
+          aria-hidden="true"
+          className="th-job-card__external"
+        />
       </div>
       <div className="th-job-card__body">
         {job.location_text?.trim() && (
@@ -54,12 +62,13 @@ export function PublicJobOpportunityCard({
           </div>
         )}
         <div className="th-job-card__footer">
-          {ageDays !== null ? (
-            <span className="th-job-card__posted" data-age={ageDays <= 3 ? "new" : "older"}>
-              <Clock3 size={14} aria-hidden="true" />
-              {postedLabel}
-            </span>
-          ) : <span />}
+          <span
+            className="th-job-card__posted"
+            data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}
+          >
+            <Clock3 size={14} aria-hidden="true" />
+            {postedLabel}
+          </span>
           {actions}
         </div>
       </div>

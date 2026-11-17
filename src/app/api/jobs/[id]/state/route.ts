@@ -8,10 +8,12 @@ import {
 import { resolveJobDiscoveryUser } from "@/thungatha-features/job-discovery/server/job-discovery-identity";
 
 const idSchema = z.string().uuid();
-const bodySchema = z.object({
-  state: z.enum(["saved", "dismissed"]),
-  scope: z.enum(["job", "employer"]).optional(),
-}).strict();
+const bodySchema = z
+  .object({
+    state: z.enum(["saved", "dismissed"]),
+    scope: z.enum(["job", "employer"]).optional(),
+  })
+  .strict();
 
 export async function PUT(
   request: Request,
@@ -33,12 +35,9 @@ export async function PUT(
 
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
-    const needsEmployerKey =
-      parsed.data.scope === "employer" ||
-      parsed.data.state === "saved";
     const { data: job, error: jobError } = await db
       .from("jobs")
-      .select(needsEmployerKey ? "id,employer_name,employer_key" : "id,employer_name")
+      .select("id,employer_name,employer_key")
       .eq("id", id)
       .not("scout_vacancy_id", "is", null)
       .maybeSingle();

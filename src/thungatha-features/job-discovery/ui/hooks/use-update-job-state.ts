@@ -50,7 +50,9 @@ export function useUpdateJobState(
               ? {
                   body: JSON.stringify({
                     state: nextState,
-                    ...(nextState === "dismissed" ? { scope: dismissalScope } : {}),
+                    ...(nextState === "dismissed"
+                      ? { scope: dismissalScope }
+                      : {}),
                   }),
                 }
               : {}),
@@ -66,11 +68,17 @@ export function useUpdateJobState(
 
           if (nextState === "dismissed") {
             const employerKey = (value: string | null | undefined) =>
-              (value ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+              (value ?? "")
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "");
 
             const jobs = current.jobs.filter((item) => {
               if (dismissalScope === "employer") {
-                return employerKey(item.employer_name) !== employerKey(job.employer_name);
+                return (
+                  employerKey(item.employer_name) !==
+                  employerKey(job.employer_name)
+                );
               }
               return item.id !== job.id;
             });

@@ -12,6 +12,13 @@ export type JobCardData = {
   published_at?: string | null;
 };
 
+function postedAgeDays(value: string | null | undefined) {
+  if (!value) return null;
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+}
+
 type Props = {
   job: JobCardData;
   variant?: "public" | "authenticated";
@@ -36,9 +43,7 @@ export function JobOpportunityCard({
     .map((part) => part[0])
     .join("")
     .toUpperCase();
-  const ageDays = job.published_at
-    ? Math.max(0, Math.floor((Date.now() - new Date(job.published_at).getTime()) / 86_400_000))
-    : null;
+  const ageDays = postedAgeDays(job.published_at);
 
   return (
     <article className="th-job-card" data-selected={selected}>
@@ -51,7 +56,11 @@ export function JobOpportunityCard({
       />
       <div className="th-job-card__header">
         {job.company_logo_url ? (
-          <img src={job.company_logo_url} alt="" className="th-job-card__logo" />
+          <img
+            src={job.company_logo_url}
+            alt=""
+            className="th-job-card__logo"
+          />
         ) : (
           <span className="th-job-card__logo">{initials || "?"}</span>
         )}
@@ -59,7 +68,11 @@ export function JobOpportunityCard({
           <span className="th-job-card__title">{job.title}</span>
           <span className="th-job-card__employer">{employer}</span>
         </span>
-        <ArrowUpRight size={22} aria-hidden="true" className="th-job-card__external" />
+        <ArrowUpRight
+          size={22}
+          aria-hidden="true"
+          className="th-job-card__external"
+        />
       </div>
       <div className="th-job-card__body">
         {job.location_text?.trim() && (
@@ -72,11 +85,16 @@ export function JobOpportunityCard({
         )}
         <div className="th-job-card__footer">
           {postedLabel ? (
-            <span className="th-job-card__posted" data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}>
+            <span
+              className="th-job-card__posted"
+              data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}
+            >
               <Clock3 size={14} aria-hidden="true" />
               {postedLabel}
             </span>
-          ) : <span />}
+          ) : (
+            <span />
+          )}
           {saveAction}
         </div>
       </div>

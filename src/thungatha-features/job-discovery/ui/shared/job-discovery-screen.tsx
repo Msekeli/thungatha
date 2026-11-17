@@ -99,7 +99,9 @@ export function JobDiscoveryScreen({
         onConfirmApplied={() => void c.confirmApplied()}
         pendingDismissJob={s.pendingDismissJob}
         onCloseDismissDialog={c.workspaceActions.closeDismissDialog}
-        onConfirmDismiss={(scope) => void c.workspaceActions.confirmDismissJob(scope)}
+        onConfirmDismiss={(scope) =>
+          void c.workspaceActions.confirmDismissJob(scope)
+        }
       />
     </>
   );

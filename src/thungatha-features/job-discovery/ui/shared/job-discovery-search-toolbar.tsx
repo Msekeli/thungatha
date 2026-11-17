@@ -23,7 +23,8 @@ export function JobDiscoverySearchToolbar({
       {hasLeadingColumn && (
         <div className="mx-auto mb-1 max-w-4xl">
           <h1 className="text-xl font-bold tracking-tight max-[700px]:text-lg">
-            Find your next <span className="text-accent-on-navy">opportunity</span>
+            Find your next{" "}
+            <span className="text-accent-on-navy">opportunity</span>
           </h1>
           <p className="mx-auto mt-0.5 max-w-3xl text-xs leading-relaxed text-public-hero-muted">
             Explore opportunities from verified employer sources.

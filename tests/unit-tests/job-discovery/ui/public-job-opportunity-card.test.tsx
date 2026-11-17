@@ -14,18 +14,38 @@ afterEach(() => cleanup());
 
 describe("PublicJobOpportunityCard publication date", () => {
   it("uses the recent style for vacancies published within three days", () => {
-    render(<PublicJobOpportunityCard job={job} ageDays={3} postedLabel="3 days ago" onSelect={vi.fn()} />);
-    expect(screen.getByText("3 days ago").className).toContain("text-success");
+    render(
+      <PublicJobOpportunityCard
+        job={job}
+        ageDays={3}
+        postedLabel="3 days ago"
+        onSelect={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("3 days ago").dataset.age).toBe("new");
   });
 
   it("uses neutral styling for older vacancies", () => {
-    render(<PublicJobOpportunityCard job={job} ageDays={4} postedLabel="4 days ago" onSelect={vi.fn()} />);
-    expect(screen.getByText("4 days ago").className).toContain("text-public-muted");
-    expect(screen.getByText("4 days ago").className).not.toContain("text-success");
+    render(
+      <PublicJobOpportunityCard
+        job={job}
+        ageDays={4}
+        postedLabel="4 days ago"
+        onSelect={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("4 days ago").dataset.age).toBe("older");
   });
 
   it("shows an unknown publication date without falling back to collection time", () => {
-    render(<PublicJobOpportunityCard job={job} ageDays={null} postedLabel="Date unknown" onSelect={vi.fn()} />);
+    render(
+      <PublicJobOpportunityCard
+        job={job}
+        ageDays={null}
+        postedLabel="Date unknown"
+        onSelect={vi.fn()}
+      />,
+    );
     expect(screen.getByText("Date unknown")).toBeTruthy();
   });
 });

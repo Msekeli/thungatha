@@ -1,4 +1,4 @@
-import { EMPTY_FILTERS, PAGE_SIZE, type Filters } from "./job-discovery-types";
+import { PAGE_SIZE, type Filters } from "./job-discovery-types";
 
 export {
   EMPTY_FILTERS,

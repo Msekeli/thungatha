@@ -21,7 +21,9 @@ export function JobDiscoveryHeader({
   isSignedIn: boolean;
 }) {
   return (
-    <header className={`mx-auto w-full ${prominent ? "max-w-none pt-1" : "max-w-5xl"}`}>
+    <header
+      className={`mx-auto w-full ${prominent ? "max-w-none pt-1" : "max-w-5xl"}`}
+    >
       <div className="mx-auto flex w-full max-w-5xl flex-row items-center gap-2 max-[700px]:flex-col">
         <div className="min-w-0 flex-1 max-[700px]:w-full">
           <JobSearchBar
