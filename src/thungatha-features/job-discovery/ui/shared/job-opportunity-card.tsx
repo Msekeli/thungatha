@@ -9,6 +9,7 @@ export type JobCardData = {
   employer_name: string;
   company_logo_url: string | null;
   location_text: string | null;
+  published_at?: string | null;
 };
 
 type Props = {
@@ -35,6 +36,9 @@ export function JobOpportunityCard({
     .map((part) => part[0])
     .join("")
     .toUpperCase();
+  const ageDays = job.published_at
+    ? Math.max(0, Math.floor((Date.now() - new Date(job.published_at).getTime()) / 86_400_000))
+    : null;
 
   return (
     <article className="th-job-card" data-selected={selected}>
@@ -58,21 +62,23 @@ export function JobOpportunityCard({
         <ArrowUpRight size={22} aria-hidden="true" className="th-job-card__external" />
       </div>
       <div className="th-job-card__body">
-        <div className="th-job-card__metadata">
-          {job.location_text?.trim() && (
+        {job.location_text?.trim() && (
+          <div className="th-job-card__metadata">
             <span className="th-job-card__location">
               <MapPin aria-hidden="true" />
               <span>{job.location_text}</span>
             </span>
-          )}
-          {postedLabel && (
-            <span className="th-job-card__posted">
+          </div>
+        )}
+        <div className="th-job-card__footer">
+          {postedLabel ? (
+            <span className="th-job-card__posted" data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}>
               <Clock3 size={14} aria-hidden="true" />
               {postedLabel}
             </span>
-          )}
+          ) : <span />}
+          {saveAction}
         </div>
-        {saveAction}
       </div>
     </article>
   );
