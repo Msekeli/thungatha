@@ -27,12 +27,16 @@ export function useJobFilterActions(
   const changeDraft = useCallback(
     (key: keyof Filters, value: string) => {
       setDraft((current) => ({ ...current, [key]: value }));
-      if (key === "query" || key === "location") {
+
+      if (key === "query") {
         if (searchTimer.current) clearTimeout(searchTimer.current);
         searchTimer.current = setTimeout(() => {
-          setFilters((current) => ({ ...current, [key]: value }));
+          setFilters((current) => ({ ...current, query: value }));
           resetResultsView();
-        }, key === "query" ? 350 : 0);
+        }, 350);
+      } else if (key === "location") {
+        setFilters((current) => ({ ...current, location: value }));
+        resetResultsView();
       }
     },
     [setDraft, setFilters, resetResultsView],
