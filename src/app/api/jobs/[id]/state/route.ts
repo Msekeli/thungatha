@@ -58,6 +58,15 @@ export async function PUT(
       if (employerError) throw employerError;
     }
 
+    if (parsed.data.state === "saved" && job.employer_key) {
+      const { error: employerError } = await db
+        .from("user_employer_dismissals")
+        .delete()
+        .eq("user_id", user!.userId)
+        .eq("employer_key", job.employer_key);
+      if (employerError) throw employerError;
+    }
+
     const { data, error } = await db
       .from("user_job_states")
       .upsert(
