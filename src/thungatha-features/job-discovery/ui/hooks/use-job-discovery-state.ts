@@ -40,6 +40,8 @@ export function useJobDiscoveryState(
   const [undoAction, setUndoAction] = useState<{
     jobId: string;
     title: string;
+    employerName: string;
+    dismissalScope: "job" | "employer";
     previousState: "saved" | "dismissed" | null;
     nextState: "saved" | "dismissed" | null;
   } | null>(null);
