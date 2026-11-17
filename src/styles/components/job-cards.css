@@ -149,8 +149,10 @@
   }
 
   .th-job-card__posted {
-    display: inline;
+    display: inline-flex;
     flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -159,6 +161,13 @@
     font-size: var(--text-detail);
     line-height: var(--text-detail--line-height);
     white-space: nowrap;
+  }
+
+  .th-job-card__posted svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
   }
 
   .th-job-card__actions {
@@ -214,7 +223,7 @@
     .th-job-card__header { min-height: 82px; gap: 10px; padding: 12px; }
     .th-job-card__logo { width: 44px; height: 44px; flex-basis: 44px; }
     .th-job-card__body { gap: 12px; padding: 12px; }
-    .th-job-card__footer { align-items: flex-start; }
+    .th-job-card__footer { align-items: center; }
     .th-job-card__actions { gap: 8px; }
     .th-job-card__action { min-width: 0; min-height: 32px; padding: 4px 9px; font-size: 12px; }
   }
