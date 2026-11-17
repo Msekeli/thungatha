@@ -32,7 +32,8 @@ export function JobDiscoverySearchToolbar({
       )}
       <JobDiscoveryControls
         prominent={hasLeadingColumn}
-        isAuthenticated={s.userSignedIn}
+        isAuthenticated={s.isAuthenticated}
+        isSignedIn={s.userSignedIn}
         draft={s.draft}
         onQueryChange={(value) => c.changeDraft("query", value)}
         onLocationChange={(value) => c.changeDraft("location", value)}
