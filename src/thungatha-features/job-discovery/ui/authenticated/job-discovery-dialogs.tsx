@@ -4,19 +4,10 @@ import type { Dispatch, SetStateAction } from "react";
 import { ProfileSetupDialog } from "./profile-setup-dialog";
 import { MatchBreakdownDialog } from "../shared/match-breakdown-dialog";
 import { ApplicationConfirmationDialog } from "./application-confirmation-dialog";
-import { JobFiltersDialog } from "./job-filters-dialog";
 import { JobDismissalDialog } from "./job-dismissal-dialog";
 import type { Job } from "../job-discovery-utils";
-import type { Filters } from "../job-discovery-utils";
 
 type Props = {
-  filtersOpen: boolean;
-  filterAnchorEl: HTMLElement | null;
-  draft: Filters;
-  changeDraft: (key: keyof Filters, value: string) => void;
-  clearFilters: () => void;
-  applyFilters: () => void;
-  setFiltersOpen: Dispatch<SetStateAction<boolean>>;
   profileSetupPrompt: boolean;
   setProfileSetupPrompt: Dispatch<SetStateAction<boolean>>;
   profileSetupAnchorEl: HTMLElement | null;
@@ -40,18 +31,6 @@ type Props = {
 export function JobDiscoveryDialogs(props: Props) {
   return (
     <>
-      <JobFiltersDialog
-        open={props.filtersOpen}
-        anchorEl={props.filterAnchorEl}
-        draft={props.draft}
-        onClose={() => props.setFiltersOpen(false)}
-        onChange={props.changeDraft}
-        onReset={props.clearFilters}
-        onApply={() => {
-          props.applyFilters();
-          props.setFiltersOpen(false);
-        }}
-      />
       <ProfileSetupDialog
         open={props.profileSetupPrompt}
         anchorEl={props.profileSetupAnchorEl}
