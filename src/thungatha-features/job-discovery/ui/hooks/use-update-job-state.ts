@@ -28,6 +28,7 @@ export function useUpdateJobState(
       job: Job,
       nextState: "saved" | "dismissed" | null,
       recordUndo = true,
+      dismissalScope: "job" | "employer" = "job",
     ): Promise<boolean> => {
       if (stateBusy) return false;
       const previousState = job.state ?? null;
