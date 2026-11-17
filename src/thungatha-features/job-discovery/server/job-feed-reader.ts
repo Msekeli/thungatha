@@ -66,7 +66,7 @@ export async function readJobFeed(
     );
   }
 
-  if (userId && dismissedEmployerKeys.length) {
+  if (userId && input.state !== "dismissed" && dismissedEmployerKeys.length) {
     query = query.not(
       "employer_key",
       "in",
