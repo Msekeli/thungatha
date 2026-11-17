@@ -25,22 +25,22 @@ export function PublicJobOpportunityCard({
     .toUpperCase();
 
   return (
-    <article className="group/card relative flex w-[98%] min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover hover:cursor-pointer motion-reduce:transition-none motion-reduce:hover:transform-none">
+    <article className="group/card relative flex w-full min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-public-card-border bg-public-card-bg shadow-public-card transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-card-hover hover:shadow-card-hover hover:cursor-pointer motion-reduce:transition-none motion-reduce:hover:transform-none">
       <button
         type="button"
         onClick={onSelect}
         aria-label={`View ${job.title} at ${employer}`}
         className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent-on-navy"
       />
-      <div className="pointer-events-none relative z-10 flex min-h-16 min-w-0 items-center gap-2 border-b-public-band border-public-band-border bg-gradient-to-br from-public-band-from to-public-band-to p-2.5 text-left transition-[filter] duration-200 group-hover/card:brightness-110">
+      <div className="pointer-events-none relative z-10 flex min-h-16 min-w-0 items-center gap-2 border-b-public-band border-public-band-border bg-gradient-to-br from-public-band-from to-public-band-to p-2.5 text-left transition-[filter] duration-200 group-hover/card:brightness-110 max-[700px]:gap-2.5 max-[700px]:p-3">
         {job.company_logo_url ? (
           <img
             src={job.company_logo_url}
             alt=""
-            className="size-9 shrink-0 rounded-panel border border-logo-border bg-white object-contain p-0.5"
+            className="size-9 shrink-0 rounded-panel border border-logo-border bg-white object-contain p-0.5 max-[700px]:size-10"
           />
         ) : (
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-job font-bold text-logo-fg">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-panel border border-logo-border bg-logo-bg text-job font-bold text-logo-fg max-[700px]:size-10">
             {initials || "?"}
           </span>
         )}
@@ -58,14 +58,14 @@ export function PublicJobOpportunityCard({
           className="shrink-0 text-accent-on-navy opacity-50 transition-all duration-200 group-hover/card:-translate-y-0.5 group-hover/card:translate-x-0.5 group-hover/card:opacity-100"
         />
       </div>
-      <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-1.5 px-3 pb-1.5 pt-1.5">
-        <span className="inline-flex min-w-0 items-center gap-2 self-start rounded-lg bg-public-location-bg px-2 py-1 text-detail text-public-location-text">
-          <MapPin size={14} aria-hidden="true" />
+      <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-2 px-3 pb-2 pt-2 max-[700px]:px-3.5">
+        <span className="inline-flex min-w-0 items-center gap-2 self-start rounded-lg bg-public-location-bg px-2.5 py-1.5 text-detail text-public-location-text">
+          <MapPin size={15} aria-hidden="true" />
           <span className="break-words">
             {job.location_text || "Location not specified"}
           </span>
         </span>
-        <div className="mt-auto flex items-center justify-between gap-2 border-t border-public-card-border pt-1.5">
+        <div className="mt-auto flex min-h-10 items-center justify-between gap-2 border-t border-public-card-border pt-2">
           {ageDays !== null && ageDays <= 3 ? (
             <span className="inline-flex items-center rounded-md bg-success-bg px-2 py-1 text-[length:var(--text-tag)] font-semibold text-success">
               {postedLabel}
