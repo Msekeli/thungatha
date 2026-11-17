@@ -18,8 +18,6 @@ export function PublicJobSortSelect({
 }) {
   const label =
     options.find((item) => item.value === value)?.label ?? "Newest first";
-  const mobileLabel =
-    value === "oldest" ? "Oldest" : value === "relevance" ? "Relevant" : "Newest";
 
   return (
     <Select.Root
@@ -37,10 +35,7 @@ export function PublicJobSortSelect({
           aria-hidden="true"
           className="shrink-0 text-fg"
         />
-        <Select.Value>
-          <span className="max-[700px]:hidden">{label}</span>
-          <span className="hidden max-[700px]:inline">{mobileLabel}</span>
-        </Select.Value>
+        <Select.Value>{label}</Select.Value>
         <Select.Icon>
           <ChevronDown size={15} className="shrink-0 text-fg" />
         </Select.Icon>
