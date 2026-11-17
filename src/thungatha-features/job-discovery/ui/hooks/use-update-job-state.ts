@@ -17,6 +17,8 @@ export function useUpdateJobState(
     value: {
       jobId: string;
       title: string;
+      employerName: string;
+      dismissalScope: "job" | "employer";
       previousState: "saved" | "dismissed" | null;
       nextState: "saved" | "dismissed" | null;
     } | null,
@@ -101,6 +103,8 @@ export function useUpdateJobState(
           setUndoAction({
             jobId: job.id,
             title: job.title,
+            employerName: job.employer_name ?? "Company",
+            dismissalScope,
             previousState,
             nextState,
           });
