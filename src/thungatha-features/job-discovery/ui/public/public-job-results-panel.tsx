@@ -35,7 +35,7 @@ export function PublicJobResultsPanel({
       <header className="flex min-h-10 shrink-0 items-center justify-between gap-2 text-detail text-public-muted">
         <span
           aria-live="polite"
-          className="inline-flex min-w-0 flex-1 items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-2 text-control font-bold text-accent-text shadow-sm max-[700px]:flex-none max-[700px]:px-2.5 max-[700px]:py-1.5"
+          className="inline-flex w-fit flex-none items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-2 text-control font-bold text-accent-text shadow-sm max-[700px]:px-2.5 max-[700px]:py-1.5"
         >
           <span className="hidden min-[701px]:inline">{data.resultCount} opportunities</span>
           <span className="min-[701px]:hidden">{data.resultCount} jobs</span>
