@@ -45,21 +45,23 @@ export function PublicJobOpportunityCard({
         <ArrowUpRight size={22} aria-hidden="true" className="th-job-card__external" />
       </div>
       <div className="th-job-card__body">
-        <div className="th-job-card__metadata">
-          {job.location_text?.trim() && (
+        {job.location_text?.trim() && (
+          <div className="th-job-card__metadata">
             <span className="th-job-card__location">
               <MapPin aria-hidden="true" />
               <span>{job.location_text}</span>
             </span>
-          )}
-          {ageDays !== null && (
-            <span className="th-job-card__posted">
+          </div>
+        )}
+        <div className="th-job-card__footer">
+          {ageDays !== null ? (
+            <span className="th-job-card__posted" data-age={ageDays <= 3 ? "new" : "older"}>
               <Clock3 size={14} aria-hidden="true" />
               {postedLabel}
             </span>
-          )}
+          ) : <span />}
+          {actions}
         </div>
-        {actions}
       </div>
     </article>
   );
