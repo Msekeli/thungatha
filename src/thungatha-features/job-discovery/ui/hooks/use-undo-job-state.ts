@@ -6,6 +6,8 @@ import type { Job } from "../job-discovery-utils";
 type UndoAction = {
   jobId: string;
   title: string;
+  employerName: string;
+  dismissalScope: "job" | "employer";
   previousState: "saved" | "dismissed" | null;
   nextState: "saved" | "dismissed" | null;
 };
