@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useJobDiscoveryState } from "./hooks/use-job-discovery-state";
 import { useJobDiscoveryController } from "./hooks/use-job-discovery-controller";
@@ -64,9 +64,18 @@ function JobsDiscoveryCore({
   workspaceLeadingColumn?: ReactNode;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const state = useJobDiscoveryState(showProfileSetupPrompt, isSignedIn);
-  const { setUserSignedIn } = state;
+  const { setUserSignedIn, setCategory, setPage, setMobileDetail } = state;
+
   useEffect(() => setUserSignedIn(isSignedIn), [isSignedIn, setUserSignedIn]);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    setCategory(status === "saved" || status === "dismissed" ? status : "new");
+    setPage(1);
+    setMobileDetail(false);
+  }, [searchParams, setCategory, setPage, setMobileDetail]);
 
   useEffect(() => {
     if (!showProfileSetupPrompt) return;
