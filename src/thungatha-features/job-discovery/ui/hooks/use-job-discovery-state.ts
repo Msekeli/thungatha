@@ -36,6 +36,7 @@ export function useJobDiscoveryState(
   const [stateBusy, setStateBusy] = useState(false);
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
+  const [pendingDismissJob, setPendingDismissJob] = useState<Job | null>(null);
   const [undoAction, setUndoAction] = useState<{
     jobId: string;
     title: string;
@@ -107,6 +108,8 @@ export function useJobDiscoveryState(
     setStateError,
     stateMessage,
     setStateMessage,
+    pendingDismissJob,
+    setPendingDismissJob,
     undoAction,
     setUndoAction,
     jobActivity,
