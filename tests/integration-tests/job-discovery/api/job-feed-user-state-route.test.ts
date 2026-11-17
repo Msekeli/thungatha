@@ -30,8 +30,13 @@ describe("GET /api/jobs user state feed", () => {
       data: [{ job_id: "dismissed-job", state: "dismissed" }, { job_id: scoutVacancyRecord.id, state: "saved" }],
       error: null,
     });
+    const employerDismissals = createQueryMock({ data: [], error: null });
     const feed = createQueryMock({ data: [scoutVacancyRecord], error: null, count: 1 });
-    const from = vi.fn().mockReturnValueOnce(states).mockReturnValueOnce(feed);
+    const from = vi
+      .fn()
+      .mockReturnValueOnce(states)
+      .mockReturnValueOnce(employerDismissals)
+      .mockReturnValueOnce(feed);
     client.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
 
@@ -44,13 +49,17 @@ describe("GET /api/jobs user state feed", () => {
 
   it("returns an empty saved feed when the user has no saved vacancies", async () => {
     const states = createQueryMock({ data: [], error: null });
-    const from = vi.fn().mockReturnValue(states);
+    const employerDismissals = createQueryMock({ data: [], error: null });
+    const from = vi
+      .fn()
+      .mockReturnValueOnce(states)
+      .mockReturnValueOnce(employerDismissals);
     client.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost/api/jobs?state=saved"));
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ jobs: [], total: 0 });
-    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledTimes(2);
   });
 
   it("requires identity for user-state cache requests", async () => {
