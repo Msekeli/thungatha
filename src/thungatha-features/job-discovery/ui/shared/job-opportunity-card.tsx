@@ -2,7 +2,14 @@
 
 import { ArrowUpRight, Clock3, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
-import type { JobCardData } from "./job-opportunity-card";
+
+export type JobCardData = {
+  id: string;
+  title: string;
+  employer_name: string;
+  company_logo_url: string | null;
+  location_text: string | null;
+};
 
 type Props = {
   job: JobCardData;
