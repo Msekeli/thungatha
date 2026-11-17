@@ -10,6 +10,7 @@ type JobSearchBarProps = {
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   placeholder?: string;
   prominent?: boolean;
+  isAuthenticated?: boolean;
 };
 
 export function JobSearchBar({
@@ -18,13 +19,14 @@ export function JobSearchBar({
   onSubmit,
   placeholder = "Job title, skill, or company",
   prominent = false,
+  isAuthenticated = false,
 }: JobSearchBarProps) {
   const { recentSearches, rememberSearch, clearRecentSearches } =
-    useRecentJobSearches();
+    useRecentJobSearches(isAuthenticated);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    rememberSearch(value);
+    if (isAuthenticated) rememberSearch(value);
     onSubmit?.(event);
   }
 
@@ -32,10 +34,10 @@ export function JobSearchBar({
     <div className="w-full min-w-0">
       <form className="w-full" role="search" onSubmit={handleSubmit}>
         <label
-          className={`flex min-w-0 items-center gap-3 border transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "h-11 rounded-xl border-public-search-border bg-public-search-bg px-3 text-public-search-text" : "h-11 rounded-xl border-[var(--th-line)] bg-[var(--th-panel)] px-3 text-[var(--th-fg-muted)]"}`}
+          className={`flex h-11 min-w-0 items-center gap-3 rounded-xl border px-3 transition-colors focus-within:border-[var(--th-accent)] focus-within:ring-2 focus-within:ring-[var(--th-accent)]/15 ${prominent ? "border-public-search-border bg-public-search-bg text-public-search-text" : "border-[var(--th-line)] bg-[var(--th-panel)] text-[var(--th-fg-muted)]"}`}
         >
           <Search
-            size={22}
+            size={20}
             aria-hidden="true"
             className={`shrink-0 ${prominent ? "text-[var(--th-public-search-text)]" : "text-[var(--th-fg-muted)]"}`}
           />
@@ -49,7 +51,7 @@ export function JobSearchBar({
           />
         </label>
       </form>
-      {!value.trim() && recentSearches.length > 0 && (
+      {isAuthenticated && !value.trim() && recentSearches.length > 0 && (
         <div
           className="mt-2 flex min-w-0 flex-wrap items-center gap-2"
           aria-label="Recent searches"
@@ -70,9 +72,7 @@ export function JobSearchBar({
             type="button"
             aria-label="Clear recent searches"
             title="Clear recent searches"
-            onClick={() => {
-              clearRecentSearches();
-            }}
+            onClick={clearRecentSearches}
             className="inline-flex size-6 items-center justify-center rounded-full text-[var(--th-fg-muted)] hover:bg-[var(--th-panel-2)] hover:text-[var(--th-fg)]"
           >
             <X size={13} aria-hidden="true" />
