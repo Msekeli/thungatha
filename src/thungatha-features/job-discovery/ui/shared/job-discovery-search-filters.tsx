@@ -28,7 +28,7 @@ export function JobDiscoverySearchFilters(props: Props) {
             placeholder="Job title, skills, or company"
           />
         </div>
-        <div className="w-48 shrink-0 max-[700px]:w-full">
+        <div className="w-[202px] shrink-0 max-[700px]:w-full">
           <JobLocationSelect
             value={props.location}
             onChange={props.onLocationChange}
