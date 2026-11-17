@@ -87,12 +87,28 @@ export async function DELETE(
 
   try {
     const db = await createAuthenticatedSupabaseClient(user!.getToken);
+    const { data: job, error: jobError } = await db
+      .from("jobs")
+      .select("employer_key")
+      .eq("id", id)
+      .maybeSingle();
+    if (jobError) throw jobError;
+
     const { error } = await db
       .from("user_job_states")
       .delete()
       .eq("user_id", user!.userId)
       .eq("job_id", id);
     if (error) throw error;
+
+    if (job?.employer_key) {
+      const { error: employerError } = await db
+        .from("user_employer_dismissals")
+        .delete()
+        .eq("user_id", user!.userId)
+        .eq("employer_key", job.employer_key);
+      if (employerError) throw employerError;
+    }
     return NextResponse.json({ state: null });
   } catch (error) {
     if (error instanceof SupabaseConfigurationError) {
