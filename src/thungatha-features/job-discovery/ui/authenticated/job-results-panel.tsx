@@ -28,12 +28,8 @@ export function AuthenticatedJobResultsPanel({
   onDismiss,
   configured,
   resultCount,
-  category,
-  dismissedCount,
-  isAuthenticated,
   sortOrder,
   onSortOrderChange,
-  onCategoryChange,
 }: JobResultsPanelProps) {
   const selectedSortLabel =
     sortOptions.find((option) => option.value === sortOrder)?.label ??
@@ -45,34 +41,16 @@ export function AuthenticatedJobResultsPanel({
       aria-label="Job search results"
       aria-busy={loading}
     >
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--th-line)] pb-3 max-[700px]:flex-nowrap max-[700px]:gap-2 max-[700px]:pb-2">
-        <div className="flex min-w-0 items-center gap-3 text-sm text-[var(--th-fg-muted)] max-[700px]:flex-1 max-[700px]:gap-2 max-[700px]:whitespace-nowrap">
+      <div className="mb-3 flex shrink-0 items-center justify-between gap-2 border-b border-[var(--th-line)] pb-3 max-[700px]:mb-2 max-[700px]:pb-2">
+        <div className="min-w-0 text-sm text-[var(--th-fg-muted)]">
           <span aria-live="polite" className="max-[700px]:hidden">
             {resultCount > 0
               ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities`
               : "0 opportunities"}
           </span>
-          <span aria-live="polite" className="hidden max-[700px]:inline">
+          <span aria-live="polite" className="hidden whitespace-nowrap max-[700px]:inline">
             {resultCount} jobs
           </span>
-          {isAuthenticated && category === "dismissed" ? (
-            <button
-              type="button"
-              onClick={() => onCategoryChange("all", "All opportunities")}
-              className="inline-flex items-center rounded-lg px-2 py-1 font-medium text-[var(--th-accent)] hover:bg-[var(--th-line)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/40"
-            >
-              ← Back to all jobs
-            </button>
-          ) : isAuthenticated ? (
-            <button
-              type="button"
-              onClick={() => onCategoryChange("dismissed", "Dismissed")}
-              className="whitespace-nowrap text-[var(--th-accent)] hover:underline"
-              aria-pressed={false}
-            >
-              Dismissed ({dismissedCount})
-            </button>
-          ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2 max-[700px]:gap-1">
           <ArrowDownWideNarrow
@@ -88,9 +66,14 @@ export function AuthenticatedJobResultsPanel({
           >
             <Select.Trigger
               aria-label={`Sort opportunities: ${selectedSortLabel}`}
-              className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-1 text-sm font-medium text-fg outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-9 max-[700px]:gap-1 max-[700px]:text-xs"
+              className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-transparent px-2 text-sm font-medium text-fg outline-none hover:bg-[var(--th-line)]/40 focus-visible:ring-2 focus-visible:ring-[var(--th-accent)]/30 max-[700px]:h-10 max-[700px]:gap-1 max-[700px]:px-1 max-[700px]:text-xs"
             >
-              <Select.Value>{selectedSortLabel}</Select.Value>
+              <Select.Value>
+                <span className="max-[700px]:hidden">{selectedSortLabel}</span>
+                <span className="hidden max-[700px]:inline">
+                  {sortOrder === "oldest" ? "Oldest" : sortOrder === "relevance" ? "Relevant" : "Newest"}
+                </span>
+              </Select.Value>
               <Select.Icon className="inline-flex text-[var(--th-fg-muted)]">
                 <ChevronDown size={16} aria-hidden="true" />
               </Select.Icon>
