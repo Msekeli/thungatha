@@ -10,14 +10,14 @@ export function JobDiscoveryHeader({
   onQueryChange,
   onLocationChange,
   onSubmit,
-  isAuthenticated,
+  isSignedIn,
 }: {
   prominent?: boolean;
   draft: Filters;
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  isAuthenticated: boolean;
+  isSignedIn: boolean;
 }) {
   return (
     <div className="w-full">
@@ -28,7 +28,7 @@ export function JobDiscoveryHeader({
         onQueryChange={onQueryChange}
         onLocationChange={onLocationChange}
         onSubmit={onSubmit}
-        isAuthenticated={isAuthenticated}
+        isAuthenticated={isSignedIn}
       />
     </div>
   );
