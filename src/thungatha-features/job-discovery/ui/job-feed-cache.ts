@@ -45,8 +45,10 @@ export async function getReusablePublicFeed(
 
     const payload = (await response.json()) as {
       states?: { job_id: string; state: "saved" | "dismissed" }[];
+      employerDismissals?: { employer_key: string; employer_name: string }[];
     };
     const states = payload.states ?? [];
+    if (payload.employerDismissals?.length) return null;
     const dismissed = states.filter((item) => item.state === "dismissed");
     let dismissedCount = 0;
     if (dismissed.length) {
