@@ -2,15 +2,13 @@
 
 import type { FormEvent } from "react";
 import { JobDiscoveryHeader } from "./job-discovery-header";
-import {
-  JobDiscoveryFeedback,
-  type JobUndoAction,
-} from "./job-discovery-feedback";
+import { JobDiscoveryFeedback, type JobUndoAction } from "./job-discovery-feedback";
 import type { Filters } from "../job-discovery-utils";
 
 type Props = {
   prominent?: boolean;
   isAuthenticated: boolean;
+  isSignedIn: boolean;
   draft: Filters;
   onQueryChange: (value: string) => void;
   onLocationChange: (value: string) => void;
@@ -34,7 +32,7 @@ export function JobDiscoveryControls(props: Props) {
         onQueryChange={props.onQueryChange}
         onLocationChange={props.onLocationChange}
         onSubmit={props.onSubmit}
-        isAuthenticated={props.isAuthenticated}
+        isSignedIn={props.isSignedIn}
       />
       <JobDiscoveryFeedback
         isAuthenticated={props.isAuthenticated}
