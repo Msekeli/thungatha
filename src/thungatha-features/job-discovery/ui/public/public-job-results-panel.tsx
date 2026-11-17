@@ -1,8 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { JobResultsState } from "../authenticated/job-results-state";
-import { ProtectedDiscoveryAction } from "../shared/protected-discovery-action";
 import { JobList } from "../shared/job-list";
 import type { RefObject } from "react";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
@@ -34,29 +32,13 @@ export function PublicJobResultsPanel({
 }) {
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden">
-      <header className="flex min-h-8 shrink-0 items-center justify-between gap-3 text-detail text-public-muted">
-        <div className="flex min-w-0 items-center gap-2">
-          <span
-            aria-live="polite"
-            className="inline-flex shrink-0 items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-1 text-control font-bold text-accent-text shadow-sm"
-          >
-            {data.resultCount} opportunities
-          </span>
-          <ProtectedDiscoveryAction
-            configured={data.configured}
-            title="View dismissed opportunities"
-            description="Sign in or create a free account to review jobs you have dismissed."
-            onAction={() => data.onCategoryChange("dismissed", "Dismissed")}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-detail text-accent-text"
-            >
-              Dismissed ({data.dismissedCount})
-            </Button>
-          </ProtectedDiscoveryAction>
-        </div>
+      <header className="flex min-h-10 shrink-0 items-center justify-between gap-2 text-detail text-public-muted">
+        <span
+          aria-live="polite"
+          className="inline-flex w-fit flex-none items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-2 text-control font-bold text-accent-text shadow-sm max-[700px]:px-2.5 max-[700px]:py-1.5"
+        >
+          {data.resultCount} opportunities
+        </span>
         <PublicJobSortSelect
           value={data.sortOrder}
           onChange={data.onSortOrderChange}
@@ -70,7 +52,7 @@ export function PublicJobResultsPanel({
         hasFilters={data.hasFilters}
         onRetry={data.onRetryFeed}
       />
-      <div className="th-job-results-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable]">
+      <div className="th-job-results-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
         {data.jobs.length > 0 && (
           <JobList
             jobs={data.jobs}

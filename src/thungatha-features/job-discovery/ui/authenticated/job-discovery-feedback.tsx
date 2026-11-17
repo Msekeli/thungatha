@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { Toast } from "@/components/ui/toast";
-import { JobUndoNotice } from "./job-undo-notice";
+import { JobUndoNotice, type UndoAction } from "./job-undo-notice";
 
-export type JobUndoAction = {
-  jobId: string;
-  title: string;
-  previousState: "saved" | "dismissed" | null;
-  nextState: "saved" | "dismissed" | null;
-} | null;
+export type JobUndoAction = UndoAction | null;
 
 type Props = {
   isAuthenticated: boolean;

@@ -34,8 +34,7 @@ export function SignOutControl() {
     setIsSigningOut(true);
     setError(null);
     try {
-      await signOut({ redirectUrl: `${window.location.origin}/` });
-      window.location.replace("/");
+      await signOut({ redirectUrl: "/" });
     } catch (reason) {
       console.error("Failed to sign out:", reason);
       setError("We couldn't sign you out. Please try again.");

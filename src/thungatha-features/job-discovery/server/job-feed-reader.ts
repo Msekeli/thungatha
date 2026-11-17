@@ -7,6 +7,18 @@ function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
 }
 
+function isMissingEmployerDismissalsSchema(error: {
+  code?: string;
+  message?: string;
+}) {
+  return (
+    error.code === "42P01" ||
+    error.code === "42703" ||
+    error.code === "PGRST204" ||
+    error.code === "PGRST205"
+  );
+}
+
 export async function readJobFeed(
   db: SupabaseClient,
   userId: string | null,
@@ -15,19 +27,32 @@ export async function readJobFeed(
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
 
-  if (statesOnly) return { states };
+  let employerDismissals: { employer_key: string; employer_name: string }[] =
+    [];
+  let employerDismissalsAvailable = false;
+
+  if (userId) {
+    const result = await db
+      .from("user_employer_dismissals")
+      .select("employer_key,employer_name")
+      .eq("user_id", userId);
+
+    if (result.error) {
+      if (!isMissingEmployerDismissalsSchema(result.error)) throw result.error;
+    } else {
+      employerDismissals = result.data ?? [];
+      employerDismissalsAvailable = true;
+    }
+  }
+
+  if (statesOnly) return { states, employerDismissals };
   if (!userId && input.state !== "all")
     return emptyFeed(input.page, input.pageSize);
   if (userId && input.state !== "all" && !states.length)
     return emptyFeed(input.page, input.pageSize);
 
   const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
-  let query = db
-    .from("job_discovery_feed")
-    .select(
-      "id,scout_vacancy_id,title,employer_name,company_logo_url,description,location_text,application_url,published_at,source_updated_at,updated_at",
-      { count: "exact" },
-    );
+  let query = db.from("job_discovery_feed").select("*", { count: "exact" });
 
   if (input.query) {
     const term = sanitizeJobSearchTerm(input.query);
@@ -53,6 +78,22 @@ export async function readJobFeed(
     query = query.gte(
       "published_at",
       new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
+    );
+  }
+
+  const dismissedEmployerKeys = employerDismissals.map(
+    (item) => item.employer_key,
+  );
+  if (
+    employerDismissalsAvailable &&
+    userId &&
+    input.state !== "dismissed" &&
+    dismissedEmployerKeys.length
+  ) {
+    query = query.not(
+      "employer_key",
+      "in",
+      `(${dismissedEmployerKeys.join(",")})`,
     );
   }
 

@@ -5,6 +5,8 @@ type State = ReturnType<typeof useJobDiscoveryState>;
 type UpdateJobState = (
   job: Job,
   state: "saved" | "dismissed" | null,
+  recordUndo?: boolean,
+  dismissalScope?: "job" | "employer",
 ) => Promise<boolean>;
 
 export function useJobDiscoveryWorkspaceActions(
@@ -30,7 +32,18 @@ export function useJobDiscoveryWorkspaceActions(
   }
 
   function dismissJob(job: Job) {
-    void updateJobState(job, job.state === "dismissed" ? null : "dismissed");
+    if (job.state === "dismissed") {
+      void updateJobState(job, null);
+      return;
+    }
+    state.setPendingDismissJob(job);
+  }
+
+  async function confirmDismissJob(scope: "job" | "employer") {
+    const job = state.pendingDismissJob;
+    if (!job) return;
+    const updated = await updateJobState(job, "dismissed", true, scope);
+    if (updated) state.setPendingDismissJob(null);
   }
 
   function saveSelectedJob() {
@@ -58,6 +71,8 @@ export function useJobDiscoveryWorkspaceActions(
     selectJob,
     saveJob,
     dismissJob,
+    confirmDismissJob,
+    closeDismissDialog: () => state.setPendingDismissJob(null),
     showResults: () => state.setMobileDetail(false),
     viewMatch: (anchorEl: HTMLElement) => {
       state.setMatchAnchorEl(anchorEl);

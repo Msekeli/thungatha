@@ -33,11 +33,7 @@ export function JobList({
   if (!jobs.length)
     return <JobEmptyState title={emptyTitle} message={emptyMessage} />;
   return (
-    <div
-      className={
-        "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
-      }
-    >
+    <div className="grid min-w-0 grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {jobs.map((job) => {
         const actions = (
           <>

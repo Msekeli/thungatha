@@ -16,6 +16,8 @@ export function AuthProviders({
       appearance={clerkAppearance}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      afterSignOutUrl="/"
+      afterMultiSessionSingleSignOutUrl="/"
     >
       {children}
     </ClerkProvider>

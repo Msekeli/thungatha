@@ -6,6 +6,8 @@ import { Toast } from "@/components/ui/toast";
 export type UndoAction = {
   jobId: string;
   title: string;
+  employerName: string;
+  dismissalScope: "job" | "employer";
   previousState: "saved" | "dismissed" | null;
   nextState: "saved" | "dismissed" | null;
 };
@@ -21,16 +23,19 @@ export function JobUndoNotice({
   onUndo: () => void;
   onDismiss: () => void;
 }) {
-  const status =
-    action.nextState === "saved"
-      ? "saved"
+  const message =
+    action.nextState === "dismissed" && action.dismissalScope === "employer"
+      ? `${action.employerName} dismissed. All jobs from this company are hidden.`
       : action.nextState === "dismissed"
-        ? "dismissed"
-        : "updated";
+        ? `${action.title} dismissed.`
+        : action.nextState === "saved"
+          ? `${action.title} saved.`
+          : `${action.title} updated.`;
   return (
     <Toast
-      key={`${action.jobId}-${action.nextState ?? "none"}`}
-      message={`${action.title} ${status}.`}
+      key={`${action.jobId}-${action.nextState ?? "none"}-${action.dismissalScope}`}
+      message={message}
+      tone={action.nextState === "dismissed" ? "warning" : "success"}
       durationMs={10000}
       onDismiss={onDismiss}
       action={

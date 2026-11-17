@@ -82,13 +82,6 @@ export function JobDiscoveryScreen({
         />
       </div>
       <JobDiscoveryDialogs
-        filtersOpen={s.filtersOpen}
-        filterAnchorEl={s.filterAnchorEl}
-        draft={s.draft}
-        changeDraft={c.changeDraft}
-        clearFilters={c.clearFilters}
-        applyFilters={c.applyFilters}
-        setFiltersOpen={s.setFiltersOpen}
         profileSetupPrompt={s.profileSetupPrompt}
         setProfileSetupPrompt={s.setProfileSetupPrompt}
         profileSetupAnchorEl={s.profileSetupAnchorEl}
@@ -104,6 +97,11 @@ export function JobDiscoveryScreen({
         employer={shown(c.selectedDetail?.employer_name)}
         onCloseApplicationPrompt={c.workspaceActions.dismissAppliedPrompt}
         onConfirmApplied={() => void c.confirmApplied()}
+        pendingDismissJob={s.pendingDismissJob}
+        onCloseDismissDialog={c.workspaceActions.closeDismissDialog}
+        onConfirmDismiss={(scope) =>
+          void c.workspaceActions.confirmDismissJob(scope)
+        }
       />
     </>
   );

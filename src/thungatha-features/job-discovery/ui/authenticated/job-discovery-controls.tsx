@@ -11,12 +11,11 @@ import type { Filters } from "../job-discovery-utils";
 type Props = {
   prominent?: boolean;
   isAuthenticated: boolean;
+  isSignedIn: boolean;
   draft: Filters;
-  category: string;
   onQueryChange: (value: string) => void;
+  onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onToggleFilters: (anchorEl: HTMLElement) => void;
-  onCategoryChange: (key: string, label: string) => void;
   undoAction: JobUndoAction;
   stateBusy: boolean;
   onUndo: () => void;
@@ -34,11 +33,9 @@ export function JobDiscoveryControls(props: Props) {
         prominent={props.prominent}
         draft={props.draft}
         onQueryChange={props.onQueryChange}
+        onLocationChange={props.onLocationChange}
         onSubmit={props.onSubmit}
-        onToggleFilters={props.onToggleFilters}
-        category={props.category}
-        onCategoryChange={props.onCategoryChange}
-        isAuthenticated={props.isAuthenticated}
+        isSignedIn={props.isSignedIn}
       />
       <JobDiscoveryFeedback
         isAuthenticated={props.isAuthenticated}

@@ -27,7 +27,7 @@ export function Toast({
     success: "border-emerald-500/40 bg-emerald-950/95 text-emerald-100",
     error: "border-red-500/40 bg-red-950/95 text-red-100",
     info: "border-sky-500/40 bg-sky-950/95 text-sky-100",
-    warning: "border-amber-400/50 bg-amber-950/95 text-amber-100",
+    warning: "border-warn/60 bg-warn-bg text-warn",
   }[tone];
   return (
     <div

@@ -1,5 +1,4 @@
 export { JobSearchBar } from "./job-search-bar";
-export { JobDiscoverySearchFilters } from "./job-discovery-search-filters";
 export { JobCategoryChips } from "./job-category-chips";
 export { JobLocationSelect } from "./job-location-select";
 export { JobList } from "./job-list";

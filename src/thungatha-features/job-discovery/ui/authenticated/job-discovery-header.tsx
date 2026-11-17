@@ -1,6 +1,7 @@
 "use client";
 
-import { JobDiscoverySearchFilters } from "../shared/job-discovery-search-filters";
+import { JobSearchBar } from "../shared/job-search-bar";
+import { JobLocationSelect } from "../shared/job-location-select";
 import type { Filters } from "../job-discovery-utils";
 import type { FormEvent } from "react";
 
@@ -8,33 +9,40 @@ export function JobDiscoveryHeader({
   prominent = false,
   draft,
   onQueryChange,
+  onLocationChange,
   onSubmit,
-  onToggleFilters,
-  category,
-  onCategoryChange,
-  isAuthenticated,
+  isSignedIn,
 }: {
   prominent?: boolean;
   draft: Filters;
   onQueryChange: (value: string) => void;
+  onLocationChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onToggleFilters: (anchorEl: HTMLElement) => void;
-  category: string;
-  onCategoryChange: (key: string, label: string) => void;
-  isAuthenticated: boolean;
+  isSignedIn: boolean;
 }) {
   return (
-    <div className="w-full">
-      <JobDiscoverySearchFilters
-        prominent={prominent}
-        query={draft.query}
-        onQueryChange={onQueryChange}
-        onOpenFilters={onToggleFilters}
-        onSubmit={onSubmit}
-        category={category}
-        onCategoryChange={onCategoryChange}
-        isAuthenticated={isAuthenticated}
-      />
-    </div>
+    <header
+      className={`mx-auto w-full ${prominent ? "max-w-none pt-1" : "max-w-5xl"}`}
+    >
+      <div className="mx-auto flex w-full max-w-5xl flex-row items-center gap-2 max-[700px]:flex-col">
+        <div className="min-w-0 flex-1 max-[700px]:w-full">
+          <JobSearchBar
+            prominent={prominent}
+            value={draft.query}
+            onChange={onQueryChange}
+            onSubmit={onSubmit}
+            isAuthenticated={isSignedIn}
+            placeholder="Job title, skills, or company"
+          />
+        </div>
+        <div className="w-[202px] shrink-0 max-[700px]:w-full">
+          <JobLocationSelect
+            value={draft.location}
+            onChange={onLocationChange}
+            ariaLabel="Filter jobs by location"
+          />
+        </div>
+      </div>
+    </header>
   );
 }

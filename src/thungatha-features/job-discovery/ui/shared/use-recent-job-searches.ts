@@ -56,15 +56,16 @@ function publishSearches(searches: string[]) {
   }
 }
 
-export function useRecentJobSearches() {
+export function useRecentJobSearches(enabled = true) {
   const recentSearches = useSyncExternalStore(
     subscribe,
-    getSnapshot,
+    enabled ? getSnapshot : () => EMPTY_SEARCHES,
     () => EMPTY_SEARCHES,
   );
 
   const rememberSearch = useCallback(
     (search: string) => {
+      if (!enabled) return;
       const value = search.trim();
       if (!value) return;
       const next = [
@@ -75,17 +76,18 @@ export function useRecentJobSearches() {
       ].slice(0, MAX_SEARCHES);
       publishSearches(next);
     },
-    [recentSearches],
+    [enabled, recentSearches],
   );
 
   const clearRecentSearches = useCallback(() => {
+    if (!enabled) return;
     try {
       window.localStorage.removeItem(STORAGE_KEY);
       notifyChange();
     } catch {
       // Search history is optional when browser storage is unavailable.
     }
-  }, []);
+  }, [enabled]);
 
   return { recentSearches, rememberSearch, clearRecentSearches };
 }

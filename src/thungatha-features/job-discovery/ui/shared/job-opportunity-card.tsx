@@ -1,7 +1,7 @@
 "use client";
 
+import { ArrowUpRight, Clock3, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
-import { JobCardButton } from "./job-card-button";
 
 export type JobCardData = {
   id: string;
@@ -9,13 +9,21 @@ export type JobCardData = {
   employer_name: string;
   company_logo_url: string | null;
   location_text: string | null;
+  published_at?: string | null;
 };
+
+function postedAgeDays(value: string | null | undefined) {
+  if (!value) return null;
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+}
 
 type Props = {
   job: JobCardData;
   variant?: "public" | "authenticated";
   selected: boolean;
-  postedLabel: string;
+  postedLabel?: string;
   onSelect: () => void;
   saveAction?: ReactNode;
 };
@@ -27,19 +35,69 @@ export function JobOpportunityCard({
   onSelect,
   saveAction,
 }: Props) {
+  const employer = job.employer_name?.trim() || "Employer not listed";
+  const initials = employer
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+  const ageDays = postedAgeDays(job.published_at);
+
   return (
-    <div className="relative w-[98%] min-w-0">
-      <JobCardButton
-        job={job}
-        selected={selected}
-        postedLabel={postedLabel}
-        onSelect={onSelect}
+    <article className="th-job-card" data-selected={selected}>
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
+        aria-label={`View ${job.title} at ${employer}`}
+        className="th-job-card__select"
       />
-      {saveAction && (
-        <div className="th-job-card-actions absolute right-1.5 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1">
+      <div className="th-job-card__header">
+        {job.company_logo_url ? (
+          <img
+            src={job.company_logo_url}
+            alt=""
+            className="th-job-card__logo"
+          />
+        ) : (
+          <span className="th-job-card__logo">{initials || "?"}</span>
+        )}
+        <span className="th-job-card__heading">
+          <span className="th-job-card__title">{job.title}</span>
+          <span className="th-job-card__employer">{employer}</span>
+        </span>
+        <ArrowUpRight
+          size={22}
+          aria-hidden="true"
+          className="th-job-card__external"
+        />
+      </div>
+      <div className="th-job-card__body">
+        {job.location_text?.trim() && (
+          <div className="th-job-card__metadata">
+            <span className="th-job-card__location">
+              <MapPin aria-hidden="true" />
+              <span>{job.location_text}</span>
+            </span>
+          </div>
+        )}
+        <div className="th-job-card__footer">
+          {postedLabel ? (
+            <span
+              className="th-job-card__posted"
+              data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}
+            >
+              <Clock3 size={14} aria-hidden="true" />
+              {postedLabel}
+            </span>
+          ) : (
+            <span />
+          )}
           {saveAction}
         </div>
-      )}
-    </div>
+      </div>
+    </article>
   );
 }

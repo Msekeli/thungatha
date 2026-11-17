@@ -36,9 +36,12 @@ export function useJobDiscoveryState(
   const [stateBusy, setStateBusy] = useState(false);
   const [stateError, setStateError] = useState<string | null>(null);
   const [stateMessage, setStateMessage] = useState<string | null>(null);
+  const [pendingDismissJob, setPendingDismissJob] = useState<Job | null>(null);
   const [undoAction, setUndoAction] = useState<{
     jobId: string;
     title: string;
+    employerName: string;
+    dismissalScope: "job" | "employer";
     previousState: "saved" | "dismissed" | null;
     nextState: "saved" | "dismissed" | null;
   } | null>(null);
@@ -51,10 +54,6 @@ export function useJobDiscoveryState(
   const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<
     string | null
   >(null);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(
-    null,
-  );
   const [matchOpen, setMatchOpen] = useState(false);
   const [matchAnchorEl, setMatchAnchorEl] = useState<HTMLElement | null>(null);
   const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] =
@@ -107,6 +106,8 @@ export function useJobDiscoveryState(
     setStateError,
     stateMessage,
     setStateMessage,
+    pendingDismissJob,
+    setPendingDismissJob,
     undoAction,
     setUndoAction,
     jobActivity,
@@ -117,10 +118,6 @@ export function useJobDiscoveryState(
     setForceAppliedPrompt,
     dismissedPromptForJobId,
     setDismissedPromptForJobId,
-    filtersOpen,
-    setFiltersOpen,
-    filterAnchorEl,
-    setFilterAnchorEl,
     matchOpen,
     setMatchOpen,
     matchAnchorEl,

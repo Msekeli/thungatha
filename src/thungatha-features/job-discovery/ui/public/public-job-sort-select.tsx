@@ -18,6 +18,7 @@ export function PublicJobSortSelect({
 }) {
   const label =
     options.find((item) => item.value === value)?.label ?? "Newest first";
+
   return (
     <Select.Root
       value={value}
@@ -27,10 +28,10 @@ export function PublicJobSortSelect({
     >
       <Select.Trigger
         aria-label={`Sort opportunities: ${label}`}
-        className="inline-flex h-8 max-w-full items-center gap-2 rounded-md border border-public-card-border bg-public-card-bg px-3 text-fg text-[length:var(--text-detail)] font-semibold shadow-public-card outline-none hover:bg-panel-2 focus-visible:ring-2 focus-visible:ring-accent/40 max-[700px]:h-7 max-[700px]:gap-1.5 max-[700px]:px-2 max-[700px]:text-[11px]"
+        className="inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-public-card-border bg-public-card-bg px-3 text-fg text-[length:var(--text-detail)] font-semibold shadow-public-card outline-none hover:bg-panel-2 focus-visible:ring-2 focus-visible:ring-accent/40 max-[700px]:gap-1.5 max-[700px]:px-2.5 max-[700px]:text-xs"
       >
         <ArrowDownWideNarrow
-          size={19}
+          size={18}
           aria-hidden="true"
           className="shrink-0 text-fg"
         />
