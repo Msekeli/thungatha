@@ -12,8 +12,7 @@ function isMissingEmployerDismissalsSchema(error: { code?: string; message?: str
     error.code === "42P01" ||
     error.code === "42703" ||
     error.code === "PGRST204" ||
-    error.code === "PGRST205" ||
-    /user_employer_dismissals|employer_key/i.test(error.message ?? "")
+    error.code === "PGRST205"
   );
 }
 
