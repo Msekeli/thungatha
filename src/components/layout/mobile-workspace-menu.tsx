@@ -3,22 +3,14 @@
 import Link from "next/link";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import {
-  BriefcaseBusiness,
-  UserRound,
-  Settings,
-  House,
-  LogIn,
-  UserRoundPlus,
-  PanelsTopLeft,
-  ClipboardCheck,
-  Bookmark,
-  Compass,
+  BriefcaseBusiness, UserRound, Settings, House, LogIn, UserRoundPlus,
+  PanelsTopLeft, ClipboardCheck, Bookmark, Compass,
 } from "lucide-react";
 import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
+import { PublicAuthPrompt } from "@/thungatha-features/job-discovery/ui/public/public-auth-prompt";
 import { Button } from "@/components/ui/button";
 
 const workspaceLinks = [
-  { href: "/jobs", label: "Discover jobs", icon: Compass },
   { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
   { href: "/applications", label: "Application tracking", icon: ClipboardCheck },
   { href: "/jobs?status=saved", label: "Saved jobs", icon: Bookmark },
@@ -30,10 +22,7 @@ const workspaceLinks = [
 type Active = (href: string) => boolean;
 
 export function MobileWorkspaceMenu({
-  open,
-  configured,
-  isActive,
-  onClose,
+  open, configured, isActive, onClose,
 }: {
   open: boolean;
   configured: boolean;
@@ -42,43 +31,49 @@ export function MobileWorkspaceMenu({
 }) {
   const { isLoaded, isSignedIn } = useAuth();
   if (!open) return null;
-
   const isGuest = !configured || (isLoaded && !isSignedIn);
 
   return (
     <div className="th-mobile-workspace-menu" id="th-mobile-workspace-menu">
       <nav aria-label="Mobile navigation">
-        {isGuest ? (
-          <>
-            <Link href="/" onClick={onClose}>
-              <House size={17} />
-              Discover jobs
+        <Link href="/" onClick={onClose} data-active={isActive("/jobs")}>
+          <House size={17} />Discover jobs
+        </Link>
+        {workspaceLinks.map((item) =>
+          isGuest ? (
+            <PublicAuthPrompt
+              key={item.href}
+              configured={configured}
+              title={`Access ${item.label}`}
+              description={`Create an account or sign in to use ${item.label.toLowerCase()} and manage your job search.`}
+              side="left"
+              align="center"
+              sideOffset={10}
+              triggerClassName="th-mobile-menu-auth-trigger"
+            >
+              <button type="button" onClick={onClose}>
+                <item.icon size={17} />{item.label}
+              </button>
+            </PublicAuthPrompt>
+          ) : (
+            <Link key={item.href} href={item.href} data-active={isActive(item.href)} onClick={onClose}>
+              <item.icon size={17} />{item.label}
             </Link>
+          ),
+        )}
+        {isGuest && (
+          <>
             <SignInButton mode="modal" fallbackRedirectUrl="/jobs">
               <Button variant="secondary" size="md" onClick={onClose}>
-                <LogIn size={17} />
-                Sign in
+                <LogIn size={17} />Sign in
               </Button>
             </SignInButton>
             <SignUpButton mode="modal" fallbackRedirectUrl="/jobs">
               <Button variant="primary" size="md" onClick={onClose}>
-                <UserRoundPlus size={17} />
-                Create account
+                <UserRoundPlus size={17} />Create account
               </Button>
             </SignUpButton>
           </>
-        ) : (
-          workspaceLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              data-active={isActive(item.href)}
-              onClick={onClose}
-            >
-              <item.icon size={17} />
-              {item.label}
-            </Link>
-          ))
         )}
       </nav>
       {!isGuest && (
