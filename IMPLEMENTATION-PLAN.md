@@ -47,7 +47,7 @@ The product specification and architecture document will define these experience
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
 | M2 | Profile and CV Import | **In progress — C02/C03 accepted; C04 in review** |
-| M3 | Job Matching and Fit Analysis | Not started |
+| M3 | Job Matching and Fit Analysis | In progress |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
 | M6 | Account, Integration and Release Readiness | Not started |
@@ -269,7 +269,7 @@ The main functional dependencies are:
 
 - M1 establishes Job Discovery.
 - M2 provides confirmed Profile information and the master CV.
-- M3 uses job requirements and Profile evidence to calculate fit.
+- M3 uses deterministic job requirements and confirmed Profile evidence to assign categorical relevance classifications.
 - M4 uses the master CV and job information to manage tailored CV versions.
 - M5 links actual applications to relevant jobs and submitted CV versions.
 - M6 verifies the integrated product and release readiness.
