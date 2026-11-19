@@ -1,7 +1,6 @@
 import "server-only";
 import "pdf-parse/worker";
 import { PDFParse } from "pdf-parse";
-import * as mammoth from "mammoth";
 
 type ExtractedExperience = {
   id: string;
@@ -204,6 +203,7 @@ function parseFields(text: string): CvExtraction["fields"] {
   const portfolioUrl = urls.find((url) => !/linkedin\.com/i.test(url)) ?? null;
   const lines = text
     .split(/\r?\n/)
+    .flatMap((line) => line.split(/\s+\|\s+/))
     .map((line) => line.trim())
     .filter(Boolean);
   const summaryLines = sectionLines(
@@ -245,7 +245,7 @@ function parseFields(text: string): CvExtraction["fields"] {
 }
 export async function extractCv(
   bytes: Uint8Array,
-  format: "pdf" | "docx",
+  format: "pdf",
 ): Promise<CvExtraction> {
   const warnings: string[] = [];
   let text = "";
@@ -253,17 +253,10 @@ export async function extractCv(
     if (format === "pdf") {
       const parser = new PDFParse({ data: Buffer.from(bytes) });
       try {
-        text = (await parser.getText()).text;
+        text = (await parser.getText({ cellSeparator: " | ", cellThreshold: 16 })).text;
       } finally {
         await parser.destroy();
       }
-    } else {
-      const result = await mammoth.extractRawText({
-        buffer: Buffer.from(bytes),
-      });
-      text = result.value;
-      if (result.messages.length)
-        warnings.push("Some DOCX content may not have been interpreted.");
     }
   } catch (error) {
     console.error(
@@ -277,7 +270,7 @@ export async function extractCv(
       extractedTextLength: 0,
       fields: emptyFields,
       warnings: [
-        "This file could not be read. Try another PDF or DOCX, or enter details manually.",
+        "This file could not be read. Try another PDF, or enter details manually.",
       ],
     };
   }
