@@ -204,7 +204,7 @@ function parseEducation(lines: string[]): ExtractedEducation[] {
   }
   return records.slice(0, 30);
 }
-function parseFields(text: string): CvExtraction["fields"] {
+export function parseCvText(text: string): CvExtraction["fields"] {
   const email = firstMatch(text, /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
   const phone = firstMatch(text, /(?:\+?\d[\d\s().-]{7,}\d)/);
   const linkedinUrl = firstMatch(
@@ -259,14 +259,12 @@ export async function extractCv(bytes: Uint8Array): Promise<CvExtraction> {
   const warnings: string[] = [];
   let text = "";
   try {
-    {
-      const parser = new PDFParse({ data: Buffer.from(bytes) });
+    const parser = new PDFParse({ data: Buffer.from(bytes) });
       try {
         text = (await parser.getText({ cellSeparator: " | ", cellThreshold: 16 })).text;
       } finally {
         await parser.destroy();
       }
-    }
   } catch (error) {
     console.error(
       "CV text extraction failed:",
@@ -297,7 +295,7 @@ export async function extractCv(bytes: Uint8Array): Promise<CvExtraction> {
         "No readable text was found. Scanned PDFs are not supported by this text-only extraction step.",
       ],
     };
-  const fields = parseFields(normalized);
+  const fields = parseCvText(normalized);
   const count = Object.values(fields).reduce(
     (total, value) =>
       total + (Array.isArray(value) ? value.length : value ? 1 : 0),
