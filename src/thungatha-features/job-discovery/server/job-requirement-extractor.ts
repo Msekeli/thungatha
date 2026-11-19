@@ -3,45 +3,29 @@ import {
   jobRequirementsSchema,
   type JobRequirements,
 } from "./job-requirement-schema";
+import { hasExactTerm, sourceSegments } from "./job-requirement-text";
 
 const ROLE_FAMILIES: [JobRequirements["roleFamily"], RegExp][] = [
-  ["software_it", /\b(software|developer|programmer|IT support|systems analyst|data analyst|network engineer)\b/i],
-  ["engineering", /\b(engineer|engineering|technician)\b/i],
-  ["finance_accounting", /\b(accountant|bookkeeper|finance|auditor|payroll)\b/i],
-  ["administration", /\b(administrator|receptionist|office assistant|clerk)\b/i],
-  ["healthcare", /\b(nurse|doctor|medical|clinical|pharmacist)\b/i],
-  ["sales_marketing", /\b(sales|marketing|brand|account manager)\b/i],
-  ["human_resources", /\b(human resources|\bHR\b|recruiter)\b/i],
-  ["operations_logistics", /\b(logistics|warehouse|operations|supply chain|driver)\b/i],
-  ["education", /\b(teacher|lecturer|educator|teaching)\b/i],
-  ["hospitality", /\b(hotel|hospitality|chef|waiter|restaurant)\b/i],
-  ["security", /\b(security officer|security guard)\b/i],
+  ["software_it", /\\b(software|developer|programmer|IT support|systems analyst|data analyst|network engineer)\\b/i],
+  ["engineering", /\\b(engineer|engineering|technician)\\b/i],
+  ["finance_accounting", /\\b(accountant|bookkeeper|finance|auditor|payroll)\\b/i],
+  ["administration", /\\b(administrator|receptionist|office assistant|clerk)\\b/i],
+  ["healthcare", /\\b(nurse|doctor|medical|clinical|pharmacist)\\b/i],
+  ["sales_marketing", /\\b(sales|marketing|brand|account manager)\\b/i],
+  ["human_resources", /\\b(human resources|\\bHR\\b|recruiter)\\b/i],
+  ["operations_logistics", /\\b(logistics|warehouse|operations|supply chain|driver)\\b/i],
+  ["education", /\\b(teacher|lecturer|educator|teaching)\\b/i],
+  ["hospitality", /\\b(hotel|hospitality|chef|waiter|restaurant)\\b/i],
+  ["security", /\\b(security officer|security guard)\\b/i],
 ];
 
 const SKILLS = ["C#", "C++", ".NET", "Node.js", "TypeScript", "JavaScript", "React", "Next.js", "SQL", "Python", "AWS", "Azure"];
-const REQUIREMENT_CONTEXT = /\b(requirements?|must|essential|minimum|preferred|advantageous|desirable|experience|proficient|familiar|knowledge|skills?|ability to|qualification|certification|licen[cs]e|registration|fluent)\b/i;
+const REQUIREMENT_CONTEXT = /\\b(requirements?|must|essential|minimum|preferred|advantageous|desirable|experience|proficient|familiar|knowledge|skills?|ability to|qualification|certification|licen[cs]e|registration|fluent)\\b/i;
 
 function importance(text: string): "mandatory" | "preferred" | "uncertain" {
-  if (/\b(required|must have|essential|minimum|mandatory|compulsory)\b/i.test(text)) return "mandatory";
-  if (/\b(preferred|advantageous|desirable|nice to have)\b/i.test(text)) return "preferred";
+  if (/\\b(required|must have|essential|minimum|mandatory|compulsory)\\b/i.test(text)) return "mandatory";
+  if (/\\b(preferred|advantageous|desirable|nice to have)\\b/i.test(text)) return "preferred";
   return "uncertain";
-}
-
-function sourceSegments(description: string) {
-  return description
-    .replace(/<\/(?:p|div|li|h[1-6]|tr)>/gi, "\n")
-    .replace(/<br\s*\/?\s*>/gi, "\n")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;|&#160;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .split(/\n|(?<=[.!?;])\s+|\s+[•▪◦]\s+/)
-    .map((part) => part.replace(/\s+/g, " ").trim())
-    .filter((part) => part.length >= 8);
-}
-
-function hasExactTerm(text: string, term: string) {
-  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i").test(text);
 }
 
 export function hashJobDescription(description: string) {
@@ -70,13 +54,15 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
 
   for (const sourceText of segments) {
     if (!REQUIREMENT_CONTEXT.test(sourceText)) continue;
-    for (const match of sourceText.matchAll(/(?:at least|minimum of|minimum)\s+(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+)?experience/gi)) add("experience", `${match[1]} years`, sourceText);
-    for (const match of sourceText.matchAll(/\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\b/gi)) add("education", match[0], sourceText);
-    for (const match of sourceText.matchAll(/\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\b/gi)) add("certification", match[0].trim(), sourceText);
+    for (const match of sourceText.matchAll(/(?:at least|minimum of|minimum)\\s+(\\d+)\\s+years?\\s+(?:of\\s+)?(?:relevant\\s+)?experience/gi)) add("experience", `${match[1]} years`, sourceText);
+    for (const match of sourceText.matchAll(/\\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\\b/gi)) add("education", match[0], sourceText);
+    for (const match of sourceText.matchAll(/\\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\\b/gi)) add("certification", match[0].trim(), sourceText);
     for (const skill of SKILLS) if (hasExactTerm(sourceText, skill)) add("skill", skill, sourceText);
-    for (const match of sourceText.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], sourceText);
-    for (const match of sourceText.matchAll(/\b(fluent in|proficient in|English|Afrikaans|isiXhosa|isiZulu)\b/gi)) {
-      if (/\b(fluent in|proficient in)\b/i.test(sourceText)) add("language", sourceText.slice(match.index ?? 0).trim(), sourceText);
+    for (const match of sourceText.matchAll(/\\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\\b/gi)) add("licence", match[0], sourceText);
+    if (/\\b(fluent in|proficient in)\\b/i.test(sourceText)) {
+      for (const language of ["English", "Afrikaans", "isiXhosa", "isiZulu"]) {
+        if (hasExactTerm(sourceText, language)) add("language", language, sourceText);
+      }
     }
   }
 
