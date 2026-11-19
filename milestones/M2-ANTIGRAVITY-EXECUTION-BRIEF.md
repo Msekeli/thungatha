@@ -128,3 +128,14 @@ C04 adds server-side text extraction for staged PDF/DOCX files using `pdf-parse@
 The extraction endpoint derives identity on the server, validates that the staged storage path is under that user's prefix, downloads through the authenticated Supabase client and limits the object to 5 MB. No AI API is called.
 
 No tests, lint, build, browser checks or Vercel operations were run, per the user's standing instruction. Synchronize local `package.json` and `package-lock.json` changes with the remote checkpoint before a clean install.
+
+
+## Current CV import scope — 2026-11-19
+
+- Support PDF only. DOCX is out of scope until PDF extraction has passed review and acceptance.
+- Keep CV parsing local to the Thungatha server using the existing `pdf-parse` NPM dependency. Do not send CV documents or extracted personal data to external parsing APIs.
+- Remove DOCX selection, MIME validation, upload/extraction handling and the unused Mammoth dependency. Use a forward Supabase migration to restrict the private bucket to `application/pdf`; do not rewrite an already-applied migration.
+- Improve extraction incrementally for linear and multi-column PDFs. Partial results are acceptable; users can correct or complete missing information in the existing manual Profile editor.
+- Never block manual Profile creation when extraction fails. Never silently overwrite confirmed Profile facts.
+- Use anonymised test fixtures or generated synthetic PDFs. Do not commit the user's uploaded CVs or their personal information.
+- Do not start DOCX support, OCR, external APIs or AI extraction during this checkpoint.
