@@ -5,7 +5,7 @@
     top: 64px;
     right: 12px;
     display: block !important;
-    width: min(300px, calc(100vw - 24px));
+    width: min(264px, calc(100vw - 24px));
     max-height: calc(100dvh - 88px);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -26,19 +26,19 @@
     min-height: 42px;
     padding: 9px 10px;
     border-radius: 8px;
-    color: var(--th-workspace-nav-text);
+    color: var(--th-fg-muted);
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     transition: background 0.15s ease, color 0.15s ease;
   }
   .th-mobile-workspace-menu nav a:hover {
-    background: var(--th-workspace-nav-active-bg);
-    color: var(--th-workspace-nav-text);
+    background: var(--th-panel-2);
+    color: var(--th-fg);
   }
   .th-mobile-workspace-menu nav a[data-active="true"] {
-    background: var(--th-workspace-nav-active-bg);
-    color: var(--th-workspace-nav-active-fg);
+    background: var(--th-selected);
+    color: var(--th-accent-text);
     font-weight: 700;
   }
   .th-mobile-menu-auth-trigger {
@@ -62,8 +62,8 @@
   }
   .th-mobile-menu-auth-trigger > button:active,
   .th-mobile-menu-auth-trigger > button:focus-visible {
-    background: var(--th-nav-active-bg);
-    color: var(--th-nav-active-fg);
+    background: var(--th-selected);
+    color: var(--th-accent-text);
   }
   .th-mobile-workspace-menu nav > .th-btn {
     justify-content: flex-start;
