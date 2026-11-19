@@ -1,7 +1,9 @@
 "use client";
+
 import Link from "next/link";
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { Compass, PanelsTopLeft, ClipboardCheck, Bookmark } from "lucide-react";
+import { PublicAuthPrompt } from "@/thungatha-features/job-discovery/ui/public/public-auth-prompt";
 
 const items = [
   { href: "/jobs", label: "Discover", icon: Compass },
@@ -35,7 +37,8 @@ export function MobileWorkspaceBottomNav({
       <span>{item.label}</span>
     </Link>
   );
-  const guest = configured && isLoaded && !isSignedIn;
+  const guest = !configured || (isLoaded && !isSignedIn);
+
   return (
     <nav
       className={`th-mobile-bottom-nav ${publicMode ? "th-mobile-bottom-nav--public" : "th-mobile-bottom-nav--workspace"}`}
@@ -45,10 +48,15 @@ export function MobileWorkspaceBottomNav({
         <>
           {renderLink(links[0])}
           {links.slice(1).map((item) => (
-            <SignInButton
+            <PublicAuthPrompt
               key={item.href}
-              mode="modal"
-              fallbackRedirectUrl={item.href}
+              configured={configured}
+              title={`Access ${item.label}`}
+              description={`Sign in or create a free account to access ${item.label.toLowerCase()} and keep your job search organised.`}
+              side="top"
+              align="center"
+              sideOffset={10}
+              triggerClassName="th-mobile-auth-trigger"
             >
               <button
                 type="button"
@@ -57,11 +65,9 @@ export function MobileWorkspaceBottomNav({
                 <item.icon size={19} strokeWidth={1.8} />
                 <span>{item.label}</span>
               </button>
-            </SignInButton>
+            </PublicAuthPrompt>
           ))}
         </>
-      ) : !configured && publicMode ? (
-        renderLink(links[0])
       ) : (
         links.map(renderLink)
       )}
