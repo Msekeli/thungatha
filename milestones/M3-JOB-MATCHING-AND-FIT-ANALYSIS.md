@@ -19,6 +19,10 @@ The Profile remains the source of truth. Derive candidate facts with a pure deri
 - Unparseable or incomplete employment dates are unknown. Never convert them to zero experience, guess dates, or infer duration from free text that cannot be reliably interpreted.
 - Merge overlapping employment periods before calculating total experience; never double-count concurrent roles. Count only reliably parsed periods and expose uncertainty where dates are incomplete.
 - Academic qualifications, professional certifications, registrations, and licences are separate evidence types. NQF levels apply to registered qualifications, not automatically to certifications or licences.
+- Treat **Matric**, **Grade 12**, and **National Senior Certificate (NSC)** as possible aliases for the same school-leaving qualification only when the source context supports that interpretation. Preserve the employer's exact wording and extracted qualification type.
+- Extract subject-specific school results as separate requirements: subject, minimum percentage/grade, mandatory/preferred status, and source evidence. A general Grade 12 match does not satisfy a separate Mathematics, Physical Sciences, or other subject-mark threshold. Do not infer that Mathematical Literacy satisfies Mathematics, or convert symbols/grades to percentages without a verified conversion rule.
+- Represent qualification pathways as explicit alternatives and conjunctions. For example, “relevant diploma or degree, or equivalent experience” is an OR between pathways, while “Grade 12 with Mathematics at 50%” is an AND between the school qualification and the subject threshold.
+- Treat vendor and professional certifications (for example, AWS or Microsoft Azure credentials) as distinct credential evidence, not as academic diplomas/degrees or automatic NQF equivalents. They may satisfy a named certification requirement or an explicitly accepted alternative pathway; otherwise they can support relevant technical capability without replacing a formal academic requirement.
 - Do not assume qualifications are equivalent merely because they share an NQF level. Preserve qualification type, name, field, and verified NQF level.
 - Canonical skill matching uses normalisation followed by exact lookup against an explicit alias dictionary. Do not blindly strip punctuation from identifiers such as C#, C++, .NET, or Node.js.
 - Unknown or unsupported role titles are unclassified. Role family is contextual evidence, not proof of eligibility and not a standalone hard exclusion.
@@ -37,6 +41,9 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 **Work**
 - Define academic qualification comparison and the limits of NQF-based comparison.
+- Define Matric/Grade 12/NSC normalisation and extraction of subject-specific minimum marks, including how percentages, grades, and ambiguous result formats are represented.
+- Define qualification pathways with explicit AND/OR logic, including “diploma or degree”, “or equivalent experience”, and named professional/vendor certification alternatives.
+- Define when professional certifications can satisfy a requirement and when they are supporting evidence only; never equate AWS/Azure credentials automatically to an academic qualification.
 - Define whether and when relevant experience can substitute for a qualification where the advert explicitly says “or equivalent”.
 - Agree the initial role-family vocabulary and deterministic word-boundary keyword rules.
 - Define mandatory, preferred, and ambiguous requirement classification from explicit wording.
@@ -45,6 +52,11 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Define how changes to the Profile, job description, extraction rules, or vocabulary invalidate/recompute an assessment.
 
 **Proposed rules for review — not yet approved**
+
+- A school-leaving requirement and each subject/mark threshold are separate requirement nodes. The candidate must meet both when the advert states both.
+- A requirement such as “Matric/Grade 12 with Mathematics at 50%” is not met merely because the Profile records Grade 12; the relevant Mathematics result must also be confirmed at or above the threshold.
+- Qualification alternatives must be represented as explicit OR groups; conditions within a pathway are AND requirements. An “equivalent experience” path is available only when the employer's wording explicitly permits it.
+- A vendor certification such as AWS or Azure may satisfy a named certification requirement. It may be accepted as an alternative to a diploma/degree only where the advert explicitly permits that alternative or an approved, evidence-backed equivalence rule exists. Otherwise it is additional relevant evidence, not a substitute for the academic qualification.
 
 1. Requirement outcomes:
    - **Met:** confirmed evidence satisfies the requirement.
@@ -73,6 +85,9 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 **Work**
 - Extract supported qualifications, experience, skills, responsibilities, licences/registrations, languages, location/work-mode constraints, and other explicitly supported requirements.
+- Extract Matric/Grade 12/NSC requirements and subject-specific minimum marks as distinct structured conditions.
+- Parse explicit alternative qualification pathways and AND/OR relationships without flattening them into a single qualification string.
+- Extract named vendor/professional certifications separately from academic qualification requirements.
 - Distinguish mandatory, preferred, and uncertain wording.
 - Use explicit canonical vocabularies and aliases; no fuzzy matching.
 - Preserve source snippets or offsets and the description hash/version.
