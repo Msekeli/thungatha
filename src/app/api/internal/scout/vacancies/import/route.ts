@@ -1,28 +1,13 @@
 import "server-only";
 
-import { timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { scoutExportPageSchema } from "@/thungatha-features/job-discovery/server/scout-export-schema";
 import { mapScoutVacancies } from "@/thungatha-features/job-discovery/server/scout-vacancy-mapper";
-
-function isAuthorised(request: Request) {
-  const expectedSecret = process.env.SCOUT_SYNC_SECRET;
-  if (!expectedSecret) return false;
-  const authorization = request.headers.get("authorization") ?? "";
-  const supplied = authorization.startsWith("Bearer ")
-    ? authorization.slice(7)
-    : "";
-  const expectedBytes = Buffer.from(expectedSecret);
-  const suppliedBytes = Buffer.from(supplied);
-  return (
-    suppliedBytes.length === expectedBytes.length &&
-    timingSafeEqual(suppliedBytes, expectedBytes)
-  );
-}
+import { isScoutImportAuthorised } from "@/thungatha-features/job-discovery/server/scout-import-auth";
 
 export async function POST(request: Request) {
-  if (!isAuthorised(request)) {
+  if (!isScoutImportAuthorised(request)) {
     return NextResponse.json(
       { error: "A valid Thungatha sync secret is required." },
       { status: 401 },
