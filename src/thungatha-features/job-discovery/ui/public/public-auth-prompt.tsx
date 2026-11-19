@@ -11,6 +11,10 @@ type Props = {
   children: ReactNode;
   title?: string;
   description?: string;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
+  triggerClassName?: string;
 };
 
 export function PublicAuthPrompt({
@@ -18,6 +22,10 @@ export function PublicAuthPrompt({
   children,
   title = "Make this job search yours",
   description = "Sign in or create a free account to use this feature and keep your job search organised.",
+  side = "bottom",
+  align = "start",
+  sideOffset = 8,
+  triggerClassName = "inline-flex",
 }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
   const promptId = useId();
@@ -25,7 +33,7 @@ export function PublicAuthPrompt({
   return (
     <>
       <span
-        className="inline-flex"
+        className={triggerClassName}
         onClick={(event) =>
           setAnchorEl((current) =>
             current === event.currentTarget ? null : event.currentTarget,
@@ -37,6 +45,9 @@ export function PublicAuthPrompt({
       <AnchoredPopover
         open={Boolean(anchorEl)}
         anchor={anchorEl}
+        side={side}
+        align={align}
+        sideOffset={sideOffset}
         onClose={closePrompt}
         label={title}
         className="relative w-[min(340px,calc(100vw-24px))] rounded-lg border border-line bg-panel p-4 pr-12 text-fg shadow-xl"
