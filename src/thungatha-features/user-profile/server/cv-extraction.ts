@@ -64,8 +64,8 @@ function sectionLines(lines: string[], headings: RegExp, stops: RegExp) {
 function parseExperience(lines: string[]): ExtractedExperience[] {
   const section = sectionLines(
     lines,
-    /^(work experience|professional experience|employment history|career history|experience)$/i,
-    /^(education|academic background|qualifications|skills|technical skills|certifications|projects|languages)$/i,
+    /^(work experience|professional experience|employment history|career history|professional employment|experience)$/i,
+    /^(education|academic background|qualifications|skills|technical skills|expertise|certifications|projects|languages|references)$/i,
   );
   const month =
     "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
@@ -116,11 +116,19 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
     };
   };
   const records: Array<{ heading: string; details: string[] }> = [];
-  for (const rawLine of section) {
-    const line = rawLine.trim();
+  for (let index = 0; index < section.length; index++) {
+    const line = section[index].trim();
     if (!line) continue;
-    if (!/^[-•·▪]/.test(line) && rangePattern.test(line))
-      records.push({ heading: line, details: [] });
+    if (!/^[-•·▪]/.test(line) && rangePattern.test(line)) {
+      const range = line.match(rangePattern);
+      const beforeDate = range?.index === undefined ? line : line.slice(0, range.index).trim();
+      const previous = section[index - 1]?.trim();
+      const previousTwo = section[index - 2]?.trim();
+      const heading = beforeDate
+        ? (previous && !rangePattern.test(previous) ? `${previous} | ${line}` : line)
+        : (previousTwo && previous ? `${previousTwo} | ${previous} | ${line}` : line);
+      records.push({ heading, details: [] });
+    }
     else if (records.length)
       records[records.length - 1].details.push(
         line.replace(/^[-•·▪]\\s*/, "").trim(),
@@ -209,12 +217,12 @@ function parseFields(text: string): CvExtraction["fields"] {
   const summaryLines = sectionLines(
     lines,
     /^(summary|professional summary|profile|about me|career profile)$/i,
-    /^(experience|work experience|professional experience|education|skills|technical skills|certifications|projects|languages)$/i,
+    /^(experience|work experience|professional experience|education|skills|technical skills|expertise|certifications|projects|languages)$/i,
   );
   const summary = summaryLines.join(" ").slice(0, 1200) || null;
   const skillLines = sectionLines(
     lines,
-    /^skills(?: and competencies| and technologies| and tools| summary)?$/i,
+    /^(?:skills|expertise|core competencies|technical skills)(?: and competencies| and technologies| and tools| summary)?$/i,
     /^(experience|work experience|professional experience|education|certifications|projects|languages|references)$/i,
   );
   const skills = skillLines
@@ -243,14 +251,11 @@ function parseFields(text: string): CvExtraction["fields"] {
     education: parseEducation(lines),
   };
 }
-export async function extractCv(
-  bytes: Uint8Array,
-  format: "pdf",
-): Promise<CvExtraction> {
+export async function extractCv(bytes: Uint8Array): Promise<CvExtraction> {
   const warnings: string[] = [];
   let text = "";
   try {
-    if (format === "pdf") {
+    {
       const parser = new PDFParse({ data: Buffer.from(bytes) });
       try {
         text = (await parser.getText({ cellSeparator: " | ", cellThreshold: 16 })).text;
@@ -276,7 +281,7 @@ export async function extractCv(
   }
   const normalized = text
     .replace(/\u0000/g, " ")
-    .replace(/[ \t]+/g, " ")
+    .replace(/[ ]{2,}/g, " ")
     .trim();
   if (normalized.length < 30)
     return {
