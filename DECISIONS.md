@@ -279,3 +279,16 @@ When a decision is approved or changed:
 - **Rationale:** The same profession can be used across many industries; the target title is a more direct signal for job discovery.
 - **Consequences:** Persist the value in the profile and version snapshots. Job ranking integration remains part of matching/discovery follow-up and must not hide adjacent roles.
 - **Review trigger:** User feedback or evidence that one target title is too restrictive.
+
+
+### D-042 — PDF-only private CV import
+
+- **Date:** 2026-11-19
+- **Status:** Confirmed
+- **Context:** Supporting PDF and DOCX in parallel was dividing effort while PDF extraction quality remained inadequate. CV documents also contain sensitive personal information.
+- **Decision:** Support PDF only for CV upload and extraction until the PDF checkpoint is reviewed and accepted. Use the existing local/server-side `pdf-parse` NPM package. Do not send CV documents or extracted personal data to external parsing APIs. DOCX, OCR and AI extraction are out of scope for this checkpoint.
+- **Fallback:** Manual Profile creation and editing remain available. Extraction may be partial; users can correct or complete missing information. Extraction failure must not block Profile creation.
+- **Rationale:** Focus implementation and acceptance on one document format, retain control of sensitive CV data, and avoid a paid external dependency.
+- **Consequences:** Remove DOCX from the UI, upload and extraction APIs, and dependency manifest. Restrict the existing private Storage bucket through a forward migration; do not rewrite the historical migration or delete existing staged objects automatically.
+- **Acceptance evidence:** Test representative anonymised linear and multi-column PDFs. Do not commit user-provided CV files.
+- **Review trigger:** PDF extraction has passed user review and acceptance; only then may another format be considered separately.
