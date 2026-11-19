@@ -5,7 +5,10 @@
     top: 64px;
     right: 12px;
     display: block !important;
-    width: min(280px, calc(100vw - 24px));
+    width: min(300px, calc(100vw - 24px));
+    max-height: calc(100dvh - 88px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 8px;
     border: 1px solid var(--th-line);
     border-radius: 12px;
