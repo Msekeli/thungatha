@@ -21,11 +21,15 @@ function isProtectedPath(path: string) {
 
 const clerkHandler = clerkMiddleware(async (auth, request) => {
   if (isProtectedPath(request.nextUrl.pathname)) {
-    const returnPath =
-      request.nextUrl.pathname +
-      (request.nextUrl.search ? request.nextUrl.search : "");
+    const returnPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+
+    // Clerk requires an absolute URL here. Build it from the incoming request
+    // so localhost, preview, and production hosts all resolve correctly.
+    const unauthenticatedUrl = new URL("/sign-in", request.url);
+    unauthenticatedUrl.searchParams.set("redirect_url", returnPath);
+
     await auth.protect({
-      unauthenticatedUrl: `/sign-in?redirect_url=${encodeURIComponent(returnPath)}`,
+      unauthenticatedUrl: unauthenticatedUrl.toString(),
     });
   }
 });
