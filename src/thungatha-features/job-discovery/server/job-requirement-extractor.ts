@@ -30,7 +30,7 @@ export function hashJobDescription(description: string) {
   return createHash("sha256").update(description).digest("hex");
 }
 
-export function extractJobRequirements(description: string): JobRequirements {
+export function extractJobRequirements(description: string, title = ""): JobRequirements {
   const clean = description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   const descriptionHash = hashJobDescription(description);
   if (clean.length < 20) {
@@ -64,7 +64,7 @@ export function extractJobRequirements(description: string): JobRequirements {
   for (const match of clean.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], match[0]);
   for (const match of clean.matchAll(/\b(fluent in|proficient in|English|Afrikaans|isiXhosa|isiZulu)\b/gi)) add("language", match[0], match[0]);
 
-  const roleFamily = ROLE_FAMILIES.find(([, pattern]) => pattern.test(clean))?.[0] ?? null;
+  const roleFamily = ROLE_FAMILIES.find(([, pattern]) => pattern.test(title))?.[0] ?? null;
   return jobRequirementsSchema.parse({
     schemaVersion: 1, extractionVersion: "m3-c02-v1", descriptionHash,
     roleFamily, requirements, status: requirements.length ? "partial" : "unavailable",
