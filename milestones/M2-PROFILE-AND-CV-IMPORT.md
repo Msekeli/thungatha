@@ -1,7 +1,7 @@
 # M2 — Profile and CV Import
 
-**Status:** In progress — C02 and C03 accepted; C04 in review.
-**Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has now been accepted by the user.
+**Status:** In progress — C02 and C03 accepted; C04 in progress (PDF-only scope).
+**Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has been accepted. On 2026-11-19, the user narrowed ongoing CV import support to PDF only; DOCX is out of scope.
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
 **Dependency:** M0; integrates with M1 without requiring users to enter Discovery first.
@@ -21,8 +21,8 @@ C01 implemented the profile data contract and backend foundation, including boun
 1. **C00 — Repository and backend readiness audit:** inspect the actual repository, identify existing functionality versus scaffolding, review auth, database configuration, routes, tests, theme tokens, shared controls and existing workspace layouts. No application-code changes.
 2. **C01 — Profile data contract and backend foundation:** agree on the profile schema, trust states, validation, identity/ownership, migrations, data access and API contract; implement the approved minimum backend increment.
 3. **C02 — Profile view and manual editing:** implement the approved empty/saved views and manual editing inside the existing workspace shells.
-4. **C03 — CV upload and private storage:** agree on format/size, storage, retention and file-access rules, then implement upload without extraction.
-5. **C04 — Deterministic extraction and progress/failure states:** use conventional text extraction first; AI is optional and requires evidence plus approval.
+4. **C03 — CV upload and private storage:** PDF-only upload, 5 MB maximum, private storage, retention and file-access rules. DOCX is not supported.
+5. **C04 — Deterministic extraction and progress/failure states:** use the existing local PDF text-extraction library and deterministic parsing; no external CV-processing APIs. Focus on PDF until the checkpoint passes.
 6. **C05 — Review and confirmation:** implement the seven grouped sections, missing-field treatment and explicit user confirmation.
 7. **C06 — Master CV lifecycle:** implement safe view/download/replacement/removal semantics without silently overwriting confirmed profile facts.
 8. **C07 — End-to-end acceptance and closeout:** verify the journeys, visual references, accessibility, security/privacy and documented limitations.
@@ -132,8 +132,8 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **M2-C00 — Repository and backend readiness audit:** Accepted / planning baseline; no application-code changes and no implementation commit required.
 - **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
 - **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
-- **M2-C03 — CV upload and private storage:** **Accepted by user (2026-10-24)** — PDF/DOCX, 5 MB limit, private Supabase Storage and staged replacement safety. User applied the migration and reported local testing complete. Commit: `8828f04cbfe31662da841a7c4738d31d294c1bf0`.
-- **M2-C04 — Deterministic extraction and progress/failure states:** **In review** — server-side PDF/DOCX text extraction and deterministic candidate parsing added; results remain unconfirmed and are not persisted.
+- **M2-C03 — CV upload and private storage:** **Accepted by user (2026-10-24)** — PDF/DOCX was the original accepted scope, 5 MB limit, private Supabase Storage and staged replacement safety. On 2026-11-19, the user narrowed future uploads to PDF only; see the scope-change record below. User applied the migration and reported local testing complete. Commit: `8828f04cbfe31662da841a7c4738d31d294c1bf0`.
+- **M2-C04 — Deterministic extraction and progress/failure states:** **In review** — server-side PDF extraction and deterministic candidate parsing; PDF-only scope is being implemented. Results remain unconfirmed and are not persisted.
 - **M2-C05 — Review and confirmation workflow:** Not started.
 - **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
 - **M2-C07 — End-to-end acceptance and closeout:** Not started.
@@ -182,3 +182,13 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Architecture:** Updated the profile schema, mapper, repository select list, blank-profile state and editor. The role preference is persisted but is not yet wired into job ranking; M3/matching work should use it as a soft relevance signal rather than a hard filter.
 - **Verification:** No tests, lint, build, browser checks or live migration commands were run by ChatGPT, per user instruction. The user must apply the new migration with the existing linked Supabase CLI workflow before this field can persist remotely.
 - **Next action:** Pull `dev`, apply the new migration, review the role field and confirm persistence before expanding the remaining profile editor sections.
+
+
+## M2 CV format scope change — 2026-11-19
+
+- **Decision:** PDF is the only supported CV upload and extraction format. DOCX is excluded until PDF extraction has passed review and acceptance.
+- **Reason:** Focus implementation and validation on one format rather than splitting effort across PDF and DOCX. Manual Profile entry remains available for users who do not upload a PDF or whose PDF cannot be read accurately.
+- **Compatibility:** The original C03 acceptance and migration remain historical records. A forward migration restricts the existing private storage bucket to PDF MIME types. Existing staged DOCX objects are not automatically deleted.
+- **Implementation:** Remove DOCX from the upload UI, upload API and extraction path; remove Mammoth from application dependencies. Keep pdf-parse local/server-side; no external parsing API or CV data transfer.
+- **Extraction strategy:** Improve layout-aware PDF text extraction and deterministic parsing. Partial extraction is acceptable when clearly surfaced for user correction. Do not invent or auto-confirm professional facts.
+- **Acceptance focus:** Validate with anonymised equivalents of a linear multi-page CV and a two-column CV. Do not commit the supplied personal CV files to the repository.
