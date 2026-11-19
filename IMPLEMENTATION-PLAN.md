@@ -158,22 +158,23 @@ Detailed checkpoints belong in the M2 milestone document.
 
 ### M3 — Job Matching and Fit Analysis
 
-**Status: Not started**
+**Status: In progress — M3-C01 relevance rules approved; implementation beginning.**
 
-**Outcome:** An explainable assessment of how a user's confirmed professional evidence aligns with a job's requirements.
+**Outcome:** An explainable categorical assessment of how a user's confirmed professional evidence aligns with a job's requirements. No numerical fit scores or percentages are produced.
 
 Scope includes:
 
 - Extracting and structuring job requirements.
 - Mapping requirements to evidence in the user's Profile and CV.
-- Calculating a deterministic, explainable fit estimate.
-- Showing matched, partially supported, missing and unverifiable requirements.
+- Producing deterministic Relevant, Partially relevant, or Unclassified outcomes.
+- Showing matched, partially supported, missing and unverifiable requirements without numerical scores or percentages.
 - Explaining the evidence behind the assessment.
 - Distinguishing confirmed information from inferred information.
-- Integrating fit analysis into Job Discovery where appropriate.
-- Testing scoring behaviour, edge cases and stale data.
+- Integrating relevance classification into catalogue-wide Job Discovery sorting before pagination.
+- Showing Relevant in green and Partially relevant in yellow; Unclassified has no badge.
+- Testing classification behaviour, edge cases and stale data.
 
-The score is an estimate of fit, not a probability of being hired. Missing evidence must not automatically be treated as proof that the user lacks a qualification. Requirements that cannot be verified must be clearly distinguished from requirements with no supporting evidence.
+Relevance labels communicate evidence-based alignment only; they are not scores or hiring-probability estimates. Missing evidence must not automatically be treated as proof that the user lacks a qualification. Requirements that cannot be verified must be clearly distinguished from requirements with no supporting evidence.
 
 **Dependencies:** M1 and M2.
 
