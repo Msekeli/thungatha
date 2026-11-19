@@ -26,7 +26,7 @@ export async function mapScoutVacancies(
     const unchanged = previous?.requirements_description_hash === hash;
     const extraction = unchanged
       ? null
-      : extractJobRequirements(vacancy.description);
+      : extractJobRequirements(vacancy.description, vacancy.title);
 
     return {
       scout_vacancy_id: vacancy.scout_vacancy_id,
