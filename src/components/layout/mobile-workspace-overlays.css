@@ -78,6 +78,17 @@
     font-size: 10px;
     text-decoration: none;
   }
+  .th-mobile-bottom-nav--workspace .th-mobile-auth-trigger,
+  .th-mobile-bottom-nav--public .th-mobile-auth-trigger {
+    display: flex;
+    min-width: 0;
+    min-height: 48px;
+  }
+  .th-mobile-bottom-nav--workspace .th-mobile-auth-trigger > button,
+  .th-mobile-bottom-nav--public .th-mobile-auth-trigger > button {
+    width: 100%;
+    cursor: pointer;
+  }
   .th-mobile-bottom-nav--workspace a[data-active="true"],
   .th-mobile-bottom-nav--public a[data-active="true"] {
     background: var(--th-nav-active-bg);
