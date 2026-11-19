@@ -21,13 +21,8 @@ export async function POST(request: Request) {
       typeof body.filename !== "string"
     )
       return apiError("Choose an uploaded CV to extract", 400);
-    const filename = body.filename.toLowerCase(),
-      format = filename.endsWith(".pdf")
-        ? "pdf"
-        : filename.endsWith(".docx")
-          ? "docx"
-          : null;
-    if (!format) return apiError("Only PDF and DOCX files are supported", 415);
+    if (!body.filename.toLowerCase().endsWith(".pdf"))
+      return apiError("Only PDF files are supported", 415);
     const prefix = `${identity.userId}/staged/`;
     if (
       !body.storagePath.startsWith(prefix) ||
@@ -48,7 +43,6 @@ export async function POST(request: Request) {
       return apiError("The CV file is empty or exceeds 5 MB", 413);
     const result = await extractCv(
       new Uint8Array(await data.arrayBuffer()),
-      format,
     );
     return NextResponse.json({ extraction: result });
   } catch (error) {
