@@ -23,7 +23,9 @@ export async function mapScoutVacancies(
   return vacancies.map((vacancy) => {
     const previous = byId.get(vacancy.scout_vacancy_id);
     const hash = hashJobDescription(vacancy.description);
-    const unchanged =\n      previous?.requirements_description_hash === hash &&\n      previous?.requirements_extraction_version === "m3-c02-v2";
+    const unchanged =
+      previous?.requirements_description_hash === hash &&
+      previous?.requirements_extraction_version === "m3-c02-v2";
     const extraction = unchanged
       ? null
       : extractJobRequirements(vacancy.description, vacancy.title);
