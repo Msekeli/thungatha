@@ -15,7 +15,7 @@ const ROLE_FAMILIES: [JobRequirements["roleFamily"], RegExp][] = [
   ["operations_logistics", /\b(logistics|warehouse|operations|supply chain|driver)\b/i],
   ["education", /\b(teacher|lecturer|educator|teaching)\b/i],
   ["hospitality", /\b(hotel|hospitality|chef|waiter|restaurant)\b/i],
-  ["security", /\b(security officer|security guard| დაცვის)\b/i],
+  ["security", /\b(security officer|security guard)\b/i],
 ];
 
 const SKILLS = ["C#", "C++", ".NET", "Node.js", "TypeScript", "JavaScript", "React", "Next.js", "SQL", "Python", "AWS", "Azure"];
@@ -41,7 +41,11 @@ export function extractJobRequirements(description: string): JobRequirements {
   }
 
   const requirements: JobRequirements["requirements"] = [];
-  const add = (category: JobRequirements["requirements"][number]["category"], value: string, sourceText: string) => {
+  const add = (category: JobRequirements["requirements"][number]["category"], value: string, matchText: string) => {
+    const index = clean.toLowerCase().indexOf(matchText.toLowerCase());
+    const start = clean.lastIndexOf(".", index) + 1;
+    const end = clean.indexOf(".", index);
+    const sourceText = clean.slice(start, end < 0 ? clean.length : end + 1).trim();
     requirements.push({
       id: `${category}:${requirements.length + 1}`,
       category, value, importance: importance(sourceText), sourceText,
@@ -54,7 +58,7 @@ export function extractJobRequirements(description: string): JobRequirements {
   for (const match of clean.matchAll(/\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\b/gi)) add("certification", match[0], match[0]);
   for (const skill of SKILLS) {
     const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const match = clean.match(new RegExp(`\\b${escaped}\\b`, "i"));
+    const match = clean.match(new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i"));
     if (match) add("skill", skill, match[0]);
   }
   for (const match of clean.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], match[0]);
