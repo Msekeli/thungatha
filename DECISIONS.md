@@ -312,3 +312,20 @@ When a decision is approved or changed:
 - **Evidence/validation:** User-confirmed direction in the M3 design discussion on 2026-11-20. The detailed business rules, qualification mappings, vocabulary coverage, and performance assumptions still require C01 decisions and M3-C07 validation.
 - **Consequences:** M3 milestone documentation now defines a rules-only scope and records the proposed C01 rules. This decision does not approve final role-family keywords, education equivalence, mandatory/preferred phrase handling, numerical score weights, or a final tier rubric.
 - **Review trigger:** Measured performance problems, demonstrated extraction false positives/false negatives, a material change in catalogue scale, or an explicit user decision to revise the M3 boundary.
+
+
+### D-044 — Structured education, subject-mark, and professional certification requirements
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed matching principles; exact parsing and equivalence rules remain for M3-C01 approval
+- **Context:** Job adverts may require Matric/Grade 12 and also specify minimum marks in Mathematics or another subject. Other adverts offer alternative pathways such as a diploma, degree, equivalent experience, or named professional/vendor certifications.
+- **Decision:**
+  - Model Matric, Grade 12, and National Senior Certificate (NSC) as potential aliases for a school-leaving qualification when context supports it, while preserving the original advert wording.
+  - Represent subject-specific minimum marks as separate requirements linked to the school qualification. Satisfying Grade 12 alone does not satisfy a separate subject/percentage threshold.
+  - Do not assume Mathematical Literacy is equivalent to Mathematics. Do not convert grades or symbols to percentages without an approved, verified conversion rule.
+  - Represent requirements with explicit AND/OR structure. For example, a school qualification plus a minimum Mathematics mark is an AND; “relevant diploma or degree, or equivalent experience” contains alternative pathways.
+  - Keep academic qualifications separate from vendor/professional certifications, registrations, and licences. AWS and Microsoft Azure certifications can satisfy a specifically named certification requirement. They may replace an academic qualification only where the advert explicitly permits that alternative or a separately approved equivalence rule supports it; otherwise they are additional evidence of technical capability.
+- **Rationale:** Flat qualification strings would lose strict subject thresholds and alternative pathways, causing false-positive matches. Credential categories must remain distinct to avoid treating a vendor certification as an academic award.
+- **Evidence/validation:** User clarification during M3 design review on 2026-11-20. Detailed extraction patterns, result-format handling, and equivalence rules remain subject to C01 review and C07 calibration.
+- **Consequences:** M3-C01 and M3-C02 now explicitly cover school subject marks, qualification pathway logic, and named vendor/professional certifications. This does not approve a universal equivalence between certifications and academic qualifications.
+- **Review trigger:** Calibration reveals systematic parsing errors or an explicit change to the agreed qualification equivalence policy.
