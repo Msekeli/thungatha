@@ -174,31 +174,35 @@ function parseEducation(lines: string[]): ExtractedEducation[] {
   const section = sectionLines(
     lines,
     /^(education|academic background|qualifications|educational background)$/i,
-    /^(work experience|professional experience|employment history|experience|skills|technical skills|certifications|projects|languages|references)$/i,
+    /^(work experience|professional experience|employment history|experience|skills|technical skills|expertise|certifications|projects|languages|references)$/i,
   );
-  return section
-    .map<ExtractedEducation | null>((line, index) => {
-      const parts = line.split(/\s+(?:at|@|\||—|–)\s+/i);
-      const qualification = (parts[0] || "").trim();
-      const institution = (parts[1] || "").trim();
-      if (
-        !institution ||
-        !qualification ||
-        qualification.length > 150 ||
-        institution.length > 150
-      )
-        return null;
-      const dates = line.match(/(?:19|20)\d{2}/g) || [];
-      return {
-        id: `cv-edu-${index + 1}`,
-        qualification,
-        institution,
-        startDate: dates[0] || null,
-        endDate: dates[1] || null,
-      };
-    })
-    .filter((item): item is ExtractedEducation => item !== null)
-    .slice(0, 30);
+  const records: ExtractedEducation[] = [];
+  for (let index = 0; index < section.length; index++) {
+    const line = section[index].trim();
+    const dates = line.match(/(?:19|20)\d{2}/g) || [];
+    if (!dates.length) continue;
+    const qualification = line
+      .replace(/(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)?\s*(?:19|20)\d{2}/gi, "")
+      .replace(/[-–—]/g, " ")
+      .trim();
+    const previous = section[index - 1]?.trim();
+    const previousTwo = section[index - 2]?.trim();
+    const next = section[index + 1]?.trim();
+    const institution = qualification
+      ? (next && !/^id\s*:/i.test(next) ? next : "")
+      : previousTwo || "";
+    const resolvedQualification = qualification || previous || "";
+    if (!resolvedQualification || !institution) continue;
+    if (resolvedQualification.length > 150 || institution.length > 150) continue;
+    records.push({
+      id: `cv-edu-${records.length + 1}`,
+      qualification: resolvedQualification,
+      institution,
+      startDate: dates[0] || null,
+      endDate: dates[1] || null,
+    });
+  }
+  return records.slice(0, 30);
 }
 function parseFields(text: string): CvExtraction["fields"] {
   const email = firstMatch(text, /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
