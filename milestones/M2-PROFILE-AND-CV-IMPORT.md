@@ -192,3 +192,16 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Implementation:** Remove DOCX from the upload UI, upload API and extraction path; remove Mammoth from application dependencies. Keep pdf-parse local/server-side; no external parsing API or CV data transfer.
 - **Extraction strategy:** Improve layout-aware PDF text extraction and deterministic parsing. Partial extraction is acceptable when clearly surfaced for user correction. Do not invent or auto-confirm professional facts.
 - **Acceptance focus:** Validate with anonymised equivalents of a linear multi-page CV and a two-column CV. Do not commit the supplied personal CV files to the repository.
+
+
+## M2-C04 implementation update — 2026-11-19
+
+- **Status:** In progress; not accepted.
+- **Format scope:** PDF only. DOCX selection, upload validation and extraction were removed from the active application path. The Mammoth dependency was removed from `package.json` and `package-lock.json`.
+- **PDF extraction:** Retained local/server-side `pdf-parse`. Enabled horizontal cell separators to preserve likely column boundaries in extracted text. The deterministic parser now separates those cells before section parsing and can group work-history rows where title, employer and date are emitted as separate cells/lines. Education parsing now handles common qualification/institution/date arrangements found in the supplied examples.
+- **Upload/storage:** UI and APIs accept PDF only. Added forward migration `20261119000100_profile_cv_pdf_only.sql` to restrict the private bucket MIME allow-list. The historical migration was not rewritten; existing staged DOCX objects are not automatically deleted.
+- **Tests added:** `tests/unit-tests/user-profile/extraction/cv-extraction.test.ts` covers synthetic linear and two-column CV text layouts. The user's uploaded CV files were not added to the repository.
+- **Privacy/manual fallback:** Parsing remains inside the Thungatha server. No external parser, OCR or AI service was introduced. The existing manual Profile editor remains available for correcting or completing extracted details.
+- **Verification:** Tests, lint, build, browser checks and migration execution were not run, in accordance with the user's standing instruction. The new tests are authored but unverified.
+- **Known limitations:** Scanned/image-only PDFs remain unsupported. This increment does not guarantee perfect reading order for every multi-column PDF and does not yet extract every Profile section (for example, certifications, projects and languages). Users must review and complete missing or incorrect fields manually.
+- **Next action:** Run the focused extraction tests and review the two representative PDF layouts locally. Keep C04 in progress until the user confirms the results.
