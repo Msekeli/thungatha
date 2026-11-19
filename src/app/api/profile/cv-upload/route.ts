@@ -9,14 +9,11 @@ import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const PDF_TYPE = "application/pdf";
-const DOCX_TYPE =
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 const BUCKET = "profile-cvs";
 
 function fileExtension(file: File) {
   const name = file.name.toLowerCase();
   if (name.endsWith(".pdf") && file.type === PDF_TYPE) return "pdf";
-  if (name.endsWith(".docx") && file.type === DOCX_TYPE) return "docx";
   return null;
 }
 
@@ -29,7 +26,7 @@ export async function POST(request: Request) {
     if (!(value instanceof File))
       return apiError("Choose a CV file to upload", 400);
     const extension = fileExtension(value);
-    if (!extension) return apiError("Upload a PDF or DOCX file", 415);
+    if (!extension) return apiError("Upload a PDF file", 415);
     if (value.size === 0) return apiError("The selected file is empty", 400);
     if (value.size > MAX_FILE_SIZE)
       return apiError("CV files must be 5 MB or smaller", 413);
@@ -37,9 +34,7 @@ export async function POST(request: Request) {
     const isPdf =
       extension === "pdf" &&
       new TextDecoder().decode(bytes.slice(0, 5)) === "%PDF-";
-    const isDocx =
-      extension === "docx" && bytes[0] === 0x50 && bytes[1] === 0x4b;
-    if (!isPdf && !isDocx)
+    if (!isPdf)
       return apiError(
         "The file content does not match a supported CV format",
         415,
@@ -51,7 +46,7 @@ export async function POST(request: Request) {
     const { error } = await supabase.storage
       .from(BUCKET)
       .upload(storagePath, bytes, {
-        contentType: extension === "pdf" ? PDF_TYPE : DOCX_TYPE,
+        contentType: PDF_TYPE,
         cacheControl: "3600",
         upsert: false,
       });
