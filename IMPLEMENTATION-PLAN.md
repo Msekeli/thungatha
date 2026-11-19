@@ -425,4 +425,7 @@ No provider ingestion was re-run and no production database changes were made du
 
 ## M2-C04 status update — 2026-10-24
 
-Server-side deterministic PDF/DOCX text extraction is implemented on `dev` using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Candidate fields remain unconfirmed and are not persisted. C04 remains in review pending user review with representative CVs. No automated or browser checks were run by ChatGPT, per instruction. Ensure local dependency manifest and lockfile changes are synchronized before a clean install.
+Server-side PDF-only deterministic extraction is being revised on `dev` using the existing `pdf-parse@2.4.5` dependency. DOCX and Mammoth have been removed from the active implementation. Candidate fields remain unconfirmed and are not persisted. C04 remains in progress pending review against representative linear and multi-column PDFs. No automated or browser checks were run by ChatGPT, per instruction.
+
+
+**M2 CV format decision (2026-11-19):** CV upload and extraction are PDF-only until PDF extraction passes review and acceptance. DOCX is out of scope. Manual Profile entry remains the fallback for missing or incorrect extraction. CV documents must remain within Thungatha's own infrastructure; no external parsing API is permitted for this checkpoint.
