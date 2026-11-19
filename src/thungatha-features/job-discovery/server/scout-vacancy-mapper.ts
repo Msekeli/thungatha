@@ -9,6 +9,7 @@ export async function mapScoutVacancies(
   database: SupabaseClient,
   vacancies: ScoutExportVacancy[],
 ) {
+  if (vacancies.length === 0) return [];
   const ids = vacancies.map((vacancy) => vacancy.scout_vacancy_id);
   const existing = await database
     .from("jobs")
