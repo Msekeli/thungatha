@@ -15,6 +15,7 @@ type Props = {
   align?: "start" | "center" | "end";
   sideOffset?: number;
   triggerClassName?: string;
+  onPromptAction?: () => void;
 };
 
 export function PublicAuthPrompt({
@@ -26,10 +27,16 @@ export function PublicAuthPrompt({
   align = "start",
   sideOffset = 8,
   triggerClassName = "inline-flex",
+  onPromptAction,
 }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
   const promptId = useId();
   const closePrompt = () => setAnchorEl(null);
+  const handlePromptAction = () => {
+    closePrompt();
+    onPromptAction?.();
+  };
+
   return (
     <>
       <span
@@ -74,22 +81,22 @@ export function PublicAuthPrompt({
           {configured ? (
             <>
               <SignInButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                <Button size="sm" variant="outline" onClick={closePrompt}>
+                <Button size="sm" variant="outline" onClick={handlePromptAction}>
                   Sign in
                 </Button>
               </SignInButton>
               <SignUpButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                <Button size="sm" variant="primary" onClick={closePrompt}>
+                <Button size="sm" variant="primary" onClick={handlePromptAction}>
                   Create free account
                 </Button>
               </SignUpButton>
             </>
           ) : (
             <>
-              <ButtonLink href="/sign-in" size="sm" variant="outline">
+              <ButtonLink href="/sign-in" size="sm" variant="outline" onClick={handlePromptAction}>
                 Sign in
               </ButtonLink>
-              <ButtonLink href="/sign-up" size="sm" variant="primary">
+              <ButtonLink href="/sign-up" size="sm" variant="primary" onClick={handlePromptAction}>
                 Create free account
               </ButtonLink>
             </>
