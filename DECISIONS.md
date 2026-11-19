@@ -292,3 +292,23 @@ When a decision is approved or changed:
 - **Consequences:** Remove DOCX from the UI, upload and extraction APIs, and dependency manifest. Restrict the existing private Storage bucket through a forward migration; do not rewrite the historical migration or delete existing staged objects automatically.
 - **Acceptance evidence:** Test representative anonymised linear and multi-column PDFs. Do not commit user-provided CV files.
 - **Review trigger:** PDF extraction has passed user review and acceptance; only then may another format be considered separately.
+
+
+### D-043 — Rules-only M3 matching and on-read candidate derivation
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed direction; detailed C01 business rules remain open
+- **Context:** M3 requires explainable matching across job descriptions and confirmed candidate Profiles. The initial design considered AI-assisted extraction, fuzzy matching, and a persisted candidate-facts snapshot.
+- **Decision:**
+  - Keep M3 requirement extraction, candidate fact derivation, role-family classification, evidence mapping, and comparison deterministic and rules-only. Do not use AI, embeddings, fuzzy matching, or Fuse.js in the M3 matching path.
+  - Use text normalisation followed by exact canonical identifier lookup through an explicit, reviewed alias dictionary. Preserve punctuation distinctions in technical identifiers such as C#, C++, .NET, and Node.js.
+  - Keep Fuse.js out of M3. It may be considered separately for future Job Discovery search or autocomplete, with its own evaluation.
+  - Derive candidate facts from the complete confirmed Profile through a pure function at read time. Do not create a separate candidate_facts table in the initial implementation; revisit only if measured derivation cost justifies persistence.
+  - Treat unparseable or incomplete employment dates as unknown; never guess or count them as zero. Merge overlapping employment periods to avoid double-counting.
+  - Keep academic qualifications distinct from certifications, professional registrations, and licences. NQF classification applies to qualifications; do not assign NQF levels to certifications or licences without an independently registered qualification basis.
+  - For the current small catalogue, calculate comparisons in memory. Do not add SQL-side candidate-pool ranking or background processing until measured catalogue size/performance justifies it. Page-only scoring must not be described as catalogue-wide relevance ranking.
+  - Unknown or unclassified job requirements and role families must remain unknown; do not hard-filter on uncertain evidence.
+- **Rationale:** Deterministic exact matching is auditable and avoids false positives caused by approximate text similarity. On-read derivation avoids stale candidate-fact snapshots while the calculation remains inexpensive. Deferring SQL ranking and background processing keeps the first implementation proportional to the current catalogue.
+- **Evidence/validation:** User-confirmed direction in the M3 design discussion on 2026-11-20. The detailed business rules, qualification mappings, vocabulary coverage, and performance assumptions still require C01 decisions and M3-C07 validation.
+- **Consequences:** M3 milestone documentation now defines a rules-only scope and records the proposed C01 rules. This decision does not approve final role-family keywords, education equivalence, mandatory/preferred phrase handling, numerical score weights, or a final tier rubric.
+- **Review trigger:** Measured performance problems, demonstrated extraction false positives/false negatives, a material change in catalogue scale, or an explicit user decision to revise the M3 boundary.
