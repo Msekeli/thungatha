@@ -88,7 +88,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C02 — Job requirement extraction
 
-**Status:** In progress — deterministic extraction v1 is implemented at Scout ingestion; verification and coverage expansion remain.
+**Status:** In progress — deterministic extraction v2 is implemented at Scout ingestion; verification and coverage expansion remain.
 
 **Goal:** produce structured, reviewable requirements from job descriptions using deterministic rules.
 
@@ -106,11 +106,12 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 **Implementation record (2026-11-20)**
 - Added a Zod schema for versioned extraction results and individual requirement records.
-- Added SHA-256 description hashing and deterministic extraction for explicit experience durations, qualification terms, named certification patterns, selected exact IT skill identifiers, licence/registration phrases, language mentions, and title-based role-family vocabulary.
-- Scout import now stores the extracted JSONB, description hash, extraction version, and extraction status. Existing extraction is reused when the exact description hash is unchanged.
+- Added SHA-256 description hashing and deterministic extraction for selected experience, qualification, named certification, canonical IT skill, licence/registration, and language patterns, plus title-based role-family vocabulary.
+- Extraction v2 segments HTML paragraphs/list items and sentence boundaries, retains the matching source segment, gates extraction on requirement-context wording, deduplicates repeated category/value pairs, and limits language extraction to explicit proficiency phrases. These rules reduce incidental mentions but do not eliminate all false positives.
+- Scout import reuses extraction only when both the exact description hash and extraction version match. The v2 version forces existing unchanged descriptions to be re-extracted on the next Scout import.
 - Added a forward migration; it has not been applied to any database.
-- Initial extraction is deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
-- Added focused unit tests for stable description hashing, mandatory experience extraction, punctuation-sensitive skill identifiers, title-based role family detection, and unavailable short descriptions. Tests have not been run.
+- Extraction remains deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
+- Added tests for hashing, mandatory experience, punctuation-sensitive skills, incidental mentions, HTML list source snippets, preferred wording, duplicate skills, explicit language proficiency, role family, and unavailable descriptions. Tests have not been run.
 
 **Exit criteria**
 - Requirements are schema-validated and traceable to source text.
