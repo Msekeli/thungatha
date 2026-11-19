@@ -110,7 +110,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Scout import now stores the extracted JSONB, description hash, extraction version, and extraction status. Existing extraction is reused when the exact description hash is unchanged.
 - Added a forward migration; it has not been applied to any database.
 - Initial extraction is deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
-- Automated checks have not been run; this record describes implementation only.
+- Added focused unit tests for stable description hashing, mandatory experience extraction, punctuation-sensitive skill identifiers, title-based role family detection, and unavailable short descriptions. Tests have not been run.
 
 **Exit criteria**
 - Requirements are schema-validated and traceable to source text.
