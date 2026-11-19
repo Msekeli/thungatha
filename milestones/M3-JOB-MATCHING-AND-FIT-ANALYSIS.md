@@ -174,7 +174,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Goal:** add matching to Discovery without making the feed dependent on matching availability.
 
 **Work**
-- Calculate classifications and order the full filtered catalogue before pagination. A page-only comparison is not catalogue-wide relevance sorting. Choose an indexed/persisted or database-query strategy that meets this requirement for the current 20,000-job target.
+- Calculate classifications and order the full filtered catalogue before pagination. A page-only comparison is not catalogue-wide relevance sorting. The current planned catalogue ceiling is 5,000 jobs. Retrieve the full filtered set in bounded database pages, compare only structured requirement metadata in memory, order the complete filtered set, and paginate afterwards. Do not rank only the currently requested page.
 - Do not classify only a loaded page and present it as catalogue-wide relevance sorting.
 - Revisit indexed coarse filtering and ranking across a candidate pool only when catalogue growth or measured performance justifies it.
 - Do not hard-filter on experience or education unless the requirement is explicitly mandatory and extraction is demonstrably reliable.
