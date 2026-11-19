@@ -8,7 +8,6 @@ import Image from "next/image";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { MobileWorkspaceMenu } from "@/components/layout/mobile-workspace-menu";
-import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 import "./mobile-workspace-nav.css";
 import "./mobile-workspace-overlays.css";
 
@@ -73,11 +72,6 @@ export function MobileWorkspaceNav({
         configured={configured}
         isActive={isActiveHref}
         onClose={() => setMenuOpen(false)}
-      />
-      <MobileWorkspaceBottomNav
-        isActive={isActiveHref}
-        publicMode={publicMode}
-        configured={configured}
       />
     </>
   );
