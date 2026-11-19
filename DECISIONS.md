@@ -329,3 +329,24 @@ When a decision is approved or changed:
 - **Evidence/validation:** User clarification during M3 design review on 2026-11-20. Detailed extraction patterns, result-format handling, and equivalence rules remain subject to C01 review and C07 calibration.
 - **Consequences:** M3-C01 and M3-C02 now explicitly cover school subject marks, qualification pathway logic, and named vendor/professional certifications. This does not approve a universal equivalence between certifications and academic qualifications.
 - **Review trigger:** Calibration reveals systematic parsing errors or an explicit change to the agreed qualification equivalence policy.
+
+
+### D-045 — Relevance classifications and catalogue-wide Discovery sorting
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed
+- **Context:** M3 initially proposed fit tiers and numerical scoring. The user rejected scores and percentages and confirmed that matching must drive the existing Job Discovery "Most relevant" sort.
+- **Decision:**
+  - Do not calculate, persist, return, or display numerical fit scores, percentages, weighted totals, or hiring-probability estimates.
+  - Classify jobs as **Relevant**, **Partially relevant**, or **Unclassified**.
+  - Relevant requires clear positive evidence of alignment with the confirmed Profile and job evidence.
+  - Partially relevant requires actual identifiable alignment, such as a related role family or exact canonical skills, but material requirements remain unmet or unverifiable. Missing Profile information alone is not enough.
+  - Unclassified applies when evidence is insufficient, ambiguous, unsupported, or materially contradictory. Show no badge for this state.
+  - Use existing semantic green styling for Relevant and existing semantic yellow/warning styling for Partially relevant; do not introduce local colour values.
+  - "Most relevant" sorts the full filtered catalogue by Relevant, Partially relevant, then Unclassified. Sort ties by newest publication date and existing stable tie-breakers. "Newest" and "Oldest" remain date-based.
+  - Relevance ordering must happen before pagination across the full filtered catalogue. Page-only ranking is not acceptable.
+  - Candidate-specific relevance requires a confirmed Profile. Without one, do not fabricate relevance; "Most relevant" falls back to newest-first.
+- **Rationale:** Clear categorical labels avoid false precision and make the Discovery sort meaningful. Separating partial evidence from insufficient evidence prevents uncertainty from being misrepresented as relevance.
+- **Evidence/validation:** User-approved M3 direction on 2026-11-20.
+- **Consequences:** M3-C01 and M3-C04/C06 use relevance classifications, not fit tiers or percentages. Existing relevance sort API option must be connected to real catalogue-wide ordering.
+- **Review trigger:** Calibration shows that category boundaries create systematic false positives/negatives or catalogue growth requires a different ranking strategy.
