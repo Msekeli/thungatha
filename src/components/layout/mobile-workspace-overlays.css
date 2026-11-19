@@ -26,13 +26,20 @@
     min-height: 42px;
     padding: 9px 10px;
     border-radius: 8px;
-    color: var(--th-fg-muted);
+    color: var(--th-workspace-nav-text);
     font-size: 13px;
+    font-weight: 600;
     text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .th-mobile-workspace-menu nav a:hover {
+    background: var(--th-workspace-nav-active-bg);
+    color: var(--th-workspace-nav-text);
   }
   .th-mobile-workspace-menu nav a[data-active="true"] {
-    background: var(--th-nav-active-bg);
-    color: var(--th-nav-active-fg);
+    background: var(--th-workspace-nav-active-bg);
+    color: var(--th-workspace-nav-active-fg);
+    font-weight: 700;
   }
   .th-mobile-menu-auth-trigger {
     display: block;
