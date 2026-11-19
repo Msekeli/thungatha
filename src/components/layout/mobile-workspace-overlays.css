@@ -34,6 +34,34 @@
     background: var(--th-nav-active-bg);
     color: var(--th-nav-active-fg);
   }
+  .th-mobile-menu-auth-trigger {
+    display: block;
+    min-width: 0;
+  }
+  .th-mobile-menu-auth-trigger > button {
+    display: flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--th-fg-muted);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .th-mobile-menu-auth-trigger > button:active,
+  .th-mobile-menu-auth-trigger > button:focus-visible {
+    background: var(--th-nav-active-bg);
+    color: var(--th-nav-active-fg);
+  }
+  .th-mobile-workspace-menu nav > .th-btn {
+    justify-content: flex-start;
+    min-height: 42px;
+  }
   .th-mobile-workspace-account {
     display: grid !important;
     gap: 8px;
