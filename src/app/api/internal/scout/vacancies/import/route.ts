@@ -4,6 +4,7 @@ import { timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { scoutExportPageSchema } from "@/thungatha-features/job-discovery/server/scout-export-schema";
+import { mapScoutVacancies } from "@/thungatha-features/job-discovery/server/scout-vacancy-mapper";
 
 function isAuthorised(request: Request) {
   const expectedSecret = process.env.SCOUT_SYNC_SECRET;
@@ -58,18 +59,7 @@ export async function POST(request: Request) {
         detectSessionInUrl: false,
       },
     });
-    const rows = parsed.data.items.map((vacancy) => ({
-      scout_vacancy_id: vacancy.scout_vacancy_id,
-      title: vacancy.title,
-      employer_name: vacancy.employer_name,
-      company_logo_url: vacancy.logo_url,
-      description: vacancy.description,
-      location_text: vacancy.location_text,
-      application_url: vacancy.application_url,
-      published_at: vacancy.published_at,
-      source_updated_at: vacancy.source_updated_at,
-      updated_at: new Date().toISOString(),
-    }));
+    const rows = await mapScoutVacancies(database, parsed.data.items);
 
     if (rows.length > 0) {
       const { error } = await database
