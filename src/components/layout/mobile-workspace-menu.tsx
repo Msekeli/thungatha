@@ -47,7 +47,13 @@ export function MobileWorkspaceMenu({
   return (
     <div className="th-mobile-workspace-menu" id="th-mobile-workspace-menu">
       <nav className="th-mobile-workspace-menu-nav" aria-label="Mobile navigation">
-        <Link href="/jobs" onClick={onClose} data-active={isActive("/jobs")}>
+        <Link
+          href="/jobs"
+          className="th-mobile-workspace-menu-link"
+          onClick={onClose}
+          data-active={isActive("/jobs")}
+          aria-current={isActive("/jobs") ? "page" : undefined}
+        >
           <House size={17} />
           Job Discovery
         </Link>
@@ -73,7 +79,7 @@ export function MobileWorkspaceMenu({
             <Link
               key={item.href}
               href={item.href}
-              className="th-workspace-nav-link"
+              className="th-mobile-workspace-menu-link"
               data-active={isActive(item.href)}
               aria-current={isActive(item.href) ? "page" : undefined}
               onClick={onClose}
