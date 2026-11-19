@@ -1,14 +1,14 @@
 # M3 — Job Matching and Fit Analysis
 
-**Status:** Not started  
-**Outcome:** An explainable, evidence-based fit assessment between a user's confirmed professional information and a job's requirements.  
+**Status:** In progress  
+**Outcome:** Explainable categorical relevance classifications between a user's confirmed professional information and a job's requirements.  
 **Dependencies:** M1 Job Discovery and M2 Profile/CV Import.
 
 ## Purpose and scope
 
-M3 compares structured requirements extracted from job descriptions with evidence in the user's confirmed Profile. A fit result is an estimate of evidence-based alignment, not a probability of being hired.
+M3 compares structured requirements extracted from job descriptions with evidence in the user's confirmed Profile. Results are categorical evidence-based relevance classifications, not scores or hiring predictions.
 
-**M3 extraction and matching are rules-only.** Do not use AI, language models, embeddings, fuzzy matching, or Fuse.js in job requirement extraction, candidate fact derivation, role-family classification, evidence mapping, or scoring. Use deterministic parsing, explicit keyword rules, canonical identifiers, and reviewed alias dictionaries. Fuse.js may be evaluated separately for future Job Discovery search/autocomplete; that is outside M3.
+**M3 extraction and matching are rules-only.** Do not use AI, language models, embeddings, fuzzy matching, or Fuse.js in job requirement extraction, candidate fact derivation, role-family classification, evidence mapping, or relevance classification. Use deterministic parsing, explicit keyword rules, canonical identifiers, and reviewed alias dictionaries. Fuse.js may be evaluated separately for future Job Discovery search/autocomplete; that is outside M3.
 
 The Profile remains the source of truth. Derive candidate facts with a pure deriveCandidateFacts(profile) function when needed; do not create a separate candidate-facts persistence table for the initial implementation. Do not treat unconfirmed CV-import drafts as candidate evidence.
 
@@ -88,6 +88,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C02 — Job requirement extraction
 
+**Status:** In progress — deterministic extraction v1 is implemented at Scout ingestion; verification and coverage expansion remain.
+
 **Goal:** produce structured, reviewable requirements from job descriptions using deterministic rules.
 
 **Work**
@@ -101,6 +103,14 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Validate extracted data against a runtime schema.
 - Handle missing, malformed, short, contradictory, and partially populated descriptions.
 - Extract requirements when a job is first imported and rerun only when its description content changes.
+
+**Implementation record (2026-11-20)**
+- Added a Zod schema for versioned extraction results and individual requirement records.
+- Added SHA-256 description hashing and deterministic extraction for explicit experience durations, qualification terms, named certification patterns, selected exact IT skill identifiers, licence/registration phrases, language mentions, and title-based role-family vocabulary.
+- Scout import now stores the extracted JSONB, description hash, extraction version, and extraction status. Existing extraction is reused when the exact description hash is unchanged.
+- Added a forward migration; it has not been applied to any database.
+- Initial extraction is deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
+- Automated checks have not been run; this record describes implementation only.
 
 **Exit criteria**
 - Requirements are schema-validated and traceable to source text.
@@ -209,4 +219,4 @@ The initial proposed families are Software & IT, Engineering, Finance & Accounti
 5. Whether the proposed tiers are accepted as written and the three relevance classifications and sort behaviour.
 6. How target-role preference contributes, if at all, without becoming a hard filter.
 
-No implementation should begin until C01 rules are reviewed and approved.
+C01 remains in progress for the unresolved vocabulary and detailed parsing boundaries. The user-approved relevance classifications and catalogue-ordering rules are sufficient to proceed with the separately scoped C02 extraction implementation.
