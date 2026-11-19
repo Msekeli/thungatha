@@ -19,18 +19,32 @@
     display: grid !important;
     gap: 3px;
   }
-  .th-mobile-workspace-menu nav a {
+  .th-mobile-workspace-menu nav a,
+  .th-mobile-workspace-menu .th-mobile-workspace-menu-link {
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
+    min-width: 0;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
     min-height: 42px;
-    padding: 9px 10px;
+    padding: 9px 12px;
     border-radius: 8px;
     color: var(--th-fg-muted);
     font-size: 13px;
     font-weight: 600;
+    line-height: 20px;
+    text-align: left;
     text-decoration: none;
     transition: background 0.15s ease, color 0.15s ease;
+  }
+  .th-mobile-workspace-menu nav a > svg,
+  .th-mobile-workspace-menu .th-mobile-workspace-menu-link > svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
   }
   .th-mobile-workspace-menu nav a:hover {
     background: var(--th-panel-2);
