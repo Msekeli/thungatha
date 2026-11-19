@@ -19,6 +19,7 @@ const ROLE_FAMILIES: [JobRequirements["roleFamily"], RegExp][] = [
 ];
 
 const SKILLS = ["C#", "C++", ".NET", "Node.js", "TypeScript", "JavaScript", "React", "Next.js", "SQL", "Python", "AWS", "Azure"];
+const REQUIREMENT_CONTEXT = /\b(requirements?|must|essential|minimum|preferred|advantageous|desirable|experience|proficient|familiar|knowledge|skills?|ability to|qualification|certification|licen[cs]e|registration|fluent)\b/i;
 
 function importance(text: string): "mandatory" | "preferred" | "uncertain" {
   if (/\b(required|must have|essential|minimum|mandatory|compulsory)\b/i.test(text)) return "mandatory";
@@ -26,14 +27,31 @@ function importance(text: string): "mandatory" | "preferred" | "uncertain" {
   return "uncertain";
 }
 
+function sourceSegments(description: string) {
+  return description
+    .replace(/<\/(?:p|div|li|h[1-6]|tr)>/gi, "\n")
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .split(/\n|(?<=[.!?;])\s+|\s+[•▪◦]\s+/)
+    .map((part) => part.replace(/\s+/g, " ").trim())
+    .filter((part) => part.length >= 8);
+}
+
+function hasExactTerm(text: string, term: string) {
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i").test(text);
+}
+
 export function hashJobDescription(description: string) {
   return createHash("sha256").update(description).digest("hex");
 }
 
 export function extractJobRequirements(description: string, title = ""): JobRequirements {
-  const clean = description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const segments = sourceSegments(description);
   const descriptionHash = hashJobDescription(description);
-  if (clean.length < 20) {
+  if (segments.join(" ").length < 20) {
     return jobRequirementsSchema.parse({
       schemaVersion: 1, extractionVersion: "m3-c02-v1", descriptionHash,
       roleFamily: null, requirements: [], status: "unavailable",
@@ -41,11 +59,8 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
   }
 
   const requirements: JobRequirements["requirements"] = [];
-  const add = (category: JobRequirements["requirements"][number]["category"], value: string, matchText: string) => {
-    const index = clean.toLowerCase().indexOf(matchText.toLowerCase());
-    const start = clean.lastIndexOf(".", index) + 1;
-    const end = clean.indexOf(".", index);
-    const sourceText = clean.slice(start, end < 0 ? clean.length : end + 1).trim();
+  const add = (category: JobRequirements["requirements"][number]["category"], value: string, sourceText: string) => {
+    if (requirements.some((item) => item.category === category && item.value.toLowerCase() === value.toLowerCase())) return;
     requirements.push({
       id: `${category}:${requirements.length + 1}`,
       category, value, importance: importance(sourceText), sourceText,
@@ -53,16 +68,17 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
     });
   };
 
-  for (const match of clean.matchAll(/(?:at least|minimum of|minimum)\s+(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+)?experience/gi)) add("experience", `${match[1]} years`, match[0]);
-  for (const match of clean.matchAll(/\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\b/gi)) add("education", match[0], match[0]);
-  for (const match of clean.matchAll(/\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\b/gi)) add("certification", match[0], match[0]);
-  for (const skill of SKILLS) {
-    const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const match = clean.match(new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i"));
-    if (match) add("skill", skill, match[0]);
+  for (const sourceText of segments) {
+    if (!REQUIREMENT_CONTEXT.test(sourceText)) continue;
+    for (const match of sourceText.matchAll(/(?:at least|minimum of|minimum)\s+(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+)?experience/gi)) add("experience", `${match[1]} years`, sourceText);
+    for (const match of sourceText.matchAll(/\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\b/gi)) add("education", match[0], sourceText);
+    for (const match of sourceText.matchAll(/\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\b/gi)) add("certification", match[0].trim(), sourceText);
+    for (const skill of SKILLS) if (hasExactTerm(sourceText, skill)) add("skill", skill, sourceText);
+    for (const match of sourceText.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], sourceText);
+    for (const match of sourceText.matchAll(/\b(fluent in|proficient in|English|Afrikaans|isiXhosa|isiZulu)\b/gi)) {
+      if (/\b(fluent in|proficient in)\b/i.test(sourceText)) add("language", sourceText.slice(match.index ?? 0).trim(), sourceText);
+    }
   }
-  for (const match of clean.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], match[0]);
-  for (const match of clean.matchAll(/\b(fluent in|proficient in|English|Afrikaans|isiXhosa|isiZulu)\b/gi)) add("language", match[0], match[0]);
 
   const roleFamily = ROLE_FAMILIES.find(([, pattern]) => pattern.test(title))?.[0] ?? null;
   return jobRequirementsSchema.parse({
