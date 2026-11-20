@@ -17,8 +17,8 @@ describe("deriveCandidateFacts", () => {
   it("merges overlapping employment periods before counting months", () => {
     const facts = deriveCandidateFacts(profile({
       workExperience: [
-        { id: "a", jobTitle: "Developer", employer: "A", startDate: "Jan 2020", endDate: "Dec 2021" },
-        { id: "b", jobTitle: "Consultant", employer: "B", startDate: "Jan 2021", endDate: "Dec 2022" },
+        { id: "a", jobTitle: "Developer", employer: "A", startDate: "Jan 2020", endDate: "Dec 2021", isCurrent: false },
+        { id: "b", jobTitle: "Consultant", employer: "B", startDate: "Jan 2021", endDate: "Dec 2022", isCurrent: false },
       ],
     }), "2026-11-20");
     expect(facts?.knownEmploymentMonths).toBe(36);
@@ -40,7 +40,7 @@ describe("deriveCandidateFacts", () => {
     const facts = deriveCandidateFacts(profile({
       workExperience: [{
         id: "bad-date", jobTitle: "Engineer", employer: "A",
-        startDate: "2020-02-31", endDate: "2021-01",
+        startDate: "2020-02-31", endDate: "2021-01", isCurrent: false,
       }],
     }), "2026-11-20");
     expect(facts?.employment).toHaveLength(0);
