@@ -1,4 +1,4 @@
-import { connection, NextResponse } from "next/server";
+import { after, connection, NextResponse } from "next/server";
 import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
@@ -12,6 +12,10 @@ import {
 import { jobFeedQuerySchema } from "@/thungatha-features/job-discovery/server/job-feed-query-schema";
 import { syncScoutVacanciesIfDue } from "@/thungatha-features/job-discovery/server/scout-export-client";
 import { readJobFeed } from "@/thungatha-features/job-discovery/server/job-feed-reader";
+import { enqueueVisibleJobAssessments } from "@/thungatha-features/job-discovery/server/job-ai-queue";
+import { processJobAiQueue } from "@/thungatha-features/job-discovery/server/job-ai-worker";
+
+export const maxDuration = 120;
 
 export async function GET(request: Request) {
   await connection();
@@ -57,6 +61,32 @@ export async function GET(request: Request) {
       statesOnly,
       identity?.getToken,
     );
+
+    if (identity && !statesOnly && result.jobs.length) {
+      try {
+        const queued = await enqueueVisibleJobAssessments(
+          identity.userId,
+          result.jobs.map((job) => job.id).filter((id): id is string => typeof id === "string"),
+        );
+        if (queued > 0) {
+          after(async () => {
+            try {
+              await processJobAiQueue(1);
+            } catch (workerError) {
+              console.error("[AI job matching] Background task failed:", {
+                message: workerError instanceof Error ? workerError.message : "Unknown worker error",
+              });
+            }
+          });
+        }
+      } catch (queueError) {
+        // Queue failures must not interrupt ordinary job discovery.
+        console.error("[AI job matching] Could not enqueue visible jobs:", {
+          message: queueError instanceof Error ? queueError.message : "Unknown queue error",
+        });
+      }
+    }
+
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof SupabaseConfigurationError) {
