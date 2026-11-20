@@ -139,7 +139,6 @@ The project has discussed a broad source-coverage goal. The candidate inventory 
 | D-025 | Exact Clerk–Supabase authorization and Row Level Security design | Verify the supported integration and token/connection model; test cross-user isolation. | Open |
 | D-026 | CV/document storage, access, retention, export, deletion, and backup policy | Select compatible storage and define access-control and lifecycle requirements before production reliance. | Open |
 | D-027 | Job refresh and scheduled-work execution | Validate source terms, idempotency, refresh requirements, quotas, and current Vercel/runtime limits. | Open |
-| D-028 | Job matching score weights, badge thresholds, and visual bands | Approve a documented scoring rubric and representative test cases before production use. | Open |
 | D-029 | Evidence required to label an employer application destination as verified | Define verification rules, evidence requirements, and uncertain/failure states. | Open |
 | D-030 | Whether to add an ORM, advanced table library, monitoring service, or background-work service | Demonstrate a concrete need and compare compatibility, cost, privacy, and operational burden. | Open |
 | D-031 | Production operational thresholds, recovery procedures, and alerting | Define before release based on observed usage and failure impact. | Open |
@@ -294,13 +293,13 @@ When a decision is approved or changed:
 - **Review trigger:** PDF extraction has passed user review and acceptance; only then may another format be considered separately.
 
 
-### D-043 — Rules-only M3 matching and on-read candidate derivation
+### D-043 — Initial deterministic M3 matching proposal and on-read candidate derivation
 
 - **Date:** 2026-11-20
-- **Status:** Confirmed direction; detailed C01 business rules remain open
+- **Status:** Superseded by D-050 for matching semantics; candidate derivation and data-integrity constraints retained
 - **Context:** M3 requires explainable matching across job descriptions and confirmed candidate Profiles. The initial design considered AI-assisted extraction, fuzzy matching, and a persisted candidate-facts snapshot.
 - **Decision:**
-  - Keep M3 requirement extraction, candidate fact derivation, role-family classification, evidence mapping, and comparison deterministic and rules-only. Do not use AI, embeddings, fuzzy matching, or Fuse.js in the M3 matching path.
+  - Historical proposal only: the initial M3 design kept extraction and comparison deterministic and rules-only. D-050 supersedes this restriction and approves AI-assisted semantic job understanding and candidate-to-role comparison. Candidate fact derivation, evidence validation, and application-owned invariants remain deterministic.
   - Use text normalisation followed by exact canonical identifier lookup through an explicit, reviewed alias dictionary. Preserve punctuation distinctions in technical identifiers such as C#, C++, .NET, and Node.js.
   - Keep Fuse.js out of M3. It may be considered separately for future Job Discovery search or autocomplete, with its own evaluation.
   - Derive candidate facts from the complete confirmed Profile through a pure function at read time. Do not create a separate candidate_facts table in the initial implementation; revisit only if measured derivation cost justifies persistence.
@@ -310,7 +309,7 @@ When a decision is approved or changed:
   - Unknown or unclassified job requirements and role families must remain unknown; do not hard-filter on uncertain evidence.
 - **Rationale:** Deterministic exact matching is auditable and avoids false positives caused by approximate text similarity. On-read derivation avoids stale candidate-fact snapshots while the calculation remains inexpensive. Deferring SQL ranking and background processing keeps the first implementation proportional to the current catalogue.
 - **Evidence/validation:** User-confirmed direction in the M3 design discussion on 2026-11-20. The detailed business rules, qualification mappings, vocabulary coverage, and performance assumptions still require C01 decisions and M3-C07 validation.
-- **Consequences:** M3 milestone documentation now defines a rules-only scope and records the proposed C01 rules. This decision does not approve final role-family keywords, education equivalence, mandatory/preferred phrase handling, numerical score weights, or a final tier rubric.
+- **Consequences:** M3 milestone documentation now defines a rules-only scope and records the proposed C01 rules. This historical decision does not approve hard role-family gates or numerical scoring. D-050 defines the current semantic matching direction and categorical labels.
 - **Review trigger:** Measured performance problems, demonstrated extraction false positives/false negatives, a material change in catalogue scale, or an explicit user decision to revise the M3 boundary.
 
 
@@ -331,24 +330,24 @@ When a decision is approved or changed:
 - **Review trigger:** Calibration reveals systematic parsing errors or an explicit change to the agreed qualification equivalence policy.
 
 
-### D-045 — Relevance classifications and catalogue-wide Discovery sorting
+### D-045 — Initial categorical relevance labels and catalogue-wide Discovery sorting (superseded by D-050)
 
 - **Date:** 2026-11-20
 - **Status:** Confirmed
 - **Context:** M3 initially proposed fit tiers and numerical scoring. The user rejected scores and percentages and confirmed that matching must drive the existing Job Discovery "Most relevant" sort.
 - **Decision:**
   - Do not calculate, persist, return, or display numerical fit scores, percentages, weighted totals, or hiring-probability estimates.
-  - Classify jobs as **Relevant**, **Partially relevant**, or **Unclassified**.
-  - Relevant requires clear positive evidence of alignment with the confirmed Profile and job evidence.
-  - Partially relevant requires actual identifiable alignment, such as a related role family or exact canonical skills, but material requirements remain unmet or unverifiable. Missing Profile information alone is not enough.
+  - Historical labels were **Relevant**, **Partially relevant**, and **Unclassified**. D-050 replaces them with **Match**, **Relevant**, and **Unclassified**.
+  - The current Match category requires strong evidence of alignment with central work and core/mandatory requirements.
+  - The current Relevant category requires meaningful supported alignment, while material gaps or unknowns prevent Match.
   - Unclassified applies when evidence is insufficient, ambiguous, unsupported, or materially contradictory. Show no badge for this state.
-  - Use existing semantic green styling for Relevant and existing semantic yellow/warning styling for Partially relevant; do not introduce local colour values.
-  - "Most relevant" sorts the full filtered catalogue by Relevant, Partially relevant, then Unclassified. Sort ties by newest publication date and existing stable tie-breakers. "Newest" and "Oldest" remain date-based.
+  - D-050 defines the current visual treatment and sorting order. Do not retain Partially relevant as a current product label.
+  - "Most relevant" now sorts the full filtered catalogue by Match, Relevant, then Unclassified. Sort ties by newest publication date and existing stable tie-breakers. "Newest" and "Oldest" remain date-based.
   - Relevance ordering must happen before pagination across the full filtered catalogue. Page-only ranking is not acceptable.
   - Candidate-specific relevance requires a confirmed Profile. Without one, do not fabricate relevance; "Most relevant" falls back to newest-first.
 - **Rationale:** Clear categorical labels avoid false precision and make the Discovery sort meaningful. Separating partial evidence from insufficient evidence prevents uncertainty from being misrepresented as relevance.
 - **Evidence/validation:** User-approved M3 direction on 2026-11-20.
-- **Consequences:** M3-C01 and M3-C04/C06 use relevance classifications, not fit tiers or percentages. Existing relevance sort API option must be connected to real catalogue-wide ordering.
+- **Consequences:** D-050 now defines the current labels, semantic AI responsibilities, and evidence-grounding requirements. Existing relevance sort API option must be connected to real catalogue-wide ordering.
 - **Review trigger:** Calibration shows that category boundaries create systematic false positives/negatives or catalogue growth requires a different ranking strategy.
 
 
@@ -370,7 +369,7 @@ When a decision is approved or changed:
 - **Context:** Thungatha is an AI-powered job-search platform, but predictable application operations should remain ordinary application logic. AI should be introduced where interpretation, extraction, reasoning, or generated assistance provides measurable value. The project is intentionally using free AI offerings.
 - **Decision:** Put shared AI infrastructure under `src/lib/ai/`. Use a provider-neutral contract with separate adapters for the existing Ollama Local installation, Gemini Developer API, Groq API, and Ollama Cloud. Ollama Local is the default for local development. Cloud providers may be used only within their currently available free API allowances; no automatic paid fallback is permitted. Provider/model quotas must be represented according to their actual reset and rate-limit policies rather than assuming a monthly reset.
 - **Feature boundary:** Task-specific prompts, schemas, input preparation, and use-case orchestration stay in the owning feature. Validate every structured response with Zod. AI output is untrusted and cannot silently modify confirmed Profile data or decide application-owned business rules.
-- **Matching boundary:** AI-assisted extraction may be introduced behind validation and evidence checks. Final Match/Relevant/Unclassified classification and candidate-to-job comparisons remain deterministic application logic. This decision supersedes the rule-only extraction restriction in D-045 only to the extent that AI-assisted extraction is now permitted for separately reviewed use cases; it does not approve AI-based final matching.
+- **Matching boundary (historical; superseded by D-050):** AI-assisted extraction was permitted, but semantic comparison and final classification were reserved for deterministic application logic. D-050 now explicitly approves AI-assisted semantic interpretation and candidate-to-job evidence comparison, with application-side validation and categorical outcome enforcement.
 - **Privacy:** Minimise data sent to cloud providers. Do not send raw CVs or unnecessary personal data to free-tier providers without a task-specific privacy review.
 - **Consequences:** Provider adapters, quota-aware routing, task schemas, and feature integrations will be implemented incrementally and tested independently. Local development must remain possible without cloud credentials.
 - **Review trigger:** Free-tier policy changes, a provider's free API access being withdrawn, a new provider being proposed, or evaluation showing that AI does not improve a task enough to justify its complexity.
@@ -394,17 +393,38 @@ When a decision is approved or changed:
 - **Review trigger:** A change to the selected providers, free-tier availability, hosting environment, or evidence that another provider is needed.
 
 
-### D-049 — Source-grounded AI output and no-thinking default
+### D-049 — Source-grounded AI output and task-appropriate reasoning
 
 - **Date:** 2026-11-20
 - **Status:** Confirmed
 - **Context:** Thungatha uses AI to work with information already supplied by the user or present in a job source. Unnecessary model reasoning increases latency and can encourage unsupported elaboration. CV assistance may improve presentation, but must preserve the truth of the source material.
-- **Decision:**
-  - Treat AI as a source-grounded extraction, organisation, summarisation, and wording assistant, not an independent source of facts.
+- **Decision (updated by D-050 for semantic matching tasks):**
+  - Treat AI as a source-grounded interpretation, semantic comparison, extraction, organisation, summarisation, and wording assistant, not an independent source of facts.
   - Factual claims in AI output must be supported by the task's supplied evidence. AI may improve wording and structure but must not invent qualifications, credentials, employers, job titles, dates, responsibilities, skills, achievements, or other personal/job facts.
   - Preserve missing or unverifiable information as unknown. Do not fill gaps with plausible assumptions. Where a task requires information that is absent, leave it out or identify the gap.
-  - Disable model reasoning/thinking by default. For the current Ollama Local adapter, send `think: false` on every request. A future task may opt into provider-supported reasoning only when a concrete need is demonstrated and the task owner explicitly approves it.
-  - Disabling thinking is not a factuality guarantee. Each feature remains responsible for source-limited prompts, minimal inputs, strict output schemas, and application-side evidence validation. AI output remains untrusted and must not silently modify confirmed Profile or master CV data.
+  - Use task-appropriate model capabilities. Direct generation remains suitable for simple extraction and wording tasks. Context-heavy semantic comparison may use provider-supported reasoning when representative evaluation demonstrates a need. Do not globally disable a capability required by an approved core task. The Ollama Local adapter must expose task-level control rather than hard-code `think: false` for every request.
+  - Reasoning settings are not a factuality guarantee. Each feature remains responsible for source-limited prompts, minimal inputs, strict output schemas, and application-side evidence validation. AI output remains untrusted and must not silently modify confirmed Profile or master CV data.
 - **Rationale:** Thungatha should accurately use available information rather than create plausible but unsupported content. Defaulting to direct generation reduces avoidable latency and discourages unnecessary elaboration.
-- **Consequences:** The Ollama Local adapter and its tests enforce `think: false`. Feature-specific AI integrations must preserve source evidence and explicitly handle missing information. Provider-specific reasoning controls for Gemini and Groq must be evaluated when those adapters are implemented; this decision does not assume their APIs use Ollama's setting.
+- **Consequences:** The Ollama Local adapter must support task-specific reasoning configuration. Feature-specific AI integrations must preserve source evidence and explicitly handle missing information. Provider-specific reasoning controls for Gemini and Groq must be evaluated when those adapters are implemented; this decision does not assume their APIs use Ollama's setting.
 - **Review trigger:** A specific task demonstrates a measurable need for reasoning, or evaluation shows that the no-thinking default materially reduces required output quality without an acceptable alternative.
+
+### D-050 — Semantic, evidence-grounded AI job matching without scores
+
+- **Date:** 2026-11-21
+- **Status:** Confirmed
+- **Context:** Thungatha is an AI-powered job-search platform. Earlier M3 documents restricted matching to deterministic extraction, exact keyword matching, and role-family rules. That restriction undermined the product's core AI purpose and could misclassify equivalent work simply because job titles or wording differ. The user has explicitly directed that AI be used meaningfully in the application and that all numerical scoring language be removed.
+- **Decision:**
+  - AI is responsible for understanding job descriptions in context and semantically comparing the actual work and requirements with the user's confirmed Profile evidence. It should interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, transferable skills, and relevant domain context.
+  - Different job titles may describe substantially equivalent work. Titles, seniority labels, industry names, and role-family labels are contextual signals only; they are never hard gates or the deciding factor. Similar titles alone do not establish a match.
+  - AI may extract and interpret source requirements, identify related capabilities and transferable skills, compare evidence across different wording, and produce a structured assessment with source references and an explanation.
+  - Job-side claims must reference the source job description and supporting text snippet/offset. Candidate-side claims must reference confirmed Profile evidence. Imported CV information remains unconfirmed until reviewed and confirmed by the user.
+  - AI must not invent facts, promote inferred or imported claims to confirmed evidence, or treat missing Profile information as proof of absence. Preserve **Confirmed**, **Inferred**, **Missing**, and **Can't verify** evidence states.
+  - Application code validates the AI response schema, verifies every source and Profile evidence reference, enforces authorization and privacy, applies the approved categorical business rules, and owns persistence, freshness, sorting, and state transitions. Deterministic validation is a guardrail; it must not replace semantic AI comparison with keyword-only logic.
+  - The only overall relevance labels are **Match**, **Relevant**, and **Unclassified**. **Match** means strong supported alignment with the central work and core/mandatory requirements. **Relevant** means meaningful supported alignment exists but material gaps or unknowns prevent Match. **Unclassified** means evidence is insufficient, ambiguous, unsupported, or contradictory. Only Match and Relevant receive badges.
+  - "Most relevant" sorts the full filtered catalogue by Match, then Relevant, then Unclassified. Date sorts remain independent.
+  - No numerical score of any kind is allowed: no percentages, weights, thresholds, weighted totals, fit points, score bands, hidden numeric rankings, hiring probabilities, or numerical badge values. Do not calculate, persist, return, display, or sort by a numerical score.
+  - AI-dependent functionality must report unavailable/uncertain states honestly when providers fail or output cannot be validated. Do not silently replace it with title or keyword matching and present that as equivalent. The core feed and ordinary record-management workflows must remain usable.
+  - AI provider usage follows D-048. Task-specific model capabilities and reasoning settings must be evaluated for semantic comparison; D-049's global no-thinking default is superseded for tasks that require contextual interpretation.
+- **Rationale:** Semantic AI can understand equivalent responsibilities and transferable skills beyond literal title or keyword overlap. Evidence references and application-side validation preserve trust without reducing the product to a deterministic rules engine.
+- **Consequences:** Product specification, architecture, README, agent instructions, implementation plan, and M3 checkpoints must align with this decision. D-043's rules-only matching restriction and D-047's deterministic comparison boundary are superseded. D-045's Partially relevant label and related display/sorting rules are superseded. M3 must implement and evaluate AI-assisted semantic comparison before claiming the intended AI-powered matching capability is complete.
+- **Review trigger:** Representative evaluation shows unacceptable false positives/negatives, privacy/provider constraints change, or the user explicitly revises the approved matching approach.
