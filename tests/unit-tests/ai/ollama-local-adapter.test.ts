@@ -17,7 +17,7 @@ function fetcher(body: unknown, status = 200, headers?: HeadersInit) {
 afterEach(() => vi.unstubAllEnvs());
 
 describe("Ollama Local adapter", () => {
-  it("sends a non-streaming chat request and returns model usage", async () => {
+  it("sends a non-thinking, non-streaming chat request and returns model usage", async () => {
     const call = fetcher({
       model: "qwen2.5:7b", message: { content: '{"requirements":[]}' },
       prompt_eval_count: 12, eval_count: 4, done_reason: "stop",
@@ -29,7 +29,7 @@ describe("Ollama Local adapter", () => {
     const body = JSON.parse(String(init?.body));
     expect(url).toBe("http://127.0.0.1:11434/api/chat");
     expect(body).toMatchObject({
-      model: "qwen2.5:7b", stream: false, format: "json",
+      model: "qwen2.5:7b", think: false, stream: false, format: "json",
       messages: [{ role: "system" }, { role: "user" }],
     });
     expect(result).toMatchObject({
