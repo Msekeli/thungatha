@@ -1,10 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  profileCompletionSchema,
-  type UserProfileDto,
-} from "../server/user-profile-schema";
+import type { UserProfileDto } from "../server/user-profile-schema";
 import { createBlankProfile, isProfileEmpty } from "./profile-defaults";
 import { saveProfileDraft } from "./profile-save";
 export { createBlankProfile, isProfileEmpty } from "./profile-defaults";
@@ -62,9 +59,6 @@ export function useProfile() {
       }
       setProfile(result.profile);
       setDraft(result.profile);
-      const complete = profileCompletionSchema.safeParse(
-        result.profile,
-      ).success;
       setMode("edit");
       setMessage(
         result.profile.confirmedAt
