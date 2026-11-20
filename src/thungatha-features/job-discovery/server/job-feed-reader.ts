@@ -1,13 +1,16 @@
+import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
 import { sanitizeJobSearchTerm } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
+import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue";
 
 
 type FeedJob = {
   id: string;
   published_at?: string | null;
   updated_at?: string | null;
+  description?: string | null;
   matchClassification?: "match" | "relevant" | "unclassified";
   [key: string]: unknown;
 };
@@ -132,12 +135,47 @@ export async function readJobFeed(
     .range(from, from + input.pageSize - 1);
   if (pageResult.error) throw pageResult.error;
 
-  const jobs: FeedJob[] = (pageResult.data ?? []).map((job) => ({
-    ...(job as FeedJob),
-    state: stateByJob.get(job.id) ?? null,
-    // No badge is shown until a versioned AI assessment exists.
-    matchClassification: "unclassified",
-  }));
+  const pageJobs = (pageResult.data ?? []) as FeedJob[];
+  let assessmentsByJob = new Map<string, { hash: string; classification: "match" | "relevant" | "unclassified" }>();
+
+  if (userId && pageJobs.length) {
+    try {
+      const profileResult = await db.from("profiles")
+        .select("profile_version,confirmed_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (profileResult.error) throw profileResult.error;
+
+      if (profileResult.data?.confirmed_at) {
+        const assessmentResult = await db.from("job_match_assessments")
+          .select("job_id,job_description_hash,classification")
+          .eq("user_id", userId)
+          .eq("profile_version", profileResult.data.profile_version)
+          .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+          .in("job_id", pageJobs.map((job) => job.id));
+        if (assessmentResult.error) throw assessmentResult.error;
+        assessmentsByJob = new Map((assessmentResult.data ?? []).map((item) => [
+          item.job_id,
+          { hash: item.job_description_hash, classification: item.classification },
+        ]));
+      }
+    } catch {
+      // A stale or unavailable AI assessment must never block the feed.
+      assessmentsByJob = new Map();
+    }
+  }
+
+  const jobs: FeedJob[] = pageJobs.map((job) => {
+    const savedAssessment = assessmentsByJob.get(job.id);
+    const currentHash = createHash("sha256").update(job.description ?? "").digest("hex");
+    return {
+      ...job,
+      state: stateByJob.get(job.id) ?? null,
+      matchClassification: savedAssessment?.hash === currentHash
+        ? savedAssessment.classification
+        : "unclassified",
+    };
+  });
   const count = pageResult.count ?? 0;
 
   const safeJobs = jobs.map((job) => {
