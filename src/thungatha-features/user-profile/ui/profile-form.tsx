@@ -5,6 +5,8 @@ import { Toast } from "@/components/ui/toast";
 import { ProfileEmptyState } from "./profile-empty-state";
 import { ProfileSavedView } from "./profile-saved-view";
 import { ProfileEditorView } from "./profile-editor-view";
+import { ProfileReviewView } from "./profile-review-view";
+import { useState } from "react";
 import { useProfile } from "./use-profile";
 
 export function ProfileForm({
@@ -28,7 +30,8 @@ export function ProfileForm({
     loadProfile,
     handleSave,
   } = useProfile();
-  const currentMode = initialMode || mode;
+  const [reviewing, setReviewing] = useState(false);
+  const currentMode = reviewing ? "review" : initialMode || mode;
 
   if (loading)
     return (
@@ -109,7 +112,22 @@ export function ProfileForm({
                     isCurrent: false,
                   })),
             });
+            setReviewing(true);
             setMode("edit");
+          }}
+        />
+      )}
+      {currentMode === "review" && (
+        <ProfileReviewView
+          profile={draft}
+          saving={saving}
+          onEdit={() => {
+            setReviewing(false);
+            setMode("edit");
+          }}
+          onSave={async () => {
+            await handleSave(true);
+            setReviewing(false);
           }}
         />
       )}
@@ -128,6 +146,25 @@ export function ProfileForm({
           saving={saving}
           onChange={setDraft}
           onSave={handleSave}
+          onExtracted={(fields) => {
+            setDraft({
+              ...draft,
+              displayName: draft.displayName || fields.fullName,
+              personalDetails: {
+                ...draft.personalDetails,
+                fullName: draft.personalDetails.fullName || fields.fullName,
+                email: draft.personalDetails.email || fields.email,
+                phone: draft.personalDetails.phone || fields.phone,
+                linkedinUrl: draft.personalDetails.linkedinUrl || fields.linkedinUrl,
+                portfolioUrl: draft.personalDetails.portfolioUrl || fields.portfolioUrl,
+              },
+              summary: draft.summary || fields.summary,
+              skills: draft.skills.length ? draft.skills : fields.skills,
+              workExperience: draft.workExperience.length ? draft.workExperience : fields.workExperience,
+              education: draft.education.length ? draft.education : fields.education.map((item) => ({ ...item, isCurrent: false })),
+            });
+            setReviewing(true);
+          }}
           onCancel={() =>
             setMode(
               profile &&
