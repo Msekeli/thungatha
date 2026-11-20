@@ -7,17 +7,21 @@ import {
 } from "../server/user-profile-schema";
 import { ProfileEditorFields } from "./profile-editor-fields";
 import { ProfileEditorSidebar } from "./profile-editor-sidebar";
+import { ProfileCvUpload } from "./profile-cv-upload";
+import type { ExtractedCvFields } from "./profile-cv-extraction";
 
 export function ProfileEditorView({
   profile,
   saving,
   onChange,
   onSave,
+  onExtracted,
 }: {
   profile: UserProfileDto;
   saving: boolean;
   onChange: (updated: UserProfileDto) => void;
   onSave: () => void;
+  onExtracted: (fields: ExtractedCvFields) => void;
   onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
@@ -39,6 +43,7 @@ export function ProfileEditorView({
       <div className="th-profile-editor-grid">
         <div className="th-profile-editor-main">
           <ProfileEditorFields profile={profile} onChange={onChange} />
+          <ProfileCvUpload onExtracted={onExtracted} />
           <div className="th-profile-mobile-actions pt-3">
             <Button className="w-full" disabled={saving} onClick={onSave}>
               {saveLabel}
