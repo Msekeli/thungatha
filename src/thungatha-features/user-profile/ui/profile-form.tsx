@@ -147,6 +147,7 @@ export function ProfileForm({
           saving={saving}
           onChange={setDraft}
           onReview={() => setReviewing(true)}
+          onSaveDraft={() => void handleSave()}
           onCancel={() =>
             setMode(
               profile &&
