@@ -64,7 +64,7 @@ Supported properties:
 - `certifications`: entries with `id`, `name`, optional `issuer`, `issueDate`, `expiryDate`
 - `projects`: entries with `id`, `name`, optional `description`, `role`, `url`
 - `masterCv`: metadata object or `null`
-- `confirmedAt`: timestamp or `null`
+- `confirmedAt`: timestamp or `null`. A non-null timestamp is accepted only when the merged saved Profile (existing data plus the PATCH fields) satisfies `profileCompletionSchema`. If omitted from a PATCH, confirmation is cleared; callers must explicitly reconfirm after partial edits.
 
 Each repeatable section is limited to 100 entries. Missing information remains null/omitted; the API does not infer values.
 
