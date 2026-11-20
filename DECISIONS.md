@@ -316,7 +316,7 @@ When a decision is approved or changed:
 ### D-044 — Structured education, subject-mark, and professional certification requirements
 
 - **Date:** 2026-11-20
-- **Status:** Confirmed matching principles; exact parsing and equivalence rules remain for M3-C01 approval
+- **Status:** Superseded by D-051 for matching interpretation; evidence-type distinctions retained
 - **Context:** Job adverts may require Matric/Grade 12 and also specify minimum marks in Mathematics or another subject. Other adverts offer alternative pathways such as a diploma, degree, equivalent experience, or named professional/vendor certifications.
 - **Decision:**
   - Model Matric, Grade 12, and National Senior Certificate (NSC) as potential aliases for a school-leaving qualification when context supports it, while preserving the original advert wording.
@@ -326,7 +326,7 @@ When a decision is approved or changed:
   - Keep academic qualifications separate from vendor/professional certifications, registrations, and licences. AWS and Microsoft Azure certifications can satisfy a specifically named certification requirement. They may replace an academic qualification only where the advert explicitly permits that alternative or a separately approved equivalence rule supports it; otherwise they are additional evidence of technical capability.
 - **Rationale:** Flat qualification strings would lose strict subject thresholds and alternative pathways, causing false-positive matches. Credential categories must remain distinct to avoid treating a vendor certification as an academic award.
 - **Evidence/validation:** User clarification during M3 design review on 2026-11-20. Detailed extraction patterns, result-format handling, and equivalence rules remain subject to C01 review and C07 calibration.
-- **Consequences:** M3-C01 and M3-C02 now explicitly cover school subject marks, qualification pathway logic, and named vendor/professional certifications. This does not approve a universal equivalence between certifications and academic qualifications.
+- **Consequences (historical):** The original proposal treated subject marks and qualification pathways as separately modelled conditions. D-051 supersedes any interpretation of these conditions as rigid matching gates. Preserve the source details and credential distinctions, but let AI interpret their significance in the complete advert and confirmed Profile context; no single condition automatically rejects a job.
 - **Review trigger:** Calibration reveals systematic parsing errors or an explicit change to the agreed qualification equivalence policy.
 
 
