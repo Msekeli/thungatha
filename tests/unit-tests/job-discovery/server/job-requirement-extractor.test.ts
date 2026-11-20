@@ -60,6 +60,16 @@ describe("job requirement extraction", () => {
     }));
   });
 
+  it("carries experience-heading context into separate skill bullets", () => {
+    const result = extractJobRequirements(
+      "<h3>Your Experience</h3><p>It'd be great if you have experience with:</p><ul><li>Frontend web technologies (e.g. JavaScript, Typescript, CSS, HTML)</li><li>Backend technologies (e.g. Node.js, Java, Go, Rust)</li></ul>",
+      "Software Engineer",
+    );
+    expect(result.roleFamily).toBe("software_it");
+    expect(result.requirements.filter((item) => item.category === "skill").map((item) => item.value))
+      .toEqual(["JavaScript", "TypeScript", "Node.js"]);
+  });
+
   it("deduplicates repeated canonical skill mentions", () => {
     const result = extractJobRequirements(
       "Required skills include SQL. Experience with SQL is essential.",
