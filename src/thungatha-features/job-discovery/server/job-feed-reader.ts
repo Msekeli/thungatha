@@ -171,9 +171,9 @@ export async function readJobFeed(
     return {
       ...job,
       state: stateByJob.get(job.id) ?? null,
-      matchClassification: savedAssessment?.hash === currentHash
-        ? savedAssessment.classification
-        : "unclassified",
+      ...(savedAssessment?.hash === currentHash
+        ? { matchClassification: savedAssessment.classification }
+        : {}),
     };
   });
   const count = pageResult.count ?? 0;
