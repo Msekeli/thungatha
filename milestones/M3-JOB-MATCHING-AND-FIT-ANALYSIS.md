@@ -121,6 +121,14 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C03 — Candidate fact derivation and evidence mapping
 
+**Status:** In progress — Profile confirmation validation is corrected; candidate fact derivation has not started.
+
+**Implementation record (2026-11-20)**
+- Profile confirmation now validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
+- A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
+- Added integration-test coverage for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
+- Candidate facts are not yet derived; this change only establishes a safer confirmation boundary.
+
 **Goal:** derive comparable facts from the complete confirmed Profile and map each requirement to its supporting evidence.
 
 **Work**
