@@ -119,11 +119,11 @@ export function ProfileEditorFields({
       </ProfileAccordion>
       <ProfileAccordion
         title="Languages and personal strengths"
-        description="Languages you speak and professional strengths such as communication, teamwork or problem-solving"
+        description="Optional — what you enjoy doing outside work"
         onSave={onSave}
         saving={saving}
         status={
-          profile.languages.length + profile.personalAttributes.length
+          profile.personalAttributes.length
             ? "Added"
             : "Optional"
         }
