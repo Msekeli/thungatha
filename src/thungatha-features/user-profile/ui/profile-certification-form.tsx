@@ -77,7 +77,7 @@ export function ProfileCertificationForm({ value, onChange, onSave, onCancel, ed
       </div>}
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button type="submit" disabled={!value.type || (driver ? false : !value.name.trim()) ||
-          (needsIssuer && !value.issuer?.trim())}>{editing ? "Save changes" : "Add entry"}</Button>
+          (needsIssuer && !value.issuer?.trim())}>{driver ? "Save licence" : "Save certificate"}</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
