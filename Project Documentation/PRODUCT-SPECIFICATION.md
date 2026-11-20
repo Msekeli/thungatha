@@ -197,18 +197,19 @@ AI is a meaningful user-facing capability in Thungatha, not merely an optional i
 |---|---|
 | Google Gemini | Primary hosted AI provider for job-fit analysis, CV improvement and career-related assistance. |
 | Groq | Alternative hosted provider and optional fallback for supported tasks. |
-| Ollama | Local model runtime for development and testing; not a production hosted-provider dependency. |
-| Qwen 3.5 4B | Initial local model candidate run through Ollama to test prompts, structured outputs and Thungatha AI workflows. |
-| Camber | Candidate cloud agent/workspace and compute environment for experiments or heavier processing where useful. It is not assumed to be a drop-in inference API. |
+| Ollama | Default local inference runtime and primary development/testing path; use it for most local AI development. |
+| Qwen 3.5 4B | Initial local model candidate run through Ollama; validate quality, structured outputs and local resource use. |
+| Camber | Cloud coding agent for development assistance and data/scientific work. It is not an application inference provider or runtime dependency. |
 
 ### Provider and privacy rules
 
-- Keep hosted provider keys and calls server-side behind a small replaceable provider interface. Configure one primary provider and an optional fallback; do not call every provider for every request.
+- Use Ollama for most development and testing. Gemini and Groq may be used occasionally during development for comparison and hosted-integration tests. For hosted workloads, keep provider keys and calls server-side behind a small replaceable provider interface and configure primary/fallback routing; do not call every provider for every request.
 - Select the model for each task based on quality, structured-output reliability, latency, privacy, context limits and cost. Exact production model selection remains subject to validation.
 - Validate structured output using the project's established Zod conventions. Use bounded inputs, output tokens, timeouts and retries. Treat malformed or low-confidence output as a failure or review case, not as truth.
 - Do not send CVs or other personal data to a provider until the task, minimum data required, provider terms and privacy/consent implications have been reviewed. Never send unnecessary personal data.
 - Keep core discovery, deterministic matching rules, persistence and user actions functional when AI is disabled or unavailable.
-- Camber's exact interfaces, model access, data handling, retention, quotas and costs must be verified before integration.
+- Use Camber as a development coding/data agent for PostgreSQL analysis, crawler-result investigation and long-running experiments; do not make it an application runtime dependency. Verify its tool interfaces and data handling before connecting project databases.
+- The user reports free Gemini student access, but this is not proof of unlimited Gemini Developer API quota or free production inference. Verify the applicable API tier, model limits, data-use terms and costs.
 
 The shared provider/tooling decision is recorded in `../DECISIONS.md` (D-042). The implementation roadmap and evidence determine when each AI capability may be described as available.
 ## 11. Security, privacy, and data ownership
