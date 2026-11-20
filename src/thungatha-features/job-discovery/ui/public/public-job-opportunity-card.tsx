@@ -53,12 +53,16 @@ export function PublicJobOpportunityCard({
         />
       </div>
       <div className="th-job-card__body">
-        {job.location_text?.trim() && (
+        {(job.location_text?.trim() ||
+          job.matchClassification === "relevant" ||
+          job.matchClassification === "partially_relevant") && (
           <div className="th-job-card__metadata">
-            <span className="th-job-card__location">
-              <MapPin aria-hidden="true" />
-              <span>{job.location_text}</span>
-            </span>
+            {job.location_text?.trim() && (
+              <span className="th-job-card__location">
+                <MapPin aria-hidden="true" />
+                <span>{job.location_text}</span>
+              </span>
+            )}
             {job.matchClassification === "relevant" && (
               <span className="th-tag" data-tone="success">Relevant</span>
             )}
