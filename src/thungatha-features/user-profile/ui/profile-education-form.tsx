@@ -23,7 +23,11 @@ export function ProfileEducationForm({
   onSave: () => void; onCancel: () => void; editing: boolean;
 }) {
   const set = (key: keyof Education, next: string | boolean) => {
-    const updated = { ...value, [key]: typeof next === "boolean" ? next : next || null } as Education;
+    const nullableFields: (keyof Education)[] = ["educationLevel", "fieldOfStudy", "startDate", "endDate"];
+    const fieldValue = typeof next === "boolean"
+      ? next
+      : nullableFields.includes(key) && !next ? null : next;
+    const updated = { ...value, [key]: fieldValue } as Education;
     if (key === "educationLevel" && (next === levels[0] || next === levels[1])) {
       updated.fieldOfStudy = null;
       updated.startDate = null;
@@ -45,13 +49,13 @@ export function ProfileEducationForm({
       </label>
       <label className="block space-y-2 text-sm font-medium">
         Qualification name <span className="text-destructive">(Required)</span>
-        <Input required maxLength={150} value={value.qualification}
+        <Input required maxLength={150} value={value.qualification || ""}
           onChange={(e) => set("qualification", e.target.value)}
           placeholder={schoolLevel ? "e.g. National Senior Certificate (Matric)" : "e.g. Diploma in Software Development"} />
       </label>
       <label className="block space-y-2 text-sm font-medium">
         {schoolLevel ? "School name" : "Institution"} <span className="text-destructive">(Required)</span>
-        <Input required maxLength={150} value={value.institution}
+        <Input required maxLength={150} value={value.institution || ""}
           onChange={(e) => set("institution", e.target.value)}
           placeholder={schoolLevel ? "Enter the name of your school" : "College, university or institution"} />
       </label>
@@ -86,8 +90,8 @@ export function ProfileEducationForm({
         </label>
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button type="submit" disabled={!value.educationLevel || !value.qualification.trim() ||
-          !value.institution.trim()}>
+        <Button type="submit" disabled={!value.educationLevel || !value.qualification?.trim() ||
+          !value.institution?.trim()}>
           {editing ? "Save changes" : "Save qualification"}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
