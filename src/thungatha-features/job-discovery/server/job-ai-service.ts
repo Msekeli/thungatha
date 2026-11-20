@@ -15,7 +15,7 @@ export async function understandJobWithAi(title: string, description: string) {
   if (evidence.length === 0) throw new Error("The job description does not contain enough readable text.");
   const response = await completeAiTask({
     task: "job-requirement-extraction", responseFormat: "json",
-    temperature: 0.1, maxOutputTokens: 5000, timeoutMs: 90_000, reasoning: true,
+    temperature: 0.1, maxOutputTokens: 5000, timeoutMs: 45_000, reasoning: true,
     systemPrompt: [
       "You are Thungatha's job-understanding engine.",
       "Understand the actual work described, not just the title or familiar keywords.",
@@ -48,7 +48,7 @@ export async function assessJobWithAi(
   if (!jobEvidence.length || !profileEvidence.length) throw new Error("There is insufficient evidence to assess this role.");
   const response = await completeAiTask({
     task: "job-fit-assessment", responseFormat: "json",
-    temperature: 0.1, maxOutputTokens: 6000, timeoutMs: 90_000, reasoning: true,
+    temperature: 0.1, maxOutputTokens: 6000, timeoutMs: 45_000, reasoning: true,
     systemPrompt: [
       "You are Thungatha's semantic job-to-candidate assessment engine.",
       "Compare the actual responsibilities, capabilities, tools, technologies, experience, qualifications, and context.",
