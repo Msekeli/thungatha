@@ -249,25 +249,31 @@ A source list found in research is not automatically approved. Confirm source-sp
 
 ## 10. AI provider boundary
 
-Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, provider selection, quota controls, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, and business decisions must not drift into a generic AI framework.
+Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, explicit provider activation, task-aware provider selection, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, and business decisions must not drift into a generic AI framework.
 
-Approved provider direction:
+### Environment-specific provider activation
 
-- **Ollama Local:** default for local development and evaluation; the developer already has it installed and configured.
-- **Gemini Developer API:** use only its free API tier and models currently eligible for that tier.
-- **Groq API:** use only its free API tier and models currently eligible for that tier.
-- **Ollama Cloud:** use only the free starter allowance and models currently included.
+Provider activation is explicit and server-side. The application must not enable a provider merely because its credentials happen to be present.
 
-Provider free limits are not uniform. They may be model-specific, daily, per-minute, rolling-window, or monthly, and can change. Do not assume that every provider resets monthly. Never silently fall back to paid usage.
+- **Local development:** Ollama Local is the only enabled provider. Gemini and Groq may have optional local configuration or credentials, but they remain disabled and must never receive local-development requests.
+- **Hosted production:** Gemini Developer API and Groq API are the enabled hosted providers, using only their currently available free-tier access. Configure credentials and activation in the hosting environment; never expose them to the browser.
+- **Ollama Cloud:** Not part of the current provider plan.
 
-- Keep provider credentials server-side and validate all structured output with the owning feature's Zod schema.
-- Apply timeouts and bounded retries only for transient failures; respect provider retry-after information and quotas.
-- Treat AI output as untrusted suggestions, never as authorization or unquestioned truth.
-- Minimise personal data sent to cloud providers. Do not send raw CVs or full Profile records to a free-tier provider without an explicit privacy review and a task-specific need.
-- Keep predictable application operations deterministic. AI may assist with interpretation, extraction, reasoning, and generated user assistance; it does not own application rules.
-- Final job relevance classification, user ownership, authentication, persistence, and application state transitions remain deterministic application responsibilities.
-- Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled.
-- Do not build a generic agent framework for the MVP.
+The transition from local development to hosted production must be configuration-only. Feature code must not inspect the environment or name a provider; it calls the shared AI service. The router may choose or fall back only among providers explicitly enabled for that environment and allowed by the task's capability, privacy, and fallback policy. Disabled providers must never be contacted.
+
+Provider capabilities, model context limits, response formats, and free-tier restrictions differ. Adapters normalize provider-specific protocols, while routing verifies that an enabled provider can perform the requested task. Never silently fall back to paid usage.
+
+### Efficient AI use and failure handling
+
+- Call AI only where interpretation, extraction, reasoning, or generated assistance provides a concrete benefit. Keep predictable operations such as filtering, sorting, validation, matching rules, authorization, persistence, and state transitions deterministic.
+- Reuse valid prior results and avoid repeating a request when the relevant input and task version have not changed.
+- Send only the data required for the task. Do not send raw CVs or full Profile records to a hosted provider without a task-specific privacy review and demonstrated need.
+- Validate structured output with the owning feature's Zod schema. Treat AI output as untrusted suggestions, never as authorization or unquestioned truth.
+- Preserve task progress when an enabled provider is temporarily unavailable. Retry or defer according to bounded, task-aware policy; do not lose work or send it to a disabled provider.
+- Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic operational diagnostics for troubleshooting provider calls (success/failure, latency, token usage when returned, and provider rate-limit/retry information). Diagnostics must not impose arbitrary internal usage caps or stop valid work.
+- Respect actual provider rate limits and free-tier terms. Provider limits are external constraints and cannot be bypassed by internal monitoring.
+
+Final job relevance classification, user ownership, authentication, persistence, and application state transitions remain deterministic application responsibilities. Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled. Do not build a generic agent framework for the MVP.
 
 ## 11. CV files and storage
 
