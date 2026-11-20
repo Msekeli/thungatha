@@ -19,6 +19,7 @@ type FeedJob = {
 };
 
 const RELEVANCE_CATALOGUE_LIMIT = 5000;
+const RELEVANCE_FETCH_BATCH_SIZE = 500;
 
 function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
@@ -193,40 +194,67 @@ export async function readJobFeed(
   const from = (input.page - 1) * input.pageSize;
   const canRankByProfile =
     input.sortOrder === "relevance" && candidate !== null;
-  const rangeStart = canRankByProfile ? 0 : from;
-  const rangeEnd = canRankByProfile
-    ? RELEVANCE_CATALOGUE_LIMIT - 1
-    : from + input.pageSize - 1;
+  let data: FeedJob[] = [];
+  let count = 0;
+  let rankWholeCatalogue = false;
 
-  let { data, error, count } = await buildQuery()
-    .order("published_at", {
-      ascending: input.sortOrder === "oldest",
-      nullsFirst: false,
-    })
-    .order("updated_at", { ascending: false })
-    .order("id", { ascending: true })
-    .range(rangeStart, rangeEnd);
+  if (canRankByProfile) {
+    // Fetch the complete filtered catalogue in bounded requests. A single
+    // large PostgREST range can be silently capped by the project's max_rows.
+    for (
+      let offset = 0;
+      offset < RELEVANCE_CATALOGUE_LIMIT;
+      offset += RELEVANCE_FETCH_BATCH_SIZE
+    ) {
+      const batchResult = await buildQuery()
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("updated_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(offset, offset + RELEVANCE_FETCH_BATCH_SIZE - 1);
+      if (batchResult.error) throw batchResult.error;
+      const batch = (batchResult.data ?? []) as FeedJob[];
+      data.push(...batch);
+      count = batchResult.count ?? data.length;
 
-  if (error) throw error;
+      if (
+        data.length >= count ||
+        batch.length < RELEVANCE_FETCH_BATCH_SIZE
+      ) {
+        break;
+      }
+    }
 
-  // The approved catalogue-wide relevance ordering is bounded at 5,000 jobs.
-  // Above that ceiling, fall back to the requested newest-first page rather
-  // than presenting a partial-catalogue ranking as complete.
-  const rankWholeCatalogue =
-    canRankByProfile && (count ?? 0) <= RELEVANCE_CATALOGUE_LIMIT;
-  if (canRankByProfile && !rankWholeCatalogue) {
+    rankWholeCatalogue =
+      count <= RELEVANCE_CATALOGUE_LIMIT && data.length >= count;
+
+    // Above the approved 5,000-job ceiling, do not present a partial-catalogue
+    // ranking as complete. Return the requested newest-first page instead.
+    if (!rankWholeCatalogue) {
+      const pageResult = await buildQuery()
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("updated_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(from, from + input.pageSize - 1);
+      if (pageResult.error) throw pageResult.error;
+      data = (pageResult.data ?? []) as FeedJob[];
+      count = pageResult.count ?? count;
+    }
+  } else {
     const pageResult = await buildQuery()
-      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("published_at", {
+        ascending: input.sortOrder === "oldest",
+        nullsFirst: false,
+      })
       .order("updated_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, from + input.pageSize - 1);
     if (pageResult.error) throw pageResult.error;
-    data = pageResult.data;
-    count = pageResult.count;
+    data = (pageResult.data ?? []) as FeedJob[];
+    count = pageResult.count ?? 0;
   }
 
-  let jobs: FeedJob[] = (data ?? []).map((job) => ({
-    ...(job as FeedJob),
+  let jobs: FeedJob[] = data.map((job) => ({
+    ...job,
     state: stateByJob.get(job.id) ?? null,
   }));
 
@@ -237,7 +265,7 @@ export async function readJobFeed(
     jobs = jobs.slice(from, from + input.pageSize);
   }
 
-  const total = count ?? 0;
+  const total = count;
   return {
     jobs,
     page: input.page,
