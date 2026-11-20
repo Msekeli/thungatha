@@ -234,3 +234,34 @@
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* The confirmed Profile summary scrolls as one page, independently of the workspace frame. */
+.th-profile-form-scroll:has(.th-profile-form-state--view) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.th-profile-form-state--view {
+  display: block;
+  flex: 0 0 auto;
+  min-height: max-content;
+  padding-bottom: 24px;
+}
+.th-profile-form-state--view > div > header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--th-page);
+  padding-top: 12px;
+}
+@media (max-width: 700px) {
+  .th-profile-form-scroll:has(.th-profile-form-state--view) {
+    overflow-y: auto;
+  }
+  .th-profile-form-state--view {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
