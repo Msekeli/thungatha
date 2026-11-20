@@ -19,7 +19,7 @@ export function ProfileEditorView({
   saving: boolean;
   onChange: (updated: UserProfileDto) => void;
   onReview: () => void;
-  onSaveDraft: () => void;
+  onSaveDraft: (updated?: UserProfileDto) => void;
   onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
