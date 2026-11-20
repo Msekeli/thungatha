@@ -28,37 +28,12 @@ function isMissingEmployerDismissalsSchema(error: {
   );
 }
 
-function newestFirst(a: FeedJob, b: FeedJob) {
-  const aPublished = a.published_at ? Date.parse(a.published_at) : NaN;
-  const bPublished = b.published_at ? Date.parse(b.published_at) : NaN;
-  if (
-    Number.isFinite(aPublished) &&
-    Number.isFinite(bPublished) &&
-    aPublished !== bPublished
-  ) {
-    return bPublished - aPublished;
-  }
-  if (Number.isFinite(aPublished) !== Number.isFinite(bPublished)) {
-    return Number.isFinite(aPublished) ? -1 : 1;
-  }
-  const aUpdated = a.updated_at ? Date.parse(a.updated_at) : NaN;
-  const bUpdated = b.updated_at ? Date.parse(b.updated_at) : NaN;
-  if (
-    Number.isFinite(aUpdated) &&
-    Number.isFinite(bUpdated) &&
-    aUpdated !== bUpdated
-  ) {
-    return bUpdated - aUpdated;
-  }
-  return a.id.localeCompare(b.id);
-}
-
 export async function readJobFeed(
   db: SupabaseClient,
   userId: string | null,
   input: JobFeedQuery,
   statesOnly: boolean,
-  getToken?: () => Promise<string | null>,
+  _getToken?: () => Promise<string | null>,
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
 
