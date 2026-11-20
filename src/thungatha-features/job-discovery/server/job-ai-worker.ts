@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
 import type { ProfileDatabaseRow } from "@/thungatha-features/user-profile/server/profile-database-row";
 import { PROFILE_SELECT_COLUMNS } from "@/thungatha-features/user-profile/server/repository";
+import { deriveCandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import { assessJobWithAi, understandJobWithAi } from "./job-ai-service";
 import { jobUnderstandingSchema } from "./job-ai-schemas";
 import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue";
@@ -66,7 +67,8 @@ async function processTask(db: ReturnType<typeof createServiceClient>, task: Que
   }
 
   const profile = mapRowToProfileDto(profileRow);
-  if (!profile.confirmedAt || profile.profileVersion !== task.profile_version) {
+  const candidateFacts = deriveCandidateFacts(profile);
+  if (!candidateFacts || candidateFacts.profileVersion !== task.profile_version) {
     await completeTask(db, task.id);
     return "stale";
   }
@@ -97,7 +99,7 @@ async function processTask(db: ReturnType<typeof createServiceClient>, task: Que
 
   const parsedUnderstanding = jobUnderstandingSchema.parse(understanding);
   const generatedAssessment = await assessJobWithAi(
-    job.title, parsedUnderstanding, description, profile,
+    job.title, parsedUnderstanding, description, candidateFacts,
   );
   const { error: saveError } = await db.from("job_match_assessments").upsert({
     user_id: task.user_id,

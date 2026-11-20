@@ -1,6 +1,6 @@
 import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
-import type { UserProfileDto } from "@/thungatha-features/user-profile/server/user-profile-schema";
+import type { CandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import { assertEvidenceReferences, buildJobEvidence, buildProfileEvidence } from "./job-ai-evidence";
 import { jobUnderstandingSchema, matchAssessmentSchema } from "./job-ai-schemas";
 
@@ -40,11 +40,10 @@ export async function understandJobWithAi(title: string, description: string) {
 }
 
 export async function assessJobWithAi(
-  title: string, understanding: unknown, description: string, profile: UserProfileDto,
+  title: string, understanding: unknown, description: string, facts: CandidateFacts,
 ) {
-  if (!profile.confirmedAt) throw new Error("A confirmed Profile is required for matching.");
   const jobEvidence = buildJobEvidence(description);
-  const profileEvidence = buildProfileEvidence(profile);
+  const profileEvidence = buildProfileEvidence(facts);
   if (!jobEvidence.length || !profileEvidence.length) throw new Error("There is insufficient evidence to assess this role.");
   const response = await completeAiTask({
     task: "job-fit-assessment", responseFormat: "json",
@@ -62,7 +61,7 @@ export async function assessJobWithAi(
       `Return this exact JSON shape: {classification:"match"|"relevant"|"unclassified",summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}.`,
       "Return only valid JSON.",
     ].join("\n"),
-    userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence }),
+    userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence, candidateFacts: { knownEmploymentMonths: facts.knownEmploymentMonths, employmentEvidenceRefs: facts.employmentEvidenceRefs, unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs, targetRole: facts.targetRole } }),
   });
   const assessment = parse(response.content, matchAssessmentSchema);
   const jobRefs = new Set(jobEvidence.map((item) => item.id));
