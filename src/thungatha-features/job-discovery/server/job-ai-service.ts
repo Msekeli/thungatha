@@ -2,7 +2,8 @@ import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import type { CandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import { assertEvidenceReferences, buildJobEvidence, buildProfileEvidence } from "./job-ai-evidence";
-import { jobUnderstandingSchema, matchAssessmentSchema } from "./job-ai-schemas";
+import { jobUnderstandingSchema, matchAssessmentInputSchema } from "./job-ai-schemas";
+import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 function parse<T>(content: string, schema: { parse: (value: unknown) => T }): T {
@@ -57,14 +58,14 @@ export async function assessJobWithAi(
       "Transferable capabilities count when the supplied evidence supports the relationship. Do not invent experience or equivalence.",
       "Use only supplied jobEvidence and profileEvidence IDs. Cite exact IDs for every factual assessment. Never cite an ID you were not given.",
       "Missing Profile information means not demonstrated, not proof the candidate lacks the capability.",
-      "Choose only Match, Relevant, or Unclassified. Match means strong evidence-based alignment with the central work. Relevant means meaningful supported alignment but material gaps or unknowns. Unclassified means evidence is insufficient, ambiguous, unsupported, or contradictory.",
-      "A Match or Relevant result must cite at least one job evidence ID and one confirmed Profile evidence ID. Do not produce scores, percentages, weights, or hiring predictions.",
-      `Return this exact JSON shape: {classification:"match"|"relevant"|"unclassified",summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}.`,
+      "Describe semanticAlignment as strong, meaningful, or insufficient, and state whether material gaps remain. Strong means strong evidence-based alignment with the central work; meaningful means supported but materially incomplete alignment; insufficient means evidence cannot support a reliable comparison.",
+      "Cite evidence for the overall alignment and every requirement/gap. Every requirement must cite job evidence. A supported requirement must cite confirmed Profile evidence. Do not produce scores, percentages, weights, or hiring predictions.",
+      `Return this exact JSON shape: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}. Do not return a classification; application code derives it.`,
       "Return only valid JSON.",
     ].join("\n"),
     userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence, candidateFacts: { knownEmploymentMonths: facts.knownEmploymentMonths, employmentEvidenceRefs: facts.employmentEvidenceRefs, unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs, targetRole: facts.targetRole } }),
   });
-  const assessment = parse(response.content, matchAssessmentSchema);
+  const assessmentInput = parse(response.content, matchAssessmentInputSchema);
   const jobRefs = new Set(jobEvidence.map((item) => item.id));
   const profileRefs = new Set(profileEvidence.map((item) => item.id));
   const allJobRefs = assessment.requirements.flatMap((item) => item.jobEvidenceRefs).concat(assessment.gaps.flatMap((item) => item.jobEvidenceRefs));

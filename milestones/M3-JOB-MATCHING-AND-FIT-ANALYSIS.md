@@ -132,7 +132,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C04 — AI semantic evidence assessment and categorical classification
 
-**Status:** In progress — the existing deterministic comparison is an interim slice; AI semantic assessment and evidence validation remain outstanding.
+**Status:** In progress — AI semantic assessment and application-owned categorical classification are implemented; representative evaluation and verification remain outstanding.
 
 **Historical implementation record (2026-11-20; preserved as interim baseline)**
 - Added a pure classifier that consumes confirmed candidate facts and schema-validated extracted job requirements. It returns one categorical relevance label, a rule version, and requirement-level outcomes; it does not calculate a score.
@@ -144,6 +144,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - The implementation is intentionally conservative. Requirement-level outcomes support only the evidence types listed above; unsupported categories remain Can't tell. Unit tests were added for exact skill evidence, missing skills, empty employment history, positive alignment with an unmet mandatory experience requirement, and unavailable/empty extraction. Tests have not been run.
 
 This record describes the earlier deterministic classifier only. It does not satisfy the approved semantic comparison requirement and must not be used as a substitute for AI assessment.
+
+**2026-11-21 implementation increment:** The AI assessment schema now returns a semantic alignment level, material-gap declaration, and explicit overall evidence references instead of a category. Application code validates all overall, requirement, and gap references against the exact supplied job description and confirmed Profile evidence, then derives Match, Relevant, or Unclassified using a versioned policy. Strong alignment with no material gaps yields Match; meaningful alignment, material gaps, or contradictory requirement evidence yields Relevant; insufficient alignment or no overall Profile evidence yields Unclassified. Supported requirements must cite confirmed Profile evidence. The AI task version was incremented to invalidate prior assessment and understanding cache entries. Focused policy/schema tests were added but have not been run.
 
 **Interim implementation record (2026-11-20; deterministic classifier only, not acceptance of the AI target)**
 - A pure classifier currently compares a limited set of exact canonical skills, language names, named certifications, school-leaving aliases, generic qualification wording, and minimum experience requirements.
