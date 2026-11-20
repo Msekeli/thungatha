@@ -27,7 +27,7 @@ export function useProfile() {
       const p = (json.profile as UserProfileDto) || createBlankProfile();
       setProfile(p);
       setDraft(p);
-      setMode(isProfileEmpty(p) ? "empty" : "view");
+      setMode(isProfileEmpty(p) ? "empty" : "edit");
       setLoadFailed(false);
       setError("");
     } catch {
@@ -65,7 +65,7 @@ export function useProfile() {
       const complete = profileCompletionSchema.safeParse(
         result.profile,
       ).success;
-      setMode(returnToEditor ? "edit" : complete ? "view" : "edit");
+      setMode("edit");
       setMessage(
         complete
           ? "Profile saved successfully."
