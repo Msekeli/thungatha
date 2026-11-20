@@ -42,7 +42,15 @@ export function evaluateRequirement(candidate: CandidateFacts, requirement: JobR
     if (match) evidence.push(match.sourcePath);
     if (match) outcome = "met";
   } else if (requirement.category === "education") {
-    const match = candidate.education.find((item) => normalise(item.qualification) === value);
+    const aliases = ["matric", "grade 12", "national senior certificate", "nsc"];
+    const schoolRequirement = aliases.includes(value);
+    const match = candidate.education.find((item) => {
+      const qualification = normalise(item.qualification);
+      if (schoolRequirement) return aliases.some((alias) => qualification.includes(alias));
+      if (value === "diploma") return /\\bdiploma\\b/.test(qualification);
+      if (value === "degree") return /\\bdegree\\b/.test(qualification);
+      return qualification === value;
+    });
     if (match) evidence.push(match.sourcePath);
     if (match) outcome = "met";
   }
