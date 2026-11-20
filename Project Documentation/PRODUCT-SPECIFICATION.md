@@ -140,13 +140,9 @@ If a URL cannot be read safely or the page content is unavailable, ask the user 
 
 When a confirmed Profile/master CV exists, show it as the starting point. If no usable master CV exists, offer CV upload/import or guide the user to complete Profile.
 
-AI may recommend one of three paths:
+AI actively supports the job-specific CV workflow. It should interpret the target role, identify the most relevant confirmed experience and transferable skills, recommend whether to use the master CV, reuse an existing tailored version, or create a new version, and propose role-appropriate ordering, emphasis, structure, and wording.
 
-1. use the master CV as-is;
-2. reuse an existing tailored CV version; or
-3. create a new tailored CV version.
-
-The user reviews the recommendation and can accept or reject it. Tailoring must use confirmed facts and may reorganize or clarify evidence, but must not fabricate experience, qualifications, dates, achievements, or skills.
+The user reviews each recommendation and proposed change and can accept, edit, or reject it. Tailoring must use confirmed facts and may reorganize or clarify evidence, but must not fabricate experience, qualifications, dates, achievements, or skills. Every factual addition must trace to confirmed Profile evidence. AI must not silently overwrite the master CV or confirmed Profile data.
 
 ### Version management
 
