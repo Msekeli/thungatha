@@ -38,9 +38,13 @@ const fields: Field[] = [
 export function ProfilePersonalDetailsForm({
   details,
   onChange,
+  languages,
+  onLanguagesChange,
 }: {
   details: Details;
   onChange: (updated: Details) => void;
+  languages: string[];
+  onLanguagesChange: (languages: string[]) => void;
 }) {
   const update = (key: keyof Details, value: string) =>
     onChange({ ...details, [key]: value || null });
@@ -87,6 +91,7 @@ export function ProfilePersonalDetailsForm({
           </div>
         ))}
       </div>
+      <ProfileLanguagesEditor languages={languages} onChange={onLanguagesChange} />
     </section>
   );
 }
