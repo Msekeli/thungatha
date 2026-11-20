@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown, PencilLine } from "lucide-react";
-import type { UserProfileDto } from "../server/user-profile-schema";
+import { profileCompletionSchema, type UserProfileDto } from "../server/user-profile-schema";
+import type { ReactNode } from "react";
 
 function ReviewSection({ title, children, onEdit }: {
-  title: string; children: React.ReactNode; onEdit: () => void;
+  title: string; children: ReactNode; onEdit: () => void;
 }) {
   return (
     <details className="group rounded-xl border border-border bg-card text-card-foreground open:shadow-sm">
@@ -31,6 +32,7 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
 }) {
   const details = profile.personalDetails;
   const contact = [details.email, details.phone, details.location].filter(Boolean).join(" · ");
+  const complete = profileCompletionSchema.safeParse(profile).success;
   return (
     <main className="mx-auto w-full max-w-4xl space-y-6 pb-10">
       <header className="space-y-2 border-b border-border pb-5">
