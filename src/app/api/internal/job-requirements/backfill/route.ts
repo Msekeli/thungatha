@@ -8,7 +8,7 @@ const DEFAULT_BATCHES = 5;
 const MAX_BATCHES = 10;
 
 function isAuthorised(request: Request) {
-  const expectedSecret = process.env.JOB_REQUIREMENTS_BACKFILL_SECRET;
+  const expectedSecret = process.env.JOB_REQUIREMENTS_BACKFILL_SECRET ?? process.env.SCOUT_SYNC_SECRET;
   const supplied = request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
   if (!expectedSecret) return false;
   const expectedBytes = Buffer.from(expectedSecret);
