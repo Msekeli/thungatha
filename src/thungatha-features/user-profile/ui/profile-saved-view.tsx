@@ -1,9 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ProfileCvUpload } from "./profile-cv-upload";
 import type { UserProfileDto } from "../server/user-profile-schema";
 import { ProfileSavedDetailsCard } from "./profile-saved-details-card";
-import { ProfileMasterCvCard } from "./profile-saved-section-card";
 import { ProfileSavedEntries } from "./profile-saved-entries";
 export function ProfileSavedView({
   profile,
@@ -35,12 +33,6 @@ export function ProfileSavedView({
       </header>
       <ProfileSavedDetailsCard profile={profile} />
       <ProfileSavedEntries profile={profile} />
-      <ProfileMasterCvCard
-        filename={profile.masterCv?.filename}
-        fileSize={profile.masterCv?.fileSize}
-        uploadedAt={profile.masterCv?.uploadedAt}
-      />
-      <ProfileCvUpload hasCurrentCv={Boolean(profile.masterCv)} />
     </div>
   );
 }
