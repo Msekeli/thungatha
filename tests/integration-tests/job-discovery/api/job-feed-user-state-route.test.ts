@@ -16,6 +16,12 @@ vi.mock("@/lib/supabase/server", () => ({
   createPublicSupabaseClient: vi.fn(),
   SupabaseConfigurationError: class SupabaseConfigurationError extends Error {},
 }));
+vi.mock("@/thungatha-features/job-discovery/server/job-ai-queue", () => ({
+  enqueueVisibleJobAssessments: vi.fn().mockResolvedValue(0),
+}));
+vi.mock("@/thungatha-features/job-discovery/server/job-ai-worker", () => ({
+  processJobAiQueue: vi.fn(),
+}));
 
 const identity = vi.mocked(getAuthenticatedIdentity);
 const configured = vi.mocked(hasClerkConfiguration);
