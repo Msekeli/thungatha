@@ -81,7 +81,7 @@ export function ProfileForm({
       {message && (
         <Toast
           message={message}
-          tone={message.startsWith("Draft saved") ? "warning" : "success"}
+          tone="success"
           onDismiss={dismissMessage}
         />
       )}
