@@ -1,6 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import type { UserProfileDto } from "../server/user-profile-schema";
+import { ProfileLanguagesEditor } from "./profile-languages-editor";
 type Details = UserProfileDto["personalDetails"];
 type Field = [keyof Details, string, string, string?, boolean?];
 const fields: Field[] = [
