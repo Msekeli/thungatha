@@ -1,16 +1,18 @@
-# M3 — Job Matching and Fit Analysis
+# M3 — AI-Powered Job Matching and Relevance
 
 **Status:** In progress  
-**Outcome:** Explainable categorical relevance classifications between a user's confirmed professional information and a job's requirements.  
+**Outcome:** AI-powered semantic comparison of actual job responsibilities and requirements with confirmed candidate evidence, producing explainable Match, Relevant, or Unclassified outcomes.  
 **Dependencies:** M1 Job Discovery and M2 Profile/CV Import.
 
 ## Purpose and scope
 
-M3 compares structured requirements extracted from job descriptions with evidence in the user's confirmed Profile. Results are categorical evidence-based relevance classifications, not scores or hiring predictions.
+M3 is a core AI capability in Thungatha. AI must understand job descriptions in context and semantically compare the actual work and requirements with evidence in the user's confirmed Profile. Do not reduce this milestone to deterministic extraction, exact keyword overlap, or job-title/role-family matching.
 
-**M3 extraction and matching are rules-only.** Do not use AI, language models, embeddings, fuzzy matching, or Fuse.js in job requirement extraction, candidate fact derivation, role-family classification, evidence mapping, or relevance classification. Use deterministic parsing, explicit keyword rules, canonical identifiers, and reviewed alias dictionaries. Fuse.js may be evaluated separately for future Job Discovery search/autocomplete; that is outside M3.
+AI is responsible for contextual interpretation, identifying responsibilities and capabilities, recognising equivalent work expressed through different titles or terminology, identifying transferable skills, comparing job requirements with candidate evidence, and preparing grounded explanations. Application code validates AI output and evidence references and enforces approved categorical rules, security, persistence, freshness, and state transitions.
 
-The Profile remains the source of truth. Derive candidate facts with a pure deriveCandidateFacts(profile) function when needed; do not create a separate candidate-facts persistence table for the initial implementation. Do not treat unconfirmed CV-import drafts as candidate evidence.
+Do not require embeddings as a prerequisite. Use provider-supported semantic language understanding directly unless evaluation demonstrates that a separate embedding capability is needed. Fuse.js may be evaluated separately for future Job Discovery search/autocomplete; it is not a substitute for semantic AI matching.
+
+The Profile remains the source of truth. Derive reliable candidate facts with a pure `deriveCandidateFacts(profile)` function when needed; do not create a separate candidate-facts persistence table for the initial implementation. Candidate facts and Profile evidence references are deterministic inputs to AI comparison, not a replacement for semantic interpretation. Do not treat unconfirmed CV-import drafts as candidate evidence.
 
 ## Global matching rules
 
@@ -24,9 +26,10 @@ The Profile remains the source of truth. Derive candidate facts with a pure deri
 - Represent qualification pathways as explicit alternatives and conjunctions. For example, “relevant diploma or degree, or equivalent experience” is an OR between pathways, while “Grade 12 with Mathematics at 50%” is an AND between the school qualification and the subject threshold.
 - Treat vendor and professional certifications (for example, AWS or Microsoft Azure credentials) as distinct credential evidence, not as academic diplomas/degrees or automatic NQF equivalents. They may satisfy a named certification requirement or an explicitly accepted alternative pathway; otherwise they can support relevant technical capability without replacing a formal academic requirement.
 - Do not assume qualifications are equivalent merely because they share an NQF level. Preserve qualification type, name, field, and verified NQF level.
-- Canonical skill matching uses normalisation followed by exact lookup against an explicit alias dictionary. Do not blindly strip punctuation from identifiers such as C#, C++, .NET, or Node.js.
-- Unknown or unsupported role titles are unclassified. Role family is contextual evidence, not proof of eligibility and not a standalone hard exclusion.
-- Preserve the original job text and the exact source snippet/reference supporting every extracted requirement.
+- Exact canonical skill aliases may provide direct evidence, but they are not the sole matching method. AI must also interpret semantically related and transferable capabilities expressed with different wording. Preserve technical distinctions in identifiers such as C#, C++, .NET, and Node.js.
+- Job titles and role-family labels are contextual evidence only, never hard gates or deciding factors. Different titles may describe substantially equivalent responsibilities and capabilities; similar titles alone do not prove equivalent work.
+- Preserve the original job text and exact source snippet/reference supporting every AI-interpreted job requirement or claim.
+- Every candidate-side factual claim must reference confirmed Profile evidence. Validate all source and Profile references against trusted records after schema validation.
 - Requirements not reliably detected remain absent/unknown and must be presented as such; never manufacture a requirement or a match.
 
 ## Checkpoint status rules
@@ -35,163 +38,153 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ## Checkpoints
 
-### M3-C01 — Relevance rules and classification specification
+### M3-C01 — Semantic matching rules and classification specification
 
-**Status:** In progress — rules approved by the user on 2026-11-20.
+**Status:** In progress — categorical labels and semantic AI direction approved on 2026-11-21; detailed qualification and evaluation cases remain.
 
-**Goal:** define deterministic relevance classification, evidence boundaries, and feed-ordering behaviour before implementation.
+**Goal:** define AI-assisted semantic comparison, evidence boundaries, categorical outcomes, and feed-ordering behaviour before implementation.
 
 **Work**
 - Define academic qualification comparison and the limits of NQF-based comparison.
-- Define Matric/Grade 12/NSC normalisation and extraction of subject-specific minimum marks, including how percentages, grades, and ambiguous result formats are represented.
+- Define Matric/Grade 12/NSC normalisation and extraction of subject-specific minimum marks, including percentages, grades, and ambiguous result formats.
 - Define qualification pathways with explicit AND/OR logic, including “diploma or degree”, “or equivalent experience”, and named professional/vendor certification alternatives.
 - Define when professional certifications can satisfy a requirement and when they are supporting evidence only; never equate AWS/Azure credentials automatically to an academic qualification.
 - Define whether and when relevant experience can substitute for a qualification where the advert explicitly says “or equivalent”.
-- Agree the initial role-family vocabulary and deterministic word-boundary keyword rules.
-- Define mandatory, preferred, and ambiguous requirement classification from explicit wording.
-- Define requirement outcomes and the three relevance classifications, including unclassified behaviour.
-- Numerical fit scores and percentages are explicitly rejected; do not implement them.
-- Define how changes to the Profile, job description, extraction rules, or vocabulary invalidate/recompute an assessment.
+- Define how titles and role families may provide context without becoming hard gates; include equivalent responsibilities across different titles and industries.
+- Define mandatory, preferred, and ambiguous requirement interpretation from explicit wording and context.
+- Define AI assessment schema, source evidence references, confirmed Profile evidence references, validation, uncertainty handling, and provider failure behaviour.
+- Define the approved **Match**, **Relevant**, and **Unclassified** outcomes.
+- No numerical scoring of any kind: no scores, percentages, weights, thresholds, weighted totals, fit points, score bands, hidden numeric rankings, or hiring-probability estimates.
+- Define how changes to the Profile, job description, model/task prompt, schema, or business rules invalidate/recompute an assessment.
 
-**Approved rules (2026-11-20)**
-
+**Approved qualification principles (2026-11-20)**
 - A school-leaving requirement and each subject/mark threshold are separate requirement nodes. The candidate must meet both when the advert states both.
 - A requirement such as “Matric/Grade 12 with Mathematics at 50%” is not met merely because the Profile records Grade 12; the relevant Mathematics result must also be confirmed at or above the threshold.
 - Qualification alternatives must be represented as explicit OR groups; conditions within a pathway are AND requirements. An “equivalent experience” path is available only when the employer's wording explicitly permits it.
 - A vendor certification such as AWS or Azure may satisfy a named certification requirement. It may be accepted as an alternative to a diploma/degree only where the advert explicitly permits that alternative or an approved, evidence-backed equivalence rule exists. Otherwise it is additional relevant evidence, not a substitute for the academic qualification.
 
-1. Requirement outcomes:
-   - **Met:** confirmed evidence satisfies the requirement.
-   - **Not met:** reliable evidence establishes that the requirement is not satisfied.
-   - **Can't tell:** evidence is absent, incomplete, ambiguous, or unverifiable.
-2. Requirement importance:
-   - **Mandatory:** explicit wording such as “must”, “required”, “essential”, “minimum”, or “compulsory”, interpreted in context.
-   - **Preferred:** explicit wording such as “preferred”, “advantageous”, “desirable”, or “nice to have”.
-   - **Uncertain:** wording does not reliably establish either category; do not silently promote it to mandatory.
-3. Overall relevance classification:
-   - **Relevant:** there is clear, positive evidence of alignment between the confirmed candidate Profile and the job. Relevant mandatory requirements are met, or the job's supported role/skill evidence clearly aligns where requirements are limited.
-   - **Partially relevant:** there is actual, identifiable alignment (for example, a related role family or some exact canonical skills), but material requirements are unmet or cannot be verified. It is not a catch-all for uncertainty.
-   - **Unclassified:** the job or candidate evidence is insufficient, ambiguous, unsupported, or contradictory enough that relevance cannot be responsibly determined. Do not show a badge.
-4. Missing Profile information is not evidence of a mismatch. Do not classify a job as partially relevant solely because information is missing.
-5. Preferred requirements may enrich explanations but do not override mandatory requirement outcomes.
-6. No numerical score, percentage, weighted total, or hiring-probability estimate is produced or displayed.
-7. Display: Relevant uses the existing positive/green semantic token; Partially relevant uses the existing warning/yellow semantic token; Unclassified has no badge. Do not introduce local colour values or new tokens without review.
-8. Sorting: **Most relevant** orders the full filtered catalogue by Relevant, then Partially relevant, then Unclassified; ties within a class use newest publication date first, then stable existing tie-breakers. Newest and Oldest remain date sorts and do not depend on Profile availability.
-9. Candidate-specific classification requires a confirmed Profile. For visitors without a confirmed Profile, relevance is unavailable and Most relevant falls back to newest-first; do not invent a personalised result.
-10. Relevance ordering must apply before pagination across the filtered catalogue, not only to the currently loaded page. If the implementation cannot guarantee that, it must not claim to provide catalogue-wide relevance sorting.
+**Requirement outcomes**
+- **Met:** confirmed evidence satisfies the requirement.
+- **Not met:** reliable evidence establishes that the requirement is not satisfied.
+- **Can't tell:** evidence is absent, incomplete, ambiguous, or unverifiable.
+
+**Requirement importance**
+- **Mandatory:** explicit wording such as “must”, “required”, “essential”, “minimum”, or “compulsory”, interpreted in context.
+- **Preferred:** explicit wording such as “preferred”, “advantageous”, “desirable”, or “nice to have”.
+- **Uncertain:** wording does not reliably establish either category; do not silently promote it to mandatory.
+
+**Overall relevance labels**
+- **Match:** strong, supported alignment with the central work and core/mandatory requirements, grounded in confirmed Profile evidence. Different titles or industries do not prevent Match when the underlying work and capabilities substantially align.
+- **Relevant:** meaningful supported alignment exists, including transferable skills or related responsibilities, but material gaps, unknowns, or incomplete evidence prevent a strong Match conclusion.
+- **Unclassified:** evidence is insufficient, ambiguous, unsupported, or materially contradictory. Do not show a badge.
+
+Missing Profile information is not evidence of a mismatch. Preferred requirements may enrich explanations but do not override mandatory requirement outcomes.
+
+**Display and sorting**
+- Match uses the existing positive/green semantic token; Relevant uses the existing informational/blue semantic token; Unclassified has no badge.
+- “Most relevant” orders the full filtered catalogue by Match, then Relevant, then Unclassified. Ties use newest publication date and existing stable tie-breakers. Newest and Oldest remain date sorts.
+- Candidate-specific classification requires a confirmed Profile. Without one, do not fabricate relevance; Most relevant falls back to newest-first.
+- Relevance ordering must apply before pagination across the filtered catalogue, not only to the currently loaded page.
 
 **Exit criteria**
-- Education comparison, experience substitution, role families, mandatory/preferred rules, relevance classification definitions, and insufficient-information behaviour are approved.
-- Worked examples cover met, not-met, unknown, ambiguous, and empty-requirement cases.
-- No numerical score or percentage is produced or displayed.
-- Relevance labels are described as evidence-based alignment, not a hiring prediction.
+- Qualification comparison, experience substitution, mandatory/preferred interpretation, and uncertainty rules are documented.
+- Worked examples cover equivalent work under different titles, cross-industry transferability, met/not-met/unknown requirements, ambiguous descriptions, and insufficient evidence.
+- AI assessments are grounded in source job text and confirmed Profile evidence.
+- No numerical score of any kind is calculated, stored, returned, displayed, or used for sorting.
 
-### M3-C02 — Job requirement extraction
+### M3-C02 — AI-assisted job understanding and requirement extraction
 
-**Status:** In progress — deterministic extraction v2 is implemented at Scout ingestion; verification and coverage expansion remain.
+**Status:** In progress — deterministic extraction v2 exists as an interim implementation at Scout ingestion; it does not yet satisfy the approved semantic AI target.
 
-**Goal:** produce structured, reviewable requirements from job descriptions using deterministic rules.
+**Goal:** produce structured, reviewable, source-grounded understanding of job descriptions using AI-assisted semantic interpretation.
 
 **Work**
-- Extract supported qualifications, experience, skills, responsibilities, licences/registrations, languages, location/work-mode constraints, and other explicitly supported requirements.
+- Use AI to interpret responsibilities, skills, technologies/tools, qualifications, experience, certifications, licences/registrations, languages, location/work-mode constraints, and relevant domain context.
+- Interpret the meaning of requirements beyond literal wording and recognise related capabilities expressed with different terminology.
 - Extract Matric/Grade 12/NSC requirements and subject-specific minimum marks as distinct structured conditions.
 - Parse explicit alternative qualification pathways and AND/OR relationships without flattening them into a single qualification string.
-- Extract named vendor/professional certifications separately from academic qualification requirements.
 - Distinguish mandatory, preferred, and uncertain wording.
-- Use explicit canonical vocabularies and aliases; no fuzzy matching.
-- Preserve source snippets or offsets and the description hash/version.
-- Validate extracted data against a runtime schema.
-- Handle missing, malformed, short, contradictory, and partially populated descriptions.
-- Extract requirements when a job is first imported and rerun only when its description content changes.
+- Preserve source snippets/offsets and the description hash/version for every extracted or interpreted requirement.
+- Validate structured output against a versioned runtime schema and verify that each cited snippet belongs to the current job description.
+- Handle missing, malformed, short, contradictory, and partially populated descriptions without inventing requirements.
+- Reuse prior results only when the exact description hash and task/schema version match.
 
-**Implementation record (2026-11-20)**
-- Added a Zod schema for versioned extraction results and individual requirement records.
-- Added SHA-256 description hashing and deterministic extraction for selected experience, qualification, named certification, canonical IT skill, licence/registration, and language patterns, plus title-based role-family vocabulary.
-- Extraction v2 segments HTML paragraphs/list items and sentence boundaries, retains the matching source segment, gates extraction on requirement-context wording, deduplicates repeated category/value pairs, and limits language extraction to explicit proficiency phrases. These rules reduce incidental mentions but do not eliminate all false positives.
-- Scout import reuses extraction only when both the exact description hash and extraction version match. The v2 version forces existing unchanged descriptions to be re-extracted on the next Scout import.
-- Added forward migrations for extraction persistence and for exposing the extracted requirement JSON, description hash, extraction version, and status through `job_discovery_feed`; neither migration has been applied to any database.
-- Extraction remains deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
-- Added tests for hashing, mandatory experience, punctuation-sensitive skills, incidental mentions, HTML list source snippets, preferred wording, duplicate skills, explicit language proficiency, role family, and unavailable descriptions. Tests have not been run.
-- Added a protected, cursor-paginated backfill endpoint for jobs already stored in `public.jobs`. It reads the existing title/description only, reuses the same deterministic extractor, and updates requirement JSON plus description hash/version/status in batches of 100. It does not call Scout or retrieve jobs from external sources. The endpoint requires `JOB_REQUIREMENTS_BACKFILL_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`; it has not been invoked. The migration remains unapplied until separately approved.
+**Interim implementation record (2026-11-20; deterministic extractor only, not acceptance of the AI target)**
+- A Zod schema, description hashing, source snippets, deterministic extraction patterns, and a protected backfill path were added.
+- The current extractor covers selected experience, qualification, named certification, canonical IT skill, licence/registration, and language patterns. It is deliberately partial and does not reliably interpret every industry or equivalent responsibility.
+- This implementation is useful as a structured baseline, but it does not provide the approved contextual semantic understanding and must not be treated as the final M3 AI capability.
+- Existing tests and migration/backfill status are recorded in the implementation history. Do not claim tests have passed or migrations have been applied unless separately verified.
 
 **Exit criteria**
 - Requirements are schema-validated and traceable to source text.
+- AI can interpret relevant meaning beyond exact keyword and title overlap.
 - Unsupported requirements are not invented.
-- Unrecognised terms remain unclassified/unknown and can be reviewed for future vocabulary updates.
-- Extraction failure produces a safe unavailable/partial result.
+- Extraction failure produces a safe unavailable/partial result and does not block ordinary Discovery.
 
 ### M3-C03 — Candidate fact derivation and evidence mapping
 
 **Status:** In progress — pure candidate fact derivation and authenticated Profile read path are implemented; evidence mapping and coverage remain.
 
-**Implementation record (2026-11-20)**
-- Profile confirmation now validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
-- A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
-- Added integration-test coverage for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
-- Added pure `deriveCandidateFacts(profile, asOfDate)` derivation. It returns no facts for an unconfirmed or incomplete Profile and includes the Profile version and confirmation timestamp for traceability.
-- Derived facts preserve raw skills alongside exact canonical aliases, target-role preference, languages, academic education, and certifications as separate collections with Profile source paths.
-- Employment dates are parsed only for `YYYY-MM`, `YYYY-MM-DD`, and month-name/year formats. Current roles use the explicit `isCurrent` flag and supplied `asOfDate`; unsupported or invalid periods remain listed as unknown. Overlapping and adjacent known periods are merged before counting known employment months.
-- Added unit tests for confirmation gating, incomplete Profiles, overlapping employment periods, unparseable dates, punctuation-sensitive skill aliases, separate credential collections, target role, and languages. Tests have not been run.
-- Added `readCandidateFacts(userId, getToken, asOfDate)` as the server-side entry point. It reads only the authenticated user's Profile through the existing user-scoped repository, maps the saved row to the Profile DTO, and delegates to the pure derivation. It returns no candidate facts when no Profile exists or the Profile is unconfirmed/incomplete.
-- Candidate fact derivation is an initial slice. It does not yet derive role-family evidence, NQF levels, subject marks, or qualification equivalence, and it does not classify job relevance.
-
-**Goal:** derive comparable facts from the complete confirmed Profile and map each requirement to its supporting evidence.
+**Goal:** derive reliable candidate facts from the complete confirmed Profile and map every comparison claim to its supporting evidence. These deterministic facts support, but do not replace, AI semantic interpretation.
 
 **Work**
-- Implement a pure deriveCandidateFacts(profile) function using the complete saved Profile, not a partial PATCH payload.
+- Implement a pure `deriveCandidateFacts(profile)` function using the complete saved Profile, not a partial PATCH payload.
 - Initially derive facts on read; do not add a candidate-facts table unless measured cost justifies it.
 - Derive reliable employment periods and experience totals without double-counting overlaps.
 - Treat unparseable dates as unknown; do not guess.
 - Preserve qualification type, name, field, and verified NQF information separately from certifications and licences.
-- Normalize skills through exact canonical identifiers and a reviewed alias dictionary.
-- Map evidence to each requirement and retain Profile field references.
+- Preserve raw skill evidence and exact canonical aliases where useful; do not treat exact aliases as the only way to recognise capability.
+- Map candidate evidence to Profile field references and expose only confirmed facts as candidate evidence.
 - Never promote unconfirmed CV-import data to confirmed evidence.
 
 **Exit criteria**
-- Every comparison is traceable to confirmed Profile evidence.
-- Positive, partial, absent, contradictory, overlapping-date, and unparseable-date examples are covered.
+- Every candidate-side claim is traceable to confirmed Profile evidence.
+- Positive, absent, contradictory, overlapping-date, and unparseable-date examples are covered.
 - Missing evidence is not misrepresented as proof of absence.
 
-### M3-C04 — Deterministic relevance classification
+### M3-C04 — AI semantic evidence assessment and categorical classification
 
-**Status:** In progress — first conservative comparison slice implemented; test coverage and rule review remain.
+**Status:** In progress — the existing deterministic comparison is an interim slice; AI semantic assessment and evidence validation remain outstanding.
 
-**Implementation record (2026-11-20)**
-- Added a pure classifier that consumes confirmed candidate facts and schema-validated extracted job requirements. It returns one categorical relevance label, a rule version, and requirement-level outcomes; it does not calculate a score.
-- Added deterministic comparisons for exact canonical skills, exact language names, exact named certifications, supported school-leaving aliases, generic diploma/degree type wording, and minimum whole-year experience requirements.
-- Experience uses merged known employment months. If known experience is below the threshold but one or more employment periods are unparseable, the outcome remains Can't tell; it becomes Not met only when all recorded employment periods are reliably known.
-- Unsupported categories and unverified qualification equivalence remain Can't tell. No NQF equivalence, subject-mark inference, role-family inference, or qualification substitution is attempted.
-- Positive alignment is required before Relevant or Partially relevant can be returned. A positive match with mandatory requirements not met or not verifiable is Partially relevant; insufficient positive evidence remains Unclassified. Partial extraction cannot produce Relevant: it remains Unclassified unless a positively matched requirement coexists with a known unmet mandatory requirement, in which case it may be Partially relevant. The current extractor emits `partial` for every non-empty extraction, so Relevant remains unavailable until extraction completeness is reliably established.
-- The implementation is intentionally conservative. Requirement-level outcomes currently support only the evidence types listed above; unsupported categories remain Can't tell. Added unit tests for exact skill evidence, missing skills, empty employment history, positive alignment with an unmet mandatory experience requirement, and unavailable/empty extraction. Tests have not been run.
+**Interim implementation record (2026-11-20; deterministic classifier only, not acceptance of the AI target)**
+- A pure classifier currently compares a limited set of exact canonical skills, language names, named certifications, school-leaving aliases, generic qualification wording, and minimum experience requirements.
+- It demonstrates some deterministic evidence and uncertainty handling, but it cannot adequately recognise equivalent responsibilities across different titles, transferable skills, or contextual relationships across industries.
+- This implementation is not the approved end state. Do not treat exact keyword overlap or deterministic title/role-family rules as equivalent to semantic AI comparison.
 
-**Goal:** produce reproducible requirement outcomes and one of the approved relevance classifications.
+**Goal:** use AI to interpret job and candidate evidence semantically, then produce validated requirement outcomes and one of the approved categorical labels.
 
 **Work**
-- Implement a pure comparison function over derived candidate facts and extracted job requirements.
-- Do not calculate or expose a numerical score or percentage.
-- Apply only the C01-approved rules.
-- Handle unknown requirements, no mandatory requirements, incomplete Profile data, and conflicting evidence consistently.
-- Version the rules/vocabulary used for an assessment.
+- Implement a feature-owned AI use case that compares structured job context with confirmed candidate facts and returns a strict, versioned schema.
+- Require source job evidence references and confirmed Profile evidence references for factual claims; validate every reference in application code.
+- Recognise equivalent responsibilities and transferable skills across different titles and industries; titles and role families are context only.
+- Include material gaps, conflicting evidence, unknowns, and uncertainty in the structured result instead of guessing.
+- Apply the approved Match / Relevant / Unclassified categorical rules after AI interpretation and evidence validation.
+- Do not calculate, store, return, expose, or sort by any numerical score or hidden numeric ranking.
+- Version the model/task prompt, schema, relevant rules, and source/Profile inputs used for an assessment.
+- Evaluate model output against representative human-reviewed examples, including misleading similar titles and equivalent work with different titles.
 
 **Exit criteria**
-- Identical inputs and rule version produce identical results.
-- Unit tests cover all requirement states, tiers, boundaries, and empty/unknown cases.
-- No fuzzy or AI-derived decision can change an eligibility outcome.
+- AI recognises equivalent work across different titles and industries and identifies transferable skills without title gates.
+- Every factual assessment claim is traceable to source job text and confirmed Profile evidence; unsupported claims are rejected or marked unknown.
+- Application-side evidence validation and categorical rules are repeatable and tested independently of the model.
+- Tests cover false positives, false negatives, requirement states, unknown/ambiguous cases, provider failures, invalid schemas, invalid evidence references, and stale results.
+- No numerical score of any kind is calculated, stored, returned, displayed, or used for sorting.
 
 ### M3-C05 — Explanation, uncertainty and freshness
 
-**Goal:** make results understandable and prevent misleading stale assessments.
+**Goal:** make AI-generated results understandable, evidence-grounded, uncertainty-aware, and resistant to stale or unsupported claims.
 
 **Work**
+- Explain why actual responsibilities and capabilities align or differ, including equivalent work expressed through different titles and transferable skills.
 - Explain which requirements are met, not met, or cannot be determined.
-- Show source evidence from the job and corresponding confirmed Profile evidence.
-- Explain limitations and distinguish missing evidence from lack of qualification.
-- Recompute on read initially; detect changes to Profile version, job description hash, or matching-rule version.
+- Show the source job snippet/reference and corresponding confirmed Profile evidence for each factual claim.
+- Explain limitations and distinguish missing evidence from lack of qualification. Never present an AI inference as confirmed evidence.
+- Recompute or mark stale when Profile version, job description hash, AI task/prompt/schema version, or relevant business rules change.
 - Do not persist stale results as current.
 
 **Exit criteria**
-- Explanations trace to job and Profile evidence.
-- Relevant input/rule changes cause recalculation or an explicit stale state.
+- Explanations trace to job and confirmed Profile evidence.
+- Relevant input, task, or rule changes cause recalculation or an explicit stale state.
 - Unknown and partial extraction states remain visible.
 
 ### M3-C06 — Job Discovery relevance sorting and integration
@@ -203,29 +196,30 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Do not classify only a loaded page and present it as catalogue-wide relevance sorting.
 - Revisit indexed coarse filtering and ranking across a candidate pool only when catalogue growth or measured performance justifies it.
 - Do not hard-filter on experience or education unless the requirement is explicitly mandatory and extraction is demonstrably reliable.
-- Display a green Relevant badge or yellow Partially relevant badge only when classification is supported; Unclassified has no badge.
+- Display a green Match badge or blue Relevant badge only when classification is supported; Unclassified has no badge.
 - Handle missing Profile, unavailable descriptions, insufficient information, and analysis failure.
 - Preserve existing search, filters, sorting, details, save, and dismiss behaviour.
 
 **Exit criteria**
 - Discovery never fabricates a match or blocks the feed waiting for analysis.
 - Matching unavailability does not break existing Discovery behaviour.
-- Displayed outcomes agree with the deterministic comparison rules.
+- Displayed outcomes agree with the validated AI assessment, evidence references, and application-owned categorical rules. AI unavailability must not be disguised as keyword matching.
 
 ### M3-C07 — Calibration, verification and acceptance
 
 **Goal:** validate the rules across representative jobs and Profiles.
 
 **Work**
-- Assemble approximately 50 anonymised job descriptions across several industries.
-- Hand-label supported requirements, mandatory/preferred status, experience, education, licences/registrations, languages, and location constraints.
-- Compare extraction output with the labels; report precision/recall or clear error counts by requirement category rather than relying on one aggregate accuracy figure.
-- Review false positives especially carefully because they can incorrectly tell a user they meet a mandatory requirement.
-- Test repeatability, overlap/date uncertainty, unknown evidence, stale-state handling, and extraction failures.
+- Assemble representative anonymised job descriptions and confirmed Profile examples across multiple industries and role families, including substantially equivalent work with different job titles.
+- Hand-label responsibilities, skills, tools/technologies, mandatory/preferred requirements, experience, education, licences/registrations, languages, transferable skills, and source evidence.
+- Evaluate semantic equivalence and transferable-skill recognition beyond literal wording; include misleading similar titles and unrelated roles with overlapping keywords.
+- Report precision/recall or clear false-positive/false-negative counts by requirement and scenario rather than relying on one aggregate figure or score.
+- Review false positives carefully because they can incorrectly tell a user their evidence satisfies a mandatory requirement.
+- Test source grounding, Profile evidence references, uncertainty, provider failures, stale-state handling, and repeatability of application-side categorical rules.
 - Record supported industries, vocabulary coverage, known limitations, and examples.
 
 **Acceptance criteria**
-- Extraction and comparison are deterministic, explainable, and reviewed against labelled examples.
+- AI-assisted semantic extraction and comparison are explainable, evidence-grounded, and reviewed against labelled examples.
 - False-positive behaviour for mandatory requirements is explicitly assessed.
 - Can't verify and missing evidence are not treated as negative proof.
 - Matching integrates with Discovery and is reusable by CV Studio.
@@ -233,15 +227,14 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ## Initial role-family vocabulary
 
-The initial proposed families are Software & IT, Engineering, Finance & Accounting, Administration, Healthcare, Sales & Marketing, Human Resources, Operations & Logistics, Education, Hospitality, and Security. This list is a starting vocabulary, not an exhaustive taxonomy. Use explicit keywords with word boundaries; ambiguous titles return unclassified. Final terms and overlap precedence require C01 review.
+The initial proposed families are Software & IT, Engineering, Finance & Accounting, Administration, Healthcare, Sales & Marketing, Human Resources, Operations & Logistics, Education, Hospitality, and Security. This list is an optional contextual aid, not an exhaustive taxonomy or a classification gate. AI must compare actual responsibilities and capabilities even when a title is unfamiliar, ambiguous, or belongs to another industry. Do not require exact family assignment or title-keyword matching before semantic comparison.
 
 ## Decisions still required at M3-C01
 
 1. Whether a higher NQF level can satisfy a lower-level requirement when qualification types or fields differ. Recommendation: not automatically; compare qualification type and field, and require explicit employer equivalence or validated mapping.
 2. How to interpret “degree or equivalent experience”. Recommendation: allow experience as an alternative only when the advert explicitly permits it, with a separately agreed relevant-experience rule.
-3. Final role-family list, keywords, and precedence where a title matches multiple families.
-4. Exact mandatory/preferred/uncertain phrase rules and treatment of context-dependent wording.
-5. Whether the proposed tiers are accepted as written and the three relevance classifications and sort behaviour.
-6. How target-role preference contributes, if at all, without becoming a hard filter.
+3. Exact mandatory/preferred/uncertain phrase rules and treatment of context-dependent wording.
+4. Evaluation examples for transferable skills and cross-title/cross-industry equivalence.
+5. How target-role preference contributes as a soft contextual signal without becoming a hard filter.
 
-C01 remains in progress for the unresolved vocabulary and detailed parsing boundaries. The user-approved relevance classifications and catalogue-ordering rules are sufficient to proceed with the separately scoped C02 extraction implementation.
+C01 remains in progress for qualification equivalence, requirement interpretation, and representative semantic evaluation cases. The user-approved Match / Relevant / Unclassified labels and catalogue-ordering rules are sufficient to proceed with AI-assisted C02/C04 implementation. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
