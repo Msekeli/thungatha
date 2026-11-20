@@ -23,7 +23,7 @@ export function ProfileEditorFields({
 }: {
   profile: UserProfileDto;
   onChange: (updated: UserProfileDto) => void;
-  onSave: () => void;
+  onSave: (updated?: UserProfileDto) => void;
   saving: boolean;
 }) {
   const details = profile.personalDetails;
@@ -101,6 +101,7 @@ export function ProfileEditorFields({
         onCertsChange={(certifications) =>
           onChange({ ...profile, certifications })
         }
+        onCertsSave={(certifications) => onSave({ ...profile, certifications })
         onProjectsChange={(projects) => onChange({ ...profile, projects })}
         onSave={onSave}
         saving={saving}
