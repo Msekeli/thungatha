@@ -38,8 +38,12 @@ export function classifyJobRelevance(
   const mandatoryUncertain = mandatory.some((item) => item.outcome === "cant_tell");
 
   let classification: Relevance = "unclassified";
-  if (positive && mandatoryMet) classification = "relevant";
-  else if (positive && (mandatoryUncertain || mandatory.some((item) => item.outcome === "not_met"))) {
+  const mandatoryNotMet = mandatory.some((item) => item.outcome === "not_met");
+  if (positive && job.status === "partial" && mandatoryNotMet) {
+    classification = "partially_relevant";
+  } else if (positive && job.status === "complete" && mandatoryMet) {
+    classification = "relevant";
+  } else if (positive && job.status === "complete" && (mandatoryUncertain || mandatoryNotMet)) {
     classification = "partially_relevant";
   }
   return { classification, ruleVersion: "m3-c04-v1", requirements };
