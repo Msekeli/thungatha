@@ -69,20 +69,28 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
     });
   };
 
+  let inRequirementList = false;
   for (const sourceText of segments) {
-    if (!REQUIREMENT_CONTEXT.test(sourceText)) continue;
-    for (const match of sourceText.matchAll(/(?:at least|minimum of|minimum)\s+(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+)?experience/gi)) add("experience", match[1] + " years", sourceText);
-    for (const match of sourceText.matchAll(/\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\b/gi)) add("education", match[0], sourceText);
-    for (const match of sourceText.matchAll(/\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\b/gi)) add("certification", match[0].trim(), sourceText);
+    const hasRequirementContext = REQUIREMENT_CONTEXT.test(sourceText);
+    // Job descriptions often put "Your Experience:" or "experience with:"
+    // in a heading, then list skills in separate bullets. Keep that context
+    // for the following list items so relevant skills are not silently skipped.
+    if (hasRequirementContext && /:\\s*$/.test(sourceText)) inRequirementList = true;
+    else if (/^(responsibilities|your experience|requirements|what you bring|what you will do|qualifications)\\b/i.test(sourceText)) inRequirementList = true;
+    else if (/^(about us|about the company|our company|what we offer|benefits)\\b/i.test(sourceText)) inRequirementList = false;
+
+    if (!hasRequirementContext && !inRequirementList) continue;
+    for (const match of sourceText.matchAll(/(?:at least|minimum of|minimum)\\s+(\\d+)\\s+years?\\s+(?:of\\s+)?(?:relevant\\s+)?experience/gi)) add("experience", match[1] + " years", sourceText);
+    for (const match of sourceText.matchAll(/\\b(Matric|Grade 12|National Senior Certificate|NSC|diploma|degree|bachelor'?s degree|honours degree|master'?s degree)\\b/gi)) add("education", match[0], sourceText);
+    for (const match of sourceText.matchAll(/\\b(AWS Certified [A-Za-z0-9 -]+|Microsoft Certified [A-Za-z0-9 -]+|PMP|CISSP|CompTIA [A-Za-z0-9 +]+)\\b/gi)) add("certification", match[0].trim(), sourceText);
     for (const skill of SKILLS) if (hasExactTerm(sourceText, skill)) add("skill", skill, sourceText);
-    for (const match of sourceText.matchAll(/\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\b/gi)) add("licence", match[0], sourceText);
-    if (/\b(fluent in|proficient in)\b/i.test(sourceText)) {
+    for (const match of sourceText.matchAll(/\\b(valid [A-Z]{1,3} driver'?s licence|driver'?s licence|professional registration|registered with [A-Z][A-Za-z ]+)\\b/gi)) add("licence", match[0], sourceText);
+    if (/\\b(fluent in|proficient in)\\b/i.test(sourceText)) {
       for (const language of ["English", "Afrikaans", "isiXhosa", "isiZulu"]) {
         if (hasExactTerm(sourceText, language)) add("language", language, sourceText);
       }
     }
   }
-
   return jobRequirementsSchema.parse({
     schemaVersion: 1, extractionVersion: "m3-c02-v2", descriptionHash,
     roleFamily: inferRoleFamily(description, title),
