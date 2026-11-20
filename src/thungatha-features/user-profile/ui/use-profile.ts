@@ -63,7 +63,7 @@ export function useProfile() {
       setMessage(
         result.profile.confirmedAt
           ? "Profile confirmed and saved."
-          : "Draft saved. You can continue editing your profile at any time.",
+          : "Changes saved. Your profile remains a draft until you confirm it.",
       );
       return true;
     } finally {
