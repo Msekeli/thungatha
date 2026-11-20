@@ -1,11 +1,10 @@
 import "server-only";
-
 import type { AiCompletionRequest, AiCompletionResult, AiProviderAdapter } from "../contracts";
 import { AiProviderError } from "../errors";
 import { ollamaHttpError, readOllamaResponse } from "./ollama-local-protocol";
 
 const DEFAULT_BASE_URL = "http://127.0.0.1:11434";
-const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_TIMEOUT_MS = 90_000;
 
 export interface OllamaLocalAdapterOptions {
   baseUrl?: string;
@@ -13,9 +12,7 @@ export interface OllamaLocalAdapterOptions {
   fetcher?: typeof fetch;
 }
 
-export function createOllamaLocalAdapter(
-  options: OllamaLocalAdapterOptions = {},
-): AiProviderAdapter {
+export function createOllamaLocalAdapter(options: OllamaLocalAdapterOptions = {}): AiProviderAdapter {
   const fetcher = options.fetcher ?? fetch;
   return {
     provider: "ollama-local",
@@ -33,7 +30,7 @@ export function createOllamaLocalAdapter(
           signal: AbortSignal.timeout(request.timeoutMs ?? DEFAULT_TIMEOUT_MS),
           body: JSON.stringify({
             model,
-            think: false,
+            ...(request.reasoning !== undefined ? { think: request.reasoning } : {}),
             messages: [
               { role: "system", content: request.systemPrompt },
               { role: "user", content: request.userPrompt },
@@ -45,10 +42,9 @@ export function createOllamaLocalAdapter(
         });
       } catch (cause) {
         const timedOut = cause instanceof Error && cause.name === "TimeoutError";
-        throw new AiProviderError(
-          timedOut ? "Ollama request timed out." : "Ollama is unavailable.",
-          { code: timedOut ? "timeout" : "unavailable", provider: "ollama-local", retryable: true, cause },
-        );
+        throw new AiProviderError(timedOut ? "Ollama request timed out." : "Ollama is unavailable.", {
+          code: timedOut ? "timeout" : "unavailable", provider: "ollama-local", retryable: true, cause,
+        });
       }
       if (!response.ok) throw ollamaHttpError(response.status, response.headers.get("retry-after"));
       return readOllamaResponse(response);
