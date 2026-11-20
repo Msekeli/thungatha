@@ -54,8 +54,8 @@ export function PublicJobOpportunityCard({
       </div>
       <div className="th-job-card__body">
         {(job.location_text?.trim() ||
-          job.matchClassification === "relevant" ||
-          job.matchClassification === "partially_relevant") && (
+          job.matchClassification === "match" ||
+          job.matchClassification === "relevant") && (
           <div className="th-job-card__metadata">
             {job.location_text?.trim() && (
               <span className="th-job-card__location">
@@ -63,11 +63,11 @@ export function PublicJobOpportunityCard({
                 <span>{job.location_text}</span>
               </span>
             )}
-            {job.matchClassification === "relevant" && (
-              <span className="th-tag" data-tone="success">Relevant</span>
+            {job.matchClassification === "match" && (
+              <span className="th-tag" data-tone="success">Match</span>
             )}
-            {job.matchClassification === "partially_relevant" && (
-              <span className="th-tag" data-tone="warning">Partially relevant</span>
+            {job.matchClassification === "relevant" && (
+              <span className="th-tag" data-tone="info">Relevant</span>
             )}
           </div>
         )}
