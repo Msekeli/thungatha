@@ -50,7 +50,7 @@ export function ProfileEditorSidebar({
       required: false,
     },
     {
-      label: "Languages and personal attributes",
+      label: "Languages and professional strengths",
       done: profile.languages.length + profile.personalAttributes.length > 0,
       required: false,
     },
