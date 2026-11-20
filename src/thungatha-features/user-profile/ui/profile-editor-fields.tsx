@@ -118,7 +118,7 @@ export function ProfileEditorFields({
         />
       </ProfileAccordion>
       <ProfileAccordion
-        title="Languages and personal strengths"
+        title="Interests and hobbies"
         description="Optional — what you enjoy doing outside work"
         onSave={onSave}
         saving={saving}
