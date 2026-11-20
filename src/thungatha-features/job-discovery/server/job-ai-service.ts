@@ -66,16 +66,10 @@ export async function assessJobWithAi(
     userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence, candidateFacts: { knownEmploymentMonths: facts.knownEmploymentMonths, employmentEvidenceRefs: facts.employmentEvidenceRefs, unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs, targetRole: facts.targetRole } }),
   });
   const assessmentInput = parse(response.content, matchAssessmentInputSchema);
-  const jobRefs = new Set(jobEvidence.map((item) => item.id));
-  const profileRefs = new Set(profileEvidence.map((item) => item.id));
-  const allJobRefs = assessment.requirements.flatMap((item) => item.jobEvidenceRefs).concat(assessment.gaps.flatMap((item) => item.jobEvidenceRefs));
-  const allProfileRefs = assessment.requirements.flatMap((item) => item.profileEvidenceRefs).concat(assessment.gaps.flatMap((item) => item.profileEvidenceRefs));
-  if (!assertEvidenceReferences(allJobRefs, jobRefs) || !assertEvidenceReferences(allProfileRefs, profileRefs)) {
-    throw new Error("AI assessment referenced evidence outside the supplied job description or confirmed Profile.");
-  }
-  if (assessment.classification !== "unclassified" &&
-      (!allJobRefs.length || !allProfileRefs.length)) {
-    throw new Error("AI assessment cannot be classified without traceable job and Profile evidence.");
-  }
+  const assessment = validateAndClassifyAssessment(
+    assessmentInput,
+    new Set(jobEvidence.map((item) => item.id)),
+    new Set(profileEvidence.map((item) => item.id)),
+  );
   return { assessment, provider: response.provider, model: response.model };
 }
