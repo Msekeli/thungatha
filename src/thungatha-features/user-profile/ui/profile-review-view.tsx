@@ -41,7 +41,7 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
       <CvSection title="Personal details" onEdit={onEdit}>
         <p>{details.fullName || "Name not provided"}</p>
         <p>{contact || "Contact details not provided"}</p>
-        <p>{[details.residentialSuburb, details.residentialCity, details.residentialProvince, details.country].filter(Boolean).join(", ")}</p>
+        <p>{[details.residentialSuburb, details.residentialCity, details.residentialProvince, details.country].filter(Boolean).join(", ")}</p>\n        <p><strong>Home language:</strong> {profile.languages[0] || "Not specified"}</p>\n        <p><strong>Additional languages:</strong> {profile.languages.slice(1).join(", ") || "None added"}</p>
       </CvSection>
       <CvSection title="Work experience" onEdit={onEdit}>
         {profile.workExperience.length ? profile.workExperience.map((item) => (
