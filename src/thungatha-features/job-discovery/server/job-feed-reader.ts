@@ -36,7 +36,6 @@ export async function readJobFeed(
   userId: string | null,
   input: JobFeedQuery,
   statesOnly: boolean,
-  _getToken?: () => Promise<string | null>,
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
 
