@@ -408,6 +408,22 @@ When a decision is approved or changed:
 - **Consequences:** The Ollama Local adapter must support task-specific reasoning configuration. Feature-specific AI integrations must preserve source evidence and explicitly handle missing information. Provider-specific reasoning controls for Gemini and Groq must be evaluated when those adapters are implemented; this decision does not assume their APIs use Ollama's setting.
 - **Review trigger:** Representative evaluation shows that task-specific model capabilities are insufficient, provider reasoning controls change, or the source-grounding and evidence-validation requirements need revision.
 
+### D-051 — Contextual interpretation without restrictive matching gates
+
+- **Date:** 2026-11-21
+- **Status:** Confirmed
+- **Context:** The existing M3 prototype uses regex extraction, a fixed skill list, title/role-family inference, exact matching, and rigid requirement handling. These rules can misinterpret job descriptions, exclude transferable experience, and distort categorical relevance when a single extracted field is treated as decisive.
+- **Decision:**
+  - AI must interpret the complete job description and compare the actual work with confirmed Profile evidence. No fixed skill dictionary, regex pattern set, exact-string evaluator, title taxonomy, or role-family vocabulary may act as the semantic decision engine.
+  - Qualifications, experience durations, certifications, licences, school marks, mandatory/preferred wording, and alternative pathways must be interpreted in the full advert and candidate context. No single extracted requirement or phrase is an automatic rejection gate.
+  - Preserve meaningful distinctions between evidence types, but do not impose universal equivalence or substitution rules. Explain direct evidence, transferable relevance, material gaps, contradictions, and uncertainty.
+  - Missing Profile information is not proof of inability or failure. It means the capability is not demonstrated in the available confirmed evidence.
+  - Retain deterministic application safeguards: schema and evidence-reference validation, identity, authorization, ownership, persistence, freshness, idempotency, sorting, and state transitions.
+  - Legacy regexes, aliases, role-family data, and fixed mappings may remain only for narrow syntax validation, display normalization, or migration compatibility where they cannot influence semantic interpretation or the final category.
+- **Rationale:** The product must assess the substance of work rather than mechanically reward familiar wording or reject candidates because their experience is described differently.
+- **Consequences:** Update the product specification, architecture, M3 milestone, implementation plan, AI guidance, and agent instructions. Retire the legacy semantic gates as part of M3 implementation; do not delete unrelated validation, source normalization, user-selected discovery filters, or security safeguards.
+- **Review trigger:** Representative evaluation shows material false positives/negatives or the user explicitly changes the approved interpretation approach.
+
 ### D-050 — Semantic, evidence-grounded AI job matching without scores
 
 - **Date:** 2026-11-21
