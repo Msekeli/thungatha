@@ -249,16 +249,29 @@ A source list found in research is not automatically approved. Confirm source-sp
 
 ## 10. AI provider boundary
 
-Use a provider-independent server-side interface only for concrete tasks that need AI. Gemini is the initial primary option; Groq is an alternative for supported tasks. Camber and Ollama remain optional experiments, not required runtime dependencies.
+AI is integrated as a server-side application capability for concrete Thungatha workflows: job-fit analysis, CV improvement and career-related assistance. It must not become the authority for professional facts, authorization, persistence or state transitions.
 
-- Validate all structured output.
-- Apply timeouts and bounded retries only for transient failures.
-- Treat output as a suggestion and never as authorization or unquestioned truth.
-- Keep keys server-side.
-- Avoid sending CVs or unnecessary personal data during M1.
-- Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled.
+### Provider/runtime roles
+
+- **Gemini:** primary hosted AI provider for supported career workflows.
+- **Groq:** alternative hosted provider and optional fallback for supported models/tasks.
+- **Ollama:** local inference runtime for development and testing; not a required production dependency.
+- **Qwen 3.5 4B:** initial local model candidate run through Ollama. Validate quality and resource use before relying on it.
+- **Camber:** candidate cloud agent/workspace and compute environment for experiments or heavier processing. Do not assume it exposes a compatible inference API; verify interfaces, data handling, retention, quotas and costs before integration.
+
+Keep hosted provider SDKs behind a small server-side interface. Configure one primary provider and optional fallback; do not call both for every request. Select models per task based on quality, structured-output reliability, latency, privacy and cost. Keep API keys out of client code.
+
+### Data and safety boundary
+
+- Send only the minimum profile/CV and vacancy context required for the user's requested task. Review provider terms and privacy/consent implications before sending personal data.
+- Validate all structured responses against explicit runtime schemas using the existing Zod conventions.
+- Treat AI output as untrusted suggestions. It cannot invent credentials or experience, silently overwrite confirmed Profile/CV facts, change application status, submit applications or take irreversible actions.
+- Deterministic application code owns authorization, ownership checks, validation, matching calculations/rules, persistence, snapshots and state transitions.
+- Apply bounded input/output sizes, timeouts and transient retries. Handle provider failure, malformed output and quota exhaustion without corrupting user data.
+- Preserve the no-AI path for discovery, deterministic matching and user actions. AI being unavailable must not block unrelated core functionality.
 - Do not build a generic agent framework for the MVP.
 
+The confirmed product direction and tool roles are recorded in `DECISIONS.md` D-042. Exact model selection and production provider configuration remain subject to implementation and privacy/cost validation.
 ## 11. CV files and storage
 
 When CV upload and export are implemented, use durable object storage approved for the project, such as Supabase Storage if suitable. Decide file type/size limits, access policies, signed URLs, retention, deletion, and privacy behaviour before release. Do not rely on the function's local filesystem for durable storage.
