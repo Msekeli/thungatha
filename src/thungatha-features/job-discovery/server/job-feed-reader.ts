@@ -13,12 +13,12 @@ type FeedJob = {
   id: string;
   published_at?: string | null;
   updated_at?: string | null;
+  extracted_requirements?: unknown;
   matchClassification?: Relevance;
   [key: string]: unknown;
 };
 
 const RELEVANCE_CATALOGUE_LIMIT = 5000;
-const REQUIREMENT_LOOKUP_BATCH_SIZE = 250;
 
 function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
@@ -70,48 +70,12 @@ function relevanceOrder(a: FeedJob, b: FeedJob) {
   );
 }
 
-async function classifyJobs(
-  db: SupabaseClient,
+function classifyJobs(
   jobs: FeedJob[],
   candidate: NonNullable<Awaited<ReturnType<typeof readCandidateFacts>>>,
-): Promise<FeedJob[]> {
-  if (!jobs.length) return jobs;
-  const ids = jobs.map((job) => job.id);
-  const requirementRows: { id: string; extracted_requirements: unknown }[] = [];
-
-  try {
-    for (
-      let index = 0;
-      index < ids.length;
-      index += REQUIREMENT_LOOKUP_BATCH_SIZE
-    ) {
-      const batch = ids.slice(index, index + REQUIREMENT_LOOKUP_BATCH_SIZE);
-      const { data, error } = await db
-        .from("jobs")
-        .select("id,extracted_requirements")
-        .in("id", batch);
-      if (error) throw error;
-      requirementRows.push(
-        ...((data ?? []) as { id: string; extracted_requirements: unknown }[]),
-      );
-    }
-  } catch {
-    // Matching is optional. A missing migration or unavailable requirement
-    // store must never make the underlying job feed unavailable.
-    return jobs.map((job) => ({
-      ...job,
-      matchClassification: "unclassified",
-    }));
-  }
-
-  const requirementsById = new Map(
-    requirementRows.map((row) => [row.id, row.extracted_requirements]),
-  );
-
+): FeedJob[] {
   return jobs.map((job) => {
-    const parsed = jobRequirementsSchema.safeParse(
-      requirementsById.get(job.id),
-    );
+    const parsed = jobRequirementsSchema.safeParse(job.extracted_requirements);
     const classification: Relevance = parsed.success
       ? classifyJobRelevance(candidate, parsed.data).classification
       : "unclassified";
@@ -266,7 +230,7 @@ export async function readJobFeed(
     state: stateByJob.get(job.id) ?? null,
   }));
 
-  if (candidate) jobs = await classifyJobs(db, jobs, candidate);
+  if (candidate) jobs = classifyJobs(jobs, candidate);
 
   if (rankWholeCatalogue) {
     jobs.sort(relevanceOrder);
