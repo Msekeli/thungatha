@@ -82,3 +82,33 @@ export async function getJobAiTaskStatus(input: {
   if (error) throw error;
   return (data?.status as "pending" | "processing" | "failed" | "completed" | undefined) ?? null;
 }
+
+
+export async function retryFailedJobAiTask(input: {
+  userId: string;
+  jobId: string;
+  profileVersion: number;
+  descriptionHash: string;
+}): Promise<boolean> {
+  const db = createServiceClient();
+  const { data, error } = await db.from("ai_task_queue")
+    .update({
+      status: "pending",
+      attempts: 0,
+      available_at: new Date().toISOString(),
+      locked_at: null,
+      last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("task_type", "job_fit_assessment")
+    .eq("user_id", input.userId)
+    .eq("job_id", input.jobId)
+    .eq("profile_version", input.profileVersion)
+    .eq("job_description_hash", input.descriptionHash)
+    .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+    .eq("status", "failed")
+    .select("id")
+    .maybeSingle();
+  if (error) throw error;
+  return Boolean(data);
+}
