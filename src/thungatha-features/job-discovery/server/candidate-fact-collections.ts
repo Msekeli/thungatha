@@ -8,8 +8,15 @@ import {
 import { parseEmploymentMonth } from "./candidate-fact-dates";
 
 export function deriveEmployment(profile: { workExperience: unknown[] }, asOfMonth: number) {
-  const employment = [];
-  const unknownEmploymentSourcePaths = [];
+  const employment: {
+    id: string;
+    jobTitle: string;
+    employer: string;
+    startMonth: number;
+    endMonth: number;
+    sourcePath: string;
+  }[] = [];
+  const unknownEmploymentSourcePaths: string[] = [];
   profile.workExperience.forEach((entry, index) => {
     const parsed = workExperienceItemSchema.safeParse(entry);
     if (!parsed.success) {
