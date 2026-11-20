@@ -1,7 +1,7 @@
 import type { CandidateFacts, RequirementOutcome } from "./relevance-classifier";
 import type { JobRequirement } from "./job-requirement-schema";
 
-const normalise = (value: string) => value.trim().toLowerCase().replace(/\\s+/g, " ");
+const normalise = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ");
 
 function skillKey(value: string) {
   const aliases: Record<string, string> = {
@@ -13,7 +13,7 @@ function skillKey(value: string) {
 }
 
 function experienceOutcome(candidate: CandidateFacts, value: string): RequirementOutcome {
-  const years = /^(\\d+) years?$/i.exec(value)?.[1];
+  const years = /^(\d+) years?$/i.exec(value)?.[1];
   if (!years) return "cant_tell";
   const requiredMonths = Number(years) * 12;
   if (candidate.knownEmploymentMonths >= requiredMonths) return "met";
@@ -47,8 +47,8 @@ export function evaluateRequirement(candidate: CandidateFacts, requirement: JobR
     const match = candidate.education.find((item) => {
       const qualification = normalise(item.qualification);
       if (schoolRequirement) return aliases.some((alias) => qualification.includes(alias));
-      if (value === "diploma") return /\\bdiploma\\b/.test(qualification);
-      if (value === "degree") return /\\bdegree\\b/.test(qualification);
+      if (value === "diploma") return /\bdiploma\b/.test(qualification);
+      if (value === "degree") return /\bdegree\b/.test(qualification);
       return qualification === value;
     });
     if (match) evidence.push(match.sourcePath);
