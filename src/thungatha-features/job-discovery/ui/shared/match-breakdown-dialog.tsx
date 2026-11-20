@@ -31,6 +31,8 @@ type Props = {
 export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "pending" | "failed" | "profile_unconfirmed" | "ready" | "error">("idle");
   const [assessment, setAssessment] = useState<MatchAssessment | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !jobId) return;
@@ -61,6 +63,27 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
 
     return () => controller.abort();
   }, [open, jobId]);
+
+  async function retryAssessment() {
+    if (!jobId || isRetrying) return;
+    setIsRetrying(true);
+    setRetryError(null);
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/match-assessment`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(result?.error ?? "The assessment could not be retried.");
+      }
+      setAssessment(null);
+      setStatus("pending");
+    } catch (error) {
+      setRetryError(error instanceof Error ? error.message : "The assessment could not be retried.");
+    } finally {
+      setIsRetrying(false);
+    }
+  }
 
   const classificationLabel = assessment?.classification === "match"
     ? "Match"
@@ -99,6 +122,10 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
           <div>
             <h3 className="mb-1 font-semibold">Assessment could not be completed</h3>
             <p className="text-fg-muted">The background assessment exhausted its retry attempts. Your Profile and this job are still available; the match assessment is not currently available.</p>
+            <Button className="mt-3" size="sm" onClick={retryAssessment} disabled={isRetrying}>
+              {isRetrying ? "Retrying…" : "Retry assessment"}
+            </Button>
+            {retryError && <p role="alert" className="mt-2 text-fg-muted">{retryError}</p>}
           </div>
         )}
         {status === "profile_unconfirmed" && (
