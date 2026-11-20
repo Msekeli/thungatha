@@ -2,11 +2,11 @@
 
 **Document status:** Working product authority for review  
 **Version:** 1.0  
-**Last updated:** 15 October 2026
+**Last updated:** 21 November 2026
 
 ## 1. Purpose
 
-Thungatha is a job-search workspace that helps a person discover relevant opportunities, understand how their confirmed experience fits a role, prepare accurate CVs, and manage applications through to an outcome.
+Thungatha is an AI-powered job-search and application-management platform. It helps people discover opportunities, understand job requirements, interpret how their confirmed experience and transferable skills relate to different roles, prepare accurate tailored CVs, and manage applications through to an outcome. AI is a core product capability used for contextual understanding and assistance; it is not limited to optional text extraction.
 
 The product is one application with three primary experiences:
 
@@ -25,7 +25,8 @@ Supporting areas are Profile and Account. Matching is a shared capability used b
 - **Traceability:** job-fit explanations should link to evidence. Application records should preserve what was submitted and which CV version was used.
 - **No false completion claims:** opening an employer's application page does not mean an application was submitted.
 - **Privacy by default:** user-owned records are protected by server-side identity and ownership checks.
-- **Resilience:** core discovery and record-management workflows should not depend on an AI provider being available.
+- **AI as a core capability:** use AI for tasks that require contextual language understanding, semantic interpretation, comparison, synthesis, and user-facing assistance. Do not replace these tasks with keyword-only or title-only rules merely to avoid AI integration.
+- **Resilience:** core discovery and record-management workflows should remain usable when an AI provider is unavailable. AI-dependent capabilities must expose clear unavailable/retry states rather than fabricate deterministic substitutes.
 - **Incremental delivery:** the six approved milestones are the delivery sequence. Do not expand or reorder them without explicit agreement.
 
 ## 3. Main experiences and routes
@@ -87,22 +88,41 @@ The Profile is the authoritative source for confirmed professional facts: work h
 
 Profile and CV import are delivered in M2. The current profile implementation is foundation code to reuse and extend after inspecting it, not a reason to rebuild the foundation.
 
-## 6. Matching and fit analysis
+## 6. Job understanding, matching and relevance
 
-Matching is a shared capability used by Job Discovery and CV Studio. A separate top-level route is not required initially.
+Matching is a shared AI-powered capability used by Job Discovery and CV Studio. It is not a separate top-level route.
 
-- Extract role requirements into structured, validated data.
-- Map requirements to evidence in the user's confirmed Profile.
-- Classify each requirement as **Confirmed**, **Inferred**, **Missing**, or **Can't verify**.
-- Confirmed evidence receives full credit under the agreed scoring rules.
-- Inferred evidence may receive half credit provisionally, with the uncertainty explained.
-- Missing evidence is not the same as “Can't verify.”
-- “Can't verify” is excluded from the score rather than treated as a negative.
-- Explain how the score was produced and show supporting evidence.
-- Present the result as an estimate of evidence-based fit, not a probability of being hired.
-- Recalculate or mark the result stale when the job description or confirmed profile changes.
+AI is responsible for understanding the meaning of a job description and comparing that meaning with the user's confirmed professional evidence. This includes responsibilities, skills, technologies and tools, experience, qualifications, certifications, languages, transferable skills, and relevant domain context. The comparison must recognise equivalent work expressed through different job titles and terminology, including related work across industries.
 
-Final weights and thresholds must be specified and tested in M3 before being treated as fixed product rules.
+Job titles and role-family labels are contextual signals only. They must never be hard gates or the deciding factor. Two roles with different titles may be a strong match when their actual responsibilities, required capabilities, and work are substantially aligned. Conversely, similar titles do not prove that the work is equivalent.
+
+### Assessment approach
+
+- Use AI to interpret unstructured job descriptions, identify explicit and implicit context without inventing requirements, understand relationships between responsibilities and capabilities, and semantically compare the role with confirmed Profile evidence.
+- Preserve source evidence for every extracted job requirement, including the source description and supporting text snippet or reference.
+- Ground candidate-side claims in confirmed Profile evidence and retain the exact Profile field/evidence references. Imported CV content remains a draft until the user confirms it.
+- Distinguish evidence states as **Confirmed**, **Inferred**, **Missing**, or **Can't verify** where applicable. An inference must be labelled and explained; it must not be promoted to confirmed fact.
+- Consider transferable skills and equivalent responsibilities even when wording, job title, seniority labels, or industry differ. Explain the basis and any limits of the comparison.
+- Missing Profile information is not evidence that the person lacks the requirement. Contradictory or ambiguous evidence must remain visible as uncertainty.
+- Validate AI output against feature-owned schemas and verify all evidence references in application code. Treat model output as untrusted data, not as an instruction or authority.
+- Application code applies the approved categorical business rules, enforces evidence requirements, authorization, persistence, freshness, and sorting. It must not substitute a keyword-only comparison for the AI semantic assessment.
+- Explain why a role is a **Match**, **Relevant**, or **Unclassified**, citing job-side and candidate-side evidence. Do not present a hiring prediction.
+
+### Approved result labels
+
+- **Match:** strong, supported alignment with the central work and core/mandatory requirements, grounded in confirmed Profile evidence. A different job title or industry does not prevent this result when the underlying work and capabilities align.
+- **Relevant:** meaningful supported alignment exists, including transferable skills or related responsibilities, but material gaps, unknowns, or incomplete evidence prevent a strong Match conclusion.
+- **Unclassified:** available evidence is insufficient, ambiguous, unsupported, or materially contradictory. Do not show a badge for this state.
+
+Only these three labels are permitted. Do not create intermediate labels, hidden ranking scores, numerical scores, percentages, weights, thresholds, weighted totals, score bands, fit points, or hiring-probability estimates. Do not persist, return, display, or sort by a numerical matching score.
+
+### Sorting and freshness
+
+- "Most relevant" orders the full filtered catalogue by **Match**, then **Relevant**, then **Unclassified**. Within each category, retain the agreed stable tie-breakers, including publication date.
+- Newest and Oldest remain date sorts and do not depend on Profile availability.
+- Candidate-specific results require a confirmed Profile. Without one, do not fabricate a personalised result; use the agreed newest-first fallback.
+- Reassess or mark results stale when the job description, confirmed Profile, AI task/prompt/schema version, or applicable business rules change.
+- If AI analysis is unavailable or cannot be validated, show the analysis as unavailable or unclassified and keep the job feed usable. Do not silently fall back to title or keyword matching and present it as equivalent AI analysis.
 
 ## 7. CV Studio
 
@@ -180,20 +200,33 @@ After authentication, navigation should make Job Discovery, CV Studio, and Job T
 
 Account settings and preferences are delivered in M6. Do not invent account features beyond those agreed in the product requirements and M6 checkpoint document.
 
-## 10. AI behaviour and provider strategy
+## 10. AI product strategy and provider boundary
 
-AI is an assistive capability, not the authority for identity, access, persistence, or deterministic business rules.
+AI is a first-class product capability in Thungatha. It should materially improve the user's ability to understand opportunities, recognise relevant experience, and prepare accurate application materials. It is not merely a future enhancement or a thin extraction layer around otherwise keyword-driven features.
 
-Initial provider options recorded in project research:
+### Core AI responsibilities
 
-- **Gemini API:** primary option for supported structured interpretation/extraction tasks.
-- **Groq:** alternative provider for supported models/tasks and fallback experiments.
-- **Camber:** optional experimentation; do not assume it is a drop-in inference API.
-- **Ollama:** optional local experimentation, not a runtime requirement.
+- **Job Discovery and matching (M3):** understand job descriptions semantically; identify responsibilities, skills, technologies, qualifications, experience and context; compare roles with confirmed Profile evidence; recognise equivalent work across different titles and industries; identify transferable skills; and produce evidence-grounded Match, Relevant, or Unclassified explanations.
+- **CV Studio (M4):** assist with role-specific CV recommendations, tailoring, restructuring, and wording using only confirmed facts. Users review proposed changes. AI must not fabricate or silently overwrite the master CV.
+- **Profile and CV import (M2):** the current approved PDF-import checkpoint remains governed by its explicit local extraction and privacy constraints. AI-based interpretation of imported personal data is not automatically enabled by this product strategy; it requires a separately approved task, privacy review, and user-facing confirmation flow.
+- **Other experiences:** add AI assistance only where an agreed user problem benefits from it. Do not invent autonomous actions or allow AI to submit applications, change application status, or make irreversible decisions.
 
-Keep provider-specific SDKs and keys behind server-side adapters. Validate structured output (using the project's established Zod conventions), set timeouts, and retry only bounded transient failures. Record useful failure metadata without logging secrets or unnecessary personal data.
+### AI implementation principles
 
-Do not send CVs or other personal data to an AI provider unless the task, data sent, provider terms, and privacy/consent implications have been reviewed. Core non-AI paths must remain useful when AI is disabled.
+- Use AI for semantic understanding, contextual interpretation, comparison, synthesis, and generation where these capabilities materially outperform brittle keyword or title rules.
+- Keep AI provider-neutral. Feature-owned use cases define their task prompts, input preparation, schemas, evidence requirements, and orchestration; shared infrastructure owns provider contracts, adapters, activation, routing, timeouts, and bounded retries.
+- Validate structured output with the owning feature's Zod schema and validate evidence references against trusted application data. Schema validity alone does not prove factual correctness.
+- Treat job descriptions, imported documents, user content, and model responses as untrusted data. External content must never override system or product instructions.
+- Send only task-required information. Do not send raw CVs or unnecessary personal data to hosted providers without a task-specific privacy review and appropriate user notice/consent.
+- Reuse valid prior results when the exact source content and task/schema version have not changed. Do not make repeated AI calls without a reason.
+- Use task-appropriate reasoning settings. Simple extraction or rewriting may use direct generation; semantic comparison must be allowed sufficient contextual interpretation and must be evaluated on representative cases. Do not globally disable model capabilities that a core product task requires.
+- Keep discovery, authentication, authorization, persistence, validation, and application lifecycle operations functional when AI is unavailable. AI-dependent features must fail honestly and recover safely; do not silently downgrade them to keyword-only logic.
+
+### Provider strategy
+
+Follow D-048 for explicit environment-specific activation: Ollama Local is the only enabled provider in local development; Gemini Developer API and Groq API are the hosted providers, subject to their available free-tier access. Provider activation is explicit and server-side. Never activate a provider merely because credentials exist, expose credentials to the browser, or silently fall back to paid usage. Ollama Cloud is not part of the current provider plan.
+
+Provider-specific SDKs and keys stay behind server-side adapters. Feature code must call the provider-neutral AI service and must not branch on provider names or environment names. Provider capabilities, context limits, response formats, and rate limits must be checked for the task. Preserve work when all enabled providers are unavailable and expose a clear failure state.
 
 ## 11. Security, privacy, and data ownership
 
