@@ -16,6 +16,7 @@ type Props = {
   matchOpen: boolean;
   setMatchOpen: Dispatch<SetStateAction<boolean>>;
   matchAnchorEl: HTMLElement | null;
+  matchJobId: string | null;
   applicationPromptAnchorEl: HTMLElement | null;
   showApplicationPrompt: boolean;
   stateBusy: boolean;
@@ -47,6 +48,7 @@ export function JobDiscoveryDialogs(props: Props) {
       <MatchBreakdownDialog
         open={props.matchOpen}
         anchorEl={props.matchAnchorEl}
+        jobId={props.matchJobId}
         onClose={() => props.setMatchOpen(false)}
       />
       <JobDismissalDialog
