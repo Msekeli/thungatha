@@ -71,7 +71,7 @@ async function processTask(db: ReturnType<typeof createServiceClient>, task: Que
     return "stale";
   }
 
-  let understandingResult = await db.from("job_ai_understandings")
+  const understandingResult = await db.from("job_ai_understandings")
     .select("understanding,provider,model")
     .eq("job_id", task.job_id)
     .eq("description_hash", task.job_description_hash)
