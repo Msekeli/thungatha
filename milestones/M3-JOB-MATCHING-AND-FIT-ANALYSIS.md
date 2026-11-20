@@ -112,6 +112,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Added a forward migration; it has not been applied to any database.
 - Extraction remains deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
 - Added tests for hashing, mandatory experience, punctuation-sensitive skills, incidental mentions, HTML list source snippets, preferred wording, duplicate skills, explicit language proficiency, role family, and unavailable descriptions. Tests have not been run.
+- Added a protected, cursor-paginated backfill endpoint for jobs already stored in `public.jobs`. It reads the existing title/description only, reuses the same deterministic extractor, and updates requirement JSON plus description hash/version/status in batches of 100. It does not call Scout or retrieve jobs from external sources. The endpoint requires `JOB_REQUIREMENTS_BACKFILL_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`; it has not been invoked. The migration remains unapplied until separately approved.
 
 **Exit criteria**
 - Requirements are schema-validated and traceable to source text.
