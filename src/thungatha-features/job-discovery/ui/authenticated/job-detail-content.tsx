@@ -29,7 +29,7 @@ export function AuthenticatedJobDetailContent({
     <JobDetailPresentation
       job={job}
       formatDate={formatDate}
-      headingAction={<JobDetailMatchSummary onViewMatch={onViewMatch} />}
+      headingAction={<JobDetailMatchSummary classification={job.matchClassification} onViewMatch={onViewMatch} />}
       actions={
         <div className="flex flex-col gap-2">
           <JobDetailActions
