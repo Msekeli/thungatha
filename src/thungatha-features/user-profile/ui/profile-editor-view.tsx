@@ -7,29 +7,21 @@ import {
 } from "../server/user-profile-schema";
 import { ProfileEditorFields } from "./profile-editor-fields";
 import { ProfileEditorSidebar } from "./profile-editor-sidebar";
-import { ProfileCvUpload } from "./profile-cv-upload";
-import type { ExtractedCvFields } from "./profile-cv-extraction";
 
 export function ProfileEditorView({
   profile,
   saving,
   onChange,
-  onSave,
-  onExtracted,
+  onReview,
 }: {
   profile: UserProfileDto;
   saving: boolean;
   onChange: (updated: UserProfileDto) => void;
-  onSave: () => void;
-  onExtracted: (fields: ExtractedCvFields) => void;
+  onReview: () => void;
   onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
-  const saveLabel = saving
-    ? "Saving…"
-    : complete
-      ? "Save Profile"
-      : "Save draft";
+  const reviewLabel = saving ? "Saving…" : complete ? "Review profile" : "Review draft";
   return (
     <div className="th-profile-editor-layout ml-0 mr-auto w-full max-w-none">
       <header className="th-profile-editor-heading border-b border-border pb-3">
@@ -43,10 +35,9 @@ export function ProfileEditorView({
       <div className="th-profile-editor-grid">
         <div className="th-profile-editor-main">
           <ProfileEditorFields profile={profile} onChange={onChange} />
-          <ProfileCvUpload onExtracted={onExtracted} />
           <div className="th-profile-mobile-actions pt-3">
-            <Button className="w-full" disabled={saving} onClick={onSave}>
-              {saveLabel}
+            <Button className="w-full" disabled={saving} onClick={onReview}>
+              {reviewLabel}
             </Button>
           </div>
         </div>
@@ -54,7 +45,7 @@ export function ProfileEditorView({
           <ProfileEditorSidebar
             profile={profile}
             saving={saving}
-            onSave={onSave}
+            onSave={onReview}
           />
         </aside>
       </div>
