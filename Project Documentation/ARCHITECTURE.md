@@ -249,13 +249,23 @@ A source list found in research is not automatically approved. Confirm source-sp
 
 ## 10. AI provider boundary
 
-Use a provider-independent server-side interface only for concrete tasks that need AI. Gemini is the initial primary option; Groq is an alternative for supported tasks. Camber and Ollama remain optional experiments, not required runtime dependencies.
+Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, provider selection, quota controls, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, and business decisions must not drift into a generic AI framework.
 
-- Validate all structured output.
-- Apply timeouts and bounded retries only for transient failures.
-- Treat output as a suggestion and never as authorization or unquestioned truth.
-- Keep keys server-side.
-- Avoid sending CVs or unnecessary personal data during M1.
+Approved provider direction:
+
+- **Ollama Local:** default for local development and evaluation; the developer already has it installed and configured.
+- **Gemini Developer API:** use only its free API tier and models currently eligible for that tier.
+- **Groq API:** use only its free API tier and models currently eligible for that tier.
+- **Ollama Cloud:** use only the free starter allowance and models currently included.
+
+Provider free limits are not uniform. They may be model-specific, daily, per-minute, rolling-window, or monthly, and can change. Do not assume that every provider resets monthly. Never silently fall back to paid usage.
+
+- Keep provider credentials server-side and validate all structured output with the owning feature's Zod schema.
+- Apply timeouts and bounded retries only for transient failures; respect provider retry-after information and quotas.
+- Treat AI output as untrusted suggestions, never as authorization or unquestioned truth.
+- Minimise personal data sent to cloud providers. Do not send raw CVs or full Profile records to a free-tier provider without an explicit privacy review and a task-specific need.
+- Keep predictable application operations deterministic. AI may assist with interpretation, extraction, reasoning, and generated user assistance; it does not own application rules.
+- Final job relevance classification, user ownership, authentication, persistence, and application state transitions remain deterministic application responsibilities.
 - Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled.
 - Do not build a generic agent framework for the MVP.
 

@@ -362,3 +362,15 @@ When a decision is approved or changed:
 - **Consequences:** The Profile API contract documents the merged validation and invalidation behaviour. The existing full-profile save flow already sends a timestamp for complete Profiles and null for incomplete ones.
 - **Validation:** Added integration tests for merged confirmation success and incomplete merged Profile rejection. Tests have not been run.
 - **Review trigger:** A future explicit draft-edit workflow or confirmation UX change that establishes a different, equally safe confirmation lifecycle.
+
+### D-047 — Provider-independent, free-tier AI foundation
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed direction
+- **Context:** Thungatha is an AI-powered job-search platform, but predictable application operations should remain ordinary application logic. AI should be introduced where interpretation, extraction, reasoning, or generated assistance provides measurable value. The project is intentionally using free AI offerings.
+- **Decision:** Put shared AI infrastructure under `src/lib/ai/`. Use a provider-neutral contract with separate adapters for the existing Ollama Local installation, Gemini Developer API, Groq API, and Ollama Cloud. Ollama Local is the default for local development. Cloud providers may be used only within their currently available free API allowances; no automatic paid fallback is permitted. Provider/model quotas must be represented according to their actual reset and rate-limit policies rather than assuming a monthly reset.
+- **Feature boundary:** Task-specific prompts, schemas, input preparation, and use-case orchestration stay in the owning feature. Validate every structured response with Zod. AI output is untrusted and cannot silently modify confirmed Profile data or decide application-owned business rules.
+- **Matching boundary:** AI-assisted extraction may be introduced behind validation and evidence checks. Final Match/Relevant/Unclassified classification and candidate-to-job comparisons remain deterministic application logic. This decision supersedes the rule-only extraction restriction in D-045 only to the extent that AI-assisted extraction is now permitted for separately reviewed use cases; it does not approve AI-based final matching.
+- **Privacy:** Minimise data sent to cloud providers. Do not send raw CVs or unnecessary personal data to free-tier providers without a task-specific privacy review.
+- **Consequences:** Provider adapters, quota-aware routing, task schemas, and feature integrations will be implemented incrementally and tested independently. Local development must remain possible without cloud credentials.
+- **Review trigger:** Free-tier policy changes, a provider's free API access being withdrawn, a new provider being proposed, or evaluation showing that AI does not improve a task enough to justify its complexity.
