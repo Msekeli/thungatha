@@ -67,7 +67,9 @@ export function ProfileForm({
       className={
         currentMode === "edit"
           ? "th-profile-form-state th-profile-form-state--edit"
-          : "space-y-4"
+          : currentMode === "view"
+            ? "th-profile-form-state th-profile-form-state--view"
+            : "space-y-4"
       }
     >
       {error && <Toast message={error} tone="error" onDismiss={dismissError} />}
