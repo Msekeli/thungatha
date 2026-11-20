@@ -101,7 +101,7 @@ export function ProfileEditorFields({
         onCertsChange={(certifications) =>
           onChange({ ...profile, certifications })
         }
-        onCertsSave={(certifications) => onSave({ ...profile, certifications })
+        onCertsSave={(certifications) => onSave({ ...profile, certifications })}
         onProjectsChange={(projects) => onChange({ ...profile, projects })}
         onSave={onSave}
         saving={saving}
