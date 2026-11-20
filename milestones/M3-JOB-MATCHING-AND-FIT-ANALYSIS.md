@@ -127,7 +127,11 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Profile confirmation now validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
 - A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
 - Added integration-test coverage for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
-- Candidate facts are not yet derived; this change only establishes a safer confirmation boundary.
+- Added pure `deriveCandidateFacts(profile, asOfDate)` derivation. It returns no facts for an unconfirmed or incomplete Profile and includes the Profile version and confirmation timestamp for traceability.
+- Derived facts preserve raw skills alongside exact canonical aliases, target-role preference, languages, academic education, and certifications as separate collections with Profile source paths.
+- Employment dates are parsed only for `YYYY-MM`, `YYYY-MM-DD`, and month-name/year formats. Current roles use the explicit `isCurrent` flag and supplied `asOfDate`; unsupported or invalid periods remain listed as unknown. Overlapping and adjacent known periods are merged before counting known employment months.
+- Added unit tests for confirmation gating, incomplete Profiles, overlapping employment periods, unparseable dates, punctuation-sensitive skill aliases, separate credential collections, target role, and languages. Tests have not been run.
+- Candidate fact derivation is an initial slice. It does not yet derive role-family evidence, NQF levels, subject marks, or qualification equivalence, and it does not classify job relevance.
 
 **Goal:** derive comparable facts from the complete confirmed Profile and map each requirement to its supporting evidence.
 
