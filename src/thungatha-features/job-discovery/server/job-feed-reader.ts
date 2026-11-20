@@ -273,9 +273,18 @@ export async function readJobFeed(
     jobs = jobs.slice(from, from + input.pageSize);
   }
 
+  const safeJobs = jobs.map((job) => {
+    const safeJob = { ...job };
+    delete safeJob.extracted_requirements;
+    delete safeJob.requirements_description_hash;
+    delete safeJob.requirements_extraction_version;
+    delete safeJob.requirements_extraction_status;
+    return safeJob;
+  });
+
   const total = count;
   return {
-    jobs,
+    jobs: safeJobs,
     page: input.page,
     pageSize: input.pageSize,
     total,
