@@ -29,7 +29,7 @@ type Props = {
 };
 
 export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) {
-  const [status, setStatus] = useState<"idle" | "loading" | "pending" | "profile_unconfirmed" | "ready" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "pending" | "failed" | "profile_unconfirmed" | "ready" | "error">("idle");
   const [assessment, setAssessment] = useState<MatchAssessment | null>(null);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
       .then(async (response) => {
         if (!response.ok) throw new Error("Assessment could not be loaded.");
         return response.json() as Promise<{
-          status: "pending" | "profile_unconfirmed" | "ready";
+          status: "pending" | "failed" | "profile_unconfirmed" | "ready";
           assessment?: MatchAssessment | null;
         }>;
       })
@@ -93,6 +93,12 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
           <div>
             <h3 className="mb-1 font-semibold">Assessment pending</h3>
             <p className="text-fg-muted">This job has been queued for AI assessment. It will appear here after background processing completes.</p>
+          </div>
+        )}
+        {status === "failed" && (
+          <div>
+            <h3 className="mb-1 font-semibold">Assessment could not be completed</h3>
+            <p className="text-fg-muted">The background assessment exhausted its retry attempts. Your Profile and this job are still available; the match assessment is not currently available.</p>
           </div>
         )}
         {status === "profile_unconfirmed" && (
