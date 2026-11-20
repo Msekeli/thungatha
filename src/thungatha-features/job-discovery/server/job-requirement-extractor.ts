@@ -8,7 +8,7 @@ import { hasExactTerm, sourceSegments } from "./job-requirement-text";
 type RoleFamily = NonNullable<JobRequirements["roleFamily"]>;
 
 const ROLE_FAMILY_SIGNALS: [RoleFamily, RegExp][] = [
-  ["software_it", /\b(c#|c\+\+|\.net|java|python|javascript|typescript|react|angular|vue|node\.js|sql|programming|codebase|code review|unit testing|software development|web development|frontend|front-end|backend|back-end|full.?stack|api integration|llm|rag|prompt engineering|machine learning|artificial intelligence|cloud platform|devops)\b/i],
+  ["software_it", /(?:\b(java|python|javascript|typescript|react|angular|vue|sql|programming|codebase|code review|unit testing|software development|web development|frontend|front-end|backend|back-end|full.?stack|api integration|llm|rag|prompt engineering|machine learning|artificial intelligence|cloud platform|devops)\b|(?<![A-Za-z0-9])c#(?![A-Za-z0-9])|(?<![A-Za-z0-9])c\+\+(?![A-Za-z0-9])|(?<![A-Za-z0-9])\.net(?![A-Za-z0-9])|\bnode\.js\b)/i],
   ["engineering", /\b(civil|mechanical|electrical|industrial|chemical) engineer(?:ing)?\b/i],
   ["finance_accounting", /\b(accountant|accounting|bookkeep|financial management|internal audit|auditor|payroll|taxation)\b/i],
   ["administration", /\b(administrator|administration|receptionist|office assistant|clerical)\b/i],
@@ -36,7 +36,7 @@ export function hashJobDescription(description: string) {
 
 function inferRoleFamily(description: string, title: string): RoleFamily | null {
   const weightedText = description
-    .split(/\n|\.|;|:/)
+    .split(/\n|;|:/)
     .filter((part) => /\b(requirements?|responsibilit|duties|skills?|technology|technical|experience|qualification|you will|what you will)\b/i.test(part))
     .join(" ");
   const evidence = weightedText || description;
