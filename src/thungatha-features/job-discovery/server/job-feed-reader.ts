@@ -77,9 +77,14 @@ function classifyJobs(
 ): FeedJob[] {
   return jobs.map((job) => {
     const parsed = jobRequirementsSchema.safeParse(job.extracted_requirements);
-    const classification: Relevance = parsed.success
-      ? classifyJobRelevance(candidate, parsed.data).classification
-      : "unclassified";
+    let classification: Relevance = "unclassified";
+    if (parsed.success) {
+      try {
+        classification = classifyJobRelevance(candidate, parsed.data).classification;
+      } catch {
+        // A single unsupported requirement must not interrupt job discovery.
+      }
+    }
     return { ...job, matchClassification: classification };
   });
 }
