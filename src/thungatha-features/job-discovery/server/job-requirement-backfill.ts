@@ -8,8 +8,8 @@ const PAGE_SIZE = 100;
 
 export async function backfillJobRequirements(afterId?: string | null) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Supabase service-role configuration is missing.");
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Supabase server-side secret configuration is missing.");
 
   const db = createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
