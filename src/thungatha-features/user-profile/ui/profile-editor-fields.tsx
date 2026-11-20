@@ -102,6 +102,8 @@ export function ProfileEditorFields({
           onChange({ ...profile, certifications })
         }
         onProjectsChange={(projects) => onChange({ ...profile, projects })}
+        onSave={onSave}
+        saving={saving}
       />
       <ProfileAccordion
         title="Preferred next role"
@@ -117,10 +119,9 @@ export function ProfileEditorFields({
       </ProfileAccordion>
       <ProfileAccordion
         title="Languages and personal strengths"
-        description="Languages you speak and professional qualities you want employers to know about"
+        description="Languages you speak and professional strengths such as communication, teamwork or problem-solving"
         onSave={onSave}
         saving={saving}
-        description="Languages and other relevant details"
         status={
           profile.languages.length + profile.personalAttributes.length
             ? "Added"
