@@ -182,19 +182,35 @@ Account settings and preferences are delivered in M6. Do not invent account feat
 
 ## 10. AI behaviour and provider strategy
 
-AI is an assistive capability, not the authority for identity, access, persistence, or deterministic business rules.
+AI is a meaningful user-facing capability in Thungatha, not merely an optional implementation detail. It assists users with career decisions and CV preparation, while deterministic application code remains authoritative for professional facts, authorization, validation, persistence and state changes.
 
-Initial provider options recorded in project research:
+### User-facing AI capabilities
 
-- **Gemini API:** primary option for supported structured interpretation/extraction tasks.
-- **Groq:** alternative provider for supported models/tasks and fallback experiments.
-- **Camber:** optional experimentation; do not assume it is a drop-in inference API.
-- **Ollama:** optional local experimentation, not a runtime requirement.
+- **Job-fit analysis:** compare the user's confirmed CV/Profile evidence against a selected vacancy. Explain matching evidence, gaps and uncertainty. Preserve the product's Confirmed, Inferred, Missing and Can't verify classifications. Present fit as an evidence-based estimate, not a hiring probability.
+- **CV improvement:** recommend targeted improvements for a selected vacancy using the user's confirmed experience and qualifications. Suggestions must not invent skills, credentials, dates, achievements or employment history.
+- **Career-related assistance:** provide relevant guidance grounded in the user's confirmed profile, goals and vacancy context. Distinguish user-provided facts from AI suggestions.
+- AI output is a proposal. The user remains in control of edits and decisions. AI must not silently overwrite confirmed Profile or master CV data, change application status, submit an application or take irreversible action.
 
-Keep provider-specific SDKs and keys behind server-side adapters. Validate structured output (using the project's established Zod conventions), set timeouts, and retry only bounded transient failures. Record useful failure metadata without logging secrets or unnecessary personal data.
+### AI technology roles
 
-Do not send CVs or other personal data to an AI provider unless the task, data sent, provider terms, and privacy/consent implications have been reviewed. Core non-AI paths must remain useful when AI is disabled.
+| Technology | Role in Thungatha |
+|---|---|
+| Google Gemini | Primary hosted AI provider for job-fit analysis, CV improvement and career-related assistance. |
+| Groq | Alternative hosted provider and optional fallback for supported tasks. |
+| Ollama | Local model runtime for development and testing; not a production hosted-provider dependency. |
+| Qwen 3.5 4B | Initial local model candidate run through Ollama to test prompts, structured outputs and Thungatha AI workflows. |
+| Camber | Candidate cloud agent/workspace and compute environment for experiments or heavier processing where useful. It is not assumed to be a drop-in inference API. |
 
+### Provider and privacy rules
+
+- Keep hosted provider keys and calls server-side behind a small replaceable provider interface. Configure one primary provider and an optional fallback; do not call every provider for every request.
+- Select the model for each task based on quality, structured-output reliability, latency, privacy, context limits and cost. Exact production model selection remains subject to validation.
+- Validate structured output using the project's established Zod conventions. Use bounded inputs, output tokens, timeouts and retries. Treat malformed or low-confidence output as a failure or review case, not as truth.
+- Do not send CVs or other personal data to a provider until the task, minimum data required, provider terms and privacy/consent implications have been reviewed. Never send unnecessary personal data.
+- Keep core discovery, deterministic matching rules, persistence and user actions functional when AI is disabled or unavailable.
+- Camber's exact interfaces, model access, data handling, retention, quotas and costs must be verified before integration.
+
+The shared provider/tooling decision is recorded in `../DECISIONS.md` (D-042). The implementation roadmap and evidence determine when each AI capability may be described as available.
 ## 11. Security, privacy, and data ownership
 
 - Resolve identity on the server using the authenticated Clerk identity.
