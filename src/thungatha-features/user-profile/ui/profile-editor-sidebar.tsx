@@ -1,8 +1,9 @@
 "use client";
 
-import { CheckCircle2, Circle, CircleDashed } from "lucide-react";
+import { AlertCircle, CheckCircle2, Circle, CircleDashed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  hasIncompleteEducation,
   isEducationComplete,
   isPersonalDetailsComplete,
 } from "./profile-completion-status";
@@ -24,6 +25,7 @@ export function ProfileEditorSidebar({
   const complete = profileCompletionSchema.safeParse(profile).success;
   const detailsDone = isPersonalDetailsComplete(d);
   const educationDone = isEducationComplete(profile.education);
+  const educationIncomplete = hasIncompleteEducation(profile.education);
   const items = [
     { label: "Personal details", done: detailsDone, required: true },
     {
@@ -36,7 +38,7 @@ export function ProfileEditorSidebar({
       done: profile.workExperience.length > 0,
       required: false,
     },
-    { label: "Education", done: educationDone, required: true },
+    { label: "Education", done: educationDone, incomplete: educationIncomplete, required: true },
     { label: "Skills", done: profile.skills.length > 0, required: false },
     {
       label: "Certifications and licences",
@@ -72,9 +74,11 @@ export function ProfileEditorSidebar({
         />
       </div>
       <ul className="th-profile-completion-list mt-4 space-y-3">
-        {items.map(({ label, done, required: isRequired }) => (
+        {items.map(({ label, done, incomplete, required: isRequired }) => (
           <li key={label} className="flex items-start gap-2 text-sm">
-            {done ? (
+            {incomplete ? (
+              <AlertCircle aria-label="Incomplete details" className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            ) : done ? (
               <CheckCircle2
                 aria-label="Complete"
                 className="mt-0.5 size-4 shrink-0 text-primary"
@@ -91,11 +95,11 @@ export function ProfileEditorSidebar({
               />
             )}
             <span
-              className={done ? "text-foreground" : "text-muted-foreground"}
+              className={incomplete ? "text-amber-700 dark:text-amber-400" : done ? "text-foreground" : "text-muted-foreground"}
             >
               {label}
               <span className="th-profile-completion-kind">
-                {done ? "Complete" : isRequired ? "Required" : "Optional"}
+                {incomplete ? "Incomplete" : done ? "Complete" : isRequired ? "Required" : "Optional"}
               </span>
             </span>
           </li>
