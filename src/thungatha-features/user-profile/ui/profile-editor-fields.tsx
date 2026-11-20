@@ -10,6 +10,10 @@ import { ProfileSkillsEditor } from "./profile-skills-editor";
 import { ProfileExtraSectionsEditor } from "./profile-extra-sections-editor";
 import { ProfileLanguageAttributesEditor } from "./profile-language-attributes-editor";
 import { ProfileAccordion } from "./profile-accordion";
+import {
+  isEducationComplete,
+  isPersonalDetailsComplete,
+} from "./profile-completion-status";
 
 export function ProfileEditorFields({
   profile,
@@ -19,23 +23,8 @@ export function ProfileEditorFields({
   onChange: (updated: UserProfileDto) => void;
 }) {
   const details = profile.personalDetails;
-  const detailsComplete = [
-    details.fullName,
-    details.email,
-    details.phone,
-    details.location,
-    details.country,
-    details.residentialSuburb,
-    details.residentialCity,
-    details.residentialProvince,
-  ].every((value) => Boolean(value?.trim()));
-  const educationComplete = profile.education.some((item) =>
-    Boolean(
-      item.educationLevel?.trim() &&
-      item.qualification.trim() &&
-      item.institution.trim(),
-    ),
-  );
+  const detailsComplete = isPersonalDetailsComplete(details);
+  const educationComplete = isEducationComplete(profile.education);
   return (
     <div className="th-profile-editor-fields space-y-3">
       <ProfileAccordion
