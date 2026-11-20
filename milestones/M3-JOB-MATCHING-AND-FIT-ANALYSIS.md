@@ -96,6 +96,18 @@ Missing Profile information is not evidence of a mismatch. Preferred requirement
 
 **Status:** In progress — deterministic extraction v2 exists as an interim implementation at Scout ingestion; it does not yet satisfy the approved semantic AI target.
 
+**Historical implementation record (2026-11-20; preserved for traceability)**
+- Added a Zod schema for versioned extraction results and individual requirement records.
+- Added SHA-256 description hashing and deterministic extraction for selected experience, qualification, named certification, canonical IT skill, licence/registration, and language patterns, plus title-based role-family vocabulary.
+- Extraction v2 segments HTML paragraphs/list items and sentence boundaries, retains the matching source segment, gates extraction on requirement-context wording, deduplicates repeated category/value pairs, and limits language extraction to explicit proficiency phrases. These rules reduce incidental mentions but do not eliminate all false positives.
+- Scout import reuses extraction only when both the exact description hash and extraction version match. The v2 version forces existing unchanged descriptions to be re-extracted on the next Scout import.
+- Added forward migrations for extraction persistence and for exposing the extracted requirement JSON, description hash, extraction version, and status through `job_discovery_feed`; neither migration has been applied to any database.
+- Extraction remains deliberately partial. It does not yet reliably parse subject-specific marks, AND/OR qualification pathways, work-mode/location constraints, or every industry vocabulary. These remain unclassified rather than inferred.
+- Added tests for hashing, mandatory experience, punctuation-sensitive skills, incidental mentions, HTML list source snippets, preferred wording, duplicate skills, explicit language proficiency, role family, and unavailable descriptions. Tests have not been run.
+- Added a protected, cursor-paginated backfill endpoint for jobs already stored in `public.jobs`. It reads the existing title/description only, reuses the same deterministic extractor, and updates requirement JSON plus description hash/version/status in batches of 100. It does not call Scout or retrieve jobs from external sources. The endpoint requires `JOB_REQUIREMENTS_BACKFILL_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`; it has not been invoked. The migration remains unapplied until separately approved.
+
+This implementation record documents the interim deterministic baseline only. It is not evidence that the approved AI semantic extraction and interpretation capability has been implemented.
+
 **Goal:** produce structured, reviewable, source-grounded understanding of job descriptions using AI-assisted semantic interpretation.
 
 **Work**
@@ -125,6 +137,18 @@ Missing Profile information is not evidence of a mismatch. Preferred requirement
 
 **Status:** In progress — pure candidate fact derivation and authenticated Profile read path are implemented; evidence mapping and coverage remain.
 
+**Implementation record (2026-11-20)**
+- Profile confirmation validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
+- A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
+- Integration-test coverage was added for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
+- Added pure `deriveCandidateFacts(profile, asOfDate)` derivation. It returns no facts for an unconfirmed or incomplete Profile and includes the Profile version and confirmation timestamp for traceability.
+- Derived facts preserve raw skills alongside exact canonical aliases, target-role preference, languages, academic education, and certifications as separate collections with Profile source paths.
+- Employment dates are parsed only for `YYYY-MM`, `YYYY-MM-DD`, and month-name/year formats. Current roles use the explicit `isCurrent` flag and supplied `asOfDate`; unsupported or invalid periods remain listed as unknown. Overlapping and adjacent known periods are merged before counting known employment months.
+- Unit tests cover confirmation gating, incomplete Profiles, overlapping employment periods, unparseable dates, punctuation-sensitive skill aliases, separate credential collections, target role, and languages. Tests have not been run.
+- Added `readCandidateFacts(userId, getToken, asOfDate)` as the server-side entry point. It reads only the authenticated user's Profile through the existing user-scoped repository, maps the saved row to the Profile DTO, and delegates to the pure derivation. It returns no candidate facts when no Profile exists or the Profile is unconfirmed/incomplete.
+- Candidate fact derivation is an initial slice. It does not yet derive role-family evidence, NQF levels, subject marks, or qualification equivalence, and it does not classify job relevance.
+
+
 **Goal:** derive reliable candidate facts from the complete confirmed Profile and map every comparison claim to its supporting evidence. These deterministic facts support, but do not replace, AI semantic interpretation.
 
 **Work**
@@ -145,6 +169,17 @@ Missing Profile information is not evidence of a mismatch. Preferred requirement
 ### M3-C04 — AI semantic evidence assessment and categorical classification
 
 **Status:** In progress — the existing deterministic comparison is an interim slice; AI semantic assessment and evidence validation remain outstanding.
+
+**Historical implementation record (2026-11-20; preserved as interim baseline)**
+- Added a pure classifier that consumes confirmed candidate facts and schema-validated extracted job requirements. It returns one categorical relevance label, a rule version, and requirement-level outcomes; it does not calculate a score.
+- Added deterministic comparisons for exact canonical skills, exact language names, exact named certifications, supported school-leaving aliases, generic diploma/degree type wording, and minimum whole-year experience requirements.
+- Experience uses merged known employment months. If known experience is below the threshold but one or more employment periods are unparseable, the outcome remains Can't tell; it becomes Not met only when all recorded employment periods are reliably known.
+- Unsupported categories and unverified qualification equivalence remain Can't tell. No NQF equivalence, subject-mark inference, role-family inference, or qualification substitution is attempted.
+- The interim classifier used the earlier Relevant / Partially relevant / Unclassified labels. D-050 supersedes those labels with Match / Relevant / Unclassified.
+- The current extractor emitted `partial` for every non-empty extraction, limiting the interim classifier's ability to return a positive result. This is a known limitation of the previous implementation, not a constraint on the approved AI semantic assessment.
+- The implementation is intentionally conservative. Requirement-level outcomes support only the evidence types listed above; unsupported categories remain Can't tell. Unit tests were added for exact skill evidence, missing skills, empty employment history, positive alignment with an unmet mandatory experience requirement, and unavailable/empty extraction. Tests have not been run.
+
+This record describes the earlier deterministic classifier only. It does not satisfy the approved semantic comparison requirement and must not be used as a substitute for AI assessment.
 
 **Interim implementation record (2026-11-20; deterministic classifier only, not acceptance of the AI target)**
 - A pure classifier currently compares a limited set of exact canonical skills, language names, named certifications, school-leaving aliases, generic qualification wording, and minimum experience requirements.
