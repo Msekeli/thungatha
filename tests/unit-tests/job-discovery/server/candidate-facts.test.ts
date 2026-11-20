@@ -64,6 +64,6 @@ describe("deriveCandidateFacts", () => {
       certifications: [{ id: "cert-1", type: "professional-certification", name: "AWS Certified Cloud Practitioner", issuer: "Amazon" }],
     }), "2026-11-20");
     expect(facts?.education[0].qualification).toBe("IT Diploma");
-    expect(facts?.certifications[0].name).toBe("AWS Certified Cloud Practitioner");
+    expect(facts?.certifications[0].name).toBe("AWS Certified Cloud Practitioner");\n    expect(facts?.nextRole).toBe("Frontend Developer");\n    expect(facts?.languages.map((language) => language.value)).toEqual(["English", "isiXhosa"]);
   });
 });
