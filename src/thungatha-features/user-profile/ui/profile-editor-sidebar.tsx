@@ -3,6 +3,10 @@
 import { CheckCircle2, Circle, CircleDashed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  isEducationComplete,
+  isPersonalDetailsComplete,
+} from "./profile-completion-status";
+import {
   profileCompletionSchema,
   type UserProfileDto,
 } from "../server/user-profile-schema";
@@ -18,23 +22,8 @@ export function ProfileEditorSidebar({
 }) {
   const d = profile.personalDetails;
   const complete = profileCompletionSchema.safeParse(profile).success;
-  const detailsDone = [
-    d.fullName,
-    d.email,
-    d.phone,
-    d.location,
-    d.country,
-    d.residentialSuburb,
-    d.residentialCity,
-    d.residentialProvince,
-  ].every((v) => Boolean(v?.trim()));
-  const educationDone = profile.education.some((e) =>
-    Boolean(
-      e.educationLevel?.trim() &&
-      e.qualification.trim() &&
-      e.institution.trim(),
-    ),
-  );
+  const detailsDone = isPersonalDetailsComplete(d);
+  const educationDone = isEducationComplete(profile.education);
   const items = [
     { label: "Personal details", done: detailsDone, required: true },
     {
