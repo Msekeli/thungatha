@@ -8,17 +8,17 @@ import { hasExactTerm, sourceSegments } from "./job-requirement-text";
 type RoleFamily = NonNullable<JobRequirements["roleFamily"]>;
 
 const ROLE_FAMILY_SIGNALS: [RoleFamily, RegExp][] = [
-  ["software_it", /(?:\b(java|python|javascript|typescript|react|angular|vue|sql|programming|codebase|code review|unit testing|software development|web development|frontend|front-end|backend|back-end|full.?stack|api integration|llm|rag|prompt engineering|machine learning|artificial intelligence|cloud platform|devops)\b|(?<![A-Za-z0-9])c#(?![A-Za-z0-9])|(?<![A-Za-z0-9])c\+\+(?![A-Za-z0-9])|(?<![A-Za-z0-9])\.net(?![A-Za-z0-9])|\bnode\.js\b)/i],
-  ["engineering", /\b(civil|mechanical|electrical|industrial|chemical) engineer(?:ing)?\b/i],
-  ["finance_accounting", /\b(accountant|accounting|bookkeep|financial management|internal audit|auditor|payroll|taxation)\b/i],
-  ["administration", /\b(administrator|administration|receptionist|office assistant|clerical)\b/i],
-  ["healthcare", /\b(nurse|doctor|medical|clinical|pharmacist|healthcare)\b/i],
-  ["sales_marketing", /\b(sales|marketing|brand management|account manager|business development)\b/i],
-  ["human_resources", /\b(human resources|\bhr\b|recruitment|talent acquisition)\b/i],
-  ["operations_logistics", /\b(logistics|warehouse|operations|supply chain|fleet management)\b/i],
-  ["education", /\b(teacher|lecturer|educator|teaching|curriculum)\b/i],
-  ["hospitality", /\b(hotel|hospitality|chef|waiter|restaurant)\b/i],
-  ["security", /\b(security officer|security guard|security operations)\b/i],
+  ["software_it", /\\b(software|software engineer|software developer|developer|development|programmer|programming|java|python|javascript|typescript|react|angular|vue|sql|codebase|code review|unit testing|web development|frontend|front-end|backend|back-end|full.?stack|api integration|llm|rag|prompt engineering|machine learning|artificial intelligence|cloud platform|devops)\\b|(?<![A-Za-z0-9])c#(?![A-Za-z0-9])|(?<![A-Za-z0-9])c\\+\\+(?![A-Za-z0-9])|(?<![A-Za-z0-9])\\.net(?![A-Za-z0-9])|\\bnode\\.js\\b/i],
+  ["engineering", /\\b(civil|mechanical|electrical|industrial|chemical) engineer(?:ing)?\\b/i],
+  ["finance_accounting", /\\b(accountant|accounting|bookkeep|financial management|internal audit|auditor|payroll|taxation)\\b/i],
+  ["administration", /\\b(administrator|administration|receptionist|office assistant|clerical)\\b/i],
+  ["healthcare", /\\b(nurse|doctor|medical|clinical|pharmacist|healthcare)\\b/i],
+  ["sales_marketing", /\\b(sales|marketing|brand management|account manager|business development)\\b/i],
+  ["human_resources", /\\b(human resources|\\bhr\\b|recruitment|talent acquisition)\\b/i],
+  ["operations_logistics", /\\b(logistics|warehouse|operations|supply chain|fleet management)\\b/i],
+  ["education", /\\b(teacher|lecturer|educator|teaching|curriculum)\\b/i],
+  ["hospitality", /\\b(hotel|hospitality|chef|waiter|restaurant)\\b/i],
+  ["security", /\\b(security officer|security guard|security operations)\\b/i],
 ];
 
 const SKILLS = ["C#", "C++", ".NET", "Node.js", "TypeScript", "JavaScript", "React", "Next.js", "SQL", "Python", "AWS", "Azure"];
@@ -54,7 +54,7 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
   const descriptionHash = hashJobDescription(description);
   if (segments.join(" ").length < 20) {
     return jobRequirementsSchema.parse({
-      schemaVersion: 1, extractionVersion: "m3-c02-v3", descriptionHash,
+      schemaVersion: 1, extractionVersion: "m3-c02-v4", descriptionHash,
       roleFamily: null, requirements: [], status: "unavailable",
     });
   }
@@ -72,7 +72,7 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
   let inRequirementList = false;
   for (const sourceText of segments) {
     const hasRequirementContext = REQUIREMENT_CONTEXT.test(sourceText);
-    // Carry a requirement heading's context into its separate bullet items.
+    // Keep headings such as "Your Experience:" active for the following bullets.
     if (hasRequirementContext && /:\s*$/.test(sourceText)) inRequirementList = true;
     else if (/^(responsibilities|your experience|requirements|what you bring|what you will do|qualifications)\b/i.test(sourceText)) inRequirementList = true;
     else if (/^(about us|about the company|our company|what we offer|benefits)\b/i.test(sourceText)) inRequirementList = false;
@@ -90,7 +90,7 @@ export function extractJobRequirements(description: string, title = ""): JobRequ
     }
   }
   return jobRequirementsSchema.parse({
-    schemaVersion: 1, extractionVersion: "m3-c02-v3", descriptionHash,
+    schemaVersion: 1, extractionVersion: "m3-c02-v4", descriptionHash,
     roleFamily: inferRoleFamily(description, title),
     requirements,
     status: requirements.length ? "partial" : "unavailable",
