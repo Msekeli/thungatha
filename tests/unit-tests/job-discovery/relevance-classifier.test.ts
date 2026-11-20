@@ -20,7 +20,7 @@ const job = (requirements: Array<Record<string, unknown>>, status: "complete" | 
   schemaVersion: 1,
   extractionVersion: "m3-c02-v2",
   descriptionHash: "a".repeat(64),
-  roleFamily: null,
+  roleFamily: "software_it",
   requirements,
   status,
 });
@@ -33,18 +33,18 @@ const requirement = (category: string, value: string, importance = "mandatory") 
 describe("classifyJobRelevance", () => {
   it("marks exact confirmed skills as met", () => {
     const result = classifyJobRelevance(candidate(), job([requirement("skill", "TypeScript")], "complete"));
-    expect(result.classification).toBe("relevant");
+    expect(result.classification).toBe("match");
     expect(result.requirements[0].profileEvidence).toEqual(["skills[0]"]);
   });
 
-  it("does not call a partial extraction relevant from its known matches alone", () => {
+  it("labels a partial extraction Relevant rather than Match", () => {
     const result = classifyJobRelevance(candidate(), job([requirement("skill", "TypeScript")]));
-    expect(result.classification).toBe("unclassified");
+    expect(result.classification).toBe("relevant");
   });
 
   it("does not infer missing skills as not met", () => {
     const result = classifyJobRelevance(candidate(), job([requirement("skill", "Python")]));
-    expect(result.classification).toBe("unclassified");
+    expect(result.classification).toBe("relevant");
     expect(result.requirements[0].outcome).toBe("cant_tell");
   });
 
@@ -53,13 +53,19 @@ describe("classifyJobRelevance", () => {
     expect(result.requirements[0].outcome).toBe("cant_tell");
   });
 
-  it("returns partially relevant when a positive match coexists with an unmet mandatory requirement", () => {
+  it("returns Relevant when a mandatory requirement is not met", () => {
     const result = classifyJobRelevance(candidate(), job([
       requirement("skill", "TypeScript"),
       requirement("experience", "5 years"),
     ]));
-    expect(result.classification).toBe("partially_relevant");
+    expect(result.classification).toBe("relevant");
     expect(result.requirements[1].outcome).toBe("not_met");
+  });
+
+  it("does not classify jobs outside the candidate role family", () => {
+    const unrelated = job([requirement("skill", "TypeScript")], "complete");
+    const result = classifyJobRelevance(candidate(), { ...unrelated, roleFamily: "finance_accounting" });
+    expect(result.classification).toBe("unclassified");
   });
 
   it("does not classify unavailable extraction", () => {
