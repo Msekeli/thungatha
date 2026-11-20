@@ -76,7 +76,7 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
       </div>
       <footer className="sticky bottom-3 flex flex-col gap-3 rounded-xl border border-border bg-card/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">Check each section before saving your profile.</p>
-        <Button className="w-full sm:w-auto" disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Confirm and save profile"}</Button>
+        <Button className="w-full sm:w-auto" disabled={saving || !complete} onClick={onSave}>{saving ? "Saving…" : "Confirm and save profile"}</Button>
       </footer>
     </main>
   );
