@@ -98,19 +98,20 @@ Job titles and role-family labels are contextual signals only. They must never b
 
 ### Assessment approach
 
-- Use AI to interpret unstructured job descriptions, identify explicit and implicit context without inventing requirements, understand relationships between responsibilities and capabilities, and semantically compare the role with confirmed Profile evidence.
+- Use AI to interpret the complete job description in context, understand the role's actual purpose and responsibilities, identify relevant capabilities and requirements, and semantically compare the work with confirmed Profile evidence. Do not restrict interpretation to predefined skill lists, regex patterns, title taxonomies, or fixed requirement templates.
 - Preserve source evidence for every extracted job requirement, including the source description and supporting text snippet or reference.
 - Ground candidate-side claims in confirmed Profile evidence and retain the exact Profile field/evidence references. Imported CV content remains a draft until the user confirms it.
 - Distinguish evidence states as **Confirmed**, **Inferred**, **Missing**, or **Can't verify** where applicable. An inference must be labelled and explained; it must not be promoted to confirmed fact.
 - Consider transferable skills and equivalent responsibilities even when wording, job title, seniority labels, or industry differ. Explain the basis and any limits of the comparison.
+- Interpret qualifications, experience durations, credentials, subject marks, mandatory/preferred wording, and alternative pathways in the context of the full advert. No single phrase, field, threshold, or extracted requirement is an automatic rejection rule or universal gate.
 - Missing Profile information is not evidence that the person lacks the requirement. Contradictory or ambiguous evidence must remain visible as uncertainty.
 - Validate AI output against feature-owned schemas and verify all evidence references in application code. Treat model output as untrusted data, not as an instruction or authority.
-- Application code applies the approved categorical business rules, enforces evidence requirements, authorization, persistence, freshness, and sorting. It must not substitute a keyword-only comparison for the AI semantic assessment.
+- Application code validates evidence, authorization, persistence, freshness, sorting, and the three approved categorical outcomes. It must not introduce rigid requirement checklists, keyword-triggered rejection, role-family gates, or a hidden score as a substitute for the AI's full-context assessment.
 - Explain why a role is a **Match**, **Relevant**, or **Unclassified**, citing job-side and candidate-side evidence. Do not present a hiring prediction.
 
 ### Approved result labels
 
-- **Match:** strong, supported alignment with the central work and core/mandatory requirements, grounded in confirmed Profile evidence. A different job title or industry does not prevent this result when the underlying work and capabilities align.
+- **Match:** strong, supported alignment with the central work and genuinely core requirements, grounded in confirmed Profile evidence. A different job title or industry does not prevent this result when the underlying work and capabilities align. Interpret stated mandatory requirements in context; do not mechanically reject on one extracted phrase or missing field.
 - **Relevant:** meaningful supported alignment exists, including transferable skills or related responsibilities, but material gaps, unknowns, or incomplete evidence prevent a strong Match conclusion.
 - **Unclassified:** available evidence is insufficient, ambiguous, unsupported, or materially contradictory. Do not show a badge for this state.
 
