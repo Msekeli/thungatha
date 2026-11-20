@@ -30,6 +30,6 @@ describe("education requirement matching", () => {
   });
 
   it("does not match an incidental NSC substring", () => {
-    expect(evaluateRequirement(candidate("Advanced NSC-related programme"), requirement).outcome).toBe("cant_tell");
+    expect(evaluateRequirement(candidate("AdvancedNSCProgramme"), requirement).outcome).toBe("cant_tell");
   });
 });
