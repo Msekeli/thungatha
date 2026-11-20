@@ -14,6 +14,8 @@ import {
   retryFailedJobAiTask,
 } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 
+export const maxDuration = 120;
+
 const idSchema = z.string().uuid();
 
 export async function GET(
