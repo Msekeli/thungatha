@@ -1,15 +1,11 @@
 import { createHash } from "node:crypto";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ScoutExportVacancy } from "./scout-export-schema";
 
 function hashDescription(description: string) {
   return createHash("sha256").update(description).digest("hex");
 }
 
-export async function mapScoutVacancies(
-  database: SupabaseClient,
-  vacancies: ScoutExportVacancy[],
-) {
+export async function mapScoutVacancies(vacancies: ScoutExportVacancy[]) {
   if (vacancies.length === 0) return [];
 
   return vacancies.map((vacancy) => ({
