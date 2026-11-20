@@ -10,6 +10,7 @@ export type JobCardData = {
   company_logo_url: string | null;
   location_text: string | null;
   published_at?: string | null;
+  matchClassification?: "relevant" | "partially_relevant" | "unclassified" | null;
 };
 
 function postedAgeDays(value: string | null | undefined) {
@@ -81,6 +82,12 @@ export function JobOpportunityCard({
               <MapPin aria-hidden="true" />
               <span>{job.location_text}</span>
             </span>
+            {job.matchClassification === "relevant" && (
+              <span className="th-tag" data-tone="success">Relevant</span>
+            )}
+            {job.matchClassification === "partially_relevant" && (
+              <span className="th-tag" data-tone="warning">Partially relevant</span>
+            )}
           </div>
         )}
         <div className="th-job-card__footer">
