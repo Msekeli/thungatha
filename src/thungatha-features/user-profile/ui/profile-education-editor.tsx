@@ -27,8 +27,8 @@ export function ProfileEducationEditor({
   const save = () => {
     if (
       !draft?.educationLevel ||
-      !draft.qualification.trim() ||
-      !draft.institution.trim()
+      !draft.qualification?.trim() ||
+      !draft.institution?.trim()
     )
       return;
     onChange(
