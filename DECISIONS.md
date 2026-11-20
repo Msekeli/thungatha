@@ -366,7 +366,7 @@ When a decision is approved or changed:
 ### D-047 — Provider-independent, free-tier AI foundation
 
 - **Date:** 2026-11-20
-- **Status:** Confirmed direction
+- **Status:** Superseded by D-048 (historical decision retained)
 - **Context:** Thungatha is an AI-powered job-search platform, but predictable application operations should remain ordinary application logic. AI should be introduced where interpretation, extraction, reasoning, or generated assistance provides measurable value. The project is intentionally using free AI offerings.
 - **Decision:** Put shared AI infrastructure under `src/lib/ai/`. Use a provider-neutral contract with separate adapters for the existing Ollama Local installation, Gemini Developer API, Groq API, and Ollama Cloud. Ollama Local is the default for local development. Cloud providers may be used only within their currently available free API allowances; no automatic paid fallback is permitted. Provider/model quotas must be represented according to their actual reset and rate-limit policies rather than assuming a monthly reset.
 - **Feature boundary:** Task-specific prompts, schemas, input preparation, and use-case orchestration stay in the owning feature. Validate every structured response with Zod. AI output is untrusted and cannot silently modify confirmed Profile data or decide application-owned business rules.
@@ -374,3 +374,21 @@ When a decision is approved or changed:
 - **Privacy:** Minimise data sent to cloud providers. Do not send raw CVs or unnecessary personal data to free-tier providers without a task-specific privacy review.
 - **Consequences:** Provider adapters, quota-aware routing, task schemas, and feature integrations will be implemented incrementally and tested independently. Local development must remain possible without cloud credentials.
 - **Review trigger:** Free-tier policy changes, a provider's free API access being withdrawn, a new provider being proposed, or evaluation showing that AI does not improve a task enough to justify its complexity.
+
+### D-048 — Environment-specific AI provider activation
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed
+- **Context:** Thungatha needs provider-independent AI infrastructure, but enabling multiple providers during local development adds unnecessary configuration and risks consuming hosted-provider allowances before production. The application must be able to use hosted providers later without feature-code changes.
+- **Decision:**
+  - During local development, Ollama Local is the only enabled AI provider. Gemini and Groq may be represented in local configuration, including optional credentials, but they must remain disabled and must not receive requests.
+  - In the hosted production environment, Gemini Developer API and Groq API are the enabled hosted providers, subject to their available free-tier access. Their credentials and activation settings belong in the hosted environment configuration, not in client-side code.
+  - Provider activation must be explicit through server-side environment/configuration. Do not infer provider availability merely from the presence of an API key, and do not silently activate a provider.
+  - Feature code must call the provider-independent AI service and must not branch on environment names or provider identities. Switching from local development to hosted production must require configuration, not feature-code changes.
+  - The provider router may select or fall back only among providers enabled for that environment and permitted by the specific task's capability, privacy, and fallback policy. It must not send requests to disabled providers.
+  - Ollama Cloud is not part of the current provider plan.
+- **AI efficiency:** Call AI only when a task genuinely benefits from interpretation, extraction, reasoning, or generation. Prefer deterministic application logic for predictable operations; reuse valid prior results; avoid repeating calls when the relevant input has not changed; and send only task-required data.
+- **Operational visibility:** Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Retain only the diagnostics needed to troubleshoot provider calls, such as provider identity internally, success/failure, latency, token usage when returned, and rate-limit/retry information. These diagnostics must not impose arbitrary internal usage caps or stop otherwise valid work. Respect actual provider limits and preserve work when all enabled providers are temporarily unavailable.
+- **Rationale:** Local development remains predictable and independent of hosted API quotas, while production providers are already catered for behind the same provider-neutral boundary. Selective AI use reduces unnecessary calls more effectively than monitoring consumption after the fact.
+- **Consequences:** Update the architecture and AI infrastructure guidance to reflect the environment policy. Provider activation, hosted credentials, and task-aware routing must be implemented and tested before hosted AI features are enabled.
+- **Review trigger:** A change to the selected providers, free-tier availability, hosting environment, or evidence that another provider is needed.
