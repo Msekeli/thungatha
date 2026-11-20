@@ -59,7 +59,6 @@ export async function GET(request: Request) {
       identity?.userId ?? null,
       parsed.data,
       statesOnly,
-      identity?.getToken,
     );
 
     const feedJobs = "jobs" in result ? result.jobs ?? [] : [];
