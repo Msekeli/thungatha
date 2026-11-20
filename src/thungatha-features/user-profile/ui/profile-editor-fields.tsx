@@ -11,7 +11,6 @@ import { ProfileExtraSectionsEditor } from "./profile-extra-sections-editor";
 import { ProfileLanguageAttributesEditor } from "./profile-language-attributes-editor";
 import { ProfileAccordion } from "./profile-accordion";
 import {
-  hasIncompleteEducation,
   isEducationComplete,
   isPersonalDetailsComplete,
 } from "./profile-completion-status";
@@ -30,7 +29,6 @@ export function ProfileEditorFields({
   const details = profile.personalDetails;
   const detailsComplete = isPersonalDetailsComplete(details);
   const educationComplete = isEducationComplete(profile.education);
-  const educationIncomplete = hasIncompleteEducation(profile.education);
   return (
     <div className="th-profile-editor-fields space-y-3">
       <ProfileAccordion
@@ -75,8 +73,8 @@ export function ProfileEditorFields({
       </ProfileAccordion>
       <ProfileAccordion
         title="Education"
-        description="At least one complete education record is required"
-        status={educationIncomplete ? "Incomplete" : educationComplete ? "Complete" : "Required"}
+        description="Add your school, qualification or tertiary education"
+        status={educationComplete ? "Added" : "Required"}
         onSave={onSave}
         saving={saving}
       >
