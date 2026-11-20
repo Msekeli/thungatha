@@ -7,13 +7,21 @@ const candidate = (qualification: string): CandidateFacts => ({
   confirmedAt: "2026-11-20T00:00:00Z",
   nextRole: null,
   skills: [],
-  education: [{ educationLevel: null, qualification, fieldOfStudy: null, sourcePath: "education[0]" }],
+  education: [{
+    id: "edu-1",
+    educationLevel: null,
+    qualification,
+    institution: "College",
+    isCurrent: false,
+    fieldOfStudy: null,
+    sourcePath: "education[0]",
+  }],
   certifications: [],
   languages: [],
   employment: [],
   knownEmploymentMonths: 0,
   unknownEmploymentSourcePaths: [],
-}) as CandidateFacts;
+});
 
 const requirement = {
   id: "education-1",
