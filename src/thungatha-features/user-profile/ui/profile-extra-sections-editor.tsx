@@ -8,6 +8,7 @@ export function ProfileExtraSectionsEditor({
   certifications,
   projects,
   onCertsChange,
+  onCertsSave,
   onProjectsChange,
   onSave,
   saving,
@@ -15,6 +16,7 @@ export function ProfileExtraSectionsEditor({
   certifications: UserProfileDto["certifications"];
   projects: UserProfileDto["projects"];
   onCertsChange: (items: UserProfileDto["certifications"]) => void;
+  onCertsSave: (items: UserProfileDto["certifications"]) => void;
   onProjectsChange: (items: UserProfileDto["projects"]) => void;
   onSave: () => void;
   saving: boolean;
@@ -33,6 +35,7 @@ export function ProfileExtraSectionsEditor({
         <ProfileCertificationsEditor
           items={certifications}
           onChange={onCertsChange}
+          onSave={onCertsSave}
         />
       </ProfileAccordion>
       <ProfileAccordion
