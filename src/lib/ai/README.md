@@ -37,10 +37,10 @@ Adapters normalize provider-specific APIs and response formats. The router must 
 
 ## Reasoning and efficient AI use
 
-- Reasoning/thinking is disabled by default. The Ollama Local adapter sends `think: false` for every task.
-- A future task may request provider-supported reasoning only when its owner demonstrates a concrete need and explicitly configures that task. It must not become a global default.
+- Reasoning/thinking is configured per task and provider capability. Context-heavy semantic job understanding and candidate-to-job comparison must be allowed sufficient interpretation; simple extraction or wording tasks may use direct generation where evaluation supports it.
+- The Ollama Local adapter must honour task-level reasoning configuration rather than hard-code `think: false` for every request. Do not globally disable model capabilities required by an approved core feature.
 - Disabling model thinking is a latency/control setting, not a factuality guarantee. Source-grounding must come from task-specific prompts, minimal evidence inputs, strict schemas, and application-side evidence validation.
-- Prefer deterministic application logic for filtering, sorting, matching rules, validation, authorization, persistence, and state transitions.
+- Prefer deterministic application logic for filtering, sorting, evidence validation, authorization, persistence, freshness, and state transitions. Do not replace semantic job matching with deterministic keyword, title, role-family, or fixed-dictionary rules.
 - Call AI only when it adds value; avoid duplicate calls and reuse valid prior results.
 - Send only the information required for the task.
 - Preserve task progress when all enabled providers are temporarily unavailable. Do not discard work or bypass provider limits.
@@ -55,7 +55,7 @@ Provider free-tier availability and limits can change. Respect provider response
 3. Set `OLLAMA_LOCAL_BASE_URL` only when Ollama listens on a different local address.
 4. Keep these values server-side. Do not prefix them with `NEXT_PUBLIC_`.
 
-The adapter uses Ollama's non-streaming `POST /api/chat` endpoint with model thinking disabled. JSON requests ask Ollama for JSON-formatted output; the owning feature must still parse and validate that content with its own Zod schema.
+The adapter uses Ollama's non-streaming `POST /api/chat` endpoint and applies the task's configured reasoning preference where supported. JSON requests ask Ollama for JSON-formatted output; the owning feature must still parse and validate that content with its own Zod schema.
 
 ## Implementation order
 
