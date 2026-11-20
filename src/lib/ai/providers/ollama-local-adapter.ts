@@ -33,6 +33,7 @@ export function createOllamaLocalAdapter(
           signal: AbortSignal.timeout(request.timeoutMs ?? DEFAULT_TIMEOUT_MS),
           body: JSON.stringify({
             model,
+            think: false,
             messages: [
               { role: "system", content: request.systemPrompt },
               { role: "user", content: request.userPrompt },
