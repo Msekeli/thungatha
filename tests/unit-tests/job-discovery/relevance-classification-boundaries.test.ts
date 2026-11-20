@@ -13,7 +13,7 @@ const candidate = {
 function classify(importance: "mandatory" | "preferred", status: "complete" | "partial") {
   return classifyJobRelevance(candidate, jobRequirementsSchema.parse({
     schemaVersion: 1, extractionVersion: "m3-c02-v2", descriptionHash: "b".repeat(64),
-    roleFamily: null, status,
+    roleFamily: "software_it", status,
     requirements: [
       { id: "skill-1", category: "skill", value: "TypeScript", importance: "mandatory", sourceText: "TypeScript", confidence: "explicit" },
       { id: "experience-1", category: "experience", value: "5 years", importance, sourceText: "5 years experience", confidence: "explicit" },
@@ -23,10 +23,10 @@ function classify(importance: "mandatory" | "preferred", status: "complete" | "p
 
 describe("relevance classification boundaries", () => {
   it("does not let an unmet preferred requirement override relevant mandatory evidence", () => {
-    expect(classify("preferred", "complete")).toBe("relevant");
+    expect(classify("preferred", "complete")).toBe("match");
   });
 
-  it("keeps a partial extraction unclassified when only an unmet preferred requirement exists", () => {
-    expect(classify("preferred", "partial")).toBe("unclassified");
+  it("keeps partial extraction at Relevant, never Match", () => {
+    expect(classify("preferred", "partial")).toBe("relevant");
   });
 });
