@@ -253,11 +253,11 @@ AI is integrated as a server-side application capability for concrete Thungatha 
 
 ### Provider/runtime roles
 
-- **Gemini:** primary hosted AI provider for supported career workflows.
-- **Groq:** alternative hosted provider and optional fallback for supported models/tasks.
-- **Ollama:** local inference runtime for development and testing; not a required production dependency.
-- **Qwen 3.5 4B:** initial local model candidate run through Ollama. Validate quality and resource use before relying on it.
-- **Camber:** candidate cloud agent/workspace and compute environment for experiments or heavier processing. Do not assume it exposes a compatible inference API; verify interfaces, data handling, retention, quotas and costs before integration.
+- **Ollama:** default local inference runtime and primary development/testing path. Use it for most local AI development and testing.
+- **Qwen 3.5 4B:** initial local model candidate run through Ollama. Validate quality, structured-output reliability and local resource use.
+- **Gemini:** intended hosted AI provider for supported career workflows.
+- **Groq:** alternative hosted AI provider and optional fallback. Gemini and Groq may be used occasionally during development for comparison; once hosted, configure primary/fallback routing based on measured task quality, privacy, quotas, latency and cost.
+- **Camber:** cloud coding agent for development assistance and data/scientific work, including PostgreSQL/crawler-result analysis and long-running experiments. It is not an inference provider or application runtime dependency; review tool interfaces and data handling before connecting project databases.
 
 Keep hosted provider SDKs behind a small server-side interface. Configure one primary provider and optional fallback; do not call both for every request. Select models per task based on quality, structured-output reliability, latency, privacy and cost. Keep API keys out of client code.
 
