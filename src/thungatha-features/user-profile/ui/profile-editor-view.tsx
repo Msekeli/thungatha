@@ -34,7 +34,7 @@ export function ProfileEditorView({
       </header>
       <div className="th-profile-editor-grid">
         <div className="th-profile-editor-main">
-          <ProfileEditorFields profile={profile} onChange={onChange} />
+          <ProfileEditorFields profile={profile} onChange={onChange} onSave={onReview} saving={saving} />
           <div className="th-profile-mobile-actions pt-3">
             <Button className="w-full" disabled={saving} onClick={onReview}>
               {reviewLabel}
