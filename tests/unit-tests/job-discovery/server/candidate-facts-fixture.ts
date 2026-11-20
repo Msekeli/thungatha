@@ -11,7 +11,7 @@ export const profile = (overrides: Partial<UserProfileDto> = {}): UserProfileDto
   summary: "Professional profile summary.",
   workExperience: [], education: [{
     id: "edu-1", educationLevel: "Diploma", qualification: "IT Diploma",
-    institution: "College",
+    institution: "College", isCurrent: false,
   }],
   skills: [], certifications: [], projects: [], languages: [],
   personalAttributes: [], masterCv: null,
