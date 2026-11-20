@@ -48,7 +48,7 @@ export function useProfile() {
     await fetchProfile();
   }, [fetchProfile]);
 
-  const handleSave = async () => {
+  const handleSave = async (returnToEditor = false) => {
     setSaving(true);
     setError("");
     setMessage("");
@@ -65,7 +65,7 @@ export function useProfile() {
       const complete = profileCompletionSchema.safeParse(
         result.profile,
       ).success;
-      setMode(complete ? "view" : "edit");
+      setMode(returnToEditor ? "edit" : complete ? "view" : "edit");
       setMessage(
         complete
           ? "Profile saved successfully."
