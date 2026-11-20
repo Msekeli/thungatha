@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { extractJobRequirements } from "./job-requirement-extractor";
 
-const VERSION = "m3-c02-v3";
+const VERSION = "m3-c02-v4";
 const PAGE_SIZE = 100;
 
 export async function backfillJobRequirements(afterId?: string | null) {
