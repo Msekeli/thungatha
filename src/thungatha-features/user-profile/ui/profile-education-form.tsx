@@ -73,8 +73,8 @@ export function ProfileEducationForm({
         )}
         <label className="block space-y-2 text-sm font-medium">
           {schoolLevel ? "Completion month/year" : value.isCurrent ? "Expected completion month/year" : "End month/year"}
-          <span className="text-destructive"> (Required)</span>
-          <Input required={!value.isCurrent} type="month" value={value.endDate || ""}
+          <span className="text-destructive"> (Needed for completion)</span>
+          <Input type="month" value={value.endDate || ""}
             onChange={(e) => set("endDate", e.target.value)} />
         </label>
       </div>
@@ -87,7 +87,7 @@ export function ProfileEducationForm({
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button type="submit" disabled={!value.educationLevel || !value.qualification.trim() ||
-          !value.institution.trim() || (!value.isCurrent && !value.endDate)}>
+          !value.institution.trim()}>
           {editing ? "Save changes" : "Save qualification"}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
