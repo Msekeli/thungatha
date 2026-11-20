@@ -2,6 +2,23 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
 import { sanitizeJobSearchTerm } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
+import { readCandidateFacts } from "./candidate-fact-reader";
+import { jobRequirementsSchema } from "./job-requirement-schema";
+import {
+  classifyJobRelevance,
+  type Relevance,
+} from "./relevance-classifier";
+
+type FeedJob = {
+  id: string;
+  published_at?: string | null;
+  updated_at?: string | null;
+  matchClassification?: Relevance;
+  [key: string]: unknown;
+};
+
+const RELEVANCE_CATALOGUE_LIMIT = 5000;
+const REQUIREMENT_LOOKUP_BATCH_SIZE = 250;
 
 function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
@@ -19,11 +36,95 @@ function isMissingEmployerDismissalsSchema(error: {
   );
 }
 
+function newestFirst(a: FeedJob, b: FeedJob) {
+  const aPublished = a.published_at ? Date.parse(a.published_at) : NaN;
+  const bPublished = b.published_at ? Date.parse(b.published_at) : NaN;
+  if (
+    Number.isFinite(aPublished) &&
+    Number.isFinite(bPublished) &&
+    aPublished !== bPublished
+  ) {
+    return bPublished - aPublished;
+  }
+  if (Number.isFinite(aPublished) !== Number.isFinite(bPublished)) {
+    return Number.isFinite(aPublished) ? -1 : 1;
+  }
+  const aUpdated = a.updated_at ? Date.parse(a.updated_at) : NaN;
+  const bUpdated = b.updated_at ? Date.parse(b.updated_at) : NaN;
+  if (
+    Number.isFinite(aUpdated) &&
+    Number.isFinite(bUpdated) &&
+    aUpdated !== bUpdated
+  ) {
+    return bUpdated - aUpdated;
+  }
+  return a.id.localeCompare(b.id);
+}
+
+function relevanceOrder(a: FeedJob, b: FeedJob) {
+  const rank = (value: Relevance | undefined) =>
+    value === "relevant" ? 0 : value === "partially_relevant" ? 1 : 2;
+  return (
+    rank(a.matchClassification) - rank(b.matchClassification) ||
+    newestFirst(a, b)
+  );
+}
+
+async function classifyJobs(
+  db: SupabaseClient,
+  jobs: FeedJob[],
+  candidate: NonNullable<Awaited<ReturnType<typeof readCandidateFacts>>>,
+): Promise<FeedJob[]> {
+  if (!jobs.length) return jobs;
+  const ids = jobs.map((job) => job.id);
+  const requirementRows: { id: string; extracted_requirements: unknown }[] = [];
+
+  try {
+    for (
+      let index = 0;
+      index < ids.length;
+      index += REQUIREMENT_LOOKUP_BATCH_SIZE
+    ) {
+      const batch = ids.slice(index, index + REQUIREMENT_LOOKUP_BATCH_SIZE);
+      const { data, error } = await db
+        .from("jobs")
+        .select("id,extracted_requirements")
+        .in("id", batch);
+      if (error) throw error;
+      requirementRows.push(
+        ...((data ?? []) as { id: string; extracted_requirements: unknown }[]),
+      );
+    }
+  } catch {
+    // Matching is optional. A missing migration or unavailable requirement
+    // store must never make the underlying job feed unavailable.
+    return jobs.map((job) => ({
+      ...job,
+      matchClassification: "unclassified",
+    }));
+  }
+
+  const requirementsById = new Map(
+    requirementRows.map((row) => [row.id, row.extracted_requirements]),
+  );
+
+  return jobs.map((job) => {
+    const parsed = jobRequirementsSchema.safeParse(
+      requirementsById.get(job.id),
+    );
+    const classification: Relevance = parsed.success
+      ? classifyJobRelevance(candidate, parsed.data).classification
+      : "unclassified";
+    return { ...job, matchClassification: classification };
+  });
+}
+
 export async function readJobFeed(
   db: SupabaseClient,
   userId: string | null,
   input: JobFeedQuery,
   statesOnly: boolean,
+  getToken?: () => Promise<string | null>,
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
 
@@ -51,78 +152,127 @@ export async function readJobFeed(
   if (userId && input.state !== "all" && !states.length)
     return emptyFeed(input.page, input.pageSize);
 
-  const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
-  let query = db.from("job_discovery_feed").select("*", { count: "exact" });
-
-  if (input.query) {
-    const term = sanitizeJobSearchTerm(input.query);
-    if (term) {
-      query = query.or(
-        `title.ilike.%${term}%,employer_name.ilike.%${term}%,description.ilike.%${term}%`,
+  let candidate: Awaited<ReturnType<typeof readCandidateFacts>> = null;
+  if (userId && getToken) {
+    try {
+      candidate = await readCandidateFacts(
+        userId,
+        getToken,
+        new Date().toISOString().slice(0, 10),
       );
+    } catch {
+      // Profile/matching failures must not block ordinary discovery.
+      candidate = null;
     }
   }
 
-  if (input.location) {
-    const location = sanitizeJobSearchTerm(input.location);
-    if (location) query = query.ilike("location_text", `%${location}%`);
-  }
-
-  if (input.publishedWithin !== "any") {
-    const ageInHours = {
-      "24h": 24,
-      "7d": 168,
-      "14d": 336,
-      "30d": 720,
-    }[input.publishedWithin];
-    query = query.gte(
-      "published_at",
-      new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
-    );
-  }
-
+  const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
   const dismissedEmployerKeys = employerDismissals.map(
     (item) => item.employer_key,
   );
-  if (
-    employerDismissalsAvailable &&
-    userId &&
-    input.state !== "dismissed" &&
-    dismissedEmployerKeys.length
-  ) {
-    query = query.not(
-      "employer_key",
-      "in",
-      `(${dismissedEmployerKeys.join(",")})`,
-    );
-  }
+  const dismissedJobIds = states
+    .filter((item) => item.state === "dismissed")
+    .map((item) => item.job_id);
 
-  if (userId && input.state !== "all") {
-    const ids = states.map((item) => item.job_id);
-    query = query.in("id", ids);
-  } else if (userId) {
-    const dismissed = states
-      .filter((item) => item.state === "dismissed")
-      .map((item) => item.job_id);
-    if (dismissed.length)
-      query = query.not("id", "in", `(${dismissed.join(",")})`);
-  }
+  const buildQuery = () => {
+    let query = db.from("job_discovery_feed").select("*", { count: "exact" });
+
+    if (input.query) {
+      const term = sanitizeJobSearchTerm(input.query);
+      if (term) {
+        query = query.or(
+          `title.ilike.%${term}%,employer_name.ilike.%${term}%,description.ilike.%${term}%`,
+        );
+      }
+    }
+
+    if (input.location) {
+      const location = sanitizeJobSearchTerm(input.location);
+      if (location) query = query.ilike("location_text", `%${location}%`);
+    }
+
+    if (input.publishedWithin !== "any") {
+      const ageInHours = {
+        "24h": 24,
+        "7d": 168,
+        "14d": 336,
+        "30d": 720,
+      }[input.publishedWithin];
+      query = query.gte(
+        "published_at",
+        new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
+      );
+    }
+
+    if (
+      employerDismissalsAvailable &&
+      userId &&
+      input.state !== "dismissed" &&
+      dismissedEmployerKeys.length
+    ) {
+      query = query.not(
+        "employer_key",
+        "in",
+        `(${dismissedEmployerKeys.join(",")})`,
+      );
+    }
+
+    if (userId && input.state !== "all") {
+      query = query.in("id", states.map((item) => item.job_id));
+    } else if (userId && dismissedJobIds.length) {
+      query = query.not("id", "in", `(${dismissedJobIds.join(",")})`);
+    }
+
+    return query;
+  };
 
   const from = (input.page - 1) * input.pageSize;
-  const { data, error, count } = await query
+  const canRankByProfile =
+    input.sortOrder === "relevance" && candidate !== null;
+  const rangeStart = canRankByProfile ? 0 : from;
+  const rangeEnd = canRankByProfile
+    ? RELEVANCE_CATALOGUE_LIMIT - 1
+    : from + input.pageSize - 1;
+
+  let { data, error, count } = await buildQuery()
     .order("published_at", {
       ascending: input.sortOrder === "oldest",
       nullsFirst: false,
     })
     .order("updated_at", { ascending: false })
     .order("id", { ascending: true })
-    .range(from, from + input.pageSize - 1);
+    .range(rangeStart, rangeEnd);
 
   if (error) throw error;
-  const jobs = (data ?? []).map((job) => ({
-    ...job,
+
+  // The approved catalogue-wide relevance ordering is bounded at 5,000 jobs.
+  // Above that ceiling, fall back to the requested newest-first page rather
+  // than presenting a partial-catalogue ranking as complete.
+  const rankWholeCatalogue =
+    canRankByProfile && (count ?? 0) <= RELEVANCE_CATALOGUE_LIMIT;
+  if (canRankByProfile && !rankWholeCatalogue) {
+    const pageResult = await buildQuery()
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("updated_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, from + input.pageSize - 1);
+    if (pageResult.error) throw pageResult.error;
+    data = pageResult.data;
+    count = pageResult.count;
+  }
+
+  let jobs: FeedJob[] = (data ?? []).map((job) => ({
+    ...(job as FeedJob),
     state: stateByJob.get(job.id) ?? null,
   }));
+
+  if (candidate) jobs = await classifyJobs(db, jobs, candidate);
+
+  if (rankWholeCatalogue) {
+    jobs.sort(relevanceOrder);
+    jobs = jobs.slice(from, from + input.pageSize);
+  }
+
   const total = count ?? 0;
   return {
     jobs,
