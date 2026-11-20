@@ -212,10 +212,10 @@ Feature-specific business rules must not drift into generic shared utilities. Av
 
 | Module/experience | Owns                                                                                                                | Does not own                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, Profile-based scoring in M1 |
+| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, candidate-specific matching in M1 |
 | Profile           | Confirmed professional facts, import drafts, confirmation, profile history                                          | Silent AI-driven edits                                          |
-| Matching          | Requirement extraction, evidence mapping, deterministic scoring, explanation and stale-state                        | Owning job listings or CV versions                              |
-| CV Studio         | Master CV and tailored versions, recommendation, review, preview, comparison, export                                | Editing Profile silently; application status history            |
+| Matching          | AI-assisted job understanding, semantic candidate comparison, transferable-skill interpretation, evidence validation, Match/Relevant/Unclassified explanations and stale-state | Owning job listings or CV versions; identity, authorization, or persistence |
+| CV Studio         | AI-assisted recommendations and tailoring, master CV and tailored versions, review, preview, comparison, export   | Editing Profile silently; application status history            |
 | Job Tracking      | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups | Job-source catalogue ownership or CV authoring                  |
 | Account           | User preferences and account-level settings defined in M6                                                           | Duplicating Clerk identity or feature data                      |
 
