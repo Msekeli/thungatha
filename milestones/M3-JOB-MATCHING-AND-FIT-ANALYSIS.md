@@ -105,7 +105,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
 - Integration-test coverage was added for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
 - Added pure `deriveCandidateFacts(profile, asOfDate)` derivation. It returns no facts for an unconfirmed or incomplete Profile and includes the Profile version and confirmation timestamp for traceability.
-- Derived facts preserve raw skills alongside exact canonical aliases, target-role preference, languages, academic education, and certifications as separate collections with Profile source paths.
+- Derived facts preserve the full set of relevant confirmed professional evidence, including employment history and descriptions, responsibilities, achievements, projects, skills, tools, education, qualifications, certifications, licences, languages, and Profile source paths. Exact aliases may assist normalization but must not limit what AI can understand.
 - Employment dates are parsed only for `YYYY-MM`, `YYYY-MM-DD`, and month-name/year formats. Current roles use the explicit `isCurrent` flag and supplied `asOfDate`; unsupported or invalid periods remain listed as unknown. Overlapping and adjacent known periods are merged before counting known employment months.
 - Unit tests cover confirmation gating, incomplete Profiles, overlapping employment periods, unparseable dates, punctuation-sensitive skill aliases, separate credential collections, target role, and languages. Tests have not been run.
 - Added `readCandidateFacts(userId, getToken, asOfDate)` as the server-side entry point. It reads only the authenticated user's Profile through the existing user-scoped repository, maps the saved row to the Profile DTO, and delegates to the pure derivation. It returns no candidate facts when no Profile exists or the Profile is unconfirmed/incomplete.
@@ -119,8 +119,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Initially derive facts on read; do not add a candidate-facts table unless measured cost justifies it.
 - Derive reliable employment periods and experience totals without double-counting overlaps.
 - Treat unparseable dates as unknown; do not guess.
-- Preserve qualification type, name, field, and verified NQF information separately from certifications and licences.
-- Preserve raw skill evidence and exact canonical aliases where useful; do not treat exact aliases as the only way to recognise capability.
+- Preserve the original Profile evidence and meaningful distinctions between qualifications, certifications, registrations, and licences. Do not impose universal equivalence rules.
+- Include relevant work descriptions, responsibilities, achievements, projects, and outcomes alongside structured Profile fields so AI can understand actual capabilities, not just labels.
 - Map candidate evidence to Profile field references and expose only confirmed facts as candidate evidence.
 - Never promote unconfirmed CV-import data to confirmed evidence.
 
@@ -174,7 +174,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 
 **Work**
 - Explain why actual responsibilities and capabilities align or differ, including equivalent work expressed through different titles and transferable skills.
-- Explain which requirements are met, not met, or cannot be determined.
+- Explain which aspects are supported, not demonstrated, contradictory, or uncertain. Avoid implying that a missing Profile field proves a requirement is not met.
 - Show the source job snippet/reference and corresponding confirmed Profile evidence for each factual claim.
 - Explain limitations and distinguish missing evidence from lack of qualification. Never present an AI inference as confirmed evidence.
 - Recompute or mark stale when Profile version, job description hash, AI task/prompt/schema version, or relevant business rules change.
@@ -190,10 +190,9 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Goal:** add matching to Discovery without making the feed dependent on matching availability.
 
 **Work**
-- Calculate classifications and order the full filtered catalogue before pagination. A page-only comparison is not catalogue-wide relevance sorting. The current planned catalogue ceiling is 5,000 jobs. Retrieve the full filtered set in bounded database pages, compare only structured requirement metadata in memory, order the complete filtered set, and paginate afterwards. Do not rank only the currently requested page.
-- Do not classify only a loaded page and present it as catalogue-wide relevance sorting.
-- Revisit indexed coarse filtering and ranking across a candidate pool only when catalogue growth or measured performance justifies it.
-- Do not hard-filter on experience or education unless the requirement is explicitly mandatory and extraction is demonstrably reliable.
+- Use persisted, current AI assessments for relevance ordering. Assessments must be generated asynchronously and keyed to the exact job-description and confirmed Profile versions; feed requests must not call AI synchronously.
+- Apply Match, Relevant, Unclassified ordering to the full filtered catalogue before pagination using cached assessment categories, with stable date tie-breakers.
+- Do not hard-filter or reject a job based on AI-interpreted candidate fit. Keep user-selected objective discovery filters (such as location, work mode, employment type, date, and explicit search terms) separate from candidate matching.
 - Display a green Match badge or blue Relevant badge only when classification is supported; Unclassified has no badge.
 - Handle missing Profile, unavailable descriptions, insufficient information, and analysis failure.
 - Preserve existing search, filters, sorting, details, save, and dismiss behaviour.
@@ -235,4 +234,4 @@ Role-family taxonomies are not required for M3. If an occupational domain is use
 4. Evaluation examples for transferable skills and cross-title/cross-industry equivalence.
 5. How target-role preference contributes as a soft contextual signal without becoming a hard filter.
 
-C01 remains in progress for qualification equivalence, requirement interpretation, and representative semantic evaluation cases. The user-approved Match / Relevant / Unclassified labels and catalogue-ordering rules are sufficient to proceed with AI-assisted C02/C04 implementation. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
+C01 remains in progress for representative semantic evaluation and evidence interpretation. Do not turn qualification equivalence examples or requirement wording into universal hard-coded rules. The user-approved Match / Relevant / Unclassified labels and catalogue-ordering rules are sufficient to proceed with AI-assisted C02/C04 implementation. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
