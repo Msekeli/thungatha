@@ -45,12 +45,12 @@ export function useProfile() {
     await fetchProfile();
   }, [fetchProfile]);
 
-  const handleSave = async (confirm = false) => {
+  const handleSave = async (confirm = false, updatedDraft = draft) => {
     setSaving(true);
     setError("");
     setMessage("");
     try {
-      const result = await saveProfileDraft(draft, confirm);
+      const result = await saveProfileDraft(updatedDraft, confirm);
       if (!result.profile) {
         setError(
           result.error || "We couldn’t save your changes. Please try again.",
