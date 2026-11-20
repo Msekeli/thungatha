@@ -40,11 +40,15 @@ export const profileCompletionSchema = z.object({
     ),
 });
 
+export const draftPersonalDetailsSchema = personalDetailsSchema.extend({
+  email: z.string().trim().max(255).nullable().optional(),
+});
+
 export const updateProfileSchema = z
   .object({
     displayName: z.string().trim().min(1).max(100).optional(),
     nextRole: z.string().trim().max(150).nullable().optional(),
-    personalDetails: personalDetailsSchema.optional(),
+    personalDetails: draftPersonalDetailsSchema.optional(),
     summary: z.string().trim().max(5000).nullable().optional(),
     workExperience: z.array(workExperienceItemSchema).max(100).optional(),
     education: z.array(educationItemSchema).max(100).optional(),
