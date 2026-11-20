@@ -8,9 +8,10 @@ This directory contains shared, server-side AI infrastructure used by multiple T
 - Keep each provider's HTTP/API implementation in its own adapter under `providers/`.
 - Keep explicit provider activation, task-aware selection, timeouts, and bounded retry policy in shared AI infrastructure.
 - Keep task-specific prompts, Zod schemas, input preparation, and business decisions in the owning feature.
-- Call AI only when interpretation, extraction, reasoning, or generated assistance provides a concrete benefit. Keep predictable application operations in ordinary TypeScript.
+- Treat AI as a source-grounded transformation tool, not an independent source of facts. It may extract, organise, summarise, or improve wording, but factual claims must be supported by the task input.
+- Do not invent qualifications, credentials, employers, job titles, dates, responsibilities, skills, achievements, or other personal/job facts. Preserve unknown or missing information as unknown; do not fill gaps with plausible guesses.
 - Reuse valid task results when the input and task version have not changed; do not repeat unnecessary requests.
-- Validate every AI response against the owning feature's schema before using or persisting it.
+- Validate every AI response against the owning feature's schema and verify factual output against supplied evidence before using or persisting it.
 - Keep credentials server-side. Never log prompts, raw CVs, personal profile data, or full job descriptions.
 
 ## Provider activation by environment
@@ -34,11 +35,14 @@ Ollama Cloud is not part of the current provider plan.
 
 Adapters normalize provider-specific APIs and response formats. The router must select only providers enabled in the current environment and permitted by the task's capability, privacy, and fallback policy. Never silently switch to paid usage or contact a disabled provider.
 
-## Efficient AI use and operational diagnostics
+## Reasoning and efficient AI use
 
+- Reasoning/thinking is disabled by default. The Ollama Local adapter sends `think: false` for every task.
+- A future task may request provider-supported reasoning only when its owner demonstrates a concrete need and explicitly configures that task. It must not become a global default.
+- Disabling model thinking is a latency/control setting, not a factuality guarantee. Source-grounding must come from task-specific prompts, minimal evidence inputs, strict schemas, and application-side evidence validation.
 - Prefer deterministic application logic for filtering, sorting, matching rules, validation, authorization, persistence, and state transitions.
 - Call AI only when it adds value; avoid duplicate calls and reuse valid prior results.
-- Send only the information required by the task.
+- Send only the information required for the task.
 - Preserve task progress when all enabled providers are temporarily unavailable. Do not discard work or bypass provider limits.
 - Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic diagnostics only: success/failure, latency, token usage when returned, and provider rate-limit/retry details. Diagnostics are for troubleshooting, not arbitrary internal usage caps.
 
@@ -51,7 +55,7 @@ Provider free-tier availability and limits can change. Respect provider response
 3. Set `OLLAMA_LOCAL_BASE_URL` only when Ollama listens on a different local address.
 4. Keep these values server-side. Do not prefix them with `NEXT_PUBLIC_`.
 
-The adapter uses Ollama's non-streaming `POST /api/chat` endpoint. JSON requests ask Ollama for JSON-formatted output; the owning feature must still parse and validate that content with its own Zod schema.
+The adapter uses Ollama's non-streaming `POST /api/chat` endpoint with model thinking disabled. JSON requests ask Ollama for JSON-formatted output; the owning feature must still parse and validate that content with its own Zod schema.
 
 ## Implementation order
 
