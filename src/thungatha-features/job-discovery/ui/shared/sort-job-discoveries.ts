@@ -1,7 +1,4 @@
 type JobWithPublicationDate = {
-  title?: string;
-  employer_name?: string | null;
-  description?: string | null;
   published_at: string | null;
 };
 
@@ -9,34 +6,15 @@ export function jobPublicationDate(job: JobWithPublicationDate): string | null {
   return job.published_at ?? null;
 }
 
-function relevanceScore(job: JobWithPublicationDate, query: string) {
-  const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-  if (terms.length === 0) return 0;
-  const title = (job.title ?? "").toLocaleLowerCase();
-  const employer = (job.employer_name ?? "").toLocaleLowerCase();
-  const description = (job.description ?? "").toLocaleLowerCase();
-
-  return terms.reduce((score, term) => {
-    if (title === term) return score + 12;
-    if (title.includes(term)) return score + 6;
-    if (employer.includes(term)) return score + 4;
-    if (description.includes(term)) return score + 1;
-    return score;
-  }, 0);
-}
-
 export function sortJobDiscoveries<T extends JobWithPublicationDate>(
   jobs: T[],
   order: string,
-  query = "",
 ) {
-  return [...jobs].sort((a, b) => {
-    if (order === "relevance" && query.trim()) {
-      const relevanceDifference =
-        relevanceScore(b, query) - relevanceScore(a, query);
-      if (relevanceDifference !== 0) return relevanceDifference;
-    }
+  // Profile relevance is calculated and sorted across the full filtered
+  // catalogue by the server before pagination. Never re-rank only this page.
+  if (order === "relevance") return [...jobs];
 
+  return [...jobs].sort((a, b) => {
     const aPublishedAt = jobPublicationDate(a);
     const bPublishedAt = jobPublicationDate(b);
     if (aPublishedAt === null && bPublishedAt !== null) return 1;
