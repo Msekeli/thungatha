@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         detectSessionInUrl: false,
       },
     });
-    const rows = await mapScoutVacancies(database, parsed.data.items);
+    const rows = await mapScoutVacancies(parsed.data.items);
 
     if (rows.length > 0) {
       const { error } = await database
