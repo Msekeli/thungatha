@@ -8,6 +8,9 @@ vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
   hasClerkConfiguration: vi.fn(),
 }));
+vi.mock("@/thungatha-features/job-discovery/server/candidate-fact-reader", () => ({
+  readCandidateFacts: vi.fn().mockResolvedValue(null),
+}));
 vi.mock("@/lib/supabase/server", () => ({
   createAuthenticatedSupabaseClient: vi.fn(),
   createPublicSupabaseClient: vi.fn(),
