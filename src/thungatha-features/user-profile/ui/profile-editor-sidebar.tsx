@@ -107,7 +107,7 @@ export function ProfileEditorSidebar({
       </p>
       <div className="mt-3">
         <Button className="w-full" disabled={saving} onClick={onSave}>
-          {saving ? "Saving…" : complete ? "Save Profile" : "Save draft"}
+          {saving ? "Saving…" : complete ? "Review profile" : "Review draft"}
         </Button>
       </div>
     </section>
