@@ -16,15 +16,18 @@ const labels: Record<string, string> = {
   "professional-licence": "Professional registration",
   "drivers-licence": "South African driver's licence", other: "Other certificate",
 };
-export function ProfileCertificationsEditor({ items, onChange }: {
+export function ProfileCertificationsEditor({ items, onChange, onSave }: {
   items: Entry[]; onChange: (items: Entry[]) => void;
+  onSave: (items: Entry[]) => void;
 }) {
   const [draft, setDraft] = useState<Entry | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const save = () => {
     if (!draft?.type || (draft.type !== "drivers-licence" && !draft.name.trim()) ||
       (["professional-certification", "occupational-certificate", "professional-licence"].includes(draft.type) && !draft.issuer?.trim())) return;
-    onChange(editingId ? items.map((item) => item.id === editingId ? draft : item) : [...items, draft]);
+    const updated = editingId ? items.map((item) => item.id === editingId ? draft : item) : [...items, draft];
+    onChange(updated);
+    onSave(updated);
     setDraft(null); setEditingId(null);
   };
   return (
