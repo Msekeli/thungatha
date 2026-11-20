@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { Popover } from "@base-ui/react/popover";
 import { Button } from "@/components/ui/button";
@@ -12,17 +12,18 @@ export function MonthYearPicker({ value, onChange, label, min, max, disabled }: 
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(value ? Number(value.slice(5, 7)) - 1 : new Date().getMonth());
   const [year, setYear] = useState(value ? Number(value.slice(0, 4)) : new Date().getFullYear());
-  useEffect(() => {
-    if (open) {
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
       setMonth(value ? Number(value.slice(5, 7)) - 1 : new Date().getMonth());
       setYear(value ? Number(value.slice(0, 4)) : new Date().getFullYear());
     }
-  }, [open, value]);
+    setOpen(nextOpen);
+  };
   const selected = `${year}-${String(month + 1).padStart(2, "0")}`;
   const years = Array.from({ length: new Date().getFullYear() + 16 - 1940 }, (_, index) => 1940 + index);
   const valid = (!min || selected >= min) && (!max || selected <= max);
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger type="button" disabled={disabled} className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 text-left text-sm shadow-xs outline-none transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50">
         <span className={value ? "text-foreground" : "text-muted-foreground"}>{value ? new Date(Number(value.slice(0, 4)), Number(value.slice(5, 7)) - 1).toLocaleDateString("en-ZA", { month: "short", year: "numeric" }) : label}</span>
         <CalendarDays className="size-4 text-muted-foreground" />
