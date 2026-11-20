@@ -45,4 +45,5 @@ export const jobRequirementsSchema = z.object({
   status: z.enum(["complete", "partial", "unavailable"]),
 });
 
+export type JobRequirement = z.infer<typeof jobRequirementSchema>;
 export type JobRequirements = z.infer<typeof jobRequirementsSchema>;
