@@ -63,7 +63,7 @@ flowchart TD
     UseCases --> Sources[Approved job-source adapters]
     Sources --> Providers[External job sources]
     UseCases --> AIAdapter[AI provider boundary]
-    AIAdapter --> AIProviders[Gemini / Groq; optional experiments]
+    AIAdapter --> AIProviders[Ollama Local in development; Gemini and Groq when hosted]
 ```
 
 Trust boundaries:
