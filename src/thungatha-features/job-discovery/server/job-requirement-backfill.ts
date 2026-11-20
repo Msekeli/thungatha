@@ -16,6 +16,7 @@ export async function backfillJobRequirements(afterId?: string | null) {
   });
   let query = db.from("jobs")
     .select("id,title,description,requirements_description_hash,requirements_extraction_version")
+    .not("scout_vacancy_id", "is", null)
     .order("id", { ascending: true }).limit(PAGE_SIZE);
   if (afterId) query = query.gt("id", afterId);
 
