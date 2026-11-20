@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { connection, NextResponse } from "next/server";
+import { after, connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { apiError, apiFailure } from "@/lib/http/api-response";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
@@ -7,6 +7,7 @@ import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
+import { processJobAiQueue } from "@/thungatha-features/job-discovery/server/job-ai-worker";
 import {
   getJobAiTaskStatus,
   JOB_AI_ASSESSMENT_VERSION,
@@ -129,6 +130,16 @@ export async function POST(
         { status: 409 },
       );
     }
+
+    after(async () => {
+      try {
+        await processJobAiQueue(1);
+      } catch (workerError) {
+        console.error("[AI job matching] Retry worker failed:", {
+          message: workerError instanceof Error ? workerError.message : "Unknown worker error",
+        });
+      }
+    });
 
     return NextResponse.json({ status: "pending" }, { status: 202 });
   } catch (error) {
