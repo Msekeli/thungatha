@@ -48,7 +48,7 @@ export function useProfile() {
     await fetchProfile();
   }, [fetchProfile]);
 
-  const handleSave = async (returnToEditor = false) => {
+  const handleSave = async () => {
     setSaving(true);
     setError("");
     setMessage("");
