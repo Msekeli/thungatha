@@ -18,9 +18,13 @@ import {
 export function ProfileEditorFields({
   profile,
   onChange,
+  onSave,
+  saving,
 }: {
   profile: UserProfileDto;
   onChange: (updated: UserProfileDto) => void;
+  onSave: () => void;
+  saving: boolean;
 }) {
   const details = profile.personalDetails;
   const detailsComplete = isPersonalDetailsComplete(details);
@@ -31,6 +35,8 @@ export function ProfileEditorFields({
         title="Personal details"
         description="Contact and location information"
         status={detailsComplete ? "Complete" : "Required"}
+        onSave={onSave}
+        saving={saving}
       >
         <ProfilePersonalDetailsForm
           details={details}
@@ -43,6 +49,8 @@ export function ProfileEditorFields({
         title="Professional summary"
         description="Introduce your experience and strengths"
         status={profile.summary?.trim() ? "Complete" : "Required"}
+        onSave={onSave}
+        saving={saving}
       >
         <ProfileSummaryForm
           summary={profile.summary}
@@ -53,6 +61,8 @@ export function ProfileEditorFields({
         title="Work experience"
         description="Your roles and responsibilities"
         status={profile.workExperience.length ? "Added" : "Optional"}
+        onSave={onSave}
+        saving={saving}
       >
         <ProfileExperienceEditor
           items={profile.workExperience}
@@ -65,6 +75,8 @@ export function ProfileEditorFields({
         title="Education"
         description="At least one complete education record is required"
         status={educationComplete ? "Complete" : "Required"}
+        onSave={onSave}
+        saving={saving}
       >
         <ProfileEducationEditor
           items={profile.education}
@@ -75,6 +87,8 @@ export function ProfileEditorFields({
         title="Skills"
         description="Skills employers can search for"
         status={profile.skills.length ? "Added" : "Optional"}
+        onSave={onSave}
+        saving={saving}
       >
         <ProfileSkillsEditor
           skills={profile.skills}
@@ -91,7 +105,9 @@ export function ProfileEditorFields({
       />
       <ProfileAccordion
         title="Preferred next role"
-        description="Help us find relevant opportunities"
+        onSave={onSave}
+        saving={saving}
+        description="The type of role you want to pursue next"
         status={profile.nextRole?.trim() ? "Added" : "Optional"}
       >
         <ProfileNextRoleForm
@@ -100,7 +116,10 @@ export function ProfileEditorFields({
         />
       </ProfileAccordion>
       <ProfileAccordion
-        title="Languages and personal attributes"
+        title="Languages and personal strengths"
+        description="Languages you speak and professional qualities you want employers to know about"
+        onSave={onSave}
+        saving={saving}
         description="Languages and other relevant details"
         status={
           profile.languages.length + profile.personalAttributes.length
