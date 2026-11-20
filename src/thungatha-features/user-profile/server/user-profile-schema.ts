@@ -34,7 +34,8 @@ export const profileCompletionSchema = z.object({
           (item) =>
             Boolean(item.educationLevel?.trim()) &&
             Boolean(item.qualification.trim()) &&
-            Boolean(item.institution.trim()),
+            Boolean(item.institution.trim()) &&
+            Boolean(item.isCurrent || item.endDate?.trim()),
         ),
       { message: "At least one complete education record is required." },
     ),
