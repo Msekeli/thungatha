@@ -350,3 +350,15 @@ When a decision is approved or changed:
 - **Evidence/validation:** User-approved M3 direction on 2026-11-20.
 - **Consequences:** M3-C01 and M3-C04/C06 use relevance classifications, not fit tiers or percentages. Existing relevance sort API option must be connected to real catalogue-wide ordering.
 - **Review trigger:** Calibration shows that category boundaries create systematic false positives/negatives or catalogue growth requires a different ranking strategy.
+
+
+### D-046 — Validate Profile confirmation against merged saved data
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed implementation direction
+- **Context:** The Profile PATCH endpoint previously validated a non-null confirmation timestamp against only the incoming partial payload. This could reject valid partial confirmations or accept an incomplete Profile if validation rules changed.
+- **Decision:** Validate confirmation using the complete saved Profile merged with the incoming PATCH fields. If a PATCH omits `confirmedAt`, clear the existing confirmation; callers must explicitly reconfirm after a partial update.
+- **Rationale:** M3 must derive candidate facts only from a complete, explicitly confirmed Profile. A stale confirmation must not survive an edit that did not explicitly reconfirm the Profile.
+- **Consequences:** The Profile API contract documents the merged validation and invalidation behaviour. The existing full-profile save flow already sends a timestamp for complete Profiles and null for incomplete ones.
+- **Validation:** Added integration tests for merged confirmation success and incomplete merged Profile rejection. Tests have not been run.
+- **Review trigger:** A future explicit draft-edit workflow or confirmation UX change that establishes a different, equally safe confirmation lifecycle.
