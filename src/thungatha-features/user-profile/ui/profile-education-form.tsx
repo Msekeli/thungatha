@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 import type { UserProfileDto } from "../server/user-profile-schema";
 type Education = UserProfileDto["education"][number];
 const levels = [
@@ -72,14 +73,13 @@ export function ProfileEducationForm({
         {!schoolLevel && (
           <label className="block space-y-2 text-sm font-medium">
             Start month/year
-            <Input type="month" value={value.startDate || ""} onChange={(e) => set("startDate", e.target.value)} />
+            <MonthYearPicker label="Start month and year" value={value.startDate || ""} onChange={(date) => set("startDate", date)} max={value.endDate || undefined} />
           </label>
         )}
         <label className="block space-y-2 text-sm font-medium">
           {schoolLevel ? "Completion month/year" : value.isCurrent ? "Expected completion month/year" : "End month/year"}
           <span className="text-destructive"> (Needed for completion)</span>
-          <Input type="month" value={value.endDate || ""}
-            onChange={(e) => set("endDate", e.target.value)} />
+          <MonthYearPicker label="Completion month and year" value={value.endDate || ""} min={value.startDate || undefined} onChange={(date) => set("endDate", date)} />
         </label>
       </div>
       {!schoolLevel && (
