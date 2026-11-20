@@ -128,7 +128,7 @@ export function ProfileForm({
             setMode("edit");
           }}
           onSave={async () => {
-            if (await handleSave()) setReviewing(false);
+            if (await handleSave(true)) setReviewing(false);
           }}
         />
       )}
