@@ -55,6 +55,7 @@ export async function GET(request: Request) {
       identity?.userId ?? null,
       parsed.data,
       statesOnly,
+      identity?.getToken,
     );
     return NextResponse.json(result);
   } catch (error) {
