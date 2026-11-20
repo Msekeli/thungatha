@@ -59,3 +59,26 @@ export async function enqueueVisibleJobAssessments(userId: string, jobIds: strin
   if (error) throw error;
   return tasks.length;
 }
+
+
+export async function getJobAiTaskStatus(input: {
+  userId: string;
+  jobId: string;
+  profileVersion: number;
+  descriptionHash: string;
+}): Promise<"pending" | "processing" | "failed" | "completed" | null> {
+  const db = createServiceClient();
+  const { data, error } = await db.from("ai_task_queue")
+    .select("status")
+    .eq("task_type", "job_fit_assessment")
+    .eq("user_id", input.userId)
+    .eq("job_id", input.jobId)
+    .eq("profile_version", input.profileVersion)
+    .eq("job_description_hash", input.descriptionHash)
+    .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.status as "pending" | "processing" | "failed" | "completed" | undefined) ?? null;
+}
