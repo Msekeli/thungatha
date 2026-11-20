@@ -6,21 +6,43 @@ This directory contains shared, server-side AI infrastructure used by multiple T
 
 - Keep provider-neutral contracts and shared error types here.
 - Keep each provider's HTTP/API implementation in its own adapter under `providers/`.
-- Keep provider selection, quota-aware routing, timeouts, and bounded retry policy in shared AI infrastructure.
-- Keep task-specific prompts, Zod schemas, input preparation, and business decisions in the owning feature (for example, Job Discovery or User Profile).
-- Call AI only for tasks that benefit from interpretation, extraction, reasoning, or generated assistance. Keep deterministic application operations in ordinary TypeScript.
+- Keep explicit provider activation, task-aware selection, timeouts, and bounded retry policy in shared AI infrastructure.
+- Keep task-specific prompts, Zod schemas, input preparation, and business decisions in the owning feature.
+- Call AI only when interpretation, extraction, reasoning, or generated assistance provides a concrete benefit. Keep predictable application operations in ordinary TypeScript.
+- Reuse valid task results when the input and task version have not changed; do not repeat unnecessary requests.
 - Validate every AI response against the owning feature's schema before using or persisting it.
 - Keep credentials server-side. Never log prompts, raw CVs, personal profile data, or full job descriptions.
-- Use Ollama Local as the development default. Cloud providers are explicit alternatives and must use their free API allowances only; never silently switch to paid usage.
 
-## Initial providers
+## Provider activation by environment
 
-- `ollama-local`: existing developer machine installation.
-- `gemini`: Google Gemini Developer API free tier, subject to model/account quotas and data-use policy.
-- `groq`: Groq API free tier, subject to model/account rate limits.
-- `ollama-cloud`: Ollama Cloud starter allowance, subject to its current usage and model limits.
+Provider activation is explicit and server-side. The presence of credentials alone must never enable a provider.
 
-Free-tier availability and limits are provider-controlled and can change. Do not encode assumed monthly reset behaviour; configure and enforce the actual provider/model limits.
+| Environment | Enabled provider(s) | Disabled provider(s) |
+|---|---|---|
+| Local development | Ollama Local only | Gemini, Groq |
+| Hosted production | Gemini, Groq | Ollama Local unless separately configured and explicitly approved |
+
+Gemini and Groq may be present in local configuration, but they must remain disabled during local development and must not receive requests. Their hosted credentials and activation settings are configured in the hosting environment. Moving from local development to hosted production must require configuration changes only; feature code must never name providers or branch on the environment.
+
+Ollama Cloud is not part of the current provider plan.
+
+## Current providers
+
+- `ollama-local`: the only enabled provider during local development.
+- `gemini`: supported for hosted production, subject to current free-tier eligibility and limits.
+- `groq`: supported for hosted production, subject to current free-tier eligibility and limits.
+
+Adapters normalize provider-specific APIs and response formats. The router must select only providers enabled in the current environment and permitted by the task's capability, privacy, and fallback policy. Never silently switch to paid usage or contact a disabled provider.
+
+## Efficient AI use and operational diagnostics
+
+- Prefer deterministic application logic for filtering, sorting, matching rules, validation, authorization, persistence, and state transitions.
+- Call AI only when it adds value; avoid duplicate calls and reuse valid prior results.
+- Send only the information required by the task.
+- Preserve task progress when all enabled providers are temporarily unavailable. Do not discard work or bypass provider limits.
+- Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic diagnostics only: success/failure, latency, token usage when returned, and provider rate-limit/retry details. Diagnostics are for troubleshooting, not arbitrary internal usage caps.
+
+Provider free-tier availability and limits can change. Respect provider responses and terms; do not assume a quota reset schedule or promise uninterrupted free access.
 
 ## Ollama Local setup
 
@@ -33,7 +55,8 @@ The adapter uses Ollama's non-streaming `POST /api/chat` endpoint. JSON requests
 
 ## Implementation order
 
-1. Establish provider-neutral contracts and error types.
-2. Add and test one adapter at a time.
-3. Add task-aware routing and quota controls.
-4. Integrate AI into a feature only after its prompt, schema, privacy boundary, and acceptance tests are defined.
+1. Maintain provider-neutral contracts and error types.
+2. Complete and test the Ollama Local adapter for local development.
+3. Add Gemini and Groq adapters as hosted-production capabilities, but keep them disabled locally.
+4. Add explicit environment-based provider activation and task-aware routing.
+5. Integrate AI into a feature only after its prompt, schema, privacy boundary, and acceptance tests are defined.
