@@ -279,3 +279,18 @@ When a decision is approved or changed:
 - **Rationale:** The same profession can be used across many industries; the target title is a more direct signal for job discovery.
 - **Consequences:** Persist the value in the profile and version snapshots. Job ranking integration remains part of matching/discovery follow-up and must not hide adjacent roles.
 - **Review trigger:** User feedback or evidence that one target title is too restrictive.
+
+### D-042 — First-class AI capabilities and shared tooling strategy
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed product direction; implementation and exact production model selection remain pending validation.
+- **Context:** The user wants Thungatha to provide meaningful AI-assisted career workflows, not merely carry an AI-powered label. Scout also needs AI to assist difficult company/job discovery and crawler tasks.
+- **Decision:** Establish the following responsibilities:
+  - **Google Gemini:** primary hosted AI provider. Thungatha uses it for job-fit analysis (CV against a vacancy), CV improvement and career-related assistance. Scout uses it for difficult career-page extraction, job-description structuring, vacancy classification and ambiguous-data resolution.
+  - **Groq:** alternative hosted provider and optional fallback for supported tasks in both applications.
+  - **Ollama:** local model runtime for development and testing, not a hosted provider.
+  - **Qwen 3.5 4B:** initial local model candidate run through Ollama to test Thungatha AI workflows and Scout extraction, structured JSON and classification.
+  - **Camber:** candidate cloud agent/workspace and compute environment. For Scout, its proposed role is to analyse crawler results, test extraction workflows and process datasets in support of company/job discovery. It is not assumed to be a drop-in LLM inference API.
+- **Constraints:** Keep hosted provider integrations server-side and behind a replaceable interface. Configure one primary provider and optional fallback; do not call both on every task. Validate structured output, bound usage, preserve provenance and uncertainty, and minimize personal data sent to hosted providers. AI recommendations cannot fabricate professional facts, silently overwrite confirmed Profile/CV data, change application status, submit applications or make irreversible decisions. Deterministic application code remains authoritative for validation, authorization, persistence, deduplication, calculations, state transitions and publication.
+- **Implementation status:** This decision does not assert that any feature is implemented. D-038 remains valid for the closed M1 scope: no AI extraction was required for the structured providers validated in M1. D-042 establishes separate future product capabilities. Exact models, provider routing, privacy/consent details, quotas and cost must be validated before production use. Camber interfaces, data handling, retention and pricing must be investigated before integration.
+- **Review trigger:** Provider/model evaluation, privacy review, a demonstrated quality improvement over deterministic processing, or a material change in provider capability, terms or cost.
