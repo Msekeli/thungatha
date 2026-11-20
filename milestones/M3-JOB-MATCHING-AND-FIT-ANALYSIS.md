@@ -122,7 +122,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C03 — Candidate fact derivation and evidence mapping
 
-**Status:** In progress — Profile confirmation validation is corrected; candidate fact derivation has not started.
+**Status:** In progress — pure candidate fact derivation and authenticated Profile read path are implemented; evidence mapping and coverage remain.
 
 **Implementation record (2026-11-20)**
 - Profile confirmation now validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
@@ -132,6 +132,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Derived facts preserve raw skills alongside exact canonical aliases, target-role preference, languages, academic education, and certifications as separate collections with Profile source paths.
 - Employment dates are parsed only for `YYYY-MM`, `YYYY-MM-DD`, and month-name/year formats. Current roles use the explicit `isCurrent` flag and supplied `asOfDate`; unsupported or invalid periods remain listed as unknown. Overlapping and adjacent known periods are merged before counting known employment months.
 - Added unit tests for confirmation gating, incomplete Profiles, overlapping employment periods, unparseable dates, punctuation-sensitive skill aliases, separate credential collections, target role, and languages. Tests have not been run.
+- Added `readCandidateFacts(userId, getToken, asOfDate)` as the server-side entry point. It reads only the authenticated user's Profile through the existing user-scoped repository, maps the saved row to the Profile DTO, and delegates to the pure derivation. It returns no candidate facts when no Profile exists or the Profile is unconfirmed/incomplete.
 - Candidate fact derivation is an initial slice. It does not yet derive role-family evidence, NQF levels, subject marks, or qualification equivalence, and it does not classify job relevance.
 
 **Goal:** derive comparable facts from the complete confirmed Profile and map each requirement to its supporting evidence.
