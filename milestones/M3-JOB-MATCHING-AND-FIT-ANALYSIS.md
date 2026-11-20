@@ -153,6 +153,16 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M3-C04 — Deterministic relevance classification
 
+**Status:** In progress — first conservative comparison slice implemented; test coverage and rule review remain.
+
+**Implementation record (2026-11-20)**
+- Added a pure classifier that consumes confirmed candidate facts and schema-validated extracted job requirements. It returns one categorical relevance label, a rule version, and requirement-level outcomes; it does not calculate a score.
+- Added deterministic comparisons for exact canonical skills, exact language names, exact named certifications, supported school-leaving aliases, generic diploma/degree type wording, and minimum whole-year experience requirements.
+- Experience uses merged known employment months. If known experience is below the threshold but one or more employment periods are unparseable, the outcome remains Can't tell; it becomes Not met only when all recorded employment periods are reliably known.
+- Unsupported categories and unverified qualification equivalence remain Can't tell. No NQF equivalence, subject-mark inference, role-family inference, or qualification substitution is attempted.
+- Positive alignment is required before Relevant or Partially relevant can be returned. A positive match with mandatory requirements not met or not verifiable is Partially relevant; insufficient positive evidence remains Unclassified.
+- The implementation is intentionally conservative. Requirement-level outcomes currently support only the evidence types listed above; rule examples and automated tests are still required. Tests have not been run.
+
 **Goal:** produce reproducible requirement outcomes and one of the approved relevance classifications.
 
 **Work**
