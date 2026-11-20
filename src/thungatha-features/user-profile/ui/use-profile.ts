@@ -58,7 +58,7 @@ export function useProfile() {
         setError(
           result.error || "We couldn’t save your changes. Please try again.",
         );
-        return;
+        return false;
       }
       setProfile(result.profile);
       setDraft(result.profile);
@@ -71,6 +71,7 @@ export function useProfile() {
           ? "Profile saved successfully."
           : "Draft saved. Complete the required personal details, professional summary, and education to save your profile.",
       );
+      return true;
     } finally {
       setSaving(false);
     }
