@@ -41,11 +41,10 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
         <p className="text-sm text-muted-foreground">Review your information before saving it as your Thungatha profile.</p>
         {contact && <p className="text-sm text-muted-foreground">{contact}</p>}
       </header>
-      <section className="rounded-xl border border-border bg-card p-5 text-card-foreground">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Professional summary</p>
-        <p className="mt-3 whitespace-pre-wrap leading-7">{profile.summary || "No professional summary added yet."}</p>
-      </section>
       <div className="space-y-3">
+        <ReviewSection title="Professional summary" onEdit={onEdit}>
+          <p className="whitespace-pre-wrap leading-7">{profile.summary || "No professional summary added yet."}</p>
+        </ReviewSection>
         <ReviewSection title={`Personal details`} onEdit={onEdit}>
           <p>{details.fullName || "Name not provided"}</p>
           <p className="mt-1 text-muted-foreground">{contact || "Contact details not provided"}</p>
