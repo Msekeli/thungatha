@@ -62,11 +62,12 @@ export async function GET(request: Request) {
       identity?.getToken,
     );
 
-    if (identity && !statesOnly && result.jobs.length) {
+    const feedJobs = "jobs" in result ? result.jobs ?? [] : [];
+    if (identity && !statesOnly && feedJobs.length) {
       try {
         const queued = await enqueueVisibleJobAssessments(
           identity.userId,
-          result.jobs.map((job) => job.id).filter((id): id is string => typeof id === "string"),
+          feedJobs.map((job) => job.id).filter((id): id is string => typeof id === "string"),
         );
         if (queued > 0) {
           after(async () => {
