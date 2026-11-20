@@ -33,15 +33,14 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
   const [assessment, setAssessment] = useState<MatchAssessment | null>(null);
 
   useEffect(() => {
-    if (!open || !jobId) {
-      setStatus("idle");
-      setAssessment(null);
-      return;
-    }
+    if (!open || !jobId) return;
 
     const controller = new AbortController();
-    setStatus("loading");
-    setAssessment(null);
+    Promise.resolve().then(() => {
+      if (controller.signal.aborted) return;
+      setStatus("loading");
+      setAssessment(null);
+    });
 
     fetch(`/api/jobs/${jobId}/match-assessment`, { signal: controller.signal })
       .then(async (response) => {
