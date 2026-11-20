@@ -2,7 +2,7 @@
 
 **Document status:** Working architecture authority for review  
 **Version:** 1.0  
-**Last updated:** 15 October 2026
+**Last updated:** 21 November 2026
 
 ## 1. Purpose and architectural direction
 
@@ -12,9 +12,10 @@ The architecture must deliver the approved product specification and milestones 
 
 ### Architectural rules
 
-1. Product rules and ownership checks are enforced by server-side application code, not by the UI or AI.
-2. Confirmed Profile data is authoritative; imported and AI-produced content remains unconfirmed until reviewed.
-3. Unknown data stays unknown; don't turn missing evidence into a negative conclusion.
+1. AI is a first-class capability for contextual understanding, semantic comparison, and generated assistance in the owning product features; it is not restricted to optional extraction.
+2. Application code—not the UI or model—owns identity, authorization, evidence validation, persistence, deterministic invariants, and state transitions.
+3. Confirmed Profile data is authoritative; imported and AI-produced personal claims remain unconfirmed until reviewed.
+4. Unknown data stays unknown; don't turn missing evidence into a negative conclusion.
 4. User-owned reads and writes must use server-derived identity and enforce ownership.
 5. External providers and AI models are replaceable adapters, not sources of authority.
 6. Keep one deployable application. Do not add microservices, a mandatory queue, or a generic agent framework without an approved, evidenced need.
@@ -79,7 +80,8 @@ The app can organize code by feature and responsibility inside the existing `src
 
 - **Route and presentation layer:** App Router pages/layouts, route handlers, and React components. Compose screens and handle user interaction.
 - **Application/use-case layer:** coordinates use cases, validation, authorization, persistence, provider calls, and state transitions.
-- **Domain rules:** deterministic rules such as deduplication, matching classification, CV version rules, and application status transitions. Domain logic should not depend on Next.js, Clerk SDKs, database clients, or AI SDKs.
+- **Domain rules:** deterministic invariants such as deduplication, evidence-reference validation, approved categorical result rules, CV version rules, and application status transitions. Domain logic should not depend on Next.js, Clerk SDKs, database clients, or AI SDKs.
+- **AI use cases:** feature-owned orchestration for job-description understanding, semantic role-to-Profile comparison, transferable-skill interpretation, grounded explanations, and CV assistance. These use cases call provider-neutral AI contracts and return schema-validated proposals with source references.
 - **Infrastructure:** SQL/repository functions, Clerk identity integration, storage, job-source adapters, and AI-provider adapters.
 - **Shared cross-cutting utilities:** authentication helpers, response/error conventions, schemas, environment validation, and logging. Do not turn `src/lib` into a catch-all for feature business logic.
 
@@ -249,7 +251,7 @@ A source list found in research is not automatically approved. Confirm source-sp
 
 ## 10. AI provider boundary
 
-Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, explicit provider activation, task-aware provider selection, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, and business decisions must not drift into a generic AI framework.
+Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, explicit provider activation, task-aware provider selection, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, evidence rules, and orchestration must not drift into a generic AI framework. The shared layer enables AI capabilities; it must not reduce every feature to a deterministic rules engine.
 
 ### Environment-specific provider activation
 
@@ -263,17 +265,20 @@ The transition from local development to hosted production must be configuration
 
 Provider capabilities, model context limits, response formats, and free-tier restrictions differ. Adapters normalize provider-specific protocols, while routing verifies that an enabled provider can perform the requested task. Never silently fall back to paid usage.
 
-### Efficient AI use and failure handling
+### AI-first feature use, efficiency and failure handling
 
-- Call AI only where interpretation, extraction, reasoning, or generated assistance provides a concrete benefit. Keep predictable operations such as filtering, sorting, validation, matching rules, authorization, persistence, and state transitions deterministic.
-- Reuse valid prior results and avoid repeating a request when the relevant input and task version have not changed.
-- Send only the data required for the task. Do not send raw CVs or full Profile records to a hosted provider without a task-specific privacy review and demonstrated need.
-- Validate structured output with the owning feature's Zod schema. Treat AI output as untrusted suggestions, never as authorization or unquestioned truth.
-- Preserve task progress when an enabled provider is temporarily unavailable. Retry or defer according to bounded, task-aware policy; do not lose work or send it to a disabled provider.
-- Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic operational diagnostics for troubleshooting provider calls (success/failure, latency, token usage when returned, and provider rate-limit/retry information). Diagnostics must not impose arbitrary internal usage caps or stop valid work.
-- Respect actual provider rate limits and free-tier terms. Provider limits are external constraints and cannot be bypassed by internal monitoring.
+- Use AI for tasks that genuinely require contextual language understanding, semantic interpretation, comparison, synthesis, or generation. Job-to-Profile matching is one of these core tasks; it must not be reduced to exact keyword overlap or job-title classification.
+- Keep predictable invariants deterministic: identity, authorization, evidence-reference validation, data validation, persistence, deduplication, state transitions, catalogue pagination, and the application of approved categorical outcomes.
+- Reuse valid prior AI results only when the source content, confirmed Profile version, task/prompt version, schema version, and relevant policy version still match. Invalidate or refresh results when any dependency changes.
+- Send only the data required for the task. Minimise personal data and do not send raw CVs or full Profile records to a hosted provider without a task-specific privacy review and demonstrated need.
+- Validate structured output with the owning feature's Zod schema, then validate all cited job-source and Profile evidence references against trusted records. Schema validity is not proof of factual correctness.
+- AI output is a proposal, not authorization or unquestioned truth. It cannot create candidate facts, promote imported data to confirmed status, or mutate Profile/CV/application records without the user's explicit workflow.
+- Use task-appropriate model capabilities. Simple extraction may use direct generation; semantic comparison must be allowed sufficient context and interpretation. Evaluate direct versus reasoning-enabled modes against representative cases instead of globally disabling capabilities.
+- Preserve task progress when an enabled provider is temporarily unavailable. Retry or defer according to bounded, task-aware policy; do not lose work or send it to a disabled provider. Show analysis unavailable rather than substituting keyword matching and presenting it as equivalent.
+- Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic diagnostics for troubleshooting provider calls (success/failure, latency, token usage when returned, and provider rate-limit/retry information). Diagnostics must not impose arbitrary internal usage caps or stop valid work.
+- Respect actual provider rate limits and free-tier terms. Never silently fall back to paid usage.
 
-Final job relevance classification, user ownership, authentication, persistence, and application state transitions remain deterministic application responsibilities. Ensure ingestion, deterministic filtering, persistence, and user actions still work when AI is disabled. Do not build a generic agent framework for the MVP.
+AI performs semantic interpretation and candidate-to-job evidence comparison. Application code verifies the evidence, applies the approved **Match / Relevant / Unclassified** category rules, and owns sorting, user ownership, authentication, persistence, and application state transitions. Keep the job feed, ingestion, and user-record workflows usable when AI is unavailable. Do not build a generic autonomous-agent framework for the MVP.
 
 ## 11. CV files and storage
 
