@@ -7,7 +7,7 @@ import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
-import { JOB_AI_ASSESSMENT_VERSION } from "@/thungatha-features/job-discovery/server/job-ai-queue";
+import { getJobAiTaskStatus, JOB_AI_ASSESSMENT_VERSION } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 
 const idSchema = z.string().uuid();
 
@@ -57,9 +57,19 @@ export async function GET(
       .maybeSingle();
     if (error) throw error;
 
-    return NextResponse.json(data
-      ? { status: "ready", ...data }
-      : { status: "pending", assessment: null });
+    if (data) return NextResponse.json({ status: "ready", ...data });
+
+    const taskStatus = await getJobAiTaskStatus({
+      userId: identity.userId,
+      jobId: id,
+      profileVersion: profileResult.data.profile_version ?? 1,
+      descriptionHash,
+    });
+
+    return NextResponse.json({
+      status: taskStatus === "failed" ? "failed" : "pending",
+      assessment: null,
+    });
   } catch (error) {
     return apiFailure(error);
   }
