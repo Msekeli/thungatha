@@ -16,13 +16,13 @@ const candidate = (overrides: Partial<CandidateFacts> = {}) => ({
   ...overrides,
 }) as CandidateFacts;
 
-const job = (requirements: Array<Record<string, unknown>>) => jobRequirementsSchema.parse({
+const job = (requirements: Array<Record<string, unknown>>, status: "complete" | "partial" = "partial") => jobRequirementsSchema.parse({
   schemaVersion: 1,
   extractionVersion: "m3-c02-v2",
   descriptionHash: "a".repeat(64),
   roleFamily: null,
   requirements,
-  status: "partial",
+  status,
 });
 
 const requirement = (category: string, value: string, importance = "mandatory") => ({
@@ -32,9 +32,14 @@ const requirement = (category: string, value: string, importance = "mandatory") 
 
 describe("classifyJobRelevance", () => {
   it("marks exact confirmed skills as met", () => {
-    const result = classifyJobRelevance(candidate(), job([requirement("skill", "TypeScript")]));
+    const result = classifyJobRelevance(candidate(), job([requirement("skill", "TypeScript")], "complete"));
     expect(result.classification).toBe("relevant");
     expect(result.requirements[0].profileEvidence).toEqual(["skills[0]"]);
+  });
+
+  it("does not call a partial extraction relevant from its known matches alone", () => {
+    const result = classifyJobRelevance(candidate(), job([requirement("skill", "TypeScript")]));
+    expect(result.classification).toBe("unclassified");
   });
 
   it("does not infer missing skills as not met", () => {
