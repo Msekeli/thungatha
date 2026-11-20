@@ -201,6 +201,8 @@ export async function readJobFeed(
   if (canRankByProfile) {
     // Fetch the complete filtered catalogue in bounded requests. A single
     // large PostgREST range can be silently capped by the project's max_rows.
+    let exactCount: number | null = null;
+    let reachedEnd = false;
     for (
       let offset = 0;
       offset < RELEVANCE_CATALOGUE_LIMIT;
@@ -214,18 +216,24 @@ export async function readJobFeed(
       if (batchResult.error) throw batchResult.error;
       const batch = (batchResult.data ?? []) as FeedJob[];
       data.push(...batch);
-      count = batchResult.count ?? data.length;
+      if (batchResult.count !== null) exactCount = batchResult.count;
 
-      if (
-        data.length >= count ||
-        batch.length < RELEVANCE_FETCH_BATCH_SIZE
-      ) {
+      if (exactCount !== null && data.length >= exactCount) {
+        reachedEnd = true;
+        break;
+      }
+      if (batch.length < RELEVANCE_FETCH_BATCH_SIZE) {
+        exactCount ??= data.length;
+        reachedEnd = true;
         break;
       }
     }
 
+    count = exactCount ?? data.length;
     rankWholeCatalogue =
-      count <= RELEVANCE_CATALOGUE_LIMIT && data.length >= count;
+      reachedEnd &&
+      count <= RELEVANCE_CATALOGUE_LIMIT &&
+      data.length >= count;
 
     // Above the approved 5,000-job ceiling, do not present a partial-catalogue
     // ranking as complete. Return the requested newest-first page instead.
