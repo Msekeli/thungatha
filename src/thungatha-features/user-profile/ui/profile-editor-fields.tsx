@@ -40,9 +40,9 @@ export function ProfileEditorFields({
       >
         <ProfilePersonalDetailsForm
           details={details}
-          onChange={(personalDetails) =>
-            onChange({ ...profile, personalDetails })
-          }
+          onChange={(personalDetails) => onChange({ ...profile, personalDetails })}
+          languages={profile.languages}
+          onLanguagesChange={(languages) => onChange({ ...profile, languages })}
         />
       </ProfileAccordion>
       <ProfileAccordion
@@ -129,9 +129,7 @@ export function ProfileEditorFields({
         }
       >
         <ProfileLanguageAttributesEditor
-          languages={profile.languages}
           attributes={profile.personalAttributes}
-          onLanguagesChange={(languages) => onChange({ ...profile, languages })}
           onAttributesChange={(personalAttributes) =>
             onChange({ ...profile, personalAttributes })
           }
