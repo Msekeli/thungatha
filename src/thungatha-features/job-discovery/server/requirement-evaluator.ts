@@ -12,6 +12,12 @@ function skillKey(value: string) {
   return aliases[normalise(value)] ?? value.trim();
 }
 
+function hasSchoolQualification(value: string) {
+  return ["matric", "grade 12", "national senior certificate", "nsc"].some(
+    (alias) => new RegExp(`\\b${alias}\\b`).test(value),
+  );
+}
+
 function experienceOutcome(candidate: CandidateFacts, value: string): RequirementOutcome {
   const years = /^(\d+) years?$/i.exec(value)?.[1];
   if (!years || candidate.employment.length === 0) return "cant_tell";
@@ -42,11 +48,10 @@ export function evaluateRequirement(candidate: CandidateFacts, requirement: JobR
     if (match) evidence.push(match.sourcePath);
     if (match) outcome = "met";
   } else if (requirement.category === "education") {
-    const aliases = ["matric", "grade 12", "national senior certificate", "nsc"];
-    const schoolRequirement = aliases.includes(value);
+    const schoolRequirement = hasSchoolQualification(value);
     const match = candidate.education.find((item) => {
       const qualification = normalise(item.qualification);
-      if (schoolRequirement) return aliases.some((alias) => qualification.includes(alias));
+      if (schoolRequirement) return hasSchoolQualification(qualification);
       if (value === "diploma") return /\bdiploma\b/.test(qualification);
       if (value === "degree") return /\bdegree\b/.test(qualification);
       return qualification === value;
