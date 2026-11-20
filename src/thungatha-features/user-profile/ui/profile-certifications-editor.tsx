@@ -23,7 +23,7 @@ export function ProfileCertificationsEditor({ items, onChange, onSave }: {
   const [draft, setDraft] = useState<Entry | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const save = () => {
-    if (!draft?.type || (draft.type !== "drivers-licence" && !draft.name.trim()) ||
+    if (!draft?.type || (draft.type !== "drivers-licence" && !draft.name?.trim()) ||
       (["professional-certification", "occupational-certificate", "professional-licence"].includes(draft.type) && !draft.issuer?.trim())) return;
     const updated = editingId ? items.map((item) => item.id === editingId ? draft : item) : [...items, draft];
     onChange(updated);
