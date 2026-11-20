@@ -19,12 +19,12 @@ export function MonthYearPicker({ value, onChange, label, min, max, disabled }: 
     }
   }, [open, value]);
   const selected = `${year}-${String(month + 1).padStart(2, "0")}`;
-  const years = Array.from({ length: 81 }, (_, index) => new Date().getFullYear() - 70 + index);
+  const years = Array.from({ length: new Date().getFullYear() + 16 - 1940 }, (_, index) => 1940 + index);
   const valid = (!min || selected >= min) && (!max || selected <= max);
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger disabled={disabled} className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 text-left text-sm shadow-xs outline-none transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50">
-        <span className={value ? "text-foreground" : "text-muted-foreground"}>{value ? new Date(year, month).toLocaleDateString("en-ZA", { month: "short", year: "numeric" }) : label}</span>
+      <Popover.Trigger type="button" disabled={disabled} className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 text-left text-sm shadow-xs outline-none transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50">
+        <span className={value ? "text-foreground" : "text-muted-foreground"}>{value ? new Date(Number(value.slice(0, 4)), Number(value.slice(5, 7)) - 1).toLocaleDateString("en-ZA", { month: "short", year: "numeric" }) : label}</span>
         <CalendarDays className="size-4 text-muted-foreground" />
       </Popover.Trigger>
       <Popover.Portal>
