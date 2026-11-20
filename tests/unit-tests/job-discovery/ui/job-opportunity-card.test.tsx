@@ -13,10 +13,10 @@ const job = {
 afterEach(() => cleanup());
 
 describe("JobOpportunityCard relevance metadata", () => {
-  it("shows a partially relevant badge beside the location", () => {
+  it("shows a Relevant badge beside the location", () => {
     render(
       <JobOpportunityCard
-        job={{ ...job, matchClassification: "partially_relevant" }}
+        job={{ ...job, matchClassification: "relevant" }}
         selected={false}
         postedLabel="Today"
         onSelect={vi.fn()}
@@ -24,7 +24,7 @@ describe("JobOpportunityCard relevance metadata", () => {
     );
 
     const location = screen.getByText("Cape Town");
-    const badge = screen.getByText("Partially relevant");
+    const badge = screen.getByText("Relevant");
     expect(location.closest(".th-job-card__metadata")).toBe(
       badge.closest(".th-job-card__metadata"),
     );
@@ -41,6 +41,6 @@ describe("JobOpportunityCard relevance metadata", () => {
     );
 
     expect(screen.queryByText("Relevant")).toBeNull();
-    expect(screen.queryByText("Partially relevant")).toBeNull();
+    expect(screen.queryByText("Relevant")).toBeNull();
   });
 });
