@@ -41,7 +41,9 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
       <CvSection title="Personal details" onEdit={onEdit}>
         <p>{details.fullName || "Name not provided"}</p>
         <p>{contact || "Contact details not provided"}</p>
-        <p>{[details.residentialSuburb, details.residentialCity, details.residentialProvince, details.country].filter(Boolean).join(", ")}</p>\n        <p><strong>Home language:</strong> {profile.languages[0] || "Not specified"}</p>\n        <p><strong>Additional languages:</strong> {profile.languages.slice(1).join(", ") || "None added"}</p>
+        <p>{[details.residentialSuburb, details.residentialCity, details.residentialProvince, details.country].filter(Boolean).join(", ")}</p>
+        <p><strong>Home language:</strong> {profile.languages[0] || "Not specified"}</p>
+        <p><strong>Additional languages:</strong> {profile.languages.slice(1).join(", ") || "None added"}</p>
       </CvSection>
       <CvSection title="Work experience" onEdit={onEdit}>
         {profile.workExperience.length ? profile.workExperience.map((item) => (
@@ -71,10 +73,11 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
       <CvSection title="Projects" onEdit={onEdit}>
         {profile.projects.length ? profile.projects.map((item) => <article key={item.id} className="mb-3 last:mb-0"><h3 className="font-semibold">{item.name}</h3>{item.description && <p>{item.description}</p>}</article>) : <p className="text-muted-foreground">No projects added.</p>}
       </CvSection>
-      <CvSection title="Languages and professional strengths" onEdit={onEdit}>
-        <p><strong>Preferred role:</strong> {profile.nextRole || "Not specified"}</p>
-        <p className="mt-2"><strong>Languages:</strong> {profile.languages.join(", ") || "Not specified"}</p>
-        <p className="mt-2"><strong>Personal attributes:</strong> {profile.personalAttributes.join(", ") || "Not specified"}</p>
+      <CvSection title="Career preferences" onEdit={onEdit}>
+        <p><strong>Preferred next role:</strong> {profile.nextRole || "Not specified"}</p>
+      </CvSection>
+      <CvSection title="Interests and hobbies" onEdit={onEdit}>
+        <p>{profile.personalAttributes.join(", ") || "No interests or hobbies added."}</p>
       </CvSection>
       <footer className="sticky bottom-3 flex flex-col gap-3 rounded-xl border border-border bg-card/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between print:hidden">
         <p className="text-sm text-muted-foreground">Review your complete CV before saving your profile.</p>
