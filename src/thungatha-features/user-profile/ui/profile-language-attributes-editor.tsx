@@ -24,7 +24,7 @@ function TagList({
   };
   return (
     <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm">
-      <h2 className="text-base font-semibold">{title}</h2>
+      <h2 className="text-base font-semibold">{title}</h2>\n      {title === "Professional strengths" && (\n        <p className="mt-1 text-sm text-muted-foreground">Add qualities that describe how you work with others and approach tasks.</p>\n      )}
       <div className="mt-3 flex flex-wrap gap-2">
         {items.map((item) => (
           <span
@@ -59,7 +59,7 @@ function TagList({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder={
-            title === "Languages" ? "Add a language" : "Add an attribute"
+            title === "Languages" ? "Add a language" : "e.g. Communication, teamwork"
           }
           aria-label={`Add ${title.toLowerCase()}`}
         />
@@ -89,7 +89,7 @@ export function ProfileLanguageAttributesEditor({
         onChange={onLanguagesChange}
       />
       <TagList
-        title="Personal attributes"
+        title="Professional strengths"
         items={attributes}
         onChange={onAttributesChange}
       />
