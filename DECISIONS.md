@@ -392,3 +392,19 @@ When a decision is approved or changed:
 - **Rationale:** Local development remains predictable and independent of hosted API quotas, while production providers are already catered for behind the same provider-neutral boundary. Selective AI use reduces unnecessary calls more effectively than monitoring consumption after the fact.
 - **Consequences:** Update the architecture and AI infrastructure guidance to reflect the environment policy. Provider activation, hosted credentials, and task-aware routing must be implemented and tested before hosted AI features are enabled.
 - **Review trigger:** A change to the selected providers, free-tier availability, hosting environment, or evidence that another provider is needed.
+
+
+### D-049 — Source-grounded AI output and no-thinking default
+
+- **Date:** 2026-11-20
+- **Status:** Confirmed
+- **Context:** Thungatha uses AI to work with information already supplied by the user or present in a job source. Unnecessary model reasoning increases latency and can encourage unsupported elaboration. CV assistance may improve presentation, but must preserve the truth of the source material.
+- **Decision:**
+  - Treat AI as a source-grounded extraction, organisation, summarisation, and wording assistant, not an independent source of facts.
+  - Factual claims in AI output must be supported by the task's supplied evidence. AI may improve wording and structure but must not invent qualifications, credentials, employers, job titles, dates, responsibilities, skills, achievements, or other personal/job facts.
+  - Preserve missing or unverifiable information as unknown. Do not fill gaps with plausible assumptions. Where a task requires information that is absent, leave it out or identify the gap.
+  - Disable model reasoning/thinking by default. For the current Ollama Local adapter, send `think: false` on every request. A future task may opt into provider-supported reasoning only when a concrete need is demonstrated and the task owner explicitly approves it.
+  - Disabling thinking is not a factuality guarantee. Each feature remains responsible for source-limited prompts, minimal inputs, strict output schemas, and application-side evidence validation. AI output remains untrusted and must not silently modify confirmed Profile or master CV data.
+- **Rationale:** Thungatha should accurately use available information rather than create plausible but unsupported content. Defaulting to direct generation reduces avoidable latency and discourages unnecessary elaboration.
+- **Consequences:** The Ollama Local adapter and its tests enforce `think: false`. Feature-specific AI integrations must preserve source evidence and explicitly handle missing information. Provider-specific reasoning controls for Gemini and Groq must be evaluated when those adapters are implemented; this decision does not assume their APIs use Ollama's setting.
+- **Review trigger:** A specific task demonstrates a measurable need for reasoning, or evaluation shows that the no-thinking default materially reduces required output quality without an acceptable alternative.
