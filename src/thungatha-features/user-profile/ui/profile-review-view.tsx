@@ -71,7 +71,7 @@ export function ProfileReviewView({ profile, onEdit, onSave, saving }: {
       <CvSection title="Projects" onEdit={onEdit}>
         {profile.projects.length ? profile.projects.map((item) => <article key={item.id} className="mb-3 last:mb-0"><h3 className="font-semibold">{item.name}</h3>{item.description && <p>{item.description}</p>}</article>) : <p className="text-muted-foreground">No projects added.</p>}
       </CvSection>
-      <CvSection title="Additional information" onEdit={onEdit}>
+      <CvSection title="Languages and professional strengths" onEdit={onEdit}>
         <p><strong>Preferred role:</strong> {profile.nextRole || "Not specified"}</p>
         <p className="mt-2"><strong>Languages:</strong> {profile.languages.join(", ") || "Not specified"}</p>
         <p className="mt-2"><strong>Personal attributes:</strong> {profile.personalAttributes.join(", ") || "Not specified"}</p>
