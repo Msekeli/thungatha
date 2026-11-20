@@ -120,7 +120,7 @@ Scope includes:
 - Handling unavailable sources, incomplete listings and errors honestly.
 - Verifying security, reliability, accessibility and the end-to-end experience.
 
-M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
+M1 does not include Profile-dependent matching, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
 
 **Dependency:** M0.
 
@@ -156,29 +156,33 @@ M2 execution begins with an audit of the existing Profile page, `src/thungatha-f
 
 Detailed checkpoints belong in the M2 milestone document.
 
-### M3 — Job Matching and Fit Analysis
+### M3 — AI-Powered Job Matching and Relevance
 
-**Status: In progress — M3-C01 relevance rules approved; implementation beginning.**
+**Status: In progress — semantic AI matching direction approved; existing deterministic extraction/classification is an interim implementation only.**
 
-**Outcome:** An explainable categorical assessment of how a user's confirmed professional evidence aligns with a job's requirements. No numerical fit scores or percentages are produced.
+**Outcome:** An explainable, evidence-grounded AI assessment of how the actual work and requirements in a job relate to a user's confirmed professional evidence, including transferable skills and equivalent responsibilities across different job titles and industries.
+
+AI is a core part of this milestone. Do not downgrade M3 to keyword matching, title matching, or deterministic-only comparison. Job titles and role-family labels are context, not hard gates or deciding factors.
 
 Scope includes:
 
-- Extracting and structuring job requirements.
-- Mapping requirements to evidence in the user's Profile and CV.
-- Producing deterministic Relevant, Partially relevant, or Unclassified outcomes.
-- Showing matched, partially supported, missing and unverifiable requirements without numerical scores or percentages.
-- Explaining the evidence behind the assessment.
-- Distinguishing confirmed information from inferred information.
-- Integrating relevance classification into catalogue-wide Job Discovery sorting before pagination.
-- Showing Relevant in green and Partially relevant in yellow; Unclassified has no badge.
-- Testing classification behaviour, edge cases and stale data.
+- Using AI to understand job descriptions and extract/interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, and domain context.
+- Comparing job requirements semantically with confirmed Profile evidence, including transferable skills and substantially equivalent work expressed with different titles or terminology.
+- Preserving job-source snippets/references and confirmed Profile evidence references for every factual comparison.
+- Validating AI output and evidence references in application code; keeping identity, authorization, persistence, freshness, deterministic data derivation, and categorical business rules application-owned.
+- Producing only **Match**, **Relevant**, or **Unclassified** outcomes. Match means strong evidence-based alignment with the central work and core/mandatory requirements; Relevant means meaningful supported alignment with material gaps/unknowns; Unclassified means evidence is insufficient, ambiguous, unsupported, or contradictory.
+- Showing badges only for Match and Relevant; Unclassified has no badge.
+- Ordering the full filtered catalogue by Match, Relevant, then Unclassified before pagination. Date sorts remain independent.
+- Explaining the evidence and uncertainty behind each result without inventing candidate or job facts.
+- Testing semantic equivalence across titles and industries, transferable-skill recognition, false positives, false negatives, evidence grounding, provider failures, and stale results.
 
-Relevance labels communicate evidence-based alignment only; they are not scores or hiring-probability estimates. Missing evidence must not automatically be treated as proof that the user lacks a qualification. Requirements that cannot be verified must be clearly distinguished from requirements with no supporting evidence.
+No numerical scoring of any kind is permitted: no score, percentage, weight, threshold, weighted total, fit points, score bands, hidden numeric ranking, or hiring-probability estimate. Do not sort or display by a numerical score.
+
+AI analysis failure must be represented honestly; do not silently substitute keyword-only matching and claim it is equivalent. Job feed access and ordinary discovery actions must remain usable when AI is unavailable.
 
 **Dependencies:** M1 and M2.
 
-**Completion condition:** Matching produces explainable, tested results based on available evidence and handles uncertainty honestly.
+**Completion condition:** AI-powered semantic comparison produces explainable and validated categorical outcomes grounded in job-source evidence and confirmed Profile evidence, with representative cross-title/cross-industry evaluation and honest uncertainty/failure handling.
 
 Detailed checkpoints belong in the M3 milestone document.
 
@@ -400,7 +404,7 @@ No provider ingestion was re-run and no production database changes were made du
 
 **Implemented:** The `/jobs` placeholder now uses C06's persisted feed/detail API. The UI provides keyword/employer, location, country, work-mode and employment-type filters; paginated results; selected-job details; loading, empty, error, retry and missing-detail states; keyboard-operable selectable cards; responsive small-screen detail navigation; and distinct original discovery-source and application-destination links.
 
-**Reused:** `GET /api/jobs`, `GET /api/jobs/[id]`, shared `Button`, and the existing CSS design tokens. No new dependencies, endpoint, or database schema were added. No mock job data, matching percentages, M5 application state, manual job entry, or save/dismiss state writes were added.
+**Reused:** `GET /api/jobs`, `GET /api/jobs/[id]`, shared `Button`, and the existing CSS design tokens. No new dependencies, endpoint, or database schema were added. No mock job data or numerical matching scores, M5 application state, manual job entry, or save/dismiss state writes were added.
 
 **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`, `milestones/M1-JOB-DISCOVERY-AND-JOB-FEED.md`, `IMPLEMENTATION-PLAN.md`.
 
