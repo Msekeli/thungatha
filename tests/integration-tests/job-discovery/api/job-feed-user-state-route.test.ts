@@ -40,11 +40,13 @@ describe("GET /api/jobs user state feed", () => {
       error: null,
     });
     const employerDismissals = createQueryMock({ data: [], error: null });
+    const profile = createQueryMock({ data: { profile_version: 1, confirmed_at: null }, error: null });
     const feed = createQueryMock({ data: [scoutVacancyRecord], error: null, count: 1 });
     const from = vi
       .fn()
       .mockReturnValueOnce(states)
       .mockReturnValueOnce(employerDismissals)
+      .mockReturnValueOnce(profile)
       .mockReturnValueOnce(feed);
     client.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
