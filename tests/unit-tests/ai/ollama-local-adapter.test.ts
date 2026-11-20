@@ -17,25 +17,35 @@ function fetcher(body: unknown, status = 200, headers?: HeadersInit) {
 afterEach(() => vi.unstubAllEnvs());
 
 describe("Ollama Local adapter", () => {
-  it("sends a non-thinking, non-streaming chat request and returns model usage", async () => {
+  it("does not force a reasoning setting when the task has no preference", async () => {
     const call = fetcher({
-      model: "qwen2.5:7b", message: { content: '{"requirements":[]}' },
+      model: "qwen3.5:4b", message: { content: '{"requirements":[]}' },
       prompt_eval_count: 12, eval_count: 4, done_reason: "stop",
     });
     const result = await createOllamaLocalAdapter({
-      model: "qwen2.5:7b", fetcher: call,
+      model: "qwen3.5:4b", fetcher: call,
     }).complete(request);
     const [url, init] = call.mock.calls[0] ?? [];
     const body = JSON.parse(String(init?.body));
     expect(url).toBe("http://127.0.0.1:11434/api/chat");
     expect(body).toMatchObject({
-      model: "qwen2.5:7b", think: false, stream: false, format: "json",
+      model: "qwen3.5:4b", stream: false, format: "json",
       messages: [{ role: "system" }, { role: "user" }],
     });
+    expect(body).not.toHaveProperty("think");
     expect(result).toMatchObject({
-      provider: "ollama-local", model: "qwen2.5:7b",
+      provider: "ollama-local", model: "qwen3.5:4b",
       content: '{"requirements":[]}', usage: { inputTokens: 12, outputTokens: 4 },
     });
+  });
+
+  it("passes task-level reasoning configuration to Ollama", async () => {
+    const call = fetcher({ model: "qwen3.5:4b", message: { content: '{"classification":"match"}' } });
+    await createOllamaLocalAdapter({ model: "qwen3.5:4b", fetcher: call }).complete({
+      ...request, task: "job-fit-assessment", reasoning: true,
+    });
+    const body = JSON.parse(String(call.mock.calls[0]?.[1]?.body));
+    expect(body.think).toBe(true);
   });
 
   it("requires a model to be configured", async () => {
