@@ -190,7 +190,7 @@ Detailed checkpoints belong in the M3 milestone document.
 
 **Status: Not started**
 
-**Outcome:** A complete workflow for assessing, tailoring, reviewing, managing and exporting CV versions for specific opportunities.
+**Outcome:** An AI-powered workflow that interprets a target role and helps users create accurate, evidence-grounded CV versions tailored to specific opportunities.
 
 Scope includes:
 
@@ -198,8 +198,9 @@ Scope includes:
 - Supporting CV upload when a master CV is not yet available.
 - Accepting a job URL, pasted job description or a job selected from Discovery.
 - Handling unreadable job URLs by asking the user to paste the description.
-- Recommending whether to use the master CV, reuse an existing tailored version or create a new version.
-- Allowing users to review and accept or reject recommendations.
+- Using AI to interpret the target role, identify relevant confirmed experience and transferable skills, and recommend whether to use the master CV, reuse an existing tailored version or create a new version.
+- Using AI to propose role-appropriate ordering, emphasis, structure, and wording grounded in confirmed Profile evidence.
+- Allowing users to review, edit, accept or reject recommendations and proposed changes.
 - Supporting AI-assisted tailoring and a live preview.
 - Managing versions and providing appropriate comparison and export workflows.
 - Preserving the master CV and confirmed Profile information.
@@ -370,14 +371,14 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 **Scope of evidence:** this verifies the tested database RPC path only. It does not establish that every provider integration, scheduled execution, or the full application ingestion pipeline has been end-to-end verified. Do not repeat C04 checks unless a concrete failure appears.
 
-**C05 status:** Under investigation — no AI extraction implementation is approved yet. The decision is deferred until the source/content audit establishes a concrete need. Do not mark C05 accepted or imply that investigation is complete.
+**C05 status:** Under investigation for M1 only — no AI extraction was required for the structured source payloads in the accepted M1 scope. This does not restrict the approved AI capabilities in M3 or later milestones.
 
 **Next active checkpoint:** M1-C06 — Discovery query and action contracts. Backend/API implementation has started on `dev`; see the detailed milestone record for endpoint scope and verification status. C05 remains open and must be resolved before M1 acceptance.
 
 
 ## M1-C05 status update — 2026-10-16
 
-**Status: Under investigation; implementation decision pending.** The checkpoint will determine whether any concrete job-content extraction gap justifies AI. No AI extraction feature is approved or claimed complete. Deterministic validation, normalization, deduplication and persistence remain authoritative, and Discovery must remain usable with AI disabled.
+**Status: Accepted for M1 scope only.** M1 used deterministic validation, normalization, deduplication and persistence because its approved source payloads were already structured. This M1-specific decision does not prohibit AI-powered semantic understanding and matching in M3 or AI-assisted CV tailoring in M4.
 
 **Sequencing decision:** proceed with M1-C06 — Discovery query and action contracts, because its documented scope is API/data-operation work and does not require AI extraction. C05 remains open; this does not change the M1 checkpoint requirements or constitute C05 acceptance.
 
