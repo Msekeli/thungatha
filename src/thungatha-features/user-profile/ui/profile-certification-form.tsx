@@ -41,7 +41,7 @@ export function ProfileCertificationForm({ value, onChange, onSave, onCancel, ed
       </label>
       {value.type && !driver && <label className="block space-y-2 text-sm font-medium">
         {professional ? "Profession / registration type" : "Certificate name"} (Required)
-        <Input required maxLength={150} value={value.name} onChange={(event) => set("name", event.target.value)}
+        <Input required maxLength={150} value={value.name || ""} onChange={(event) => set("name", event.target.value)}
           placeholder={professional ? "e.g. Professional Engineer" : "e.g. Occupational Certificate: Electrician"} />
       </label>}
       {driver && <fieldset className="space-y-2">
@@ -76,7 +76,7 @@ export function ProfileCertificationForm({ value, onChange, onSave, onCancel, ed
         </label>
       </div>}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button type="submit" disabled={!value.type || (driver ? false : !value.name.trim()) ||
+        <Button type="submit" disabled={!value.type || (driver ? false : !value.name?.trim()) ||
           (needsIssuer && !value.issuer?.trim())}>{driver ? "Save licence" : "Save certificate"}</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
