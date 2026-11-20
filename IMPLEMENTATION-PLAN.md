@@ -166,10 +166,10 @@ AI is a core part of this milestone. Do not downgrade M3 to keyword matching, ti
 
 Scope includes:
 
-- Using AI to understand job descriptions and extract/interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, and domain context.
-- Comparing job requirements semantically with confirmed Profile evidence, including transferable skills and substantially equivalent work expressed with different titles or terminology.
+- Using AI to understand complete job descriptions and interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, and domain context without relying on fixed dictionaries or regex as the semantic engine.
+- Comparing the actual work and requirements semantically with confirmed Profile evidence, including transferable skills and substantially equivalent work expressed with different titles or terminology. Interpret individual requirements in the context of the full advert; do not use one extracted phrase, threshold, title, or missing field as an automatic rejection gate.
 - Preserving job-source snippets/references and confirmed Profile evidence references for every factual comparison.
-- Validating AI output and evidence references in application code; keeping identity, authorization, persistence, freshness, deterministic data derivation, and categorical business rules application-owned.
+- Validating AI output and evidence references in application code; keeping identity, authorization, persistence, freshness, deterministic data integrity, and categorical outcome enforcement application-owned. Use asynchronous, idempotent processing and cached assessments; do not call AI synchronously on every feed request.
 - Producing only **Match**, **Relevant**, or **Unclassified** outcomes. Match means strong evidence-based alignment with the central work and core/mandatory requirements; Relevant means meaningful supported alignment with material gaps/unknowns; Unclassified means evidence is insufficient, ambiguous, unsupported, or contradictory.
 - Showing badges only for Match and Relevant; Unclassified has no badge.
 - Ordering the full filtered catalogue by Match, Relevant, then Unclassified before pagination. Date sorts remain independent.
@@ -178,7 +178,7 @@ Scope includes:
 
 No numerical scoring of any kind is permitted: no score, percentage, weight, threshold, weighted total, fit points, score bands, hidden numeric ranking, or hiring-probability estimate. Do not sort or display by a numerical score.
 
-AI analysis failure must be represented honestly; do not silently substitute keyword-only matching and claim it is equivalent. Job feed access and ordinary discovery actions must remain usable when AI is unavailable.
+AI analysis failure must be represented honestly; do not silently substitute keyword-only matching and claim it is equivalent. Job feed access and ordinary discovery actions must remain usable when AI is unavailable. Existing regex extraction, fixed dictionaries, exact-match evaluators, and role-family gates are interim legacy logic to retire from semantic decision-making.
 
 **Dependencies:** M1 and M2.
 
@@ -274,7 +274,7 @@ The main functional dependencies are:
 
 - M1 establishes Job Discovery.
 - M2 provides confirmed Profile information and the master CV.
-- M3 uses deterministic job requirements and confirmed Profile evidence to assign categorical relevance classifications.
+- M3 uses AI semantic job understanding and comparison against confirmed Profile evidence to assign categorical relevance classifications. Deterministic application code validates evidence and enforces security, persistence, freshness, and approved outcome invariants.
 - M4 uses the master CV and job information to manage tailored CV versions.
 - M5 links actual applications to relevant jobs and submitted CV versions.
 - M6 verifies the integrated product and release readiness.
