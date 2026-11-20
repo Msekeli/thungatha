@@ -19,8 +19,10 @@ export function ProfileCertificationForm({ value, onChange, onSave, onCancel, ed
   const driver = value.type === "drivers-licence";
   const professional = value.type === "professional-licence";
   const needsIssuer = value.type !== "drivers-licence" && value.type !== "other";
-  const set = (key: keyof Entry, next: string | string[]) =>
-    onChange({ ...value, [key]: next || null } as Entry);
+  const set = (key: keyof Entry, next: string | string[]) => {
+    const fieldValue = key === "name" ? next : next || null;
+    onChange({ ...value, [key]: fieldValue } as Entry);
+  };
   const setType = (type: string) => onChange({
     ...value, type: type as Entry["type"],
     name: type === "drivers-licence" ? "South African driver's licence" : value.name,
