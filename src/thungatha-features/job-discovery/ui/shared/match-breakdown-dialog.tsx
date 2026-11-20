@@ -64,6 +64,29 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
     return () => controller.abort();
   }, [open, jobId]);
 
+  useEffect(() => {
+    if (!open || !jobId || status !== "pending") return;
+
+    const interval = window.setInterval(async () => {
+      try {
+        const response = await fetch(`/api/jobs/${jobId}/match-assessment`);
+        if (!response.ok) return;
+        const result = await response.json() as {
+          status: "pending" | "failed" | "profile_unconfirmed" | "ready";
+          assessment?: MatchAssessment | null;
+        };
+        if (result.status !== "pending") {
+          setStatus(result.status);
+          setAssessment(result.assessment ?? null);
+        }
+      } catch {
+        // Keep the pending state; the next poll can recover from transient failures.
+      }
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, [open, jobId, status]);
+
   async function retryAssessment() {
     if (!jobId || isRetrying) return;
     setIsRetrying(true);
