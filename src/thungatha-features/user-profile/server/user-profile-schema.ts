@@ -26,12 +26,18 @@ export const profileCompletionSchema = z.object({
   }),
   summary: z.string().trim().min(1).max(5000),
   education: z
-    .array(
-      educationItemSchema.extend({
-        educationLevel: z.string().trim().min(1).max(100),
-      }),
-    )
-    .min(1),
+    .array(educationItemSchema)
+    .min(1)
+    .refine(
+      (items) =>
+        items.some(
+          (item) =>
+            Boolean(item.educationLevel?.trim()) &&
+            Boolean(item.qualification.trim()) &&
+            Boolean(item.institution.trim()),
+        ),
+      { message: "At least one complete education record is required." },
+    ),
 });
 
 export const updateProfileSchema = z
