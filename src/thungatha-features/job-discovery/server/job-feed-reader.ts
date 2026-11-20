@@ -64,7 +64,7 @@ function newestFirst(a: FeedJob, b: FeedJob) {
 
 function relevanceOrder(a: FeedJob, b: FeedJob) {
   const rank = (value: Relevance | undefined) =>
-    value === "relevant" ? 0 : value === "partially_relevant" ? 1 : 2;
+    value === "match" ? 0 : value === "relevant" ? 1 : 2;
   return (
     rank(a.matchClassification) - rank(b.matchClassification) ||
     newestFirst(a, b)
