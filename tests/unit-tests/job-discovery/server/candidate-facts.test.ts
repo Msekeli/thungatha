@@ -54,6 +54,17 @@ describe("deriveCandidateFacts", () => {
     expect(facts?.unknownEmploymentSourcePaths).toEqual(["workExperience[0]"]);
   });
 
+  it("rejects impossible calendar dates instead of counting them", () => {
+    const facts = deriveCandidateFacts(profile({
+      workExperience: [{
+        id: "bad-date", jobTitle: "Engineer", employer: "A",
+        startDate: "2020-02-31", endDate: "2021-01",
+      }],
+    }), "2026-11-20");
+    expect(facts?.employment).toHaveLength(0);
+    expect(facts?.unknownEmploymentSourcePaths).toEqual(["workExperience[0]"]);
+  });
+
   it("uses exact canonical skill aliases without stripping punctuation", () => {
     const facts = deriveCandidateFacts(profile({ skills: ["C sharp", "C++", "DotNet", "React Native"] }), "2026-11-20");
     expect(facts?.skills.map((skill) => skill.canonical)).toEqual(["C#", "C++", ".NET", null]);
