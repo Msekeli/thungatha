@@ -24,11 +24,7 @@ export function buildJobDiscoveryViewModel(input: {
   const selectedActivity =
     jobActivity?.jobId === selectedId ? jobActivity.activity : null;
   const applicationUrl = safeExternalUrl(selectedDetail?.application_url);
-  const visibleJobs = sortJobDiscoveries(
-    feed?.jobs ?? [],
-    sortOrder,
-    filters.query,
-  );
+  const visibleJobs = sortJobDiscoveries(feed?.jobs ?? [], sortOrder);
   const hasFilters = Object.entries(filters).some(
     ([key, value]) => value !== EMPTY_FILTERS[key as keyof Filters],
   );
