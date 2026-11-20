@@ -161,7 +161,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Experience uses merged known employment months. If known experience is below the threshold but one or more employment periods are unparseable, the outcome remains Can't tell; it becomes Not met only when all recorded employment periods are reliably known.
 - Unsupported categories and unverified qualification equivalence remain Can't tell. No NQF equivalence, subject-mark inference, role-family inference, or qualification substitution is attempted.
 - Positive alignment is required before Relevant or Partially relevant can be returned. A positive match with mandatory requirements not met or not verifiable is Partially relevant; insufficient positive evidence remains Unclassified.
-- The implementation is intentionally conservative. Requirement-level outcomes currently support only the evidence types listed above; rule examples and automated tests are still required. Tests have not been run.
+- The implementation is intentionally conservative. Requirement-level outcomes currently support only the evidence types listed above; unsupported categories remain Can't tell. Added unit tests for exact skill evidence, missing skills, empty employment history, positive alignment with an unmet mandatory experience requirement, and unavailable/empty extraction. Tests have not been run.
 
 **Goal:** produce reproducible requirement outcomes and one of the approved relevance classifications.
 
