@@ -48,9 +48,10 @@ describe("classifyJobRelevance", () => {
     expect(result.requirements[0].outcome).toBe("cant_tell");
   });
 
-  it("keeps an empty work history unknown", () => {
+  it("leaves candidates without role-family evidence unclassified", () => {
     const result = classifyJobRelevance(candidate({ employment: [], knownEmploymentMonths: 0 }), job([requirement("experience", "5 years")]));
-    expect(result.requirements[0].outcome).toBe("cant_tell");
+    expect(result.classification).toBe("unclassified");
+    expect(result.requirements).toHaveLength(0);
   });
 
   it("returns Relevant when a mandatory requirement is not met", () => {
