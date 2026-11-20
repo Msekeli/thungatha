@@ -1,12 +1,18 @@
 export function parseEmploymentMonth(value: string | null | undefined) {
   if (!value) return null;
   const text = value.trim();
-  let match = /^(\d{4})-(\d{2})(?:-\d{2})?$/.exec(text);
-  if (match) return validMonth(Number(match[1]), Number(match[2]));
-  match = /^([A-Za-z]{3,9})\s+(\d{4})$/.exec(text);
-  if (!match) return null;
-  const month = new Date(Date.parse(match[1] + " 1, 2000")).getMonth() + 1;
-  return validMonth(Number(match[2]), month);
+  const match = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(text);
+  if (match) {
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = match[3] ? Number(match[3]) : 1;
+    if (day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) return null;
+    return validMonth(year, month);
+  }
+  const named = /^([A-Za-z]{3,9})\s+(\d{4})$/.exec(text);
+  if (!named) return null;
+  const month = new Date(Date.parse(named[1] + " 1, 2000")).getMonth() + 1;
+  return validMonth(Number(named[2]), month);
 }
 
 function validMonth(year: number, month: number) {
@@ -15,17 +21,17 @@ function validMonth(year: number, month: number) {
     : null;
 }
 
-export function mergeEmploymentMonths(periods: Array<{ start: number; end: number }>) {
-  const sorted = [...periods].sort((a, b) => a.start - b.start || a.end - b.end);
+export function mergeEmploymentMonths(periods: Array<{ startMonth: number; endMonth: number }>) {
+  const sorted = [...periods].sort((a, b) => a.startMonth - b.startMonth || a.endMonth - b.endMonth);
   let total = 0;
-  let current: { start: number; end: number } | null = null;
+  let current: { startMonth: number; endMonth: number } | null = null;
   for (const period of sorted) {
     if (!current) current = { ...period };
-    else if (period.start <= current.end + 1) current.end = Math.max(current.end, period.end);
+    else if (period.startMonth <= current.endMonth + 1) current.endMonth = Math.max(current.endMonth, period.endMonth);
     else {
-      total += current.end - current.start + 1;
+      total += current.endMonth - current.startMonth + 1;
       current = { ...period };
     }
   }
-  return total + (current ? current.end - current.start + 1 : 0);
+  return total + (current ? current.endMonth - current.startMonth + 1 : 0);
 }
