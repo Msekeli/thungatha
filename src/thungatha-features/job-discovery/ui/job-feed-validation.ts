@@ -32,7 +32,11 @@ export function isValidFeed(value: unknown): value is Feed {
         typeof job.updated_at === "string" &&
         (job.state === null ||
           job.state === "saved" ||
-          job.state === "dismissed"),
+          job.state === "dismissed") &&
+        (job.matchClassification === undefined ||
+          job.matchClassification === "relevant" ||
+          job.matchClassification === "partially_relevant" ||
+          job.matchClassification === "unclassified"),
     )
   );
 }
