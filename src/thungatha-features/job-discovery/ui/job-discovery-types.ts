@@ -11,7 +11,7 @@ export type Job = {
   source_updated_at: string | null;
   updated_at: string;
   state: "saved" | "dismissed" | null;
-  matchClassification?: "relevant" | "partially_relevant" | "unclassified";
+  matchClassification?: "match" | "relevant" | "unclassified";
 };
 
 export type JobActivity = {
