@@ -11,7 +11,9 @@ export function JobDetailMatchSummary({
     ? "Match"
     : classification === "relevant"
       ? "Relevant"
-      : "Assessment pending";
+      : classification === "unclassified"
+        ? "Unclassified"
+        : "Assessment pending";
 
   return (
     <div className="th-jobs-match-scorebox hidden flex-col items-start gap-1 min-[601px]:flex">
