@@ -13,19 +13,19 @@ export function deriveEmployment(profile: { workExperience: unknown[] }, asOfMon
   profile.workExperience.forEach((entry, index) => {
     const parsed = workExperienceItemSchema.safeParse(entry);
     if (!parsed.success) {
-      unknownEmploymentSourcePaths.push(`workExperience[\${index}]`);
+      unknownEmploymentSourcePaths.push(`workExperience[${index}]`);
       return;
     }
     const startMonth = parseEmploymentMonth(parsed.data.startDate);
     const endMonth = parsed.data.isCurrent ? asOfMonth : parseEmploymentMonth(parsed.data.endDate);
     if (startMonth === null || endMonth === null || endMonth < startMonth) {
-      unknownEmploymentSourcePaths.push(`workExperience[\${index}]`);
+      unknownEmploymentSourcePaths.push(`workExperience[${index}]`);
       return;
     }
     employment.push({
       id: parsed.data.id, jobTitle: parsed.data.jobTitle,
       employer: parsed.data.employer, startMonth, endMonth,
-      sourcePath: `workExperience[\${index}]`,
+      sourcePath: `workExperience[${index}]`,
     });
   });
   return { employment, unknownEmploymentSourcePaths };
@@ -38,20 +38,20 @@ export function deriveProfileCollections(profile: {
     const parsed = skillItemSchema.safeParse(value);
     return parsed.success ? [{
       value: parsed.data, canonical: canonicalSkill(parsed.data),
-      sourcePath: `skills[\${index}]`,
+      sourcePath: `skills[${index}]`,
     }] : [];
   });
   const education = profile.education.flatMap((entry, index) => {
     const parsed = educationItemSchema.safeParse(entry);
-    return parsed.success ? [{ ...parsed.data, sourcePath: `education[\${index}]` }] : [];
+    return parsed.success ? [{ ...parsed.data, sourcePath: `education[${index}]` }] : [];
   });
   const certifications = profile.certifications.flatMap((entry, index) => {
     const parsed = certificationItemSchema.safeParse(entry);
-    return parsed.success ? [{ ...parsed.data, sourcePath: `certifications[\${index}]` }] : [];
+    return parsed.success ? [{ ...parsed.data, sourcePath: `certifications[${index}]` }] : [];
   });
   const languages = profile.languages.flatMap((value, index) => {
     const parsed = languageItemSchema.safeParse(value);
-    return parsed.success ? [{ value: parsed.data, sourcePath: `languages[\${index}]` }] : [];
+    return parsed.success ? [{ value: parsed.data, sourcePath: `languages[${index}]` }] : [];
   });
   return { skills, education, certifications, languages };
 }
