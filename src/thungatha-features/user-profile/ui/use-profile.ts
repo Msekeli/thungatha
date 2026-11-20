@@ -48,12 +48,12 @@ export function useProfile() {
     await fetchProfile();
   }, [fetchProfile]);
 
-  const handleSave = async () => {
+  const handleSave = async (confirm = false) => {
     setSaving(true);
     setError("");
     setMessage("");
     try {
-      const result = await saveProfileDraft(draft);
+      const result = await saveProfileDraft(draft, confirm);
       if (!result.profile) {
         setError(
           result.error || "We couldn’t save your changes. Please try again.",
@@ -67,9 +67,9 @@ export function useProfile() {
       ).success;
       setMode("edit");
       setMessage(
-        complete
-          ? "Profile saved successfully."
-          : "Draft saved. Complete the required personal details, professional summary, and education to save your profile.",
+        result.profile.confirmedAt
+          ? "Profile confirmed and saved."
+          : "Draft saved. You can continue editing your profile at any time.",
       );
       return true;
     } finally {
