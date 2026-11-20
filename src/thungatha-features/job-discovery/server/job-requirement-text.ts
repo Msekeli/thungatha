@@ -10,7 +10,3 @@ export function sourceSegments(description: string) {
     .filter((part) => part.length >= 8);
 }
 
-export function hasExactTerm(text: string, term: string) {
-  const escaped = term.replace(/[.*+?^{}()|[\]\\$]/g, "\\$&");
-  return new RegExp("(?<![A-Za-z0-9])" + escaped + "(?![A-Za-z0-9])", "i").test(text);
-}
