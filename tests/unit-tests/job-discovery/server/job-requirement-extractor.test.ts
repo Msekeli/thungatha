@@ -30,6 +30,14 @@ describe("job requirement extraction", () => {
     expect(result.roleFamily).toBe("software_it");
   });
 
+  it("classifies an AI-titled role from its software engineering requirements", () => {
+    const result = extractJobRequirements(
+      "Responsibilities include integrating into established C# .NET codebases, writing unit tests and participating in code reviews. Required skills include C# and .NET.",
+      "Applied AI Engineer",
+    );
+    expect(result.roleFamily).toBe("software_it");
+  });
+
   it("does not treat incidental technology mentions as requirements", () => {
     const result = extractJobRequirements(
       "<p>Our company uses Azure and React.</p><p>Applicants must have reliable communication skills.</p>",
