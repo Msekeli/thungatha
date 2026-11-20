@@ -22,6 +22,15 @@ This directory contains shared, server-side AI infrastructure used by multiple T
 
 Free-tier availability and limits are provider-controlled and can change. Do not encode assumed monthly reset behaviour; configure and enforce the actual provider/model limits.
 
+## Ollama Local setup
+
+1. Start Ollama on the development machine and confirm its local API is reachable at `http://127.0.0.1:11434`.
+2. Run `ollama list` and set `OLLAMA_LOCAL_MODEL` to an installed model tag exactly as listed.
+3. Set `OLLAMA_LOCAL_BASE_URL` only when Ollama listens on a different local address.
+4. Keep these values server-side. Do not prefix them with `NEXT_PUBLIC_`.
+
+The adapter uses Ollama's non-streaming `POST /api/chat` endpoint. JSON requests ask Ollama for JSON-formatted output; the owning feature must still parse and validate that content with its own Zod schema.
+
 ## Implementation order
 
 1. Establish provider-neutral contracts and error types.
