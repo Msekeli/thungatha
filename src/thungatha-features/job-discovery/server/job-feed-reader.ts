@@ -15,6 +15,26 @@ type FeedJob = {
   [key: string]: unknown;
 };
 
+const RELEVANCE_CATALOGUE_LIMIT = 5000;
+const RELEVANCE_FETCH_BATCH_SIZE = 500;
+
+function newestFirst(a: FeedJob, b: FeedJob) {
+  const aPublished = a.published_at ? Date.parse(a.published_at) : NaN;
+  const bPublished = b.published_at ? Date.parse(b.published_at) : NaN;
+  if (Number.isFinite(aPublished) && Number.isFinite(bPublished) && aPublished !== bPublished) return bPublished - aPublished;
+  if (Number.isFinite(aPublished) !== Number.isFinite(bPublished)) return Number.isFinite(aPublished) ? -1 : 1;
+  const aUpdated = a.updated_at ? Date.parse(a.updated_at) : NaN;
+  const bUpdated = b.updated_at ? Date.parse(b.updated_at) : NaN;
+  if (Number.isFinite(aUpdated) && Number.isFinite(bUpdated) && aUpdated !== bUpdated) return bUpdated - aUpdated;
+  return a.id.localeCompare(b.id);
+}
+
+function relevanceOrder(a: FeedJob, b: FeedJob) {
+  const rank = (value: FeedJob["matchClassification"]) =>
+    value === "match" ? 0 : value === "relevant" ? 1 : 2;
+  return rank(a.matchClassification) - rank(b.matchClassification) || newestFirst(a, b);
+}
+
 function emptyFeed(page: number, pageSize: number) {
   return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
 }
@@ -124,47 +144,90 @@ export async function readJobFeed(
   };
 
   const from = (input.page - 1) * input.pageSize;
-  const pageResult = await buildQuery()
-    .order("published_at", {
-      ascending: input.sortOrder === "oldest",
-      nullsFirst: false,
-    })
-    .order("updated_at", { ascending: false })
-    .order("id", { ascending: true })
-    .range(from, from + input.pageSize - 1);
-  if (pageResult.error) throw pageResult.error;
-
-  const pageJobs = (pageResult.data ?? []) as FeedJob[];
-  let assessmentsByJob = new Map<string, { hash: string; classification: "match" | "relevant" | "unclassified" }>();
-
-  if (userId && pageJobs.length) {
+  let profileVersion: number | null = null;
+  if (userId) {
     try {
       const profileResult = await db.from("profiles")
         .select("profile_version,confirmed_at")
         .eq("user_id", userId)
         .maybeSingle();
       if (profileResult.error) throw profileResult.error;
-
-      if (profileResult.data?.confirmed_at) {
-        const assessmentResult = await db.from("job_match_assessments")
-          .select("job_id,job_description_hash,classification")
-          .eq("user_id", userId)
-          .eq("profile_version", profileResult.data.profile_version)
-          .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
-          .in("job_id", pageJobs.map((job) => job.id));
-        if (assessmentResult.error) throw assessmentResult.error;
-        assessmentsByJob = new Map((assessmentResult.data ?? []).map((item) => [
-          item.job_id,
-          { hash: item.job_description_hash, classification: item.classification },
-        ]));
-      }
+      if (profileResult.data?.confirmed_at) profileVersion = profileResult.data.profile_version ?? 1;
     } catch {
-      // A stale or unavailable AI assessment must never block the feed.
-      assessmentsByJob = new Map();
+      profileVersion = null;
     }
   }
 
-  const jobs: FeedJob[] = pageJobs.map((job) => {
+  let data: FeedJob[] = [];
+  let count = 0;
+  let rankWholeCatalogue = false;
+
+  if (input.sortOrder === "relevance" && profileVersion !== null) {
+    let exactCount: number | null = null;
+    let reachedEnd = false;
+    for (let offset = 0; offset < RELEVANCE_CATALOGUE_LIMIT; offset += RELEVANCE_FETCH_BATCH_SIZE) {
+      const batchResult = await buildQuery()
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("updated_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(offset, offset + RELEVANCE_FETCH_BATCH_SIZE - 1);
+      if (batchResult.error) throw batchResult.error;
+      const batch = (batchResult.data ?? []) as FeedJob[];
+      data.push(...batch);
+      if (batchResult.count !== null) exactCount = batchResult.count;
+      if (exactCount !== null && data.length >= exactCount) {
+        reachedEnd = true;
+        break;
+      }
+      if (batch.length < RELEVANCE_FETCH_BATCH_SIZE) {
+        exactCount ??= data.length;
+        reachedEnd = true;
+        break;
+      }
+    }
+    count = exactCount ?? data.length;
+    rankWholeCatalogue = reachedEnd && count <= RELEVANCE_CATALOGUE_LIMIT && data.length >= count;
+  }
+
+  if (!rankWholeCatalogue) {
+    const pageResult = await buildQuery()
+      .order("published_at", {
+        ascending: input.sortOrder === "oldest",
+        nullsFirst: false,
+      })
+      .order("updated_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, from + input.pageSize - 1);
+    if (pageResult.error) throw pageResult.error;
+    data = (pageResult.data ?? []) as FeedJob[];
+    count = pageResult.count ?? count;
+  }
+
+  const assessmentsByJob = new Map<string, { hash: string; classification: "match" | "relevant" | "unclassified" }>();
+  if (userId && profileVersion !== null && data.length) {
+    try {
+      for (let offset = 0; offset < data.length; offset += RELEVANCE_FETCH_BATCH_SIZE) {
+        const batch = data.slice(offset, offset + RELEVANCE_FETCH_BATCH_SIZE);
+        const assessmentResult = await db.from("job_match_assessments")
+          .select("job_id,job_description_hash,classification")
+          .eq("user_id", userId)
+          .eq("profile_version", profileVersion)
+          .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+          .in("job_id", batch.map((job) => job.id));
+        if (assessmentResult.error) throw assessmentResult.error;
+        for (const item of assessmentResult.data ?? []) {
+          assessmentsByJob.set(item.job_id, {
+            hash: item.job_description_hash,
+            classification: item.classification,
+          });
+        }
+      }
+    } catch {
+      assessmentsByJob.clear();
+    }
+  }
+
+  let jobs: FeedJob[] = data.map((job) => {
     const savedAssessment = assessmentsByJob.get(job.id);
     const currentHash = createHash("sha256").update(job.description ?? "").digest("hex");
     return {
@@ -175,7 +238,11 @@ export async function readJobFeed(
         : {}),
     };
   });
-  const count = pageResult.count ?? 0;
+
+  if (rankWholeCatalogue) {
+    jobs.sort(relevanceOrder);
+    jobs = jobs.slice(from, from + input.pageSize);
+  }
 
   const safeJobs = jobs.map((job) => {
     const safeJob = { ...job };
