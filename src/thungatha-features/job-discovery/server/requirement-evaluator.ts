@@ -14,7 +14,7 @@ function skillKey(value: string) {
 
 function experienceOutcome(candidate: CandidateFacts, value: string): RequirementOutcome {
   const years = /^(\d+) years?$/i.exec(value)?.[1];
-  if (!years) return "cant_tell";
+  if (!years || candidate.employment.length === 0) return "cant_tell";
   const requiredMonths = Number(years) * 12;
   if (candidate.knownEmploymentMonths >= requiredMonths) return "met";
   return candidate.unknownEmploymentSourcePaths.length ? "cant_tell" : "not_met";
