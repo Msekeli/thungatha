@@ -28,7 +28,15 @@ describe("candidate fact derivation", () => {
     expect(facts?.evidence.map((item) => item.sourcePath)).toContain("workExperience[0].achievements[0]");
     expect(facts?.evidence.map((item) => item.sourcePath)).toContain("certifications[0].name");
     expect(facts?.evidence.map((item) => item.sourcePath)).toContain("projects[0].description");
+    expect(facts?.evidence.map((item) => item.sourcePath)).toContain("personalDetails.residentialCity");
     expect(facts?.targetRole).toBe("Software Developer");
+  });
+  it("keeps unknown employment periods linked to their actual Profile evidence", () => {
+    const source = profile({ workExperience: [{ id: "work-2", jobTitle: "Analyst", employer: "Org", startDate: "unknown", isCurrent: false }] });
+    const facts = deriveCandidateFacts(source, "2026-11-20");
+    expect(facts?.knownEmploymentMonths).toBeNull();
+    expect(facts?.unknownEmploymentPeriodRefs).toContain("profile:workExperience[0].startDate");
+    expect(facts?.unknownEmploymentPeriodRefs.every((ref) => facts.evidence.some((item) => item.id === ref))).toBe(true);
   });
   it("counts merged employment months once and retains unknown periods", () => {
     const result = calculateKnownEmploymentMonths([

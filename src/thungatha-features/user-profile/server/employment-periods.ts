@@ -2,7 +2,7 @@ export type EmploymentPeriod = { startDate: string; endDate?: string | null; isC
 type MonthRange = { start: number; end: number; sourceIndex: number };
 const MONTHS = new Map([
   ...["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"].map((name, index) => [name, index] as const),
-  ...["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].map((name, index) => [name, index] as const),
+  ...["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec"].map((name, index) => [name, index] as const),
 ]);
 export function parseEmploymentMonth(value: string | null | undefined): number | null {
   if (!value) return null;

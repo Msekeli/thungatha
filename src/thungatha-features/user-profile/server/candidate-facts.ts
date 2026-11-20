@@ -14,6 +14,11 @@ export function deriveCandidateFacts(profile: UserProfileDto, asOfDate = new Dat
     evidence.push({ id: `profile:${sourcePath}`, sourcePath, content: value.trim() });
   };
   add("summary", profile.summary); add("nextRole", profile.nextRole);
+  add("personalDetails.location", profile.personalDetails.location);
+  add("personalDetails.country", profile.personalDetails.country);
+  add("personalDetails.residentialSuburb", profile.personalDetails.residentialSuburb);
+  add("personalDetails.residentialCity", profile.personalDetails.residentialCity);
+  add("personalDetails.residentialProvince", profile.personalDetails.residentialProvince);
   profile.workExperience.forEach((item, index) => {
     const path = `workExperience[${index}]`;
     add(`${path}.jobTitle`, item.jobTitle); add(`${path}.employer`, item.employer);
@@ -43,13 +48,14 @@ export function deriveCandidateFacts(profile: UserProfileDto, asOfDate = new Dat
   profile.languages.forEach((value, i) => add(`languages[${i}]`, value));
   profile.personalAttributes.forEach((value, i) => add(`personalAttributes[${i}]`, value));
   const employment = calculateKnownEmploymentMonths(profile.workExperience, asOfDate);
+  const employmentRefs = (index: number) => {
+    const path = `profile:workExperience[${index}]`;
+    return [`${path}.startDate`, `${path}.isCurrent`, `${path}.endDate`].filter((ref) => evidence.some((item) => item.id === ref));
+  };
   return {
     profileVersion: profile.profileVersion, confirmedAt: profile.confirmedAt, targetRole: profile.nextRole,
     knownEmploymentMonths: employment.knownSourceIndexes.length ? employment.knownMonths : null,
-    employmentEvidenceRefs: employment.knownSourceIndexes.flatMap((i) => {
-      const path = `profile:workExperience[${i}]`;
-      return profile.workExperience[i].isCurrent ? [`${path}.startDate`, `${path}.isCurrent`] : [`${path}.startDate`, `${path}.endDate`];
-    }),
-    unknownEmploymentPeriodRefs: employment.unknownSourceIndexes.map((i) => `profile:workExperience[${i}]`), evidence,
+    employmentEvidenceRefs: employment.knownSourceIndexes.flatMap(employmentRefs),
+    unknownEmploymentPeriodRefs: employment.unknownSourceIndexes.flatMap(employmentRefs), evidence,
   };
 }
