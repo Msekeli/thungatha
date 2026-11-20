@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 import type { UserProfileDto } from "../server/user-profile-schema";
 type Entry = UserProfileDto["certifications"][number];
 const types = [
@@ -71,10 +72,10 @@ export function ProfileCertificationForm({ value, onChange, onSave, onCancel, ed
       </label>}
       {value.type && <div className="grid gap-4 sm:grid-cols-2">
         <label className="block space-y-2 text-sm font-medium">Issue date (Optional)
-          <Input type="month" value={value.issueDate || ""} onChange={(event) => set("issueDate", event.target.value)} />
+          <MonthYearPicker label="Issue month and year" value={value.issueDate || ""} onChange={(date) => set("issueDate", date)} max={value.expiryDate || undefined} />
         </label>
         <label className="block space-y-2 text-sm font-medium">Expiry date (If applicable)
-          <Input type="month" value={value.expiryDate || ""} onChange={(event) => set("expiryDate", event.target.value)} />
+          <MonthYearPicker label="Expiry month and year" value={value.expiryDate || ""} min={value.issueDate || undefined} onChange={(date) => set("expiryDate", date)} />
         </label>
       </div>}
       <div className="flex flex-col gap-2 sm:flex-row">
