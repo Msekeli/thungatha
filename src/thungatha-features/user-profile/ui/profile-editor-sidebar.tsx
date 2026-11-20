@@ -50,8 +50,8 @@ export function ProfileEditorSidebar({
       required: false,
     },
     {
-      label: "Languages and professional strengths",
-      done: profile.languages.length + profile.personalAttributes.length > 0,
+      label: "Interests and hobbies",
+      done: profile.personalAttributes.length > 0,
       required: false,
     },
   ];
