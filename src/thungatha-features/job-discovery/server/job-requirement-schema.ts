@@ -26,7 +26,7 @@ export const jobRequirementSchema = z.object({
 
 export const jobRequirementsSchema = z.object({
   schemaVersion: z.literal(1),
-  extractionVersion: z.literal("m3-c02-v2"),
+  extractionVersion: z.literal("m3-c02-v3"),
   descriptionHash: z.string().regex(/^[a-f0-9]{64}$/),
   roleFamily: z.enum([
     "software_it",
