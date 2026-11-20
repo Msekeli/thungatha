@@ -24,7 +24,11 @@ export const workExperienceItemSchema = z.object({
   isCurrent: z.boolean().default(false),
   description: z.string().trim().max(5000).nullable().optional(),
   achievements: z.array(z.string().trim().min(1).max(1000)).max(50).optional(),
-}).strict();
+}).strict().superRefine((item, context) => {
+  if (!item.isCurrent && item.endDate && item.endDate < item.startDate) {
+    context.addIssue({ code: "custom", path: ["endDate"], message: "End date cannot be before start date." });
+  }
+});
 
 export const educationItemSchema = z.object({
   id: z.string().trim().min(1).max(100),
@@ -35,7 +39,11 @@ export const educationItemSchema = z.object({
   startDate: z.string().trim().max(50).nullable().optional(),
   endDate: z.string().trim().max(50).nullable().optional(),
   isCurrent: z.boolean().optional().default(false),
-}).strict();
+}).strict().superRefine((item, context) => {
+  if (item.startDate && item.endDate && item.endDate < item.startDate) {
+    context.addIssue({ code: "custom", path: ["endDate"], message: "Completion date cannot be before start date." });
+  }
+});
 
 export const certificationItemSchema = z.object({
   id: z.string().trim().min(1).max(150),
@@ -48,7 +56,11 @@ export const certificationItemSchema = z.object({
   licenceCategories: z.array(z.string().trim().max(30)).max(20).optional(),
   licenceNumber: z.string().trim().max(100).nullable().optional(),
   endorsements: z.string().trim().max(500).nullable().optional(),
-}).strict();
+}).strict().superRefine((item, context) => {
+  if (item.issueDate && item.expiryDate && item.expiryDate < item.issueDate) {
+    context.addIssue({ code: "custom", path: ["expiryDate"], message: "Expiry date cannot be before issue date." });
+  }
+});
 
 export const projectItemSchema = z.object({
   id: z.string().trim().min(1).max(100),
