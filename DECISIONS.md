@@ -169,7 +169,7 @@ M1's nine checkpoints remain defined in the M1 specification:
 - **M1-C08:** Save, dismiss, undo, and truthful source/application status.
 - **M1-C09:** End-to-end verification, hardening, documentation, and acceptance.
 
-The M1 specification is the detailed source of truth for these checkpoints and their evidence. `IMPLEMENTATION-PLAN.md` remains the cross-milestone summary.
+The M1 specification is the detailed source of truth for these checkpoints and their evidence. Its decision not to add AI extraction applied only to M1's structured source payloads; it does not restrict the AI-powered semantic capabilities approved for M3 and CV assistance in M4. `IMPLEMENTATION-PLAN.md` remains the cross-milestone summary.
 
 Do not mark a checkpoint accepted merely because implementation is complete. Record actual tests, observed results, remaining issues, and user review.
 
@@ -300,16 +300,16 @@ When a decision is approved or changed:
 - **Context:** M3 requires explainable matching across job descriptions and confirmed candidate Profiles. The initial design considered AI-assisted extraction, fuzzy matching, and a persisted candidate-facts snapshot.
 - **Decision:**
   - Historical proposal only: the initial M3 design kept extraction and comparison deterministic and rules-only. D-050 supersedes this restriction and approves AI-assisted semantic job understanding and candidate-to-role comparison. Candidate fact derivation, evidence validation, and application-owned invariants remain deterministic.
-  - Use text normalisation followed by exact canonical identifier lookup through an explicit, reviewed alias dictionary. Preserve punctuation distinctions in technical identifiers such as C#, C++, .NET, and Node.js.
+  - Historical deterministic baseline: text normalisation and exact canonical identifier lookup through a reviewed alias dictionary may provide direct evidence. Under D-050, these aliases supplement rather than replace semantic AI comparison. Preserve punctuation distinctions in technical identifiers such as C#, C++, .NET, and Node.js.
   - Keep Fuse.js out of M3. It may be considered separately for future Job Discovery search or autocomplete, with its own evaluation.
   - Derive candidate facts from the complete confirmed Profile through a pure function at read time. Do not create a separate candidate_facts table in the initial implementation; revisit only if measured derivation cost justifies persistence.
   - Treat unparseable or incomplete employment dates as unknown; never guess or count them as zero. Merge overlapping employment periods to avoid double-counting.
   - Keep academic qualifications distinct from certifications, professional registrations, and licences. NQF classification applies to qualifications; do not assign NQF levels to certifications or licences without an independently registered qualification basis.
-  - For the planned catalogue ceiling of 5,000 jobs, retrieve the full filtered set in bounded database pages, compare only the structured requirement metadata in memory, order the complete filtered set, and then apply user-facing pagination. Do not rank only the currently requested page. Reassess SQL-side ranking or background processing only if measured performance at the agreed ceiling requires it.
+  - For the planned catalogue ceiling of 5,000 jobs, retrieve the full filtered set in bounded database pages, perform the approved AI-assisted assessment using structured job metadata and confirmed candidate evidence, order the complete filtered set by categorical outcome, and then apply user-facing pagination. Do not rank only the currently requested page. Reassess SQL-side ranking or background processing only if measured performance at the agreed ceiling requires it.
   - Unknown or unclassified job requirements and role families must remain unknown; do not hard-filter on uncertain evidence.
-- **Rationale:** Deterministic exact matching is auditable and avoids false positives caused by approximate text similarity. On-read derivation avoids stale candidate-fact snapshots while the calculation remains inexpensive. Deferring SQL ranking and background processing keeps the first implementation proportional to the current catalogue.
+- **Historical rationale:** The initial proposal favoured exact deterministic matching for auditability. D-050 establishes that semantic AI comparison, constrained by source evidence and application-side validation, is the approved approach. On-read candidate fact derivation remains useful for avoiding stale candidate-fact snapshots while calculation remains inexpensive. Deferring SQL ranking and background processing keeps the first implementation proportional to the current catalogue.
 - **Evidence/validation:** User-confirmed direction in the M3 design discussion on 2026-11-20. The detailed business rules, qualification mappings, vocabulary coverage, and performance assumptions still require C01 decisions and M3-C07 validation.
-- **Consequences:** M3 milestone documentation now defines a rules-only scope and records the proposed C01 rules. This historical decision does not approve hard role-family gates or numerical scoring. D-050 defines the current semantic matching direction and categorical labels.
+- **Consequences:** The original M3 milestone document recorded a rules-only scope. That scope is superseded by D-050, which defines the current semantic AI matching direction and categorical labels. Candidate fact derivation and evidence integrity constraints remain applicable.
 - **Review trigger:** Measured performance problems, demonstrated extraction false positives/false negatives, a material change in catalogue scale, or an explicit user decision to revise the M3 boundary.
 
 
@@ -406,7 +406,7 @@ When a decision is approved or changed:
   - Reasoning settings are not a factuality guarantee. Each feature remains responsible for source-limited prompts, minimal inputs, strict output schemas, and application-side evidence validation. AI output remains untrusted and must not silently modify confirmed Profile or master CV data.
 - **Rationale:** Thungatha should accurately use available information rather than create plausible but unsupported content. Defaulting to direct generation reduces avoidable latency and discourages unnecessary elaboration.
 - **Consequences:** The Ollama Local adapter must support task-specific reasoning configuration. Feature-specific AI integrations must preserve source evidence and explicitly handle missing information. Provider-specific reasoning controls for Gemini and Groq must be evaluated when those adapters are implemented; this decision does not assume their APIs use Ollama's setting.
-- **Review trigger:** A specific task demonstrates a measurable need for reasoning, or evaluation shows that the no-thinking default materially reduces required output quality without an acceptable alternative.
+- **Review trigger:** Representative evaluation shows that task-specific model capabilities are insufficient, provider reasoning controls change, or the source-grounding and evidence-validation requirements need revision.
 
 ### D-050 — Semantic, evidence-grounded AI job matching without scores
 
