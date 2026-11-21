@@ -8,6 +8,7 @@ import {
   getConfirmedProfileVersion,
   getJobAiTaskStatus,
   retryFailedJobAiTask,
+  requeueCompletedJobAiTask,
 } from "./job-ai-queue-eligibility";
 
 export {
@@ -15,6 +16,7 @@ export {
   isUsableJobDescription,
   getJobAiTaskStatus,
   retryFailedJobAiTask,
+  requeueCompletedJobAiTask,
 };
 
 async function enqueueJobRows(
