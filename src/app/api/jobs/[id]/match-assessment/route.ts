@@ -9,6 +9,7 @@ import {
   isUsableJobDescription,
   JOB_AI_ASSESSMENT_VERSION,
   retryFailedJobAiTask,
+  requeueCompletedJobAiTask,
 } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 import { resolveEvidenceLinkedAssessment } from "./evidence-resolver";
 import { requireAuthIdentity } from "./auth-helper";
@@ -57,10 +58,24 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ status: "ready", ...data, assessment });
     }
 
-    const taskStatus = await getJobAiTaskStatus({
-      userId: identity.userId, jobId: id, profileVersion: profileResult.data.profile_version ?? 1, descriptionHash,
-    });
-    if (!taskStatus) await enqueueVisibleJobAssessments(identity.userId, [id]);
+    const taskInput = {
+      userId: identity.userId,
+      jobId: id,
+      profileVersion: profileResult.data.profile_version ?? 1,
+      descriptionHash,
+    };
+    let taskStatus = await getJobAiTaskStatus(taskInput);
+    if (taskStatus === "completed") {
+      const requeued = await requeueCompletedJobAiTask(taskInput);
+      taskStatus = requeued ? "pending" : await getJobAiTaskStatus(taskInput);
+    }
+    if (!taskStatus) {
+      await enqueueVisibleJobAssessments(identity.userId, [id]);
+      taskStatus = "pending";
+    }
+    // A completed queue row without a matching persisted assessment is an
+    // inconsistent terminal state. Stop polling and expose it as retryable.
+    if (taskStatus === "completed") taskStatus = "failed";
     return NextResponse.json({ status: taskStatus === "failed" ? "failed" : "pending", assessment: null });
   } catch (error) { return apiFailure(error); }
 }
