@@ -1,22 +1,44 @@
 import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import type { CandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
-import { assertEvidenceReferences, buildJobEvidence, buildProfileEvidence } from "./job-ai-evidence";
-import { jobUnderstandingSchema, matchAssessmentInputSchema } from "./job-ai-schemas";
+import {
+  assertEvidenceReferences,
+  buildJobEvidence,
+  buildProfileEvidence,
+} from "./job-ai-evidence";
+import {
+  jobUnderstandingSchema,
+  matchAssessmentInputSchema,
+} from "./job-ai-schemas";
 import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
-function parse<T>(content: string, schema: { parse: (value: unknown) => T }): T {
-  try { return schema.parse(JSON.parse(content)); }
-  catch (cause) { throw new Error("AI returned output that failed the matching schema.", { cause }); }
+function parse<T>(
+  content: string,
+  schema: { parse: (value: unknown) => T },
+): T {
+  try {
+    return schema.parse(JSON.parse(content));
+  } catch (cause) {
+    throw new Error("AI returned output that failed the matching schema.", {
+      cause,
+    });
+  }
 }
 
 export async function understandJobWithAi(title: string, description: string) {
   const evidence = buildJobEvidence(description);
-  if (evidence.length === 0) throw new Error("The job description does not contain enough readable text.");
+  if (evidence.length === 0)
+    throw new Error(
+      "The job description does not contain enough readable text.",
+    );
   const response = await completeAiTask({
-    task: "job-requirement-extraction", responseFormat: "json",
-    temperature: 0.1, maxOutputTokens: 5000, timeoutMs: 45_000, reasoning: true,
+    task: "job-requirement-extraction",
+    responseFormat: "json",
+    temperature: 0.1,
+    maxOutputTokens: 5000,
+    timeoutMs: 45_000,
+    reasoning: false,
     systemPrompt: [
       "You are Thungatha's job-understanding engine.",
       "Understand the actual work described, not just the title or familiar keywords.",
@@ -36,19 +58,34 @@ export async function understandJobWithAi(title: string, description: string) {
     ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ];
-  if (!assertEvidenceReferences(refs, allowed)) throw new Error("AI job understanding referenced text that is not in the supplied job description.");
-  return { analysis: result, provider: response.provider, model: response.model };
+  if (!assertEvidenceReferences(refs, allowed))
+    throw new Error(
+      "AI job understanding referenced text that is not in the supplied job description.",
+    );
+  return {
+    analysis: result,
+    provider: response.provider,
+    model: response.model,
+  };
 }
 
 export async function assessJobWithAi(
-  title: string, understanding: unknown, description: string, facts: CandidateFacts,
+  title: string,
+  understanding: unknown,
+  description: string,
+  facts: CandidateFacts,
 ) {
   const jobEvidence = buildJobEvidence(description);
   const profileEvidence = buildProfileEvidence(facts);
-  if (!jobEvidence.length || !profileEvidence.length) throw new Error("There is insufficient evidence to assess this role.");
+  if (!jobEvidence.length || !profileEvidence.length)
+    throw new Error("There is insufficient evidence to assess this role.");
   const response = await completeAiTask({
-    task: "job-fit-assessment", responseFormat: "json",
-    temperature: 0.1, maxOutputTokens: 6000, timeoutMs: 45_000, reasoning: true,
+    task: "job-fit-assessment",
+    responseFormat: "json",
+    temperature: 0.1,
+    maxOutputTokens: 6000,
+    timeoutMs: 45_000,
+    reasoning: false,
     systemPrompt: [
       "You are Thungatha's semantic job-to-candidate assessment engine.",
       "Compare the actual responsibilities, capabilities, tools, technologies, experience, qualifications, and context.",
@@ -63,7 +100,18 @@ export async function assessJobWithAi(
       `Return this exact JSON shape: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,importance:"mandatory"|"preferred"|"uncertain",assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}.`,
       "Return only valid JSON.",
     ].join("\n"),
-    userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence, candidateFacts: { knownEmploymentMonths: facts.knownEmploymentMonths, employmentEvidenceRefs: facts.employmentEvidenceRefs, unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs, targetRole: facts.targetRole } }),
+    userPrompt: json({
+      title,
+      jobUnderstanding: understanding,
+      jobEvidence,
+      confirmedProfileEvidence: profileEvidence,
+      candidateFacts: {
+        knownEmploymentMonths: facts.knownEmploymentMonths,
+        employmentEvidenceRefs: facts.employmentEvidenceRefs,
+        unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs,
+        targetRole: facts.targetRole,
+      },
+    }),
   });
   const parsedUnderstanding = jobUnderstandingSchema.parse(understanding);
   const assessmentInput = parse(response.content, matchAssessmentInputSchema);
