@@ -48,7 +48,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   let understanding = cached.data?.understanding;
   if (!understanding) {
     console.info("[AI job matching] Job understanding started", { jobId: task.job_id });
-    const generated = await understandJobWithAi(job.title, description);
+    const generated = await understandJobWithAi(description);
     understanding = generated.analysis;
     console.info("[AI job matching] Job understanding completed", { jobId: task.job_id, provider: generated.provider, model: generated.model });
     const { error } = await db.from("job_ai_understandings").upsert({
