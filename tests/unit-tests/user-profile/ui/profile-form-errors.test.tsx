@@ -27,10 +27,13 @@ describe("ProfileForm error recovery", () => {
   });
 
   it("shows error alert when save fails due to network error", async () => {
-    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-      if (init?.method === "PATCH") throw new TypeError("Failed to fetch");
-      return { ok: true, json: async () => ({ profile: null }) } as Response;
-    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ profile: null }),
+      } as Response)
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"));
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
@@ -43,12 +46,16 @@ describe("ProfileForm error recovery", () => {
   });
 
   it("shows API error message when rejected by server", async () => {
-    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-      if (init?.method === "PATCH") {
-        return { ok: false, json: async () => ({ error: "Invalid profile" }) } as Response;
-      }
-      return new Response(JSON.stringify({ profile: null }), { status: 200 });
-    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ profile: null }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: "Invalid profile" }),
+      } as Response);
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
