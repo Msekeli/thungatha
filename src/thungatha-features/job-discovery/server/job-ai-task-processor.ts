@@ -3,8 +3,8 @@ import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/use
 import type { ProfileDatabaseRow } from "@/thungatha-features/user-profile/server/profile-database-row";
 import { PROFILE_SELECT_COLUMNS } from "@/thungatha-features/user-profile/server/repository";
 import { deriveCandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
-import { assessJobWithAi, understandJobWithAi } from "./job-ai-service";
-import { jobUnderstandingSchema } from "./job-ai-schemas";
+import { assessJobWithAi, parseJobUnderstanding, understandJobWithAi } from "./job-ai-service";
+import type { JobUnderstanding } from "./job-ai-schemas";
 import {
   JOB_AI_ASSESSMENT_VERSION, JOB_AI_UNDERSTANDING_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
 } from "./job-ai-queue-eligibility";
@@ -45,24 +45,47 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
     .eq("description_hash", task.job_description_hash)
     .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
   if (cached.error) throw cached.error;
-  let understanding = cached.data?.understanding;
-  if (!understanding) {
+  let parsedUnderstanding: JobUnderstanding | null = null;
+  if (cached.data?.understanding) {
+    try {
+      parsedUnderstanding = parseJobUnderstanding(description, cached.data.understanding);
+      console.info("[AI job matching] Reusing cached job understanding", { jobId: task.job_id });
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : "Unknown cache validation error";
+      console.warn("[AI job matching] Cached understanding is invalid; regenerating", {
+        jobId: task.job_id,
+        error: detail,
+      });
+      const { error: deleteError } = await db.from("job_ai_understandings")
+        .delete()
+        .eq("description_hash", task.job_description_hash)
+        .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION);
+      if (deleteError) throw deleteError;
+    }
+  }
+
+  if (!parsedUnderstanding) {
     console.info("[AI job matching] Job understanding started", { jobId: task.job_id });
-    const generated = await understandJobWithAi(description);
-    understanding = generated.analysis;
-    console.info("[AI job matching] Job understanding completed", { jobId: task.job_id, provider: generated.provider, model: generated.model });
+    const generatedUnderstanding = await understandJobWithAi(description);
+    parsedUnderstanding = generatedUnderstanding.analysis;
+    console.info("[AI job matching] Job understanding completed", {
+      jobId: task.job_id,
+      provider: generatedUnderstanding.provider,
+      model: generatedUnderstanding.model,
+    });
     const { error } = await db.from("job_ai_understandings").upsert({
       description_hash: task.job_description_hash,
-      analysis_version: JOB_AI_UNDERSTANDING_VERSION, understanding: generated.analysis,
-      provider: generated.provider, model: generated.model, updated_at: new Date().toISOString(),
+      analysis_version: JOB_AI_UNDERSTANDING_VERSION,
+      understanding: generatedUnderstanding.analysis,
+      provider: generatedUnderstanding.provider,
+      model: generatedUnderstanding.model,
+      updated_at: new Date().toISOString(),
     }, { onConflict: "description_hash,analysis_version" });
     if (error) throw error;
-  } else {
-    console.info("[AI job matching] Reusing cached job understanding", { jobId: task.job_id });
   }
-  const parsed = jobUnderstandingSchema.parse(understanding);
+
   console.info("[AI job matching] Candidate assessment started", { jobId: task.job_id });
-  const generated = await assessJobWithAi(job.title, parsed, description, facts);
+  const generated = await assessJobWithAi(job.title, parsedUnderstanding, description, facts);
   console.info("[AI job matching] Candidate assessment completed", {
     jobId: task.job_id, classification: generated.assessment.classification,
     provider: generated.provider, model: generated.model,
