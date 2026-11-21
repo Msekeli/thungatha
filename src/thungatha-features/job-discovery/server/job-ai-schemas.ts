@@ -28,7 +28,7 @@ const requirementAssessment = z.object({
 });
 
 export const matchAssessmentInputSchema = z.object({
-  overallFit: z.enum(["match", "relevant", "unclassified"]).optional(),
+  overallFit: z.enum(["match", "relevant", "unclassified"]),
   semanticAlignment: z.object({
     level: z.enum(["strong", "meaningful", "insufficient"]),
     materialGaps: z.boolean(),
@@ -52,7 +52,10 @@ export const matchAssessmentInputSchema = z.object({
   if (assessment.overallFit === "match" && assessment.semanticAlignment.level !== "strong") {
     context.addIssue({ code: "custom", message: "Match classification requires strong semantic alignment." });
   }
+  if (assessment.overallFit !== "unclassified" && assessment.semanticAlignment.level === "insufficient") {
+    context.addIssue({ code: "custom", message: "Insufficient evidence must be classified as unclassified." });
+  }
 });
-
+ 
 export type JobUnderstanding = z.infer<typeof jobUnderstandingSchema>;
 export type MatchAssessmentInput = z.infer<typeof matchAssessmentInputSchema>;
