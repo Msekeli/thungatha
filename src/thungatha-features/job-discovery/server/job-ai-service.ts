@@ -100,8 +100,9 @@ function parse<T>(
 }
 
 function assertCompleteResponse(stage: string, response: { finishReason?: string }) {
-  if (response.finishReason === "MAX_TOKENS") {
-    throw new Error(`${stage}: Gemini stopped at the output-token limit; the JSON response may be incomplete.`);
+  const finishReason = response.finishReason?.toUpperCase();
+  if (finishReason === "MAX_TOKENS" || finishReason === "LENGTH") {
+    throw new Error(`${stage}: ${response.provider} stopped at the output-token limit; the JSON response may be incomplete.`);
   }
 }
 
