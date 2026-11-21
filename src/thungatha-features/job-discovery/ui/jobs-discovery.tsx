@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
@@ -65,19 +65,10 @@ function JobsDiscoveryCore({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const backfillStarted = useRef(false);
   const state = useJobDiscoveryState(showProfileSetupPrompt, isSignedIn);
   const { setUserSignedIn, setCategory, setPage, setMobileDetail } = state;
 
   useEffect(() => setUserSignedIn(isSignedIn), [isSignedIn, setUserSignedIn]);
-
-  useEffect(() => {
-    if (!isSignedIn || backfillStarted.current) return;
-    backfillStarted.current = true;
-    void fetch("/api/jobs/assessments/backfill", { method: "POST" }).catch(() => {
-      backfillStarted.current = false;
-    });
-  }, [isSignedIn]);
 
   useEffect(() => {
     const status = searchParams.get("status");
