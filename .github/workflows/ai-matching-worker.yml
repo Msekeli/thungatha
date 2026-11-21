@@ -15,7 +15,7 @@ concurrency:
 jobs:
   process:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 6
     steps:
       - name: Process queued assessments
         env:
@@ -27,7 +27,7 @@ jobs:
             exit 0
           fi
 
-          curl --fail-with-body --silent --show-error \
+          curl --fail-with-body --silent --show-error --max-time 330 \
             --request POST "${APP_BASE_URL%/}/api/internal/ai-matching/worker" \
             --header "Authorization: Bearer $AI_WORKER_SECRET" \
             --header "Content-Type: application/json"
