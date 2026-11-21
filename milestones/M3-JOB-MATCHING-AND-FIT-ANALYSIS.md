@@ -178,6 +178,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Status:** In progress — evidence-linked explanations, user-facing evidence display, extraction-coverage warnings, and atomic assessment persistence are implemented. Database migration application and verification remain.
 
 **2026-11-21 implementation increment:** The worker now delegates persistence to `persist_job_match_assessment`. The function locks the queue task, job, and Profile rows, verifies the exact job description plus Profile version and confirmation timestamp, and atomically writes the assessment and completes the task. Stale inputs complete the task without writing an assessment; database errors roll back the transaction. The former non-atomic pre-write check has been removed.
+- **Persistence contract hardening:** A follow-up migration adds a locked queue-task hash comparison before invoking the atomic persistence function. The worker passes the hash it originally claimed, so the task's stored description hash must still match that exact input before an assessment can be written.
 
 **Goal:** make AI-generated results understandable, evidence-grounded, uncertainty-aware, and resistant to stale or unsupported claims.
 
