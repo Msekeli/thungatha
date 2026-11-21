@@ -39,25 +39,7 @@ export function validateAndClassifyAssessment(
     throw new Error("AI assessment referenced evidence outside the supplied job description or confirmed Profile.");
   }
 
-  const { level, materialGaps } = assessment.semanticAlignment;
-  const hasContradiction = assessment.requirements.some((item) => item.assessment === "contradictory");
-  let classification: MatchClassification;
-  if (level === "insufficient" || !assessment.semanticAlignment.profileEvidenceRefs.length) {
-    classification = "unclassified";
-  } else if (assessment.overallFit) {
-    if (assessment.overallFit === "match") {
-      classification = (level === "strong" && !materialGaps && !hasContradiction) ? "match" : "relevant";
-    } else if (assessment.overallFit === "relevant") {
-      classification = "relevant";
-    } else {
-      classification = "unclassified";
-    }
-  } else {
-    const hasUnmetMandatory = assessment.requirements.some(
-      (item) => item.importance === "mandatory" && item.assessment !== "supported",
-    );
-    classification = level === "meaningful" || materialGaps || hasContradiction || hasUnmetMandatory ? "relevant" : "match";
-  }
-
-  return { ...assessment, classification };
+  // AI owns the semantic fit decision. This layer validates evidence and requirement
+  // integrity; it must not replace the model's judgement with a deterministic checklist.
+  return { ...assessment, classification: assessment.overallFit };
 }
