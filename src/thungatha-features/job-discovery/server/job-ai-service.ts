@@ -28,7 +28,7 @@ function parse<T>(
   }
 }
 
-export async function understandJobWithAi(title: string, description: string) {
+export async function understandJobWithAi(description: string) {
   const evidence = buildJobEvidence(description);
   if (evidence.length === 0) {
     throw new Error("The job description does not contain enough readable text.");
@@ -54,7 +54,7 @@ export async function understandJobWithAi(title: string, description: string) {
       "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
       "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
     ].join("\n"),
-    userPrompt: json({ title, sourceEvidence: evidence }),
+    userPrompt: json({ sourceEvidence: evidence }),
   });
 
   const result = parse(response.content, jobUnderstandingSchema);
