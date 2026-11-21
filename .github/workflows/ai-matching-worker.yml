@@ -2,7 +2,7 @@ name: AI Job Matching Worker
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Process one queued assessment
+      - name: Process queued assessments
         env:
           APP_BASE_URL: ${{ secrets.THUNGATHA_BASE_URL }}
           AI_WORKER_SECRET: ${{ secrets.AI_WORKER_SECRET }}

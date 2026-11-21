@@ -7,13 +7,8 @@ export function JobDetailMatchSummary({
   classification?: "match" | "relevant" | "unclassified";
   onViewMatch: (anchor: HTMLElement) => void;
 }) {
-  const label = classification === "match"
-    ? "Match"
-    : classification === "relevant"
-      ? "Relevant"
-      : classification === "unclassified"
-        ? "Unclassified"
-        : "Assessment pending";
+  if (classification !== "match" && classification !== "relevant") return null;
+  const label = classification === "match" ? "Match" : "Relevant";
 
   return (
     <div className="th-jobs-match-scorebox hidden flex-col items-start gap-1 min-[601px]:flex">

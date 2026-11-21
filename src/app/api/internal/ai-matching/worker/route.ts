@@ -10,9 +10,7 @@ function isAuthorised(request: Request) {
   const expectedSecret = process.env.AI_WORKER_SECRET;
   if (!expectedSecret) return false;
   const authorization = request.headers.get("authorization") ?? "";
-  const suppliedSecret = authorization.startsWith("Bearer ")
-    ? authorization.slice("Bearer ".length)
-    : "";
+  const suppliedSecret = authorization.startsWith("Bearer ") ? authorization.slice("Bearer ".length) : "";
   const expected = Buffer.from(expectedSecret);
   const supplied = Buffer.from(suppliedSecret);
   return supplied.length === expected.length && timingSafeEqual(supplied, expected);
@@ -22,14 +20,13 @@ export async function POST(request: Request) {
   if (!isAuthorised(request)) {
     return NextResponse.json({ error: "A valid AI worker secret is required." }, { status: 401 });
   }
-
   try {
-    const result = await processJobAiQueue(1);
+    const result = await processJobAiQueue(5);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("[AI job matching] Worker invocation failed:", {
       errorName: error instanceof Error ? error.name : "unknown",
-      message: error instanceof Error ? error.message : "Unknown worker failure",
+      message: error instanceof Error ? error.message : "Unknown error",
     });
     return NextResponse.json({ error: "AI worker execution failed." }, { status: 500 });
   }

@@ -11,11 +11,8 @@ export function useJobDiscoveryState(
   showProfileSetupPrompt: boolean,
   isSignedIn: boolean,
 ) {
-  const [profileSetupPrompt, setProfileSetupPrompt] = useState(
-    showProfileSetupPrompt,
-  );
-  const [profileSetupAnchorEl, setProfileSetupAnchorEl] =
-    useState<HTMLElement | null>(null);
+  const [profileSetupPrompt, setProfileSetupPrompt] = useState(showProfileSetupPrompt);
+  const [profileSetupAnchorEl, setProfileSetupAnchorEl] = useState<HTMLElement | null>(null);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -38,94 +35,33 @@ export function useJobDiscoveryState(
   const [stateMessage, setStateMessage] = useState<string | null>(null);
   const [pendingDismissJob, setPendingDismissJob] = useState<Job | null>(null);
   const [undoAction, setUndoAction] = useState<{
-    jobId: string;
-    title: string;
-    employerName: string;
+    jobId: string; title: string; employerName: string;
     dismissalScope: "job" | "employer";
     previousState: "saved" | "dismissed" | null;
     nextState: "saved" | "dismissed" | null;
   } | null>(null);
-  const [jobActivity, setJobActivity] = useState<{
-    jobId: string;
-    activity: JobActivity;
-  } | null>(null);
+  const [jobActivity, setJobActivity] = useState<{ jobId: string; activity: JobActivity } | null>(null);
   const [activityError, setActivityError] = useState<string | null>(null);
   const [forceAppliedPrompt, setForceAppliedPrompt] = useState(false);
-  const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<
-    string | null
-  >(null);
+  const [dismissedPromptForJobId, setDismissedPromptForJobId] = useState<string | null>(null);
   const [matchOpen, setMatchOpen] = useState(false);
   const [matchAnchorEl, setMatchAnchorEl] = useState<HTMLElement | null>(null);
-  const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] =
-    useState<HTMLElement | null>(null);
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] = useState<HTMLElement | null>(null);
+  const [sortOrder, setSortOrder] = useState("relevance");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   return {
-    profileSetupPrompt,
-    setProfileSetupPrompt,
-    profileSetupAnchorEl,
-    setProfileSetupAnchorEl,
-    draft,
-    setDraft,
-    filters,
-    setFilters,
-    page,
-    setPage,
-    feed,
-    setFeed,
-    dismissedCount,
-    setDismissedCount,
-    loading,
-    setLoading,
-    error,
-    setError,
-    retryFeed,
-    setRetryFeed,
-    selectedId,
-    setSelectedId,
-    detail,
-    setDetail,
-    detailLoading,
-    setDetailLoading,
-    detailError,
-    setDetailError,
-    retryDetail,
-    setRetryDetail,
-    mobileDetail,
-    setMobileDetail,
-    category,
-    setCategory,
-    isAuthenticated,
-    setIsAuthenticated,
-    userSignedIn,
-    setUserSignedIn,
-    stateBusy,
-    setStateBusy,
-    stateError,
-    setStateError,
-    stateMessage,
-    setStateMessage,
-    pendingDismissJob,
-    setPendingDismissJob,
-    undoAction,
-    setUndoAction,
-    jobActivity,
-    setJobActivity,
-    activityError,
-    setActivityError,
-    forceAppliedPrompt,
-    setForceAppliedPrompt,
-    dismissedPromptForJobId,
-    setDismissedPromptForJobId,
-    matchOpen,
-    setMatchOpen,
-    matchAnchorEl,
-    setMatchAnchorEl,
-    applicationPromptAnchorEl,
-    setApplicationPromptAnchorEl,
-    sortOrder,
-    setSortOrder,
-    loadMoreRef,
+    profileSetupPrompt, setProfileSetupPrompt, profileSetupAnchorEl, setProfileSetupAnchorEl,
+    draft, setDraft, filters, setFilters, page, setPage, feed, setFeed,
+    dismissedCount, setDismissedCount, loading, setLoading, error, setError,
+    retryFeed, setRetryFeed, selectedId, setSelectedId, detail, setDetail,
+    detailLoading, setDetailLoading, detailError, setDetailError, retryDetail, setRetryDetail,
+    mobileDetail, setMobileDetail, category, setCategory, isAuthenticated, setIsAuthenticated,
+    userSignedIn, setUserSignedIn, stateBusy, setStateBusy, stateError, setStateError,
+    stateMessage, setStateMessage, pendingDismissJob, setPendingDismissJob,
+    undoAction, setUndoAction, jobActivity, setJobActivity, activityError, setActivityError,
+    forceAppliedPrompt, setForceAppliedPrompt, dismissedPromptForJobId, setDismissedPromptForJobId,
+    matchOpen, setMatchOpen, matchAnchorEl, setMatchAnchorEl,
+    applicationPromptAnchorEl, setApplicationPromptAnchorEl, sortOrder, setSortOrder, loadMoreRef,
   };
 }
