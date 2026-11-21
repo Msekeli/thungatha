@@ -1,7 +1,11 @@
 import type { JobUnderstanding, MatchAssessmentInput } from "./job-ai-schemas";
 
 export type MatchClassification = "match" | "relevant" | "unclassified";
-export type MatchAssessment = MatchAssessmentInput & { classification: MatchClassification };
+export const MATCH_CLASSIFICATION_POLICY_VERSION = "m3-classification-v1";
+export type MatchAssessment = MatchAssessmentInput & {
+  classification: MatchClassification;
+  classificationPolicyVersion: string;
+};
 
 export function validateAndClassifyAssessment(
   assessment: MatchAssessmentInput,
@@ -39,7 +43,27 @@ export function validateAndClassifyAssessment(
     throw new Error("AI assessment referenced evidence outside the supplied job description or confirmed Profile.");
   }
 
-  // AI owns the semantic fit decision. This layer validates evidence and requirement
-  // integrity; it must not replace the model's judgement with a deterministic checklist.
-  return { ...assessment, classification: assessment.overallFit };
+  const insufficient = assessment.semanticAlignment.level === "insufficient"
+    || assessment.semanticAlignment.profileEvidenceRefs.length === 0;
+  const contradictoryEvidence = assessment.requirements.some((item) => item.assessment === "contradictory");
+  const unsupportedMandatory = assessment.requirements.some(
+    (item) => item.importance === "mandatory" && item.assessment !== "supported",
+  );
+
+  // The model supplies semantic evidence and explanations. Application code owns
+  // the public category so model output cannot bypass the approved classification policy.
+  const classification: MatchClassification = insufficient
+    ? "unclassified"
+    : assessment.semanticAlignment.level === "strong"
+      && !assessment.semanticAlignment.materialGaps
+      && !contradictoryEvidence
+      && !unsupportedMandatory
+      ? "match"
+      : "relevant";
+
+  return {
+    ...assessment,
+    classification,
+    classificationPolicyVersion: MATCH_CLASSIFICATION_POLICY_VERSION,
+  };
 }
