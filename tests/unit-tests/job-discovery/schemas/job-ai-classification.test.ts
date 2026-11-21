@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { matchAssessmentInputSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
+import { jobUnderstandingSchema, matchAssessmentInputSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import { validateAndClassifyAssessment } from "@/thungatha-features/job-discovery/server/job-ai-classification";
-import { jobUnderstandingSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 
 const jobRefs = new Set(["job:segment:1"]);
 const profileRefs = new Set(["profile:skills[0].name"]);
@@ -21,15 +20,15 @@ describe("AI assessment classification policy", () => {
   });
   it("downgrades strong alignment with material gaps to Relevant", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { ...input.semanticAlignment, materialGaps: true } });
-    expect(validateAndClassifyAssessment(parsed, jobRefs, profileRefs).classification).toBe("relevant");
+    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
   it("classifies meaningful alignment as Relevant", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { ...input.semanticAlignment, level: "meaningful" } });
-    expect(validateAndClassifyAssessment(parsed, jobRefs, profileRefs).classification).toBe("relevant");
+    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
   it("classifies insufficient evidence as Unclassified", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { level: "insufficient", materialGaps: true, jobEvidenceRefs: ["job:segment:1"], profileEvidenceRefs: [] } });
-    expect(validateAndClassifyAssessment(parsed, jobRefs, profileRefs).classification).toBe("unclassified");
+    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("unclassified");
   });
   it("rejects a reference outside the supplied evidence", () => {
     const parsed = matchAssessmentInputSchema.parse(input);
@@ -38,8 +37,19 @@ describe("AI assessment classification policy", () => {
   it("rejects supported requirements without Profile evidence", () => {
     expect(matchAssessmentInputSchema.safeParse({ ...input, requirements: [{ ...input.requirements[0], profileEvidenceRefs: [] }] }).success).toBe(false);
   });
+  it("prevents Match when a mandatory requirement is not demonstrated", () => {
+    const mandatory = jobUnderstandingSchema.parse({ ...understanding, requirements: [{ ...understanding.requirements[0], importance: "mandatory" }] });
+    const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory", assessment: "not_demonstrated", profileEvidenceRefs: [] }] });
+    expect(validateAndClassifyAssessment(parsed, mandatory, jobRefs, profileRefs).classification).toBe("relevant");
+  });
+  it("rejects omitted or reclassified extracted requirements", () => {
+    const omitted = matchAssessmentInputSchema.parse({ ...input, requirements: [] });
+    expect(() => validateAndClassifyAssessment(omitted, understanding, jobRefs, profileRefs)).toThrow(/omitted/);
+    const wrongImportance = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory" }] });
+    expect(() => validateAndClassifyAssessment(wrongImportance, understanding, jobRefs, profileRefs)).toThrow(/do not match/);
+  });
   it("downgrades a contradiction to Relevant even when alignment is otherwise strong", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], assessment: "contradictory" }] });
-    expect(validateAndClassifyAssessment(parsed, jobRefs, profileRefs).classification).toBe("relevant");
+    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
 });
