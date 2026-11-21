@@ -6,10 +6,6 @@ import {
   type Filters,
 } from "../job-discovery-utils";
 import { JobFeedRequestError, requestJobFeed } from "../request-job-feed";
-import {
-  canReusePublicJobFeed,
-  getReusablePublicFeed,
-} from "../job-feed-cache";
 
 export function useJobFeed(
   page: number,
@@ -35,32 +31,6 @@ export function useJobFeed(
         setError(null);
       }
       try {
-        if (
-          sortOrder !== "oldest" &&
-          canReusePublicJobFeed(page, category, filters)
-        ) {
-          const cached = await getReusablePublicFeed(signal);
-          if (cached) {
-            setIsAuthenticated(true);
-            setFeed(cached);
-            setSelectedId((current) =>
-              current && cached.jobs.some((job) => job.id === current)
-                ? current
-                : null,
-            );
-            void requestJobFeed(
-              buildJobFeedParams(1, "dismissed", filters),
-              signal,
-            )
-              .then((dismissedFeed) => {
-                if (!signal.aborted) setDismissedCount(dismissedFeed.total);
-              })
-              .catch(() => {
-                // Keep the last known count if the separate count request fails.
-              });
-            return;
-          }
-        }
         const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
         setFeed(data);
