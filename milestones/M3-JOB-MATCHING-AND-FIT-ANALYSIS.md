@@ -246,3 +246,13 @@ Role-family taxonomies are not required for M3. If an occupational domain is use
 5. How target-role preference contributes as a soft contextual signal without becoming a hard filter.
 
 C01 remains in progress for representative semantic evaluation and evidence interpretation. Do not turn qualification equivalence examples or requirement wording into universal hard-coded rules. The user-approved Match / Relevant / Unclassified labels and catalogue-ordering rules are sufficient to proceed with AI-assisted C02/C04 implementation. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
+
+## 2026-11-21 implementation continuation
+
+- Removed the model-supplied overall category from the assessment contract. The AI now supplies semantic alignment, requirement-level evidence states, gaps, and explanations only.
+- Application code now derives Match, Relevant, or Unclassified using the versioned `m3-classification-v1` policy after validating the complete requirement set and all job/Profile evidence references. Strong alignment is not Match when material gaps, contradictory evidence, or an unsupported mandatory requirement exists. Insufficient alignment or no overall confirmed Profile evidence is Unclassified.
+- Incremented the AI task/schema version to `m3-ai-v3` so assessments produced under the former model-owned category contract are not reused.
+- Relevance sorting now reads the complete filtered catalogue in batches rather than silently stopping at 5,000 jobs. The feed queues only the jobs on the page being returned; queue processing remains asynchronous and provider failures do not block ordinary feed rendering.
+- Added focused classification-policy tests for the application-owned category, mandatory requirement handling, contradictory evidence, evidence-reference validation, and requirement completeness.
+- **Verification:** repository changes were committed to `dev`; no local Vitest, type-check, lint, build, database migration, worker, or browser run was executed during this remote edit. The new tests and integration behaviour remain unverified at runtime.
+- **Open M3 work:** representative cross-title/cross-industry evaluation, qualification/alternative-pathway cases, full stale-state and provider-failure verification, authenticated API/database checks, responsive Discovery review, and explicit user acceptance remain outstanding. M3 remains **In progress**.
