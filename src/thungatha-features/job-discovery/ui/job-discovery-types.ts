@@ -12,6 +12,7 @@ export type Job = {
   updated_at: string;
   state: "saved" | "dismissed" | null;
   matchClassification?: "match" | "relevant" | "unclassified";
+  matchStatus?: "no_assessment" | "processing" | "failed" | "stale" | "no_confirmed_profile" | "error" | "match" | "relevant" | "unclassified";
 };
 
 export type JobActivity = {
