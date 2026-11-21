@@ -78,7 +78,7 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
     const match = value.match(
       new RegExp("^(" + month + ")\\s+((?:19|20)\\d{2})$", "i"),
     );
-    if (!match) return /^(?:19|20)\\d{2}$/.test(value) ? value : null;
+    if (!match) return /^(?:19|20)\d{2}$/.test(value) ? value : null;
     const months = [
       "jan",
       "feb",
