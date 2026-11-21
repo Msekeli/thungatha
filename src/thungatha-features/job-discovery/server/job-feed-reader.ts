@@ -7,6 +7,7 @@ import { relevanceOrder, type FeedJob } from "./job-feed-sorting";
 import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
 import { resolveJobMatchStatus } from "./job-feed-status";
 import { readEmployerDismissals } from "./job-feed-dismissals";
+import { enqueueVisibleJobAssessments } from "./job-ai-queue";
 
 const BATCH_SIZE = 500;
 
@@ -53,6 +54,23 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
     count = pRes.count ?? count;
   }
 
+  // Gradually enrich only the current discovery candidates. The queue enforces
+  // a strict per-user active-task cap, so browsing cannot flood the AI worker.
+  if (userId && profileVersion !== null && data.length) {
+    const assessmentCandidates = rankWhole
+      ? data.slice(0, Math.min(input.pageSize, 30))
+      : data;
+    try {
+      await enqueueVisibleJobAssessments(
+        userId,
+        assessmentCandidates.map((job) => job.id),
+        3,
+      );
+    } catch (error) {
+      console.error("[job-feed-reader] Could not queue bounded assessments:", error);
+    }
+  }
+
   const stateByJob = new Map(states.map((s) => [s.job_id, s.state]));
   const { assessmentsByJob, queueStatusByJob, hasError: hasAssessmentError } = userId && profileVersion !== null && data.length
     ? await fetchFeedAssessmentsAndQueue(db, userId, profileVersion, data.map((j) => j.id))
@@ -69,8 +87,8 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
 
   if (rankWhole) { jobs.sort(relevanceOrder); jobs = jobs.slice(from, from + input.pageSize); }
 
-  // Feed reads are browse-only. Assessment is queued on demand by the selected-job
-  // match-assessment endpoint, never as a side effect of pagination or refresh.
+  // Assessment enrichment is bounded to three active tasks per user; persisted
+  // results are read above so badges reflect only completed current-version work.
 
   const safeJobs = jobs.map((job) => {
     const safe = { ...job };
