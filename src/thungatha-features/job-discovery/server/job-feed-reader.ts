@@ -8,7 +8,6 @@ import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
 import { resolveJobMatchStatus } from "./job-feed-status";
 import { readEmployerDismissals } from "./job-feed-dismissals";
 
-const RELEVANCE_LIMIT = 5000;
 const BATCH_SIZE = 500;
 
 export async function readJobFeed(db: SupabaseClient, userId: string | null, input: JobFeedQuery, statesOnly: boolean) {
@@ -33,7 +32,7 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
   const from = (input.page - 1) * input.pageSize;
 
   if (input.sortOrder === "relevance" && profileVersion !== null) {
-    for (let offset = 0; offset < RELEVANCE_LIMIT; offset += BATCH_SIZE) {
+    for (let offset = 0; ; offset += BATCH_SIZE) {
       const bRes = await buildFeedJobQuery(db, input, queryOpts)
         .order("published_at", { ascending: false, nullsFirst: false }).order("updated_at", { ascending: false })
         .order("id", { ascending: true }).range(offset, offset + BATCH_SIZE - 1);
