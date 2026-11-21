@@ -30,7 +30,7 @@ export function ProfileAccordion({
         {children}
         {incomplete && <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">Some education details are missing. Complete the highlighted fields before reviewing your profile.</p>}
         <div className="mt-4 flex justify-end border-t border-border pt-3">
-          <Button type="button" size="sm" onClick={onSave} disabled={saving}>
+          <Button type="button" size="sm" onClick={() => onSave()} disabled={saving}>
             <Save className="size-4" />{saving ? "Saving…" : "Save section"}
           </Button>
         </div>
