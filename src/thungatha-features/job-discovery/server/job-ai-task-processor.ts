@@ -8,7 +8,6 @@ import { assessJobWithAi, understandJobWithAi } from "./job-ai-service";
 import { jobUnderstandingSchema } from "./job-ai-schemas";
 import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue";
 import { createHash } from "node:crypto";
-import { isAssessmentInputCurrent } from "./job-ai-freshness";
 
 export type QueueTask = {
   id: string; user_id: string; job_id: string; profile_version: number;
@@ -59,27 +58,20 @@ export async function processJobAiTask(db: ReturnType<typeof createJobAiClient>,
   }
   const parsed = jobUnderstandingSchema.parse(understanding);
   const generated = await assessJobWithAi(job.title, parsed, description, facts);
-  const [latestJob, latestProfile] = await Promise.all([
-    db.from("jobs").select("description").eq("id", task.job_id).maybeSingle(),
-    db.from("profiles").select("profile_version,confirmed_at").eq("user_id", task.user_id).maybeSingle(),
-  ]);
-  if (latestJob.error) throw latestJob.error;
-  if (latestProfile.error) throw latestProfile.error;
-  if (!isAssessmentInputCurrent(task, {
-    description: latestJob.data?.description ?? null,
-    profileVersion: latestProfile.data?.profile_version ?? null,
-    confirmedAt: latestProfile.data?.confirmed_at ?? null,
-  })) {
-    await completeTask(db, task.id);
-    return "stale";
-  }
-  const { error } = await db.from("job_match_assessments").upsert({
-    user_id: task.user_id, job_id: task.job_id, profile_version: task.profile_version,
-    job_description_hash: task.job_description_hash, assessment_version: JOB_AI_ASSESSMENT_VERSION,
-    classification: generated.assessment.classification, assessment: generated.assessment,
-    provider: generated.provider, model: generated.model,
-  }, { onConflict: "user_id,job_id,profile_version,job_description_hash,assessment_version" });
-  if (error) throw error;
-  await completeTask(db, task.id);
+  const { data: persisted, error: persistError } = await db.rpc("persist_job_match_assessment", {
+    p_task_id: task.id,
+    p_user_id: task.user_id,
+    p_job_id: task.job_id,
+    p_profile_version: task.profile_version,
+    p_profile_confirmed_at: facts.confirmedAt,
+    p_job_description: description,
+    p_assessment_version: task.assessment_version,
+    p_classification: generated.assessment.classification,
+    p_assessment: generated.assessment,
+    p_provider: generated.provider,
+    p_model: generated.model,
+  });
+  if (persistError) throw persistError;
+  if (!persisted) return "stale";
   return "processed";
 }

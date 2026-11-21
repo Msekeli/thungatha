@@ -173,11 +173,11 @@ This record describes the earlier deterministic classifier only. It does not sat
 
 ### M3-C05 — Explanation, uncertainty and freshness
 
-**2026-11-21 implementation increment:** The authenticated assessment endpoint resolves assessment references to exact job-description segments and confirmed Profile fields. The match breakdown displays supporting excerpts beside requirements and gaps, and exposes job-understanding coverage so partial or unavailable extraction remains visible. Profile evidence is returned only through the authenticated, user-scoped endpoint. This builds on the pre-persistence freshness recheck; stronger atomic freshness enforcement remains outstanding.
+**2026-11-21 implementation increment:** The authenticated assessment endpoint resolves assessment references to exact job-description segments and confirmed Profile fields. The match breakdown displays supporting excerpts beside requirements and gaps, and exposes job-understanding coverage so partial or unavailable extraction remains visible. Profile evidence is returned only through the authenticated, user-scoped endpoint. A database function now locks the task, job, and Profile rows and performs the freshness check, assessment upsert, and task completion in one transaction. This prevents job/Profile updates from racing the persistence operation.
 
-**Status:** In progress — evidence-linked explanations are in the assessment contract; a pre-persistence freshness recheck is implemented. User-facing evidence display and stronger atomic freshness enforcement remain.
+**Status:** In progress — evidence-linked explanations, user-facing evidence display, extraction-coverage warnings, and atomic assessment persistence are implemented. Database migration application and verification remain.
 
-**2026-11-21 implementation increment:** Before an AI assessment is persisted, the worker re-reads the current job description and Profile confirmation/version. If the job was deleted or changed, the Profile was removed/unconfirmed, or its version changed while AI was processing, the task is marked stale and the generated assessment is discarded. Focused freshness tests were added but have not been run. This is a pre-write recheck; it is not an atomic transaction with the assessment write.
+**2026-11-21 implementation increment:** The worker now delegates persistence to `persist_job_match_assessment`. The function locks the queue task, job, and Profile rows, verifies the exact job description plus Profile version and confirmation timestamp, and atomically writes the assessment and completes the task. Stale inputs complete the task without writing an assessment; database errors roll back the transaction. The former non-atomic pre-write check has been removed.
 
 **Goal:** make AI-generated results understandable, evidence-grounded, uncertainty-aware, and resistant to stale or unsupported claims.
 
