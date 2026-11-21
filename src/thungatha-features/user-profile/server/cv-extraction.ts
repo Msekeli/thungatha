@@ -131,7 +131,7 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
     }
     else if (records.length)
       records[records.length - 1].details.push(
-        line.replace(/^[-•·▪]\\s*/, "").trim(),
+        line.replace(/^[-•·▪]\s*/, "").trim(),
       );
   }
   return records
@@ -140,10 +140,10 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
       if (!range || range.index === undefined) return null;
       const heading = record.heading
         .slice(0, range.index)
-        .replace(/[|–—-]\\s*$/, "")
+        .replace(/[|–—-]\s*$/, "")
         .trim();
       const parts = heading
-        .split(/\\s+\\|\\s+/)
+        .split(/\s+\|\s+/)
         .map((part) => part.trim())
         .filter(Boolean);
       if (parts.length < 2) return null;
@@ -152,7 +152,7 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
       const dates = parseRange(range[1]);
       if (!jobTitle || !employer || !dates.startDate) return null;
       const description = record.details
-        .map((line) => line.replace(/\\s+/g, " ").trim())
+        .map((line) => line.replace(/\s+/g, " ").trim())
         .filter(Boolean)
         .join(" ")
         .slice(0, 5000);
