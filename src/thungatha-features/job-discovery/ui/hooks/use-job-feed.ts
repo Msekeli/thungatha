@@ -29,9 +29,11 @@ export function useJobFeed(
     [page, category, filters, sortOrder],
   );
   const refreshFeed = useCallback(
-    async (signal: AbortSignal) => {
-      setLoading(true);
-      setError(null);
+    async (signal: AbortSignal, background = false) => {
+      if (!background) {
+        setLoading(true);
+        setError(null);
+      }
       try {
         if (
           sortOrder !== "oldest" &&
@@ -62,6 +64,11 @@ export function useJobFeed(
         const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
         setFeed(data);
+        if (data.jobs.some((job) => job.matchStatus === "processing")) {
+          window.setTimeout(() => {
+            if (!signal.aborted) void refreshFeed(signal, true);
+          }, 10_000);
+        }
         setSelectedId((current) =>
           current && data.jobs.some((job) => job.id === current)
             ? current
@@ -92,7 +99,7 @@ export function useJobFeed(
             : "Could not reach Job Discovery. Check your connection and retry.",
         );
       } finally {
-        if (!signal.aborted) setLoading(false);
+        if (!signal.aborted && !background) setLoading(false);
       }
     },
     [
