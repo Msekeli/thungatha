@@ -10,6 +10,9 @@ export function validateAndClassifyAssessment(
   allowedProfileRefs: Set<string>,
 ): MatchAssessment {
   const extracted = new Map(understanding.requirements.map((item) => [item.id, item]));
+  if (extracted.size !== understanding.requirements.length) {
+    throw new Error("Extracted job requirements contain duplicate identifiers.");
+  }
   const assessedIds = new Set<string>();
   for (const item of assessment.requirements) {
     const source = extracted.get(item.id);

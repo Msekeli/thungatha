@@ -42,6 +42,11 @@ describe("AI assessment classification policy", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory", assessment: "not_demonstrated", profileEvidenceRefs: [] }] });
     expect(validateAndClassifyAssessment(parsed, mandatory, jobRefs, profileRefs).classification).toBe("relevant");
   });
+  it("rejects duplicate identifiers in extracted requirements", () => {
+    const duplicated = jobUnderstandingSchema.parse({ ...understanding, requirements: [...understanding.requirements, ...understanding.requirements] });
+    const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [input.requirements[0], input.requirements[0]] });
+    expect(() => validateAndClassifyAssessment(parsed, duplicated, jobRefs, profileRefs)).toThrow(/duplicate identifiers/);
+  });
   it("rejects omitted or reclassified extracted requirements", () => {
     const omitted = matchAssessmentInputSchema.parse({ ...input, requirements: [] });
     expect(() => validateAndClassifyAssessment(omitted, understanding, jobRefs, profileRefs)).toThrow(/omitted/);

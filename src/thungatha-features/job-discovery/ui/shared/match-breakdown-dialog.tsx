@@ -9,6 +9,7 @@ type EvidenceItem = { id: string; sourcePath: string; content: string };
 
 type RequirementAssessment = {
   requirement: string;
+  importance: "mandatory" | "preferred" | "uncertain";
   assessment: "supported" | "not_demonstrated" | "contradictory" | "uncertain";
   explanation: string;
   jobEvidenceRefs: string[];
@@ -196,7 +197,7 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
                   {assessment.requirements.map((item, index) => (
                     <li key={item.requirement + index} className="border-t border-line pt-2">
                       <p className="font-medium">{item.requirement}</p>
-                      <p className="mt-1 text-fg-muted">{item.assessment.replaceAll("_", " ")}</p>
+                      <p className="mt-1 text-xs text-fg-muted">{item.importance} requirement · {item.assessment.replaceAll("_", " ")}</p>
                       <p className="mt-1 text-fg-muted">{item.explanation}</p>
                       {((item.jobEvidence?.length ?? 0) > 0 || (item.profileEvidence?.length ?? 0) > 0) && (
                         <div className="mt-2 space-y-2">
