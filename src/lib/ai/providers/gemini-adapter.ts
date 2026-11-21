@@ -1,6 +1,6 @@
 import "server-only";
 import type { AiCompletionRequest, AiCompletionResult, AiProviderAdapter } from "../contracts";
-import { AiProviderError } from "../errors";
+import { AiProviderError, createProviderHttpError } from "../errors";
 
 const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models";
 const extractCandidate = (value: unknown) => {
@@ -42,10 +42,10 @@ export function createGeminiAdapter(options: { apiKey?: string; model?: string; 
           code: timeout ? "timeout" : "unavailable", provider: "gemini", retryable: true, cause,
         });
       }
-      if (!response.ok) throw new AiProviderError(`Gemini returned HTTP ${response.status}.`, {
-        code: response.status === 429 ? "rate-limited" : response.status === 401 || response.status === 403 ? "authentication" : response.status >= 500 ? "unavailable" : "unknown",
-        provider: "gemini", retryable: response.status === 429 || response.status >= 500,
-      });
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw createProviderHttpError("gemini", response.status, response.headers.get("retry-after"), errorPayload);
+      }
       const payload = await response.json().catch(() => null);
       const candidate = extractCandidate(payload);
       if (!candidate) throw new AiProviderError("Gemini returned no usable candidate content.", { code: "invalid-response", provider: "gemini" });
