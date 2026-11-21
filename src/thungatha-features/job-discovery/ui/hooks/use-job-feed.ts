@@ -29,7 +29,7 @@ export function useJobFeed(
     [page, category, filters, sortOrder],
   );
   const refreshFeed = useCallback(
-    async (signal: AbortSignal, background = false) => {
+    async function refresh(signal: AbortSignal, background = false) {
       if (!background) {
         setLoading(true);
         setError(null);
@@ -66,7 +66,7 @@ export function useJobFeed(
         setFeed(data);
         if (data.jobs.some((job) => job.matchStatus === "processing")) {
           window.setTimeout(() => {
-            if (!signal.aborted) void refreshFeed(signal, true);
+            if (!signal.aborted) void refresh(signal, true);
           }, 10_000);
         }
         setSelectedId((current) =>
@@ -92,7 +92,7 @@ export function useJobFeed(
         if (reason instanceof Error && reason.name === "AbortError") return;
         if (background) {
           window.setTimeout(() => {
-            if (!signal.aborted) void refreshFeed(signal, true);
+            if (!signal.aborted) void refresh(signal, true);
           }, 10_000);
           return;
         }
