@@ -17,6 +17,8 @@ export interface AiCompletionRequest {
   systemPrompt: string;
   userPrompt: string;
   responseFormat: AiResponseFormat;
+  /** Provider-supported JSON Schema for constrained structured output. */
+  responseSchema?: Record<string, unknown>;
   temperature?: number;
   maxOutputTokens?: number;
   timeoutMs?: number;
