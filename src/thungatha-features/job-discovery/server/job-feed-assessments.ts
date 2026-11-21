@@ -47,13 +47,14 @@ export async function fetchFeedAssessmentsAndQueue(
 
       if (queueResult.error) {
         console.error("[job-feed-assessments] Failed to read queue tasks:", queueResult.error);
+        hasError = true;
       } else {
         for (const item of queueResult.data ?? []) {
           queueStatusByJob.set(item.job_id, item.status);
         }
       }
     } catch (error) {
-      console.error("[job-feed-assessments] Unexpected error fetching assessments:", error);
+      console.error("[job-feed-assessments] Unexpected error fetching assessments or queue:", error);
       hasError = true;
     }
   }
