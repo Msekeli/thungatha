@@ -1,4 +1,5 @@
 import "server-only";
+import { ZodError } from "zod";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import type { CandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import {
@@ -16,17 +17,86 @@ import { validateAndClassifyAssessment } from "./job-ai-classification";
 const json = (value: unknown) => JSON.stringify(value);
 
 function parse<T>(
+  stage: string,
   content: string,
   schema: { parse: (value: unknown) => T },
 ): T {
+  let value: unknown;
   try {
-    return schema.parse(JSON.parse(content));
+    value = JSON.parse(content);
   } catch (cause) {
-    throw new Error("AI returned output that failed the matching schema.", {
-      cause,
-    });
+    const detail = cause instanceof Error ? cause.message : "unknown JSON parsing error";
+    throw new Error(`${stage}: AI returned invalid JSON (${detail}).`);
+  }
+
+  try {
+    return schema.parse(value);
+  } catch (cause) {
+    if (cause instanceof ZodError) {
+      const issues = cause.issues.slice(0, 12).map((issue) => {
+        const path = issue.path.length ? issue.path.join(".") : "(root)";
+        return `${path}: ${issue.message}`;
+      });
+      throw new Error(`${stage}: AI output failed schema validation: ${issues.join("; ")}`);
+    }
+    throw new Error(`${stage}: AI output could not be validated.`);
   }
 }
+
+function assertCompleteResponse(stage: string, response: { finishReason?: string }) {
+  if (response.finishReason === "MAX_TOKENS") {
+    throw new Error(`${stage}: Gemini stopped at the output-token limit; the JSON response may be incomplete.`);
+  }
+}
+
+const matchAssessmentResponseSchema: Record<string, unknown> = {
+  type: "OBJECT",
+  properties: {
+    semanticAlignment: {
+      type: "OBJECT",
+      properties: {
+        level: { type: "STRING", enum: ["strong", "meaningful", "insufficient"] },
+        materialGaps: { type: "BOOLEAN" },
+        jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+        profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
+      },
+      required: ["level", "materialGaps", "jobEvidenceRefs", "profileEvidenceRefs"],
+    },
+    summary: { type: "STRING", minLength: 1, maxLength: 500 },
+    alignmentExplanation: { type: "STRING", minLength: 1, maxLength: 800 },
+    requirements: {
+      type: "ARRAY",
+      maxItems: 24,
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING", minLength: 1, maxLength: 40 },
+          requirement: { type: "STRING", minLength: 1, maxLength: 280 },
+          importance: { type: "STRING", enum: ["mandatory", "preferred", "uncertain"] },
+          assessment: { type: "STRING", enum: ["supported", "not_demonstrated", "contradictory", "uncertain"] },
+          explanation: { type: "STRING", minLength: 1, maxLength: 500 },
+          jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+          profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
+        },
+        required: ["id", "requirement", "importance", "assessment", "explanation", "jobEvidenceRefs", "profileEvidenceRefs"],
+      },
+    },
+    gaps: {
+      type: "ARRAY",
+      maxItems: 8,
+      items: {
+        type: "OBJECT",
+        properties: {
+          description: { type: "STRING", minLength: 1, maxLength: 300 },
+          jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+          profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
+        },
+        required: ["description", "jobEvidenceRefs", "profileEvidenceRefs"],
+      },
+    },
+  },
+  required: ["semanticAlignment", "summary", "alignmentExplanation", "requirements", "gaps"],
+};
 
 export async function understandJobWithAi(description: string) {
   const evidence = buildJobEvidence(description);
@@ -57,7 +127,8 @@ export async function understandJobWithAi(description: string) {
     userPrompt: json({ sourceEvidence: evidence }),
   });
 
-  const result = parse(response.content, jobUnderstandingSchema);
+  assertCompleteResponse("Job understanding", response);
+  const result = parse("Job understanding", response.content, jobUnderstandingSchema);
   const allowed = new Set(evidence.map((item) => item.id));
   const refs = [
     ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
@@ -84,8 +155,6 @@ export async function assessJobWithAi(
     ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ]);
   const referencedJobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
-  // If understanding could not extract material items, retain a small source
-  // sample so the assessment can safely return Unclassified instead of retrying forever.
   const jobEvidence = referencedJobEvidence.length
     ? referencedJobEvidence
     : allJobEvidence.slice(0, 3);
@@ -105,8 +174,11 @@ export async function assessJobWithAi(
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
+    responseSchema: matchAssessmentResponseSchema,
     temperature: 0.1,
-    maxOutputTokens: 2800,
+    // A complete evidence-linked assessment can be substantially larger than
+    // the extraction response. Keep enough headroom for all 24 requirements.
+    maxOutputTokens: 6000,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
@@ -115,12 +187,14 @@ export async function assessJobWithAi(
       "Treat target-role preference as soft context only, never as proof of a skill or experience.",
       "Missing Profile information means not demonstrated, not proof that the candidate lacks the capability.",
       "Use only supplied jobEvidence and confirmedProfileEvidence IDs. Cite exact IDs for every factual claim.",
-      "Assess every extracted requirement exactly once, preserving its exact id, wording, and importance. Do not add, omit, duplicate, or reclassify requirements. If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
+      "Assess every extracted requirement exactly once, preserving its exact id, exact wording, and importance. Do not add, omit, duplicate, or reclassify requirements.",
+      "For each requirement, keep explanation to one concise sentence of at most 160 characters. Do not repeat the requirement in the explanation.",
       "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence.",
+      "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
       "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
       "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match, Relevant, or Unclassified.",
-      'Return JSON: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id,requirement,importance,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation,jobEvidenceRefs,profileEvidenceRefs}],gaps:[{description,jobEvidenceRefs,profileEvidenceRefs}]}.',
-      "Keep explanations brief and evidence-specific. Return only valid JSON.",
+      'Return JSON matching the supplied response schema: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id,requirement,importance,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation,jobEvidenceRefs,profileEvidenceRefs}],gaps:[{description,jobEvidenceRefs,profileEvidenceRefs}]}.',
+      "Keep all text concise and evidence-specific. Return only the required JSON object with no markdown.",
     ].join("\n"),
     userPrompt: json({
       title,
@@ -135,7 +209,8 @@ export async function assessJobWithAi(
     }),
   });
 
-  const assessmentInput = parse(response.content, matchAssessmentInputSchema);
+  assertCompleteResponse("Candidate assessment", response);
+  const assessmentInput = parse("Candidate assessment", response.content, matchAssessmentInputSchema);
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
     understanding,
