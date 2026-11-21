@@ -4,7 +4,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { processJobAiQueue } from "@/thungatha-features/job-discovery/server/job-ai-worker";
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 function isAuthorised(request: Request) {
   const expectedSecret = process.env.AI_WORKER_SECRET;
