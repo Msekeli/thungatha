@@ -23,6 +23,9 @@ export function validateAndClassifyAssessment(
     if (!source || assessedIds.has(item.id) || source.importance !== item.importance) {
       throw new Error("AI assessment requirements do not match the extracted job requirements.");
     }
+    if (item.requirement !== source.statement) {
+      throw new Error(`AI assessment changed the extracted wording for requirement "${item.id}".`);
+    }
     assessedIds.add(item.id);
   }
   if (assessedIds.size !== extracted.size) {
