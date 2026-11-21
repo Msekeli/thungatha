@@ -37,12 +37,16 @@ describe("ProfileForm flow", () => {
       confirmedAt: null,
       profileVersion: 1,
     };
-    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-      if (init?.method === "PATCH") {
-        return { ok: true, json: async () => ({ profile: savedProfile }) } as Response;
-      }
-      return { ok: true, json: async () => ({ profile: null }) } as Response;
-    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ profile: null }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ profile: savedProfile }),
+      } as Response);
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm />);
