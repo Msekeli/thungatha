@@ -173,6 +173,10 @@ This record describes the earlier deterministic classifier only. It does not sat
 
 ### M3-C05 — Explanation, uncertainty and freshness
 
+**Status:** In progress — evidence-linked explanations are in the assessment contract; a pre-persistence freshness recheck is implemented. User-facing evidence display and stronger atomic freshness enforcement remain.
+
+**2026-11-21 implementation increment:** Before an AI assessment is persisted, the worker re-reads the current job description and Profile confirmation/version. If the job was deleted or changed, the Profile was removed/unconfirmed, or its version changed while AI was processing, the task is marked stale and the generated assessment is discarded. Focused freshness tests were added but have not been run. This is a pre-write recheck; it is not an atomic transaction with the assessment write.
+
 **Goal:** make AI-generated results understandable, evidence-grounded, uncertainty-aware, and resistant to stale or unsupported claims.
 
 **Work**
