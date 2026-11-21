@@ -441,7 +441,7 @@ Server-side PDF-only deterministic extraction is being revised on `dev` using th
 
 **Status:** Implemented on `dev`; local verification and migration application pending.
 
-The M3 matching pipeline now caches job understanding by description hash and analysis version, reuses that understanding across job records/users, sends a compact evidence subset to candidate assessment, and limits model output to material responsibilities, capabilities, requirements, and concise evidence explanations. Job feed reads are browse-only; assessments are requested on demand for the selected job. Per-user active queue depth is capped at three, explicit backfill is capped at three tasks per request, and worker processing is limited to one task per invocation.
+The M3 matching pipeline now caches job understanding by description hash and analysis version, reuses that understanding across job records/users, sends a compact evidence subset to candidate assessment, and limits model output to material responsibilities, capabilities, requirements, and concise evidence explanations. Job feed reads are browse-only; assessments are requested on demand for the selected job. Per-user active queue depth is atomically capped at three, explicit backfill is capped at three tasks per request, and worker processing is limited to one task per invocation.
 
 **Migration required:** `supabase/migrations/20261121000600_cache_job_understanding_by_description.sql`. Not applied by this change.
 

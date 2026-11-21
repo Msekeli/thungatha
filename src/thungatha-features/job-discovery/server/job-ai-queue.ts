@@ -36,18 +36,7 @@ async function enqueueJobRows(
   if (!eligible.length || requestedLimit <= 0) return 0;
 
   const db = createServiceClient();
-  const { count: activeCount, error: countError } = await db
-    .from("ai_task_queue")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .in("status", ["pending", "processing"]);
-  if (countError) throw countError;
-
-  const capacity = Math.min(
-    requestedLimit,
-    Math.max(0, MAX_ACTIVE_ASSESSMENTS_PER_USER - (activeCount ?? 0)),
-  );
-  if (capacity === 0) return 0;
+  const capacity = requestedLimit;
 
   const jobIds = eligible.map((job) => job.id);
   const [queueResult, assessmentResult] = await Promise.all([
@@ -90,11 +79,14 @@ async function enqueueJobRows(
     };
   });
 
-  const { data, error } = await db.from("ai_task_queue")
-    .upsert(tasks, { onConflict: "dedupe_key", ignoreDuplicates: true })
-    .select("id");
+  const { data, error } = await db.rpc("enqueue_ai_job_assessment_tasks", {
+    p_user_id: userId,
+    p_tasks: tasks,
+    p_max_active: MAX_ACTIVE_ASSESSMENTS_PER_USER,
+    p_max_to_enqueue: capacity,
+  });
   if (error) throw error;
-  return data?.length ?? 0;
+  return data ?? 0;
 }
 
 export async function enqueueVisibleJobAssessments(userId: string, jobIds: string[]) {
