@@ -38,7 +38,7 @@ export async function GET(
       : await createPublicSupabaseClient();
     const { data, error } = await db.from("jobs")
       .select("id,scout_vacancy_id,title,employer_name,company_logo_url,description,location_text,application_url,published_at,source_updated_at,updated_at")
-      .eq("id", id).not("scout_vacancy_id", "is", null).maybeSingle();
+      .eq("id", id).maybeSingle();
     if (error) throw error;
     if (!data) return apiError("Job not found", 404);
 
