@@ -58,7 +58,7 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
   // a strict per-user active-task cap, so browsing cannot flood the AI worker.
   if (userId && profileVersion !== null && data.length) {
     const assessmentCandidates = rankWhole
-      ? data.slice(0, Math.min(input.pageSize, 30))
+      ? data.slice(from, from + Math.min(input.pageSize, 30))
       : data;
     try {
       await enqueueVisibleJobAssessments(
