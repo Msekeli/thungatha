@@ -1,7 +1,7 @@
 import type { JobUnderstanding, MatchAssessmentInput } from "./job-ai-schemas";
 
 export type MatchClassification = "match" | "relevant" | "unclassified";
-export const MATCH_CLASSIFICATION_POLICY_VERSION = "m3-classification-v1";
+export const MATCH_CLASSIFICATION_POLICY_VERSION = "m3-classification-v2";
 export type MatchAssessment = MatchAssessmentInput & {
   classification: MatchClassification;
   classificationPolicyVersion: string;
@@ -58,6 +58,7 @@ export function validateAndClassifyAssessment(
       && !assessment.semanticAlignment.materialGaps
       && !contradictoryEvidence
       && !unsupportedMandatory
+      && understanding.coverage === "complete"
       ? "match"
       : "relevant";
 
