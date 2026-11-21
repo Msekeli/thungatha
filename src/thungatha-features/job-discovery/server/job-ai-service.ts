@@ -99,7 +99,7 @@ function parse<T>(
   }
 }
 
-function assertCompleteResponse(stage: string, response: { finishReason?: string }) {
+function assertCompleteResponse(stage: string, response: { provider: string; finishReason?: string }) {
   const finishReason = response.finishReason?.toUpperCase();
   if (finishReason === "MAX_TOKENS" || finishReason === "LENGTH") {
     throw new Error(`${stage}: ${response.provider} stopped at the output-token limit; the JSON response may be incomplete.`);
