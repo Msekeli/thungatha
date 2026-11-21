@@ -7,8 +7,9 @@ const extractCandidate = (value: unknown) => {
   if (!value || typeof value !== "object") return null;
   const candidates = (value as { candidates?: unknown[] }).candidates;
   const first = candidates?.[0] as { content?: { parts?: { text?: unknown }[] }; finishReason?: string } | undefined;
-  const content = first?.content?.parts?.map((part) => typeof part.text === "string" ? part.text : "").join("");
-  return content ? { content, finishReason: first?.finishReason } : null;
+  if (!first) return null;
+  const content = first.content?.parts?.map((part) => typeof part.text === "string" ? part.text : "").join("") ?? "";
+  return { content, finishReason: first.finishReason };
 };
 
 export function createGeminiAdapter(options: { apiKey?: string; model?: string; fetcher?: typeof fetch } = {}): AiProviderAdapter {
@@ -48,7 +49,16 @@ export function createGeminiAdapter(options: { apiKey?: string; model?: string; 
       }
       const payload = await response.json().catch(() => null);
       const candidate = extractCandidate(payload);
-      if (!candidate) throw new AiProviderError("Gemini returned no usable candidate content.", { code: "invalid-response", provider: "gemini" });
+      if (!candidate?.content) {
+        const finishReason = candidate?.finishReason;
+        const blocked = finishReason === "SAFETY" || finishReason === "RECITATION";
+        throw new AiProviderError(
+          blocked
+            ? `Gemini did not return content because generation was blocked (${finishReason}).`
+            : `Gemini returned no usable candidate content${finishReason ? ` (finish reason: ${finishReason})` : ""}.`,
+          { code: blocked ? "content-filtered" : "invalid-response", provider: "gemini" },
+        );
+      }
       const usage = (payload as { usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number } })?.usageMetadata;
       return {
         ...candidate,
