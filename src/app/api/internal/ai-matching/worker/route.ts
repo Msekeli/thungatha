@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A valid AI worker secret is required." }, { status: 401 });
   }
   try {
-    const result = await processJobAiQueue(5);
+    const result = await processJobAiQueue(1);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("[AI job matching] Worker invocation failed:", {
