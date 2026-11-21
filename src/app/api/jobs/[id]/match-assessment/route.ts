@@ -7,7 +7,8 @@ import {
   enqueueVisibleJobAssessments,
   getJobAiTaskStatus,
   isUsableJobDescription,
-  JOB_AI_ASSESSMENT_VERSION,\n  JOB_AI_UNDERSTANDING_VERSION,
+  JOB_AI_ASSESSMENT_VERSION,
+  JOB_AI_UNDERSTANDING_VERSION,
   retryFailedJobAiTask,
   requeueCompletedJobAiTask,
 } from "@/thungatha-features/job-discovery/server/job-ai-queue";
