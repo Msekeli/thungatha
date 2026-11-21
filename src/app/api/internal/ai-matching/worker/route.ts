@@ -22,7 +22,11 @@ export async function POST(request: Request) {
   }
   try {
     const result = await processJobAiQueue(1);
-    return NextResponse.json({ success: true, ...result });
+    const success = result.failed === 0;
+    return NextResponse.json(
+      { success, ...result },
+      { status: success ? 200 : 503 },
+    );
   } catch (error) {
     console.error("[AI job matching] Worker invocation failed:", {
       errorName: error instanceof Error ? error.name : "unknown",
