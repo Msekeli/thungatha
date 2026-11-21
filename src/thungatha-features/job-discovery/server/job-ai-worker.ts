@@ -64,7 +64,15 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
         available_at: new Date(Date.now() + delayMinutes * 60_000).toISOString(),
         locked_at: null, last_error: sanitized, updated_at: new Date().toISOString(),
       }).eq("id", task.id).eq("status", "processing");
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("[AI job matching] Could not persist task failure diagnostics", {
+          taskId: task.id,
+          jobId: task.job_id,
+          taskError: sanitized,
+          persistenceError: updateError.message,
+        });
+        throw new Error(`Task failed (${sanitized}), and its retry state could not be saved: ${updateError.message}`);
+      }
       failed += 1;
       tasks.push({
         taskId: task.id,
