@@ -31,7 +31,7 @@ export const profileCompletionSchema = z.object({
 });
 
 export const draftPersonalDetailsSchema = personalDetailsSchema.extend({
-  email: z.string().trim().max(255).nullable().optional(),
+  email: z.string().trim().email().max(255).nullable().optional(),
 });
 export const updateProfileSchema = z.object({
   displayName: z.string().trim().min(1).max(100).optional(),
