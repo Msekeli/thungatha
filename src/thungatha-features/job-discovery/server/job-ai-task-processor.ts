@@ -96,7 +96,6 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
     p_job_id: task.job_id,
     p_profile_version: task.profile_version,
     p_profile_confirmed_at: facts.confirmedAt,
-    p_job_description_hash: task.job_description_hash,
     p_job_description: description,
     p_assessment_version: task.assessment_version,
     p_classification: generated.assessment.classification,
