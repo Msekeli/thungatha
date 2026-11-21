@@ -37,7 +37,7 @@ export async function understandJobWithAi(title: string, description: string) {
     responseFormat: "json",
     temperature: 0.1,
     maxOutputTokens: 5000,
-    timeoutMs: 45_000,
+    timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
       "You are Thungatha's job-understanding engine.",
@@ -84,7 +84,7 @@ export async function assessJobWithAi(
     responseFormat: "json",
     temperature: 0.1,
     maxOutputTokens: 6000,
-    timeoutMs: 45_000,
+    timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
       "You are Thungatha's semantic job-to-candidate assessment engine.",
