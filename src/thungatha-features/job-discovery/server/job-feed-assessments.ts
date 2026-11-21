@@ -9,6 +9,7 @@ export async function fetchFeedAssessmentsAndQueue(
   userId: string,
   profileVersion: number,
   jobIds: string[],
+  currentHashes: Map<string, string>,
 ): Promise<{
   assessmentsByJob: Map<string, AssessmentRecord>;
   queueStatusByJob: Map<string, "pending" | "processing" | "failed" | "completed">;
@@ -28,7 +29,7 @@ export async function fetchFeedAssessmentsAndQueue(
           .eq("user_id", userId).eq("profile_version", profileVersion)
           .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).in("job_id", batch),
         db.from("ai_task_queue")
-          .select("job_id,status")
+          .select("job_id,job_description_hash,status")
           .eq("user_id", userId).eq("profile_version", profileVersion)
           .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).in("job_id", batch),
       ]);
@@ -38,10 +39,12 @@ export async function fetchFeedAssessmentsAndQueue(
         hasError = true;
       } else {
         for (const item of assessmentResult.data ?? []) {
-          assessmentsByJob.set(item.job_id, {
-            hash: item.job_description_hash,
-            classification: item.classification,
-          });
+          if (currentHashes.get(item.job_id) === item.job_description_hash) {
+            assessmentsByJob.set(item.job_id, {
+              hash: item.job_description_hash,
+              classification: item.classification,
+            });
+          }
         }
       }
 
@@ -50,7 +53,9 @@ export async function fetchFeedAssessmentsAndQueue(
         hasError = true;
       } else {
         for (const item of queueResult.data ?? []) {
-          queueStatusByJob.set(item.job_id, item.status);
+          if (currentHashes.get(item.job_id) === item.job_description_hash) {
+            queueStatusByJob.set(item.job_id, item.status);
+          }
         }
       }
     } catch (error) {
