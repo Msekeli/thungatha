@@ -67,7 +67,7 @@ export function useJobFeed(
         if (data.jobs.some((job) => job.matchStatus === "processing")) {
           window.setTimeout(() => {
             if (!signal.aborted) void refresh(signal, true);
-          }, 10_000);
+          }, 60_000);
         }
         setSelectedId((current) =>
           current && data.jobs.some((job) => job.id === current)
@@ -93,7 +93,7 @@ export function useJobFeed(
         if (background) {
           window.setTimeout(() => {
             if (!signal.aborted) void refresh(signal, true);
-          }, 10_000);
+          }, 60_000);
           return;
         }
         setFeed(null);
