@@ -9,10 +9,12 @@ import {
 import {
   jobUnderstandingSchema,
   matchAssessmentInputSchema,
+  type JobUnderstanding,
 } from "./job-ai-schemas";
 import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
+
 function parse<T>(
   content: string,
   schema: { parse: (value: unknown) => T },
@@ -28,29 +30,33 @@ function parse<T>(
 
 export async function understandJobWithAi(title: string, description: string) {
   const evidence = buildJobEvidence(description);
-  if (evidence.length === 0)
-    throw new Error(
-      "The job description does not contain enough readable text.",
-    );
+  if (evidence.length === 0) {
+    throw new Error("The job description does not contain enough readable text.");
+  }
+
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
     temperature: 0.1,
-    maxOutputTokens: 5000,
+    maxOutputTokens: 2800,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
-      "You are Thungatha's job-understanding engine.",
-      "Understand the actual work described, not just the title or familiar keywords.",
-      "Interpret the full advert. Do not use a fixed skill vocabulary or assume requirements absent from the source.",
-      "Identify central responsibilities, capabilities, technologies, and explicit or clearly implied requirements.",
-      "Use only supplied job evidence IDs. Every responsibility, capability, and requirement must cite one or more exact sourceEvidenceRefs.",
-      "Classify importance as mandatory, preferred, or uncertain using context, not keyword triggers.",
-      `Return this exact JSON shape: {summary:string,responsibilities:[{id:string,statement:string,sourceEvidenceRefs:string[]}],capabilities:[{id:string,name:string,context:string,sourceEvidenceRefs:string[]}],requirements:[{id:string,statement:string,category:"experience"|"skill"|"technology"|"qualification"|"certification"|"licence"|"language"|"location"|"work_mode"|"other",importance:"mandatory"|"preferred"|"uncertain",sourceEvidenceRefs:string[]}],coverage:"complete"|"partial"|"unavailable"}.`,
+      "Understand the complete job advert in context, not just its title or familiar keywords.",
+      "Identify only material responsibilities, capabilities, and requirements that affect the actual work or candidate suitability.",
+      "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
+      "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
+      "Return at most 12 responsibilities, 16 capabilities, and 24 material requirements. If the advert contains more material information than fits, mark coverage partial rather than silently implying completeness.",
+      "Every item must cite one or more exact supplied job evidence IDs. Never infer a requirement that the advert does not support.",
+      "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
+      "Keep each statement concise. Return a short role-purpose summary.",
+      'Return JSON: {summary:string,responsibilities:[{id,statement,sourceEvidenceRefs}],capabilities:[{id,name,context,sourceEvidenceRefs}],requirements:[{id,statement,category,importance,sourceEvidenceRefs}],coverage:"complete"|"partial"|"unavailable"}.',
+      "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
       "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
     ].join("\n"),
     userPrompt: json({ title, sourceEvidence: evidence }),
   });
+
   const result = parse(response.content, jobUnderstandingSchema);
   const allowed = new Set(evidence.map((item) => item.id));
   const refs = [
@@ -58,66 +64,81 @@ export async function understandJobWithAi(title: string, description: string) {
     ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ];
-  if (!assertEvidenceReferences(refs, allowed))
-    throw new Error(
-      "AI job understanding referenced text that is not in the supplied job description.",
-    );
-  return {
-    analysis: result,
-    provider: response.provider,
-    model: response.model,
-  };
+  if (!assertEvidenceReferences(refs, allowed)) {
+    throw new Error("AI job understanding referenced text that is not in the supplied job description.");
+  }
+
+  return { analysis: result, provider: response.provider, model: response.model };
 }
 
 export async function assessJobWithAi(
   title: string,
-  understanding: unknown,
+  understanding: JobUnderstanding,
   description: string,
   facts: CandidateFacts,
 ) {
-  const jobEvidence = buildJobEvidence(description);
+  const allJobEvidence = buildJobEvidence(description);
+  const referencedJobIds = new Set([
+    ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
+  ]);
+  const referencedJobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
+  // If understanding could not extract material items, retain a small source
+  // sample so the assessment can safely return Unclassified instead of retrying forever.
+  const jobEvidence = referencedJobEvidence.length
+    ? referencedJobEvidence
+    : allJobEvidence.slice(0, 3);
   const profileEvidence = buildProfileEvidence(facts);
-  if (!jobEvidence.length || !profileEvidence.length)
+
+  if (!jobEvidence.length || !profileEvidence.length) {
     throw new Error("There is insufficient evidence to assess this role.");
+  }
+
+  const compactUnderstanding = {
+    coverage: understanding.coverage,
+    responsibilities: understanding.responsibilities,
+    capabilities: understanding.capabilities,
+    requirements: understanding.requirements,
+  };
+
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
     temperature: 0.1,
-    maxOutputTokens: 6000,
+    maxOutputTokens: 2800,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
-      "You are Thungatha's semantic job-to-candidate assessment engine.",
-      "Compare the actual responsibilities, capabilities, tools, technologies, experience, qualifications, and context.",
-      "Different titles can describe equivalent work. Titles and occupational categories are context only, never gates.",
-      "The user next-role preference is a soft context signal only; it is not evidence of skills, experience, or qualification.",
-      "Interpret every requirement in the full advert. No single phrase, qualification, experience duration, or missing Profile field is an automatic rejection rule.",
-      "Transferable capabilities count when the supplied evidence supports the relationship. Do not invent experience or equivalence.",
-      "Use only supplied jobEvidence and profileEvidence IDs. Cite exact IDs for every factual assessment. Never cite an ID you were not given.",
-      "Missing Profile information means not demonstrated, not proof the candidate lacks the capability.",
-      "Describe semanticAlignment as strong, meaningful, or insufficient, and state whether material gaps remain. Do not return an overall category; application code derives Match, Relevant, or Unclassified from your semantic evidence and requirement assessments.",
-      "Assess every extracted requirement exactly once. Preserve its exact id and importance from jobUnderstanding; do not add, omit, duplicate, or reclassify requirements. Every requirement must cite job evidence. A supported requirement must cite confirmed Profile evidence. Do not produce scores, percentages, weights, or hiring predictions.",
-      `Return this exact JSON shape: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,importance:"mandatory"|"preferred"|"uncertain",assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}.`,
-      "Return only valid JSON.",
+      "Compare the actual work and material requirements with the candidate's confirmed Profile evidence.",
+      "Recognise equivalent responsibilities across different titles and transferable capabilities across contexts when the evidence supports the relationship. Titles are context, never gates.",
+      "Treat target-role preference as soft context only, never as proof of a skill or experience.",
+      "Missing Profile information means not demonstrated, not proof that the candidate lacks the capability.",
+      "Use only supplied jobEvidence and confirmedProfileEvidence IDs. Cite exact IDs for every factual claim.",
+      "Assess every extracted requirement exactly once, preserving its exact id, wording, and importance. Do not add, omit, duplicate, or reclassify requirements. If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
+      "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence.",
+      "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
+      "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match, Relevant, or Unclassified.",
+      'Return JSON: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id,requirement,importance,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation,jobEvidenceRefs,profileEvidenceRefs}],gaps:[{description,jobEvidenceRefs,profileEvidenceRefs}]}.',
+      "Keep explanations brief and evidence-specific. Return only valid JSON.",
     ].join("\n"),
     userPrompt: json({
       title,
-      jobUnderstanding: understanding,
+      jobUnderstanding: compactUnderstanding,
       jobEvidence,
       confirmedProfileEvidence: profileEvidence,
       candidateFacts: {
         knownEmploymentMonths: facts.knownEmploymentMonths,
         employmentEvidenceRefs: facts.employmentEvidenceRefs,
         unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs,
-        targetRole: facts.targetRole,
       },
     }),
   });
-  const parsedUnderstanding = jobUnderstandingSchema.parse(understanding);
+
   const assessmentInput = parse(response.content, matchAssessmentInputSchema);
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
-    parsedUnderstanding,
+    understanding,
     new Set(jobEvidence.map((item) => item.id)),
     new Set(profileEvidence.map((item) => item.id)),
   );

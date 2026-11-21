@@ -256,3 +256,19 @@ C01 remains in progress for representative semantic evaluation and evidence inte
 - Added focused classification-policy tests for the application-owned category, mandatory requirement handling, contradictory evidence, evidence-reference validation, and requirement completeness.
 - **Verification:** repository changes were committed to `dev`; no local Vitest, type-check, lint, build, database migration, worker, or browser run was executed during this remote edit. The new tests and integration behaviour remain unverified at runtime.
 - **Open M3 work:** representative cross-title/cross-industry evaluation, qualification/alternative-pathway cases, full stale-state and provider-failure verification, authenticated API/database checks, responsive Discovery review, and explicit user acceptance remain outstanding. M3 remains **In progress**.
+
+
+## 2026-11-21 AI workload reduction implementation
+
+**Status:** Implemented on `dev`; runtime verification intentionally not performed.
+
+- Job-understanding cache identity is now the exact description hash plus a dedicated understanding version. The cache is shared across job records and users; it no longer uses `job_id` as its primary key.
+- Job understanding still interprets responsibilities, capabilities, material requirements, and full-advert context. Output is compact and capped at 12 responsibilities, 16 capabilities, and 24 material requirements; duplicate/boilerplate items are excluded and incomplete coverage remains explicit.
+- Candidate assessment reuses the cached understanding and receives only the job evidence referenced by that understanding, rather than the complete segmented description a second time. Confirmed Profile evidence remains the only candidate evidence. Duplicate target-role context was removed from the candidate-facts payload; deterministic employment-duration facts remain.
+- Feed reads no longer enqueue assessments. The authenticated selected-job assessment endpoint remains the on-demand entry point. Queue admission is capped at three pending/processing tasks per user, explicit backfill queues at most three per request, and a worker invocation processes one task.
+- Assessment/schema version advanced to `m3-ai-v4`; understanding cache uses `m3-understanding-v2`. Existing evidence-reference validation, exact requirement coverage, classification policy, profile-version checks, job-description hash checks, stale-task handling, retries, and atomic persistence remain in place.
+- Added migration `20261121000600_cache_job_understanding_by_description.sql` to deduplicate existing cache rows and change the cache primary key to `(description_hash, analysis_version)`. It has **not** been applied.
+
+**Verification:** No tests, builds, lint, type-checks, worker executions, AI provider calls, or Supabase operations were run. Changes were reviewed from source and migration definitions only.
+
+**Next action:** Pull `dev`, manually review the diff, apply the new migration through the approved Supabase workflow, then run the user's local verification and report any failures. Do not claim runtime correctness until those checks are completed.

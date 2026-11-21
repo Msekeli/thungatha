@@ -1,26 +1,39 @@
 import { z } from "zod";
 
-const refs = z.array(z.string().min(1));
+const refs = z.array(z.string().min(1)).max(4);
 const requiredRefs = refs.min(1);
 
 export const jobUnderstandingSchema = z.object({
-  summary: z.string().min(1).max(3000),
-  responsibilities: z.array(z.object({ id: z.string().min(1), statement: z.string().min(1), sourceEvidenceRefs: requiredRefs })).max(40),
-  capabilities: z.array(z.object({ id: z.string().min(1), name: z.string().min(1), context: z.string().max(1000), sourceEvidenceRefs: requiredRefs })).max(60),
+  summary: z.string().min(1).max(500),
+  responsibilities: z.array(z.object({
+    id: z.string().min(1).max(40),
+    statement: z.string().min(1).max(240),
+    sourceEvidenceRefs: requiredRefs,
+  })).max(12),
+  capabilities: z.array(z.object({
+    id: z.string().min(1).max(40),
+    name: z.string().min(1).max(100),
+    context: z.string().max(200),
+    sourceEvidenceRefs: requiredRefs,
+  })).max(16),
   requirements: z.array(z.object({
-    id: z.string().min(1), statement: z.string().min(1),
+    id: z.string().min(1).max(40),
+    statement: z.string().min(1).max(280),
     category: z.enum(["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"]),
-    importance: z.enum(["mandatory", "preferred", "uncertain"]), sourceEvidenceRefs: requiredRefs,
-  })).max(80),
+    importance: z.enum(["mandatory", "preferred", "uncertain"]),
+    sourceEvidenceRefs: requiredRefs,
+  })).max(24),
   coverage: z.enum(["complete", "partial", "unavailable"]),
 });
 
 const requirementAssessment = z.object({
-  id: z.string().min(1), requirement: z.string().min(1),
+  id: z.string().min(1).max(40),
+  requirement: z.string().min(1).max(280),
   importance: z.enum(["mandatory", "preferred", "uncertain"]),
   assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
-  explanation: z.string().min(1).max(1500),
-  jobEvidenceRefs: requiredRefs, profileEvidenceRefs: refs,
+  explanation: z.string().min(1).max(500),
+  jobEvidenceRefs: requiredRefs,
+  profileEvidenceRefs: refs,
 }).superRefine((item, context) => {
   if (item.assessment === "supported" && item.profileEvidenceRefs.length === 0) {
     context.addIssue({ code: "custom", message: "Supported requirements need confirmed Profile evidence." });
@@ -34,13 +47,14 @@ export const matchAssessmentInputSchema = z.object({
     jobEvidenceRefs: requiredRefs,
     profileEvidenceRefs: refs,
   }),
-  summary: z.string().min(1).max(2000),
-  alignmentExplanation: z.string().min(1).max(3000),
-  requirements: z.array(requirementAssessment).max(100),
+  summary: z.string().min(1).max(500),
+  alignmentExplanation: z.string().min(1).max(800),
+  requirements: z.array(requirementAssessment).max(24),
   gaps: z.array(z.object({
-    description: z.string().min(1).max(1000),
-    jobEvidenceRefs: requiredRefs, profileEvidenceRefs: refs,
-  })).max(40),
+    description: z.string().min(1).max(300),
+    jobEvidenceRefs: requiredRefs,
+    profileEvidenceRefs: refs,
+  })).max(8),
 }).superRefine((assessment, context) => {
   if (assessment.semanticAlignment.level !== "insufficient" && assessment.semanticAlignment.profileEvidenceRefs.length === 0) {
     context.addIssue({ code: "custom", message: "Meaningful alignment needs confirmed Profile evidence." });

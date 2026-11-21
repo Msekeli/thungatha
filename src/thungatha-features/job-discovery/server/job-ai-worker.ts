@@ -15,7 +15,7 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
   const db = createJobAiClient();
   const tasks: TaskDiagnostic[] = [];
   let processed = 0; let stale = 0; let failed = 0;
-  const boundedMax = Math.max(1, Math.min(maxTasks, 5));
+  const boundedMax = Math.max(1, Math.min(maxTasks, 1));
 
   for (let index = 0; index < boundedMax; index += 1) {
     const { data, error } = await db.rpc("claim_ai_job_matching_task");

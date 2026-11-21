@@ -7,7 +7,7 @@ import {
   enqueueVisibleJobAssessments,
   getJobAiTaskStatus,
   isUsableJobDescription,
-  JOB_AI_ASSESSMENT_VERSION,
+  JOB_AI_ASSESSMENT_VERSION,\n  JOB_AI_UNDERSTANDING_VERSION,
   retryFailedJobAiTask,
   requeueCompletedJobAiTask,
 } from "@/thungatha-features/job-discovery/server/job-ai-queue";
@@ -48,8 +48,8 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
 
     if (data) {
       const { data: understandingData } = await db.from("job_ai_understandings").select("understanding")
-        .eq("job_id", id).eq("description_hash", descriptionHash)
-        .eq("analysis_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
+        .eq("description_hash", descriptionHash)
+        .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
       const assessment = await resolveEvidenceLinkedAssessment({
         userId: identity.userId, token: identity.getToken, description,
         assessment: data.assessment as Parameters<typeof resolveEvidenceLinkedAssessment>[0]["assessment"],

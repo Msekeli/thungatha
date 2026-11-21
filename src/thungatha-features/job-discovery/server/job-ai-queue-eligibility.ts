@@ -3,7 +3,8 @@ import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { buildJobEvidence } from "./job-ai-evidence";
 
-export const JOB_AI_ASSESSMENT_VERSION = "m3-ai-v3";
+export const JOB_AI_UNDERSTANDING_VERSION = "m3-understanding-v2";
+export const JOB_AI_ASSESSMENT_VERSION = "m3-ai-v4";
 
 export function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

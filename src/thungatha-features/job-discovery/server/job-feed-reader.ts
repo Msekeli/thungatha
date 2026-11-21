@@ -7,7 +7,6 @@ import { relevanceOrder, type FeedJob } from "./job-feed-sorting";
 import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
 import { resolveJobMatchStatus } from "./job-feed-status";
 import { readEmployerDismissals } from "./job-feed-dismissals";
-import { enqueueVisibleJobAssessments } from "./job-ai-queue";
 
 const BATCH_SIZE = 500;
 
@@ -70,26 +69,8 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
 
   if (rankWhole) { jobs.sort(relevanceOrder); jobs = jobs.slice(from, from + input.pageSize); }
 
-  // Queue only the jobs on the page being returned. The worker processes them
-  // asynchronously; the feed never waits for a provider response.
-  if (userId && profileVersion !== null && jobs.length) {
-    try {
-      await enqueueVisibleJobAssessments(userId, jobs.map((job) => job.id));
-      for (const job of jobs) {
-        if (!assessmentsByJob.has(job.id) && !queueStatusByJob.has(job.id)) {
-          queueStatusByJob.set(job.id, "pending");
-        }
-      }
-    } catch (error) {
-      console.error("[job-feed-reader] Failed to queue visible job assessments:", error);
-      for (const job of jobs) {
-        if (!assessmentsByJob.has(job.id)) {
-          job.matchStatus = "error";
-          delete job.matchClassification;
-        }
-      }
-    }
-  }
+  // Feed reads are browse-only. Assessment is queued on demand by the selected-job
+  // match-assessment endpoint, never as a side effect of pagination or refresh.
 
   const safeJobs = jobs.map((job) => {
     const safe = { ...job };

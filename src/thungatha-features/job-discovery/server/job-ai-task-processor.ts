@@ -6,7 +6,7 @@ import { deriveCandidateFacts } from "@/thungatha-features/user-profile/server/c
 import { assessJobWithAi, understandJobWithAi } from "./job-ai-service";
 import { jobUnderstandingSchema } from "./job-ai-schemas";
 import {
-  JOB_AI_ASSESSMENT_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
+  JOB_AI_ASSESSMENT_VERSION, JOB_AI_UNDERSTANDING_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
 } from "./job-ai-queue-eligibility";
 
 export type QueueTask = {
@@ -42,8 +42,8 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   if (!facts || facts.profileVersion !== task.profile_version) { await completeTask(db, task.id); return "stale"; }
   console.info("[AI job matching] Task started", { taskId: task.id, jobId: task.job_id, title: job.title });
   const cached = await db.from("job_ai_understandings").select("understanding,provider,model")
-    .eq("job_id", task.job_id).eq("description_hash", task.job_description_hash)
-    .eq("analysis_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
+    .eq("description_hash", task.job_description_hash)
+    .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
   if (cached.error) throw cached.error;
   let understanding = cached.data?.understanding;
   if (!understanding) {
@@ -52,10 +52,10 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
     understanding = generated.analysis;
     console.info("[AI job matching] Job understanding completed", { jobId: task.job_id, provider: generated.provider, model: generated.model });
     const { error } = await db.from("job_ai_understandings").upsert({
-      job_id: task.job_id, description_hash: task.job_description_hash,
-      analysis_version: JOB_AI_ASSESSMENT_VERSION, understanding: generated.analysis,
+      description_hash: task.job_description_hash,
+      analysis_version: JOB_AI_UNDERSTANDING_VERSION, understanding: generated.analysis,
       provider: generated.provider, model: generated.model, updated_at: new Date().toISOString(),
-    }, { onConflict: "job_id" });
+    }, { onConflict: "description_hash,analysis_version" });
     if (error) throw error;
   } else {
     console.info("[AI job matching] Reusing cached job understanding", { jobId: task.job_id });
