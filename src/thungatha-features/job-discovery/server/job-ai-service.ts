@@ -31,7 +31,6 @@ const jobUnderstandingResponseSchema: Record<string, unknown> = {
           sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
         },
         required: ["id", "statement", "sourceEvidenceRefs"],
-        additionalProperties: false,
       },
     },
     capabilities: {
@@ -46,7 +45,6 @@ const jobUnderstandingResponseSchema: Record<string, unknown> = {
           sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
         },
         required: ["id", "name", "context", "sourceEvidenceRefs"],
-        additionalProperties: false,
       },
     },
     requirements: {
@@ -62,13 +60,11 @@ const jobUnderstandingResponseSchema: Record<string, unknown> = {
           sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
         },
         required: ["id", "statement", "category", "importance", "sourceEvidenceRefs"],
-        additionalProperties: false,
       },
     },
     coverage: { type: "STRING", enum: ["complete", "partial", "unavailable"] },
   },
   required: ["summary", "responsibilities", "capabilities", "requirements", "coverage"],
-  additionalProperties: false,
 };
 
 
