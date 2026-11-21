@@ -251,7 +251,6 @@ export async function assessJobWithAi(
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
-    responseSchema: matchAssessmentResponseSchema,
     temperature: 0.1,
     // A complete evidence-linked assessment can be substantially larger than
     // the extraction response. Keep enough headroom for all 24 requirements.
