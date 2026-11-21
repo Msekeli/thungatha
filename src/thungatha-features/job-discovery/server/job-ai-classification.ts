@@ -1,11 +1,27 @@
-import type { MatchAssessmentInput } from "./job-ai-schemas";
+import type { JobUnderstanding, MatchAssessmentInput } from "./job-ai-schemas";
 
 export type MatchClassification = "match" | "relevant" | "unclassified";
 export type MatchAssessment = MatchAssessmentInput & { classification: MatchClassification };
 
 export function validateAndClassifyAssessment(
-  assessment: MatchAssessmentInput, allowedJobRefs: Set<string>, allowedProfileRefs: Set<string>,
+  assessment: MatchAssessmentInput,
+  understanding: JobUnderstanding,
+  allowedJobRefs: Set<string>,
+  allowedProfileRefs: Set<string>,
 ): MatchAssessment {
+  const extracted = new Map(understanding.requirements.map((item) => [item.id, item]));
+  const assessedIds = new Set<string>();
+  for (const item of assessment.requirements) {
+    const source = extracted.get(item.id);
+    if (!source || assessedIds.has(item.id) || source.importance !== item.importance) {
+      throw new Error("AI assessment requirements do not match the extracted job requirements.");
+    }
+    assessedIds.add(item.id);
+  }
+  if (assessedIds.size !== extracted.size) {
+    throw new Error("AI assessment omitted one or more extracted job requirements.");
+  }
+
   const jobReferences = [
     ...assessment.semanticAlignment.jobEvidenceRefs,
     ...assessment.requirements.flatMap((item) => item.jobEvidenceRefs),
@@ -22,9 +38,12 @@ export function validateAndClassifyAssessment(
 
   const { level, materialGaps } = assessment.semanticAlignment;
   const hasContradiction = assessment.requirements.some((item) => item.assessment === "contradictory");
+  const hasUnmetMandatory = assessment.requirements.some(
+    (item) => item.importance === "mandatory" && item.assessment !== "supported",
+  );
   const classification: MatchClassification = level === "insufficient" || !assessment.semanticAlignment.profileEvidenceRefs.length
     ? "unclassified"
-    : level === "meaningful" || materialGaps || hasContradiction ? "relevant" : "match";
+    : level === "meaningful" || materialGaps || hasContradiction || hasUnmetMandatory ? "relevant" : "match";
 
   return { ...assessment, classification };
 }

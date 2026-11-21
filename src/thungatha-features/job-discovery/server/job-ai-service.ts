@@ -59,15 +59,17 @@ export async function assessJobWithAi(
       "Use only supplied jobEvidence and profileEvidence IDs. Cite exact IDs for every factual assessment. Never cite an ID you were not given.",
       "Missing Profile information means not demonstrated, not proof the candidate lacks the capability.",
       "Describe semanticAlignment as strong, meaningful, or insufficient, and state whether material gaps remain. Strong means strong evidence-based alignment with the central work; meaningful means supported but materially incomplete alignment; insufficient means evidence cannot support a reliable comparison.",
-      "Cite evidence for the overall alignment and every requirement/gap. Every requirement must cite job evidence. A supported requirement must cite confirmed Profile evidence. Do not produce scores, percentages, weights, or hiring predictions.",
-      `Return this exact JSON shape: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}. Do not return a classification; application code derives it.`,
+      "Assess every extracted requirement exactly once. Preserve its exact id and importance from jobUnderstanding; do not add, omit, duplicate, or reclassify requirements. Every requirement must cite job evidence. A supported requirement must cite confirmed Profile evidence. A mandatory requirement that is not supported prevents a Match classification. Do not produce scores, percentages, weights, or hiring predictions.",
+      `Return this exact JSON shape: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id:string,requirement:string,importance:"mandatory"|"preferred"|"uncertain",assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}],gaps:[{description:string,jobEvidenceRefs:string[],profileEvidenceRefs:string[]}]}. Do not return a classification; application code derives it.`,
       "Return only valid JSON.",
     ].join("\n"),
     userPrompt: json({ title, jobUnderstanding: understanding, jobEvidence, confirmedProfileEvidence: profileEvidence, candidateFacts: { knownEmploymentMonths: facts.knownEmploymentMonths, employmentEvidenceRefs: facts.employmentEvidenceRefs, unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs, targetRole: facts.targetRole } }),
   });
+  const parsedUnderstanding = jobUnderstandingSchema.parse(understanding);
   const assessmentInput = parse(response.content, matchAssessmentInputSchema);
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
+    parsedUnderstanding,
     new Set(jobEvidence.map((item) => item.id)),
     new Set(profileEvidence.map((item) => item.id)),
   );

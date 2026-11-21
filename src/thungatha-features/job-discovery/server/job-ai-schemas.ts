@@ -17,6 +17,7 @@ export const jobUnderstandingSchema = z.object({
 
 const requirementAssessment = z.object({
   id: z.string().min(1), requirement: z.string().min(1),
+  importance: z.enum(["mandatory", "preferred", "uncertain"]),
   assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
   explanation: z.string().min(1).max(1500),
   jobEvidenceRefs: requiredRefs, profileEvidenceRefs: refs,
