@@ -5,12 +5,16 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnchoredPopover } from "@/components/ui/anchored-popover";
 
+type EvidenceItem = { id: string; sourcePath: string; content: string };
+
 type RequirementAssessment = {
   requirement: string;
   assessment: "supported" | "not_demonstrated" | "contradictory" | "uncertain";
   explanation: string;
   jobEvidenceRefs: string[];
   profileEvidenceRefs: string[];
+  jobEvidence?: EvidenceItem[];
+  profileEvidence?: EvidenceItem[];
 };
 
 type MatchAssessment = {
@@ -18,7 +22,9 @@ type MatchAssessment = {
   summary: string;
   alignmentExplanation: string;
   requirements: RequirementAssessment[];
-  gaps: Array<{ description: string; jobEvidenceRefs: string[]; profileEvidenceRefs: string[] }>;
+  semanticAlignment?: { jobEvidence?: EvidenceItem[]; profileEvidence?: EvidenceItem[] };
+  understandingCoverage?: "complete" | "partial" | "unavailable";
+  gaps: Array<{ description: string; jobEvidenceRefs: string[]; profileEvidenceRefs: string[]; jobEvidence?: EvidenceItem[]; profileEvidence?: EvidenceItem[] }>;
 };
 
 type Props = {
@@ -163,6 +169,26 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
               <p className="mt-1 text-fg-muted">{assessment.summary}</p>
             </div>
             <p className="text-fg-muted">{assessment.alignmentExplanation}</p>
+            {assessment.understandingCoverage !== "complete" && (
+              <p className="rounded-md border border-line p-2 text-xs text-fg-muted">
+                {assessment.understandingCoverage === "partial"
+                  ? "The job advert could only be partially analysed. Some requirements may not be represented below."
+                  : "The job advert could not be fully analysed. Treat this assessment as incomplete."}
+              </p>
+            )}
+            {assessment.semanticAlignment && (
+              <section className="space-y-2">
+                <h4 className="font-semibold">Overall supporting evidence</h4>
+                {assessment.semanticAlignment.jobEvidence?.map((evidence) => (
+                  <p key={evidence.id} className="rounded-md bg-panel p-2 text-fg-muted">{evidence.content}</p>
+                ))}
+                {assessment.semanticAlignment.profileEvidence?.map((evidence) => (
+                  <p key={evidence.id} className="rounded-md bg-panel p-2 text-fg-muted">
+                    <span className="font-semibold">Your Profile · {evidence.sourcePath}: </span>{evidence.content}
+                  </p>
+                ))}
+              </section>
+            )}
             {assessment.requirements.length > 0 && (
               <section>
                 <h4 className="mb-2 font-semibold">Requirement evidence</h4>
@@ -172,10 +198,21 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
                       <p className="font-medium">{item.requirement}</p>
                       <p className="mt-1 text-fg-muted">{item.assessment.replaceAll("_", " ")}</p>
                       <p className="mt-1 text-fg-muted">{item.explanation}</p>
-                      {(item.jobEvidenceRefs.length > 0 || item.profileEvidenceRefs.length > 0) && (
-                        <p className="mt-1 text-xs text-fg-muted">
-                          Evidence: {[...item.jobEvidenceRefs, ...item.profileEvidenceRefs].join(", ")}
-                        </p>
+                      {((item.jobEvidence?.length ?? 0) > 0 || (item.profileEvidence?.length ?? 0) > 0) && (
+                        <div className="mt-2 space-y-2">
+                          {item.jobEvidence?.map((evidence) => (
+                            <div key={evidence.id} className="rounded-md bg-panel p-2">
+                              <span className="text-xs font-semibold text-fg-muted">Job description</span>
+                              <p className="mt-1 text-fg-muted">{evidence.content}</p>
+                            </div>
+                          ))}
+                          {item.profileEvidence?.map((evidence) => (
+                            <div key={evidence.id} className="rounded-md bg-panel p-2">
+                              <span className="text-xs font-semibold text-fg-muted">Your Profile · {evidence.sourcePath}</span>
+                              <p className="mt-1 text-fg-muted">{evidence.content}</p>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </li>
                   ))}
@@ -186,7 +223,11 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
               <section>
                 <h4 className="mb-2 font-semibold">Gaps and unknowns</h4>
                 <ul className="list-disc space-y-1 pl-5 text-fg-muted">
-                  {assessment.gaps.map((gap, index) => <li key={gap.description + index}>{gap.description}</li>)}
+                  {assessment.gaps.map((gap, index) => <li key={gap.description + index} className="space-y-1">
+                    <p>{gap.description}</p>
+                    {gap.jobEvidence?.map((evidence) => <p key={evidence.id} className="text-xs">Job: {evidence.content}</p>)}
+                    {gap.profileEvidence?.map((evidence) => <p key={evidence.id} className="text-xs">Profile: {evidence.content}</p>)}
+                  </li>)}
                 </ul>
               </section>
             )}
