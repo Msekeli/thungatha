@@ -27,13 +27,14 @@ describe("ProfileForm error recovery", () => {
   });
 
   it("shows error alert when save fails due to network error", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ profile: null }),
-      } as Response)
-      .mockRejectedValueOnce(new TypeError("Failed to fetch"));
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          throw new TypeError("Failed to fetch");
+        }
+        return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      },
+    );
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
@@ -43,19 +44,20 @@ describe("ProfileForm error recovery", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
   });
 
   it("shows API error message when rejected by server", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ profile: null }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: "Invalid profile" }),
-      } as Response);
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          return new Response(JSON.stringify({ error: "Invalid profile" }), {
+            status: 400,
+          });
+        }
+        return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      },
+    );
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
@@ -65,5 +67,6 @@ describe("ProfileForm error recovery", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
   });
 });
