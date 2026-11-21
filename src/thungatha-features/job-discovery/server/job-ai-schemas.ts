@@ -28,6 +28,7 @@ const requirementAssessment = z.object({
 });
 
 export const matchAssessmentInputSchema = z.object({
+  overallFit: z.enum(["match", "relevant", "unclassified"]).optional(),
   semanticAlignment: z.object({
     level: z.enum(["strong", "meaningful", "insufficient"]),
     materialGaps: z.boolean(),
@@ -44,6 +45,12 @@ export const matchAssessmentInputSchema = z.object({
 }).superRefine((assessment, context) => {
   if (assessment.semanticAlignment.level !== "insufficient" && assessment.semanticAlignment.profileEvidenceRefs.length === 0) {
     context.addIssue({ code: "custom", message: "Meaningful alignment needs confirmed Profile evidence." });
+  }
+  if (assessment.overallFit === "match" && assessment.semanticAlignment.materialGaps) {
+    context.addIssue({ code: "custom", message: "Match classification cannot have material gaps." });
+  }
+  if (assessment.overallFit === "match" && assessment.semanticAlignment.level !== "strong") {
+    context.addIssue({ code: "custom", message: "Match classification requires strong semantic alignment." });
   }
 });
 

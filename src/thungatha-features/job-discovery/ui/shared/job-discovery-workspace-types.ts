@@ -36,5 +36,6 @@ export type JobDiscoveryWorkspaceProps = {
   sortOrder: string;
   onSortOrderChange: (value: string) => void;
   onCategoryChange: (key: string, label: string) => void;
+  onPageChange: (page: number) => void;
   leadingColumn?: ReactNode;
 };

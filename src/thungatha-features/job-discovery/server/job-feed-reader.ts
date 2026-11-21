@@ -1,264 +1,80 @@
 import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
-import { sanitizeJobSearchTerm } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
-import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue";
+import { buildFeedJobQuery } from "./job-feed-query-builder";
+import { relevanceOrder, type FeedJob } from "./job-feed-sorting";
+import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
+import { resolveJobMatchStatus } from "./job-feed-status";
+import { readEmployerDismissals } from "./job-feed-dismissals";
 
+const RELEVANCE_LIMIT = 5000;
+const BATCH_SIZE = 500;
 
-type FeedJob = {
-  id: string;
-  published_at?: string | null;
-  updated_at?: string | null;
-  description?: string | null;
-  matchClassification?: "match" | "relevant" | "unclassified";
-  [key: string]: unknown;
-};
-
-const RELEVANCE_CATALOGUE_LIMIT = 5000;
-const RELEVANCE_FETCH_BATCH_SIZE = 500;
-
-function newestFirst(a: FeedJob, b: FeedJob) {
-  const aPublished = a.published_at ? Date.parse(a.published_at) : NaN;
-  const bPublished = b.published_at ? Date.parse(b.published_at) : NaN;
-  if (Number.isFinite(aPublished) && Number.isFinite(bPublished) && aPublished !== bPublished) return bPublished - aPublished;
-  if (Number.isFinite(aPublished) !== Number.isFinite(bPublished)) return Number.isFinite(aPublished) ? -1 : 1;
-  const aUpdated = a.updated_at ? Date.parse(a.updated_at) : NaN;
-  const bUpdated = b.updated_at ? Date.parse(b.updated_at) : NaN;
-  if (Number.isFinite(aUpdated) && Number.isFinite(bUpdated) && aUpdated !== bUpdated) return bUpdated - aUpdated;
-  return a.id.localeCompare(b.id);
-}
-
-function relevanceOrder(a: FeedJob, b: FeedJob) {
-  const rank = (value: FeedJob["matchClassification"]) =>
-    value === "match" ? 0 : value === "relevant" ? 1 : 2;
-  return rank(a.matchClassification) - rank(b.matchClassification) || newestFirst(a, b);
-}
-
-function emptyFeed(page: number, pageSize: number) {
-  return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
-}
-
-function isMissingEmployerDismissalsSchema(error: {
-  code?: string;
-  message?: string;
-}) {
-  return (
-    error.code === "42P01" ||
-    error.code === "42703" ||
-    error.code === "PGRST204" ||
-    error.code === "PGRST205"
-  );
-}
-
-export async function readJobFeed(
-  db: SupabaseClient,
-  userId: string | null,
-  input: JobFeedQuery,
-  statesOnly: boolean,
-) {
+export async function readJobFeed(db: SupabaseClient, userId: string | null, input: JobFeedQuery, statesOnly: boolean) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
-
-  let employerDismissals: { employer_key: string; employer_name: string }[] =
-    [];
-  let employerDismissalsAvailable = false;
-
-  if (userId) {
-    const result = await db
-      .from("user_employer_dismissals")
-      .select("employer_key,employer_name")
-      .eq("user_id", userId);
-
-    if (result.error) {
-      if (!isMissingEmployerDismissalsSchema(result.error)) throw result.error;
-    } else {
-      employerDismissals = result.data ?? [];
-      employerDismissalsAvailable = true;
-    }
+  const { dismissals, dismissalsAvailable } = await readEmployerDismissals(db, userId);
+  if (statesOnly) return { states, employerDismissals: dismissals };
+  if ((!userId || !states.length) && input.state !== "all") {
+    return { jobs: [], page: input.page, pageSize: input.pageSize, total: 0, totalPages: 0 };
   }
 
-  if (statesOnly) return { states, employerDismissals };
-  if (!userId && input.state !== "all")
-    return emptyFeed(input.page, input.pageSize);
-  if (userId && input.state !== "all" && !states.length)
-    return emptyFeed(input.page, input.pageSize);
-
-  const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
-  const dismissedEmployerKeys = employerDismissals.map(
-    (item) => item.employer_key,
-  );
-  const dismissedJobIds = states
-    .filter((item) => item.state === "dismissed")
-    .map((item) => item.job_id);
-
-  const buildQuery = () => {
-    let query = db.from("job_discovery_feed").select("*", { count: "exact" });
-
-    if (input.query) {
-      const term = sanitizeJobSearchTerm(input.query);
-      if (term) {
-        query = query.or(
-          `title.ilike.%${term}%,employer_name.ilike.%${term}%,description.ilike.%${term}%`,
-        );
-      }
-    }
-
-    if (input.location) {
-      const location = sanitizeJobSearchTerm(input.location);
-      if (location) query = query.ilike("location_text", `%${location}%`);
-    }
-
-    if (input.publishedWithin !== "any") {
-      const ageInHours = {
-        "24h": 24,
-        "7d": 168,
-        "14d": 336,
-        "30d": 720,
-      }[input.publishedWithin];
-      query = query.gte(
-        "published_at",
-        new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
-      );
-    }
-
-    if (
-      employerDismissalsAvailable &&
-      userId &&
-      input.state !== "dismissed" &&
-      dismissedEmployerKeys.length
-    ) {
-      query = query.not(
-        "employer_key",
-        "in",
-        `(${dismissedEmployerKeys.join(",")})`,
-      );
-    }
-
-    if (userId && input.state !== "all") {
-      query = query.in("id", states.map((item) => item.job_id));
-    } else if (userId && dismissedJobIds.length) {
-      query = query.not("id", "in", `(${dismissedJobIds.join(",")})`);
-    }
-
-    return query;
-  };
-
-  const from = (input.page - 1) * input.pageSize;
-  let profileVersion: number | null = null;
+  const queryOpts = { userId, states, dismissedEmployerKeys: dismissals.map((d) => d.employer_key), employerDismissalsAvailable: dismissalsAvailable };
+  let profileVersion: number | null = null; let hasProfileError = false;
   if (userId) {
-    try {
-      const profileResult = await db.from("profiles")
-        .select("profile_version,confirmed_at")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (profileResult.error) throw profileResult.error;
-      if (profileResult.data?.confirmed_at) profileVersion = profileResult.data.profile_version ?? 1;
-    } catch {
-      profileVersion = null;
-    }
+    const pRes = await db.from("profiles").select("profile_version,confirmed_at").eq("user_id", userId).maybeSingle();
+    if (pRes.error) { console.error("[job-feed-reader] Failed to read profile:", pRes.error); hasProfileError = true; }
+    else if (pRes.data?.confirmed_at) profileVersion = pRes.data.profile_version ?? 1;
   }
 
   let data: FeedJob[] = [];
   let count = 0;
-  let rankWholeCatalogue = false;
+  let rankWhole = false;
+  const from = (input.page - 1) * input.pageSize;
 
   if (input.sortOrder === "relevance" && profileVersion !== null) {
-    let exactCount: number | null = null;
-    let reachedEnd = false;
-    for (let offset = 0; offset < RELEVANCE_CATALOGUE_LIMIT; offset += RELEVANCE_FETCH_BATCH_SIZE) {
-      const batchResult = await buildQuery()
-        .order("published_at", { ascending: false, nullsFirst: false })
-        .order("updated_at", { ascending: false })
-        .order("id", { ascending: true })
-        .range(offset, offset + RELEVANCE_FETCH_BATCH_SIZE - 1);
-      if (batchResult.error) throw batchResult.error;
-      const batch = (batchResult.data ?? []) as FeedJob[];
+    for (let offset = 0; offset < RELEVANCE_LIMIT; offset += BATCH_SIZE) {
+      const bRes = await buildFeedJobQuery(db, input, queryOpts)
+        .order("published_at", { ascending: false, nullsFirst: false }).order("updated_at", { ascending: false })
+        .order("id", { ascending: true }).range(offset, offset + BATCH_SIZE - 1);
+      if (bRes.error) throw bRes.error;
+      const batch = (bRes.data ?? []) as FeedJob[];
       data.push(...batch);
-      if (batchResult.count !== null) exactCount = batchResult.count;
-      if (exactCount !== null && data.length >= exactCount) {
-        reachedEnd = true;
-        break;
-      }
-      if (batch.length < RELEVANCE_FETCH_BATCH_SIZE) {
-        exactCount ??= data.length;
-        reachedEnd = true;
-        break;
-      }
-    }
-    count = exactCount ?? data.length;
-    rankWholeCatalogue = reachedEnd && count <= RELEVANCE_CATALOGUE_LIMIT && data.length >= count;
-  }
-
-  if (!rankWholeCatalogue) {
-    const pageResult = await buildQuery()
-      .order("published_at", {
-        ascending: input.sortOrder === "oldest",
-        nullsFirst: false,
-      })
-      .order("updated_at", { ascending: false })
-      .order("id", { ascending: true })
-      .range(from, from + input.pageSize - 1);
-    if (pageResult.error) throw pageResult.error;
-    data = (pageResult.data ?? []) as FeedJob[];
-    count = pageResult.count ?? count;
-  }
-
-  const assessmentsByJob = new Map<string, { hash: string; classification: "match" | "relevant" | "unclassified" }>();
-  if (userId && profileVersion !== null && data.length) {
-    try {
-      for (let offset = 0; offset < data.length; offset += RELEVANCE_FETCH_BATCH_SIZE) {
-        const batch = data.slice(offset, offset + RELEVANCE_FETCH_BATCH_SIZE);
-        const assessmentResult = await db.from("job_match_assessments")
-          .select("job_id,job_description_hash,classification")
-          .eq("user_id", userId)
-          .eq("profile_version", profileVersion)
-          .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
-          .in("job_id", batch.map((job) => job.id));
-        if (assessmentResult.error) throw assessmentResult.error;
-        for (const item of assessmentResult.data ?? []) {
-          assessmentsByJob.set(item.job_id, {
-            hash: item.job_description_hash,
-            classification: item.classification,
-          });
-        }
-      }
-    } catch {
-      assessmentsByJob.clear();
+      count = bRes.count ?? data.length;
+      if ((bRes.count !== null && data.length >= bRes.count) || batch.length < BATCH_SIZE) { rankWhole = true; break; }
     }
   }
+
+  if (!rankWhole) {
+    const pRes = await buildFeedJobQuery(db, input, queryOpts)
+      .order("published_at", { ascending: input.sortOrder === "oldest", nullsFirst: false })
+      .order("updated_at", { ascending: false }).order("id", { ascending: true }).range(from, from + input.pageSize - 1);
+    if (pRes.error) throw pRes.error;
+    data = (pRes.data ?? []) as FeedJob[];
+    count = pRes.count ?? count;
+  }
+
+  const stateByJob = new Map(states.map((s) => [s.job_id, s.state]));
+  const { assessmentsByJob, queueStatusByJob, hasError: hasAssessmentError } = userId && profileVersion !== null && data.length
+    ? await fetchFeedAssessmentsAndQueue(db, userId, profileVersion, data.map((j) => j.id))
+    : { assessmentsByJob: new Map(), queueStatusByJob: new Map(), hasError: false };
 
   let jobs: FeedJob[] = data.map((job) => {
-    const savedAssessment = assessmentsByJob.get(job.id);
     const currentHash = createHash("sha256").update(job.description ?? "").digest("hex");
-    return {
-      ...job,
-      state: stateByJob.get(job.id) ?? null,
-      ...(savedAssessment?.hash === currentHash
-        ? { matchClassification: savedAssessment.classification }
-        : {}),
-    };
+    const statusResult = resolveJobMatchStatus({
+      hasError: hasProfileError || hasAssessmentError, profileConfirmed: profileVersion !== null,
+      currentHash, assessment: assessmentsByJob.get(job.id), queueStatus: queueStatusByJob.get(job.id),
+    });
+    return { ...job, state: stateByJob.get(job.id) ?? null, matchStatus: statusResult.matchStatus, ...(statusResult.matchClassification ? { matchClassification: statusResult.matchClassification } : {}) };
   });
 
-  if (rankWholeCatalogue) {
-    jobs.sort(relevanceOrder);
-    jobs = jobs.slice(from, from + input.pageSize);
-  }
+  if (rankWhole) { jobs.sort(relevanceOrder); jobs = jobs.slice(from, from + input.pageSize); }
 
   const safeJobs = jobs.map((job) => {
-    const safeJob = { ...job };
-    delete safeJob.extracted_requirements;
-    delete safeJob.requirements_description_hash;
-    delete safeJob.requirements_extraction_version;
-    delete safeJob.requirements_extraction_status;
-    return safeJob;
+    const safe = { ...job };
+    delete safe.extracted_requirements; delete safe.requirements_description_hash;
+    delete safe.requirements_extraction_version; delete safe.requirements_extraction_status;
+    return safe;
   });
-
-  const total = count;
-  return {
-    jobs: safeJobs,
-    page: input.page,
-    pageSize: input.pageSize,
-    total,
-    totalPages: Math.ceil(total / input.pageSize),
-  };
+  return { jobs: safeJobs, page: input.page, pageSize: input.pageSize, total: count, totalPages: Math.ceil(count / input.pageSize) };
 }

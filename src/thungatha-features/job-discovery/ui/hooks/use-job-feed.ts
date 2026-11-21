@@ -61,21 +61,11 @@ export function useJobFeed(
         }
         const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
-        setFeed((current) => {
-          if (page <= 1 || !current) return data;
-          const knownIds = new Set(current.jobs.map((job) => job.id));
-          return {
-            ...data,
-            jobs: [
-              ...current.jobs,
-              ...data.jobs.filter((job) => !knownIds.has(job.id)),
-            ],
-          };
-        });
+        setFeed(data);
         setSelectedId((current) =>
-          current && (page > 1 || data.jobs.some((job) => job.id === current))
+          current && data.jobs.some((job) => job.id === current)
             ? current
-            : null,
+            : (data.jobs[0]?.id ?? null),
         );
         if (category === "dismissed") {
           setDismissedCount(data.total);

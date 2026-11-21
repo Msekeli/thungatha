@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useJobActivitySync } from "./use-job-activity-sync";
-import { useInfiniteJobPagination } from "./use-infinite-job-pagination";
 import { useUpdateJobState } from "./use-update-job-state";
 import { useSelectedJobDetail } from "./use-selected-job-detail";
 import { useUndoJobState } from "./use-undo-job-state";
@@ -25,7 +24,6 @@ export function useJobDiscoveryData(state: DiscoveryState) {
     s.setIsAuthenticated,
     s.setSelectedId,
   );
-  useInfiniteJobPagination(s.loadMoreRef, s.loading, s.feed, s.page, s.setPage);
   useSelectedJobDetail(
     s.selectedId,
     s.retryDetail,

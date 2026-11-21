@@ -7,14 +7,14 @@ const MONTHS = new Map([
 export function parseEmploymentMonth(value: string | null | undefined): number | null {
   if (!value) return null;
   let year = 0; let month = -1;
-  const iso = /^(\\d{4})-(\\d{2})(?:-(\\d{2}))?$/.exec(value.trim());
+  const iso = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(value.trim());
   if (iso) {
     year = Number(iso[1]); month = Number(iso[2]) - 1;
     const day = iso[3] ? Number(iso[3]) : 1;
     const date = new Date(Date.UTC(year, month, day));
     if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month || date.getUTCDate() !== day) return null;
   } else {
-    const named = /^([A-Za-z]+)\\s+(\\d{4})$/.exec(value.trim());
+    const named = /^([A-Za-z]+)\s+(\d{4})$/.exec(value.trim());
     if (!named || !MONTHS.has(named[1].toLowerCase())) return null;
     year = Number(named[2]); month = MONTHS.get(named[1].toLowerCase())!;
   }

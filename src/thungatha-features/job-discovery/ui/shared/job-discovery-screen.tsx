@@ -79,6 +79,7 @@ export function JobDiscoveryScreen({
             s.setMobileDetail(false);
           }}
           onCategoryChange={c.changeCategory}
+          onPageChange={s.setPage}
         />
       </div>
       <JobDiscoveryDialogs

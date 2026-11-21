@@ -2,6 +2,7 @@
 
 import { JobResultsState } from "../authenticated/job-results-state";
 import { JobList } from "../shared/job-list";
+import { JobFeedPagination } from "../shared/job-feed-pagination";
 import type { RefObject } from "react";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
@@ -72,16 +73,13 @@ export function PublicJobResultsPanel({
             )}
           />
         )}
-        {data.feed && data.feed.page < data.feed.totalPages && (
-          <div
-            ref={loadMoreRef}
-            aria-live="polite"
-            className="py-4 text-center text-detail text-fg-muted"
-          >
-            {data.loading
-              ? "Loading more opportunities…"
-              : "Scroll to load more opportunities"}
-          </div>
+        {data.feed && (
+          <JobFeedPagination
+            page={data.feed.page}
+            totalPages={data.feed.totalPages}
+            loading={data.loading}
+            onPageChange={data.onPageChange}
+          />
         )}
       </div>
     </section>

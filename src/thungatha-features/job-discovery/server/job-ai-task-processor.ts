@@ -1,32 +1,29 @@
 import "server-only";
-import { createClient } from "@supabase/supabase-js";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
 import type { ProfileDatabaseRow } from "@/thungatha-features/user-profile/server/profile-database-row";
 import { PROFILE_SELECT_COLUMNS } from "@/thungatha-features/user-profile/server/repository";
 import { deriveCandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import { assessJobWithAi, understandJobWithAi } from "./job-ai-service";
 import { jobUnderstandingSchema } from "./job-ai-schemas";
-import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue";
-import { createHash } from "node:crypto";
+import {
+  JOB_AI_ASSESSMENT_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
+} from "./job-ai-queue-eligibility";
 
 export type QueueTask = {
   id: string; user_id: string; job_id: string; profile_version: number;
   job_description_hash: string; assessment_version: string; attempts: number;
 };
-function hashDescription(description: string) { return createHash("sha256").update(description).digest("hex"); }
-async function completeTask(db: ReturnType<typeof createJobAiClient>, id: string) {
+
+export const createJobAiClient = createServiceClient;
+
+async function completeTask(db: ReturnType<typeof createServiceClient>, id: string) {
   const { error } = await db.from("ai_task_queue").update({
     status: "completed", locked_at: null, last_error: null, updated_at: new Date().toISOString(),
   }).eq("id", id);
   if (error) throw error;
 }
-export function createJobAiClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Supabase server-side secret configuration is missing.");
-  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false } });
-}
-export async function processJobAiTask(db: ReturnType<typeof createJobAiClient>, task: QueueTask) {
+
+export async function processJobAiTask(db: ReturnType<typeof createServiceClient>, task: QueueTask) {
   if (task.assessment_version !== JOB_AI_ASSESSMENT_VERSION) { await completeTask(db, task.id); return "stale"; }
   const [jobResult, profileResult] = await Promise.all([
     db.from("jobs").select("id,title,description").eq("id", task.job_id).maybeSingle(),
@@ -38,7 +35,9 @@ export async function processJobAiTask(db: ReturnType<typeof createJobAiClient>,
   const row = profileResult.data as ProfileDatabaseRow | null;
   if (!job || !row) { await completeTask(db, task.id); return "stale"; }
   const description = job.description ?? "";
-  if (hashDescription(description) !== task.job_description_hash) { await completeTask(db, task.id); return "stale"; }
+  if (!isUsableJobDescription(description) || hashDescription(description) !== task.job_description_hash) {
+    await completeTask(db, task.id); return "stale";
+  }
   const facts = deriveCandidateFacts(mapRowToProfileDto(row));
   if (!facts || facts.profileVersion !== task.profile_version) { await completeTask(db, task.id); return "stale"; }
   const cached = await db.from("job_ai_understandings").select("understanding,provider,model")

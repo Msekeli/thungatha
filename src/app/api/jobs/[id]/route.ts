@@ -45,11 +45,13 @@ export async function GET(
     let state: "saved" | "dismissed" | null = null;
     let matchClassification: "match" | "relevant" | "unclassified" | undefined;
     if (identity) {
+      const stateQuery = db.from("user_job_states")?.select("state")
+        ?.eq("user_id", identity.userId).eq("job_id", id).maybeSingle();
+      const profileQuery = db.from("profiles")?.select("profile_version,confirmed_at")
+        ?.eq("user_id", identity.userId).maybeSingle();
       const [stateResult, profileResult] = await Promise.all([
-        db.from("user_job_states").select("state")
-          .eq("user_id", identity.userId).eq("job_id", id).maybeSingle(),
-        db.from("profiles").select("profile_version,confirmed_at")
-          .eq("user_id", identity.userId).maybeSingle(),
+        stateQuery ?? Promise.resolve({ data: null, error: null }),
+        profileQuery ?? Promise.resolve({ data: null, error: null }),
       ]);
       if (stateResult.error) throw stateResult.error;
       if (profileResult.error) throw profileResult.error;
@@ -57,13 +59,13 @@ export async function GET(
       if (profileResult.data?.confirmed_at) {
         const descriptionHash = createHash("sha256").update(data.description ?? "").digest("hex");
         const assessmentResult = await db.from("job_match_assessments")
-          .select("classification")
-          .eq("user_id", identity.userId).eq("job_id", id)
-          .eq("profile_version", profileResult.data.profile_version ?? 1)
-          .eq("job_description_hash", descriptionHash)
-          .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
-        if (assessmentResult.error) throw assessmentResult.error;
-        matchClassification = assessmentResult.data?.classification as typeof matchClassification;
+          ?.select("classification")
+          ?.eq("user_id", identity.userId).eq("job_id", id)
+          ?.eq("profile_version", profileResult.data.profile_version ?? 1)
+          ?.eq("job_description_hash", descriptionHash)
+          ?.eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
+        if (assessmentResult?.error) throw assessmentResult.error;
+        matchClassification = assessmentResult?.data?.classification as typeof matchClassification;
       }
     }
     return NextResponse.json({ job: { ...data, state, ...(matchClassification ? { matchClassification } : {}) } });

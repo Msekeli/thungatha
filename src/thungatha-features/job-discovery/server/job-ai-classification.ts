@@ -41,12 +41,23 @@ export function validateAndClassifyAssessment(
 
   const { level, materialGaps } = assessment.semanticAlignment;
   const hasContradiction = assessment.requirements.some((item) => item.assessment === "contradictory");
-  const hasUnmetMandatory = assessment.requirements.some(
-    (item) => item.importance === "mandatory" && item.assessment !== "supported",
-  );
-  const classification: MatchClassification = level === "insufficient" || !assessment.semanticAlignment.profileEvidenceRefs.length
-    ? "unclassified"
-    : level === "meaningful" || materialGaps || hasContradiction || hasUnmetMandatory ? "relevant" : "match";
+  let classification: MatchClassification;
+  if (level === "insufficient" || !assessment.semanticAlignment.profileEvidenceRefs.length) {
+    classification = "unclassified";
+  } else if (assessment.overallFit) {
+    if (assessment.overallFit === "match") {
+      classification = (level === "strong" && !materialGaps && !hasContradiction) ? "match" : "relevant";
+    } else if (assessment.overallFit === "relevant") {
+      classification = "relevant";
+    } else {
+      classification = "unclassified";
+    }
+  } else {
+    const hasUnmetMandatory = assessment.requirements.some(
+      (item) => item.importance === "mandatory" && item.assessment !== "supported",
+    );
+    classification = level === "meaningful" || materialGaps || hasContradiction || hasUnmetMandatory ? "relevant" : "match";
+  }
 
   return { ...assessment, classification };
 }

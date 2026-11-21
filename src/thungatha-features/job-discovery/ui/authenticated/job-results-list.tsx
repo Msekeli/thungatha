@@ -2,29 +2,31 @@ import type { RefObject } from "react";
 import { JobList } from "../shared/job-list";
 import type { Job } from "./job-results-types";
 import { JobCardActions } from "../shared/job-card-actions";
+import { JobFeedPagination } from "../shared/job-feed-pagination";
 
 export function JobResultsList({
   jobs,
   selectedId,
   loading,
   feed,
-  loadMoreRef,
   formatDate,
   onSelect,
   onSave,
   onDismiss,
   configured,
+  onPageChange,
 }: {
   jobs: Job[];
   selectedId: string | null;
   loading: boolean;
   feed: { page: number; totalPages: number } | null;
-  loadMoreRef: RefObject<HTMLDivElement | null>;
+  loadMoreRef?: RefObject<HTMLDivElement | null>;
   formatDate: (value: string | null | undefined) => string | null;
   onSelect: (job: Job) => void;
   onSave: (job: Job) => void;
   onDismiss: (job: Job) => void;
   configured: boolean;
+  onPageChange?: (page: number) => void;
 }) {
   return (
     <>
@@ -32,9 +34,7 @@ export function JobResultsList({
         jobs={jobs}
         variant="authenticated"
         selectedId={selectedId}
-        postedLabel={(job) =>
-          formatDate((job as Job).published_at) ?? undefined
-        }
+        postedLabel={(job) => formatDate((job as Job).published_at) ?? undefined}
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;
@@ -48,16 +48,13 @@ export function JobResultsList({
           );
         }}
       />
-      {feed && feed.page < feed.totalPages && (
-        <div
-          ref={loadMoreRef}
-          aria-live="polite"
-          className="px-2 py-4 text-center text-xs text-fg-muted"
-        >
-          {loading
-            ? "Loading more opportunities…"
-            : "Scroll to load more opportunities"}
-        </div>
+      {feed && onPageChange && (
+        <JobFeedPagination
+          page={feed.page}
+          totalPages={feed.totalPages}
+          loading={loading}
+          onPageChange={onPageChange}
+        />
       )}
     </>
   );

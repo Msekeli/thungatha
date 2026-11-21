@@ -30,6 +30,7 @@ export function AuthenticatedJobResultsPanel({
   resultCount,
   sortOrder,
   onSortOrderChange,
+  onPageChange,
 }: JobResultsPanelProps) {
   const selectedSortLabel =
     sortOptions.find((option) => option.value === sortOrder)?.label ??
