@@ -1,6 +1,6 @@
 import "server-only";
 import type { AiCompletionRequest, AiCompletionResult, AiProviderAdapter } from "../contracts";
-import { AiProviderError } from "../errors";
+import { AiProviderError, createProviderHttpError } from "../errors";
 
 const ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
@@ -35,10 +35,10 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
           code: timeout ? "timeout" : "unavailable", provider: "groq", retryable: true, cause,
         });
       }
-      if (!response.ok) throw new AiProviderError(`Groq returned HTTP ${response.status}.`, {
-        code: response.status === 429 ? "rate-limited" : response.status === 401 || response.status === 403 ? "authentication" : response.status >= 500 ? "unavailable" : "unknown",
-        provider: "groq", retryable: response.status === 429 || response.status >= 500,
-      });
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw createProviderHttpError("groq", response.status, response.headers.get("retry-after"), errorPayload);
+      }
       const payload = await response.json().catch(() => null) as {
         model?: string; choices?: { message?: { content?: unknown }; finish_reason?: string }[];
         usage?: { prompt_tokens?: number; completion_tokens?: number };
