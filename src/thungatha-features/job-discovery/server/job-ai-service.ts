@@ -16,6 +16,62 @@ import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 
+const jobUnderstandingResponseSchema: Record<string, unknown> = {
+  type: "OBJECT",
+  properties: {
+    summary: { type: "STRING" },
+    responsibilities: {
+      type: "ARRAY",
+      maxItems: 12,
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          statement: { type: "STRING" },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+        },
+        required: ["id", "statement", "sourceEvidenceRefs"],
+        additionalProperties: false,
+      },
+    },
+    capabilities: {
+      type: "ARRAY",
+      maxItems: 16,
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          name: { type: "STRING" },
+          context: { type: "STRING" },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+        },
+        required: ["id", "name", "context", "sourceEvidenceRefs"],
+        additionalProperties: false,
+      },
+    },
+    requirements: {
+      type: "ARRAY",
+      maxItems: 24,
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          statement: { type: "STRING" },
+          category: { type: "STRING", enum: ["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"] },
+          importance: { type: "STRING", enum: ["mandatory", "preferred", "uncertain"] },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+        },
+        required: ["id", "statement", "category", "importance", "sourceEvidenceRefs"],
+        additionalProperties: false,
+      },
+    },
+    coverage: { type: "STRING", enum: ["complete", "partial", "unavailable"] },
+  },
+  required: ["summary", "responsibilities", "capabilities", "requirements", "coverage"],
+  additionalProperties: false,
+};
+
+
 function parse<T>(
   stage: string,
   content: string,
@@ -107,8 +163,9 @@ export async function understandJobWithAi(description: string) {
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
+    responseSchema: jobUnderstandingResponseSchema,
     temperature: 0.1,
-    maxOutputTokens: 2800,
+    maxOutputTokens: 3600,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
@@ -120,7 +177,7 @@ export async function understandJobWithAi(description: string) {
       "Every item must cite between one and four exact supplied job evidence IDs. Use only the smallest set of IDs that directly supports the item; never list every related fragment and never invent an ID.",
       "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
       "Keep each statement concise. Return a short role-purpose summary.",
-      'Return JSON: {summary:string,responsibilities:[{id,statement,sourceEvidenceRefs}],capabilities:[{id,name,context,sourceEvidenceRefs}],requirements:[{id,statement,category,importance,sourceEvidenceRefs}],coverage:"complete"|"partial"|"unavailable"}.',
+      "Return JSON conforming exactly to the supplied response schema.",
       "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
       "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
     ].join("\n"),
@@ -193,7 +250,7 @@ export async function assessJobWithAi(
       "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
       "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
       "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match, Relevant, or Unclassified.",
-      'Return JSON matching the supplied response schema: {semanticAlignment:{level:"strong"|"meaningful"|"insufficient",materialGaps:boolean,jobEvidenceRefs:string[],profileEvidenceRefs:string[]},summary:string,alignmentExplanation:string,requirements:[{id,requirement,importance,assessment:"supported"|"not_demonstrated"|"contradictory"|"uncertain",explanation,jobEvidenceRefs,profileEvidenceRefs}],gaps:[{description,jobEvidenceRefs,profileEvidenceRefs}]}.',
+      "Return JSON conforming exactly to the supplied response schema.",
       "Keep all text concise and evidence-specific. Return only the required JSON object with no markdown.",
     ].join("\n"),
     userPrompt: json({
