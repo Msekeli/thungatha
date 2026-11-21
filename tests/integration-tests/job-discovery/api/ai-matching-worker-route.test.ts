@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/internal/ai-matching/worker/route";
 import { processJobAiQueue } from "@/thungatha-features/job-discovery/server/job-ai-worker";
 
@@ -6,6 +6,7 @@ vi.mock("@/thungatha-features/job-discovery/server/job-ai-worker", () => ({
   processJobAiQueue: vi.fn(),
 }));
 
+beforeEach(() => vi.clearAllMocks());
 afterEach(() => vi.unstubAllEnvs());
 
 describe("AI matching worker route", () => {
