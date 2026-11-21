@@ -154,6 +154,35 @@ const matchAssessmentResponseSchema: Record<string, unknown> = {
   required: ["semanticAlignment", "summary", "alignmentExplanation", "requirements", "gaps"],
 };
 
+export function parseJobUnderstanding(description: string, value: unknown): JobUnderstanding {
+  const result = typeof value === "string"
+    ? parse("Job understanding", value, jobUnderstandingSchema)
+    : (() => {
+        try {
+          return jobUnderstandingSchema.parse(value);
+        } catch (cause) {
+          if (cause instanceof ZodError) {
+            const issues = cause.issues.slice(0, 12).map((issue) => {
+              const path = issue.path.length ? issue.path.join(".") : "(root)";
+              return `${path}: ${issue.message}`;
+            });
+            throw new Error(`Cached job understanding failed schema validation: ${issues.join("; ")}`);
+          }
+          throw new Error("Cached job understanding could not be validated.");
+        }
+      })();
+  const allowed = new Set(buildJobEvidence(description).map((item) => item.id));
+  const refs = [
+    ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...result.requirements.flatMap((item) => item.sourceEvidenceRefs),
+  ];
+  if (!assertEvidenceReferences(refs, allowed)) {
+    throw new Error("Job understanding referenced evidence outside the current job description.");
+  }
+  return result;
+}
+
 export async function understandJobWithAi(description: string) {
   const evidence = buildJobEvidence(description);
   if (evidence.length === 0) {
@@ -185,17 +214,7 @@ export async function understandJobWithAi(description: string) {
   });
 
   assertCompleteResponse("Job understanding", response);
-  const result = parse("Job understanding", response.content, jobUnderstandingSchema);
-  const allowed = new Set(evidence.map((item) => item.id));
-  const refs = [
-    ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...result.requirements.flatMap((item) => item.sourceEvidenceRefs),
-  ];
-  if (!assertEvidenceReferences(refs, allowed)) {
-    throw new Error("AI job understanding referenced text that is not in the supplied job description.");
-  }
-
+  const result = parseJobUnderstanding(description, response.content);
   return { analysis: result, provider: response.provider, model: response.model };
 }
 
