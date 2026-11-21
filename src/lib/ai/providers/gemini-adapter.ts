@@ -3,7 +3,7 @@ import type { AiCompletionRequest, AiCompletionResult, AiProviderAdapter } from 
 import { AiProviderError } from "../errors";
 
 const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models";
-const responseSchema = (value: unknown) => {
+const extractCandidate = (value: unknown) => {
   if (!value || typeof value !== "object") return null;
   const candidates = (value as { candidates?: unknown[] }).candidates;
   const first = candidates?.[0] as { content?: { parts?: { text?: unknown }[] }; finishReason?: string } | undefined;
@@ -30,6 +30,7 @@ export function createGeminiAdapter(options: { apiKey?: string; model?: string; 
             contents: [{ role: "user", parts: [{ text: request.userPrompt }] }],
             generationConfig: {
               ...(request.responseFormat === "json" ? { responseMimeType: "application/json" } : {}),
+              ...(request.responseSchema ? { responseSchema: request.responseSchema } : {}),
               ...(request.temperature !== undefined ? { temperature: request.temperature } : {}),
               ...(request.maxOutputTokens ? { maxOutputTokens: request.maxOutputTokens } : {}),
             },
@@ -46,10 +47,15 @@ export function createGeminiAdapter(options: { apiKey?: string; model?: string; 
         provider: "gemini", retryable: response.status === 429 || response.status >= 500,
       });
       const payload = await response.json().catch(() => null);
-      const parsed = responseSchema(payload);
-      if (!parsed) throw new AiProviderError("Gemini returned no usable candidate content.", { code: "invalid-response", provider: "gemini" });
+      const candidate = extractCandidate(payload);
+      if (!candidate) throw new AiProviderError("Gemini returned no usable candidate content.", { code: "invalid-response", provider: "gemini" });
       const usage = (payload as { usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number } })?.usageMetadata;
-      return { ...parsed, provider: "gemini", model, usage: { inputTokens: usage?.promptTokenCount, outputTokens: usage?.candidatesTokenCount } };
+      return {
+        ...candidate,
+        provider: "gemini",
+        model,
+        usage: { inputTokens: usage?.promptTokenCount, outputTokens: usage?.candidatesTokenCount },
+      };
     },
   };
 }
