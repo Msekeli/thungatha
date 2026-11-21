@@ -32,8 +32,6 @@ alter table public.job_ai_understandings
 comment on table public.job_ai_understandings is
   'Shared AI understanding cache keyed by exact job description SHA-256 and analysis version; not owned by a job or user.';
 
-commit;
-
 
 -- Serialize queue admission per user so simultaneous selected-job requests cannot
 -- exceed the bounded pending/processing workload.
@@ -127,3 +125,5 @@ revoke all on function public.enqueue_ai_job_assessment_tasks(text, jsonb, integ
   from public, anon, authenticated;
 grant execute on function public.enqueue_ai_job_assessment_tasks(text, jsonb, integer, integer)
   to service_role;
+
+commit;
