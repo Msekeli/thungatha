@@ -53,6 +53,8 @@ describe("ProfileForm flow", () => {
       await screen.findByRole("button", { name: "Enter details manually" }),
     );
 
+    fireEvent.click(screen.getByText("Personal details", { selector: "summary span span" }));
+
     const requiredFields: Record<string, string> = {
       "Full name": "Sam",
       "Email address": "sam@example.com",
