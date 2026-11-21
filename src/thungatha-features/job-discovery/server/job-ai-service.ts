@@ -22,34 +22,31 @@ const jobUnderstandingResponseSchema: Record<string, unknown> = {
     summary: { type: "STRING" },
     responsibilities: {
       type: "ARRAY",
-      maxItems: 12,
       items: {
         type: "OBJECT",
         properties: {
           id: { type: "STRING" },
           statement: { type: "STRING" },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
         },
         required: ["id", "statement", "sourceEvidenceRefs"],
       },
     },
     capabilities: {
       type: "ARRAY",
-      maxItems: 16,
       items: {
         type: "OBJECT",
         properties: {
           id: { type: "STRING" },
           name: { type: "STRING" },
           context: { type: "STRING" },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
         },
         required: ["id", "name", "context", "sourceEvidenceRefs"],
       },
     },
     requirements: {
       type: "ARRAY",
-      maxItems: 24,
       items: {
         type: "OBJECT",
         properties: {
@@ -57,7 +54,7 @@ const jobUnderstandingResponseSchema: Record<string, unknown> = {
           statement: { type: "STRING" },
           category: { type: "STRING", enum: ["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"] },
           importance: { type: "STRING", enum: ["mandatory", "preferred", "uncertain"] },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
+          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
         },
         required: ["id", "statement", "category", "importance", "sourceEvidenceRefs"],
       },
@@ -101,55 +98,6 @@ function assertCompleteResponse(stage: string, response: { provider: string; fin
     throw new Error(`${stage}: ${response.provider} stopped at the output-token limit; the JSON response may be incomplete.`);
   }
 }
-
-const matchAssessmentResponseSchema: Record<string, unknown> = {
-  type: "OBJECT",
-  properties: {
-    semanticAlignment: {
-      type: "OBJECT",
-      properties: {
-        level: { type: "STRING", enum: ["strong", "meaningful", "insufficient"] },
-        materialGaps: { type: "BOOLEAN" },
-        jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
-        profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
-      },
-      required: ["level", "materialGaps", "jobEvidenceRefs", "profileEvidenceRefs"],
-    },
-    summary: { type: "STRING", minLength: 1, maxLength: 500 },
-    alignmentExplanation: { type: "STRING", minLength: 1, maxLength: 800 },
-    requirements: {
-      type: "ARRAY",
-      maxItems: 24,
-      items: {
-        type: "OBJECT",
-        properties: {
-          id: { type: "STRING", minLength: 1, maxLength: 40 },
-          requirement: { type: "STRING", minLength: 1, maxLength: 280 },
-          importance: { type: "STRING", enum: ["mandatory", "preferred", "uncertain"] },
-          assessment: { type: "STRING", enum: ["supported", "not_demonstrated", "contradictory", "uncertain"] },
-          explanation: { type: "STRING", minLength: 1, maxLength: 500 },
-          jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
-          profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
-        },
-        required: ["id", "requirement", "importance", "assessment", "explanation", "jobEvidenceRefs", "profileEvidenceRefs"],
-      },
-    },
-    gaps: {
-      type: "ARRAY",
-      maxItems: 8,
-      items: {
-        type: "OBJECT",
-        properties: {
-          description: { type: "STRING", minLength: 1, maxLength: 300 },
-          jobEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, minItems: 1, maxItems: 4 },
-          profileEvidenceRefs: { type: "ARRAY", items: { type: "STRING" }, maxItems: 4 },
-        },
-        required: ["description", "jobEvidenceRefs", "profileEvidenceRefs"],
-      },
-    },
-  },
-  required: ["semanticAlignment", "summary", "alignmentExplanation", "requirements", "gaps"],
-};
 
 export function parseJobUnderstanding(description: string, value: unknown): JobUnderstanding {
   const result = typeof value === "string"
@@ -265,8 +213,11 @@ export async function assessJobWithAi(
       "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
       "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
       "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match, Relevant, or Unclassified.",
-      "Return JSON conforming exactly to the supplied response schema.",
-      "Keep all text concise and evidence-specific. Return only the required JSON object with no markdown.",
+      "Return one JSON object with exactly these top-level fields: semanticAlignment, summary, alignmentExplanation, requirements, gaps.",
+      "semanticAlignment must contain level (strong, meaningful, insufficient), materialGaps (boolean), jobEvidenceRefs (array), and profileEvidenceRefs (array).",
+      "Each requirements item must contain id, requirement, importance (mandatory, preferred, uncertain), assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, and profileEvidenceRefs.",
+      "Each gaps item must contain description, jobEvidenceRefs, and profileEvidenceRefs.",
+      "Use no additional fields. Every requirement must exactly preserve the extracted id, wording, and importance. Return only JSON, without markdown.",
     ].join("\n"),
     userPrompt: json({
       title,
