@@ -28,9 +28,18 @@ export async function POST(request: Request) {
       { status: success ? 200 : 503 },
     );
   } catch (error) {
+    const errorRecord = error && typeof error === "object"
+      ? error as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown }
+      : null;
     console.error("[AI job matching] Worker invocation failed:", {
       errorName: error instanceof Error ? error.name : "unknown",
-      message: error instanceof Error ? error.message : "Unknown error",
+      message: error instanceof Error
+        ? error.message
+        : typeof errorRecord?.message === "string"
+          ? [errorRecord.message, errorRecord.code, errorRecord.details, errorRecord.hint]
+              .filter((value): value is string => typeof value === "string" && value.length > 0)
+              .join(" | ")
+          : "Unknown error",
     });
     return NextResponse.json({ error: "AI worker execution failed." }, { status: 500 });
   }
