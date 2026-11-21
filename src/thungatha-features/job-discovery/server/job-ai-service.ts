@@ -117,7 +117,7 @@ export async function understandJobWithAi(description: string) {
       "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
       "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
       "Return at most 12 responsibilities, 16 capabilities, and 24 material requirements. If the advert contains more material information than fits, mark coverage partial rather than silently implying completeness.",
-      "Every item must cite one or more exact supplied job evidence IDs. Never infer a requirement that the advert does not support.",
+      "Every item must cite between one and four exact supplied job evidence IDs. Use only the smallest set of IDs that directly supports the item; never list every related fragment and never invent an ID.",
       "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
       "Keep each statement concise. Return a short role-purpose summary.",
       'Return JSON: {summary:string,responsibilities:[{id,statement,sourceEvidenceRefs}],capabilities:[{id,name,context,sourceEvidenceRefs}],requirements:[{id,statement,category,importance,sourceEvidenceRefs}],coverage:"complete"|"partial"|"unavailable"}.',
