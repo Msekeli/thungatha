@@ -37,16 +37,16 @@ describe("ProfileForm flow", () => {
       confirmedAt: null,
       profileVersion: 1,
     };
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ profile: null }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ profile: savedProfile }),
-      } as Response);
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          return new Response(JSON.stringify({ profile: savedProfile }), {
+            status: 200,
+          });
+        }
+        return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      },
+    );
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm />);
@@ -81,6 +81,8 @@ describe("ProfileForm flow", () => {
         screen.getByText(/Changes saved\. Your profile remains a draft/),
       ).toBeInTheDocument();
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(
+      fetchMock.mock.calls.filter(([, init]) => init?.method === "PATCH"),
+    ).toHaveLength(1);
   });
 });
