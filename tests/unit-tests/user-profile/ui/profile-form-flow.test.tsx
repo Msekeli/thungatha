@@ -39,9 +39,9 @@ describe("ProfileForm flow", () => {
     };
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       if (init?.method === "PATCH") {
-        return new Response(JSON.stringify({ profile: savedProfile }), { status: 200 });
+        return { ok: true, json: async () => ({ profile: savedProfile }) } as Response;
       }
-      return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      return { ok: true, json: async () => ({ profile: null }) } as Response;
     });
 
     vi.stubGlobal("fetch", fetchMock);
