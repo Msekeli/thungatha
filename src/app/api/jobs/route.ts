@@ -3,7 +3,7 @@ import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
-import { apiError, apiFailure } from "@/lib/http/api-response";
+import { apiError, apiFailure, describeApiError } from "@/lib/http/api-response";
 import {
   createAuthenticatedSupabaseClient,
   createPublicSupabaseClient,
@@ -81,9 +81,10 @@ export async function GET(request: Request) {
         }
       } catch (queueError) {
         // Queue failures must not interrupt ordinary job discovery.
-        console.error("[AI job matching] Could not enqueue visible jobs:", {
-          message: queueError instanceof Error ? queueError.message : "Unknown queue error",
-        });
+        console.error(
+          "[AI job matching] Could not enqueue visible jobs:",
+          describeApiError(queueError),
+        );
       }
     }
 
