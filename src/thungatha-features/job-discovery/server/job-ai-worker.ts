@@ -47,7 +47,7 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
             ].filter(Boolean).join(" | ")
           : "AI task processing failed";
       const sanitized = rawMessage.replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "[REDACTED]").slice(0, 500);
-      const terminal = task.attempts >= 4;
+      const terminal = task.attempts >= 4 || errorRecord?.retryable === false;
       const exponentialDelayMs = Math.min(60, 2 ** task.attempts) * 60_000;
       const providerRetryAfterMs = typeof errorRecord?.retryAfterMs === "number"
         && Number.isFinite(errorRecord.retryAfterMs)
