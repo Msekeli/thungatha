@@ -2,7 +2,11 @@ import "server-only";
 import { createJobAiClient, processJobAiTask, type QueueTask } from "./job-ai-task-processor";
 
 export type TaskDiagnostic = {
-  taskId: string; jobId: string; outcome: "processed" | "stale" | "failed"; attempts: number;
+  taskId: string;
+  jobId: string;
+  outcome: "processed" | "stale" | "failed";
+  attempts: number;
+  error?: string;
 };
 
 export type WorkerDiagnostics = {
@@ -33,6 +37,16 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
       const sanitized = rawMessage.replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "[REDACTED]").slice(0, 500);
       const terminal = task.attempts >= 4;
       const delayMinutes = Math.min(60, 2 ** task.attempts);
+
+      // Keep failures visible in server logs as well as in the queue row and
+      // worker response. Do not log prompts, evidence, or provider payloads.
+      console.error("[AI job matching] Task failed", {
+        taskId: task.id,
+        jobId: task.job_id,
+        attempt: task.attempts,
+        terminal,
+        error: sanitized,
+      });
       const { error: updateError } = await db.from("ai_task_queue").update({
         status: terminal ? "failed" : "pending",
         available_at: new Date(Date.now() + delayMinutes * 60_000).toISOString(),
@@ -40,7 +54,13 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
       }).eq("id", task.id);
       if (updateError) throw updateError;
       failed += 1;
-      tasks.push({ taskId: task.id, jobId: task.job_id, outcome: "failed", attempts: task.attempts });
+      tasks.push({
+        taskId: task.id,
+        jobId: task.job_id,
+        outcome: "failed",
+        attempts: task.attempts,
+        error: sanitized,
+      });
     }
   }
 
