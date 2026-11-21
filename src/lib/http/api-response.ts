@@ -6,11 +6,21 @@ type ApiErrorResponse = {
   requestId?: string;
 };
 
+type ApiErrorDescription = {
+  errorName: string;
+  message?: string;
+  cause?: ApiErrorDescription;
+  code?: string;
+  details?: string;
+  hint?: string;
+  status?: number;
+};
+
 export function apiError(message: string, status: number) {
   return NextResponse.json<ApiErrorResponse>({ error: message }, { status });
 }
 
-export function describeApiError(error: unknown) {
+export function describeApiError(error: unknown): ApiErrorDescription {
   if (error instanceof Error) {
     return {
       errorName: error.name,
