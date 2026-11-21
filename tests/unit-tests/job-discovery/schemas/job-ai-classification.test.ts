@@ -55,6 +55,14 @@ describe("AI assessment classification policy", () => {
     const wrongImportance = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory" }] });
     expect(() => validateAndClassifyAssessment(wrongImportance, understanding, jobRefs, profileRefs)).toThrow(/do not match/);
   });
+  it("rejects changed requirement wording", () => {
+    const changed = matchAssessmentInputSchema.parse({
+      ...input,
+      requirements: [{ ...input.requirements[0], requirement: "Develop applications" }],
+    });
+    expect(() => validateAndClassifyAssessment(changed, understanding, jobRefs, profileRefs))
+      .toThrow(/changed the extracted wording/);
+  });
   it("prevents Match when contradictory requirement evidence exists", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], assessment: "contradictory" }] });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
