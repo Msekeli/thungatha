@@ -40,23 +40,33 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   }
   const facts = deriveCandidateFacts(mapRowToProfileDto(row));
   if (!facts || facts.profileVersion !== task.profile_version) { await completeTask(db, task.id); return "stale"; }
+  console.info("[AI job matching] Task started", { taskId: task.id, jobId: task.job_id, title: job.title });
   const cached = await db.from("job_ai_understandings").select("understanding,provider,model")
     .eq("job_id", task.job_id).eq("description_hash", task.job_description_hash)
     .eq("analysis_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
   if (cached.error) throw cached.error;
   let understanding = cached.data?.understanding;
   if (!understanding) {
+    console.info("[AI job matching] Job understanding started", { jobId: task.job_id });
     const generated = await understandJobWithAi(job.title, description);
     understanding = generated.analysis;
+    console.info("[AI job matching] Job understanding completed", { jobId: task.job_id, provider: generated.provider, model: generated.model });
     const { error } = await db.from("job_ai_understandings").upsert({
       job_id: task.job_id, description_hash: task.job_description_hash,
       analysis_version: JOB_AI_ASSESSMENT_VERSION, understanding: generated.analysis,
       provider: generated.provider, model: generated.model, updated_at: new Date().toISOString(),
     }, { onConflict: "job_id" });
     if (error) throw error;
+  } else {
+    console.info("[AI job matching] Reusing cached job understanding", { jobId: task.job_id });
   }
   const parsed = jobUnderstandingSchema.parse(understanding);
+  console.info("[AI job matching] Candidate assessment started", { jobId: task.job_id });
   const generated = await assessJobWithAi(job.title, parsed, description, facts);
+  console.info("[AI job matching] Candidate assessment completed", {
+    jobId: task.job_id, classification: generated.assessment.classification,
+    provider: generated.provider, model: generated.model,
+  });
   const { data: persisted, error: persistError } = await db.rpc("persist_job_match_assessment", {
     p_task_id: task.id,
     p_user_id: task.user_id,
@@ -72,6 +82,10 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
     p_model: generated.model,
   });
   if (persistError) throw persistError;
-  if (!persisted) return "stale";
+  if (!persisted) {
+    console.info("[AI job matching] Assessment became stale before persistence", { jobId: task.job_id });
+    return "stale";
+  }
+  console.info("[AI job matching] Assessment persisted", { jobId: task.job_id, classification: generated.assessment.classification });
   return "processed";
 }
