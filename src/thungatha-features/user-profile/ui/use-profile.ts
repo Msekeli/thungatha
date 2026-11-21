@@ -24,7 +24,7 @@ export function useProfile() {
       const p = (json.profile as UserProfileDto) || createBlankProfile();
       setProfile(p);
       setDraft(p);
-      setMode(isProfileEmpty(p) ? "empty" : "edit");
+      setMode(isProfileEmpty(p) ? "empty" : "view");
       setLoadFailed(false);
       setError("");
     } catch {
