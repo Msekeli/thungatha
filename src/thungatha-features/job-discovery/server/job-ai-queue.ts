@@ -89,7 +89,11 @@ async function enqueueJobRows(
   return data ?? 0;
 }
 
-export async function enqueueVisibleJobAssessments(userId: string, jobIds: string[]) {
+export async function enqueueVisibleJobAssessments(
+  userId: string,
+  jobIds: string[],
+  requestedLimit = MAX_ACTIVE_ASSESSMENTS_PER_USER,
+) {
   const uniqueIds = [...new Set(jobIds)].filter(Boolean);
   if (!uniqueIds.length) return 0;
 
@@ -101,7 +105,7 @@ export async function enqueueVisibleJobAssessments(userId: string, jobIds: strin
     .in("id", uniqueIds);
   if (error) throw error;
 
-  return enqueueJobRows(userId, profileVersion, data ?? [], 1);
+  return enqueueJobRows(userId, profileVersion, data ?? [], requestedLimit);
 }
 
 /**
