@@ -69,7 +69,7 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
   );
   const month =
     "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
-  const token = "(?:" + month + "\\s+)?(?:19|20)\\d{2}|present|current";
+  const token = "(?:(?:" + month + "\\s+)?(?:19|20)\\d{2}|present|current)";
   const rangePattern = new RegExp(
     "(" + token + "\\s*(?:[-–—]|to)\\s*" + token + ")",
     "i",
