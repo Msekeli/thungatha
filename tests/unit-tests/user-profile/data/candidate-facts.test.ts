@@ -8,7 +8,7 @@ const profile = (overrides: Partial<UserProfileDto> = {}): UserProfileDto => ({
   personalDetails: { fullName: "Candidate", email: "candidate@example.com", phone: "0123456789", location: "Cape Town", country: "South Africa", residentialSuburb: "Observatory", residentialCity: "Cape Town", residentialProvince: "Western Cape" },
   summary: "Software developer with practical delivery experience.",
   workExperience: [{ id: "work-1", jobTitle: "Developer", employer: "Company", startDate: "2020-01", endDate: "2022-01", isCurrent: false, description: "Built internal applications.", achievements: ["Automated reporting"] }],
-  education: [{ id: "edu-1", educationLevel: "Diploma", qualification: "IT Software Development", institution: "College" }],
+  education: [{ id: "edu-1", educationLevel: "Diploma", qualification: "IT Software Development", institution: "College", isCurrent: false }],
   skills: ["TypeScript"], certifications: [{ id: "cert-1", type: "professional-certification", name: "AZ-900", issuer: "Microsoft" }],
   projects: [{ id: "project-1", name: "Portal", role: "Developer", description: "Built a portal." }],
   languages: ["English"], personalAttributes: ["Problem solving"], masterCv: null,
