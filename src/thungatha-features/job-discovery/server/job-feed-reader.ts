@@ -71,13 +71,17 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
     }
   }
 
+  const currentHashes = new Map(data.map((job) => [
+    job.id,
+    createHash("sha256").update(job.description ?? "").digest("hex"),
+  ]));
   const stateByJob = new Map(states.map((s) => [s.job_id, s.state]));
   const { assessmentsByJob, queueStatusByJob, hasError: hasAssessmentError } = userId && profileVersion !== null && data.length
-    ? await fetchFeedAssessmentsAndQueue(db, userId, profileVersion, data.map((j) => j.id))
+    ? await fetchFeedAssessmentsAndQueue(db, userId, profileVersion, data.map((j) => j.id), currentHashes)
     : { assessmentsByJob: new Map(), queueStatusByJob: new Map(), hasError: false };
 
   let jobs: FeedJob[] = data.map((job) => {
-    const currentHash = createHash("sha256").update(job.description ?? "").digest("hex");
+    const currentHash = currentHashes.get(job.id)!;
     const statusResult = resolveJobMatchStatus({
       hasError: hasProfileError || hasAssessmentError, profileConfirmed: profileVersion !== null,
       currentHash, assessment: assessmentsByJob.get(job.id), queueStatus: queueStatusByJob.get(job.id),
