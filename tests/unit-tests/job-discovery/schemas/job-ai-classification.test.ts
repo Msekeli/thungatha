@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { jobUnderstandingSchema, matchAssessmentInputSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
-import { validateAndClassifyAssessment } from "@/thungatha-features/job-discovery/server/job-ai-classification";
+import { MATCH_CLASSIFICATION_POLICY_VERSION, validateAndClassifyAssessment } from "@/thungatha-features/job-discovery/server/job-ai-classification";
 
 const jobRefs = new Set(["job:segment:1"]);
 const profileRefs = new Set(["profile:skills[0].name"]);
 const understanding = jobUnderstandingSchema.parse({ summary: "Role", responsibilities: [], capabilities: [], requirements: [{ id: "r1", statement: "Build software", category: "skill", importance: "preferred", sourceEvidenceRefs: ["job:segment:1"] }], coverage: "complete" });
 const input = {
-  overallFit: "match" as const,
   semanticAlignment: { level: "strong" as const, materialGaps: false, jobEvidenceRefs: ["job:segment:1"], profileEvidenceRefs: ["profile:skills[0].name"] },
   summary: "The candidate's confirmed evidence aligns with the central work.",
   alignmentExplanation: "The supplied evidence supports the responsibilities described.",
@@ -15,20 +14,22 @@ const input = {
 };
 
 describe("AI assessment classification policy", () => {
-  it("accepts the AI Match decision when evidence is valid", () => {
+  it("derives Match from strong alignment without material gaps", () => {
     const parsed = matchAssessmentInputSchema.parse(input);
-    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("match");
+    const result = validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs);
+    expect(result.classification).toBe("match");
+    expect(result.classificationPolicyVersion).toBe(MATCH_CLASSIFICATION_POLICY_VERSION);
   });
-  it("accepts the AI Relevant decision when material gaps are reported", () => {
-    const parsed = matchAssessmentInputSchema.parse({ ...input, overallFit: "relevant", semanticAlignment: { ...input.semanticAlignment, materialGaps: true } });
+  it("derives Relevant from strong alignment with material gaps", () => {
+    const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { ...input.semanticAlignment, materialGaps: true } });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
-  it("accepts the AI Relevant decision for meaningful alignment", () => {
-    const parsed = matchAssessmentInputSchema.parse({ ...input, overallFit: "relevant", semanticAlignment: { ...input.semanticAlignment, level: "meaningful" } });
+  it("derives Relevant from meaningful alignment", () => {
+    const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { ...input.semanticAlignment, level: "meaningful" } });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
-  it("accepts the AI Unclassified decision when evidence is insufficient", () => {
-    const parsed = matchAssessmentInputSchema.parse({ ...input, overallFit: "unclassified", semanticAlignment: { level: "insufficient", materialGaps: true, jobEvidenceRefs: ["job:segment:1"], profileEvidenceRefs: [] } });
+  it("derives Unclassified when evidence is insufficient", () => {
+    const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { level: "insufficient", materialGaps: true, jobEvidenceRefs: ["job:segment:1"], profileEvidenceRefs: [] } });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("unclassified");
   });
   it("rejects a reference outside the supplied evidence", () => {
@@ -38,9 +39,9 @@ describe("AI assessment classification policy", () => {
   it("rejects supported requirements without Profile evidence", () => {
     expect(matchAssessmentInputSchema.safeParse({ ...input, requirements: [{ ...input.requirements[0], profileEvidenceRefs: [] }] }).success).toBe(false);
   });
-  it("preserves the AI Relevant decision when a mandatory requirement is not demonstrated", () => {
+  it("prevents Match when a mandatory requirement is not demonstrated", () => {
     const mandatory = jobUnderstandingSchema.parse({ ...understanding, requirements: [{ ...understanding.requirements[0], importance: "mandatory" }] });
-    const parsed = matchAssessmentInputSchema.parse({ ...input, overallFit: "relevant", requirements: [{ ...input.requirements[0], importance: "mandatory", assessment: "not_demonstrated", profileEvidenceRefs: [] }] });
+    const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory", assessment: "not_demonstrated", profileEvidenceRefs: [] }] });
     expect(validateAndClassifyAssessment(parsed, mandatory, jobRefs, profileRefs).classification).toBe("relevant");
   });
   it("rejects duplicate identifiers in extracted requirements", () => {
@@ -54,8 +55,8 @@ describe("AI assessment classification policy", () => {
     const wrongImportance = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], importance: "mandatory" }] });
     expect(() => validateAndClassifyAssessment(wrongImportance, understanding, jobRefs, profileRefs)).toThrow(/do not match/);
   });
-  it("preserves the AI Relevant decision when a contradiction is identified", () => {
-    const parsed = matchAssessmentInputSchema.parse({ ...input, overallFit: "relevant", requirements: [{ ...input.requirements[0], assessment: "contradictory" }] });
+  it("prevents Match when contradictory requirement evidence exists", () => {
+    const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], assessment: "contradictory" }] });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
 });
