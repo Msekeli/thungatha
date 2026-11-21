@@ -33,7 +33,19 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
       else processed += 1;
       tasks.push({ taskId: task.id, jobId: task.job_id, outcome, attempts: task.attempts });
     } catch (error) {
-      const rawMessage = error instanceof Error ? error.message : "AI task processing failed";
+      const errorRecord = error && typeof error === "object"
+        ? error as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown }
+        : null;
+      const rawMessage = error instanceof Error
+        ? error.message
+        : typeof errorRecord?.message === "string"
+          ? [
+              errorRecord.message,
+              typeof errorRecord.code === "string" ? `code=${errorRecord.code}` : "",
+              typeof errorRecord.details === "string" ? errorRecord.details : "",
+              typeof errorRecord.hint === "string" ? `hint=${errorRecord.hint}` : "",
+            ].filter(Boolean).join(" | ")
+          : "AI task processing failed";
       const sanitized = rawMessage.replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "[REDACTED]").slice(0, 500);
       const terminal = task.attempts >= 4;
       const delayMinutes = Math.min(60, 2 ** task.attempts);
@@ -51,7 +63,7 @@ export async function processJobAiQueue(maxTasks = 1): Promise<WorkerDiagnostics
         status: terminal ? "failed" : "pending",
         available_at: new Date(Date.now() + delayMinutes * 60_000).toISOString(),
         locked_at: null, last_error: sanitized, updated_at: new Date().toISOString(),
-      }).eq("id", task.id);
+      }).eq("id", task.id).eq("status", "processing");
       if (updateError) throw updateError;
       failed += 1;
       tasks.push({
