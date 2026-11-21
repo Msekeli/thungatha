@@ -90,6 +90,12 @@ export function useJobFeed(
         }
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
+        if (background) {
+          window.setTimeout(() => {
+            if (!signal.aborted) void refreshFeed(signal, true);
+          }, 10_000);
+          return;
+        }
         setFeed(null);
         if (reason instanceof JobFeedRequestError)
           setIsAuthenticated(reason.status !== 401);
