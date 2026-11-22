@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const refs = z.array(z.string().min(1)).max(4);
 const requiredRefs = refs.min(1);
+// Semantic alignment cites evidence across the whole assessment, so its
+// aggregate reference lists can legitimately exceed the per-item limit.
+const aggregateRefs = z.array(z.string().min(1)).max(100);
+const requiredAggregateRefs = aggregateRefs.min(1);
 
 export const jobUnderstandingSchema = z.object({
   summary: z.string().min(1).max(500),
@@ -44,8 +48,8 @@ export const matchAssessmentInputSchema = z.object({
   semanticAlignment: z.object({
     level: z.enum(["strong", "meaningful", "insufficient"]),
     materialGaps: z.boolean(),
-    jobEvidenceRefs: requiredRefs,
-    profileEvidenceRefs: refs,
+    jobEvidenceRefs: requiredAggregateRefs,
+    profileEvidenceRefs: aggregateRefs,
   }),
   summary: z.string().min(1).max(500),
   alignmentExplanation: z.string().min(1).max(800),
