@@ -16,55 +16,6 @@ import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 
-const jobUnderstandingResponseSchema: Record<string, unknown> = {
-  type: "OBJECT",
-  properties: {
-    summary: { type: "STRING" },
-    responsibilities: {
-      type: "ARRAY",
-      items: {
-        type: "OBJECT",
-        properties: {
-          id: { type: "STRING" },
-          statement: { type: "STRING" },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" } },
-        },
-        required: ["id", "statement", "sourceEvidenceRefs"],
-      },
-    },
-    capabilities: {
-      type: "ARRAY",
-      items: {
-        type: "OBJECT",
-        properties: {
-          id: { type: "STRING" },
-          name: { type: "STRING" },
-          context: { type: "STRING" },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" } },
-        },
-        required: ["id", "name", "context", "sourceEvidenceRefs"],
-      },
-    },
-    requirements: {
-      type: "ARRAY",
-      items: {
-        type: "OBJECT",
-        properties: {
-          id: { type: "STRING" },
-          statement: { type: "STRING" },
-          category: { type: "STRING", enum: ["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"] },
-          importance: { type: "STRING", enum: ["mandatory", "preferred", "uncertain"] },
-          sourceEvidenceRefs: { type: "ARRAY", items: { type: "STRING" } },
-        },
-        required: ["id", "statement", "category", "importance", "sourceEvidenceRefs"],
-      },
-    },
-    coverage: { type: "STRING", enum: ["complete", "partial", "unavailable"] },
-  },
-  required: ["summary", "responsibilities", "capabilities", "requirements", "coverage"],
-};
-
-
 function parse<T>(
   stage: string,
   content: string,
@@ -137,7 +88,6 @@ export async function understandJobWithAi(description: string) {
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
-    responseSchema: jobUnderstandingResponseSchema,
     temperature: 0.1,
     maxOutputTokens: 3600,
     timeoutMs: 120_000,
