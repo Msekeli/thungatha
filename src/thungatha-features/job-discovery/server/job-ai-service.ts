@@ -62,6 +62,36 @@ function parse<T>(
   }
 }
 
+async function parseAssessmentWithJsonRepair(content: string) {
+  try {
+    return parse("Candidate assessment", content, matchAssessmentInputSchema);
+  } catch (error) {
+    if (!(error instanceof Error) || !error.message.includes("AI returned invalid JSON")) throw error;
+
+    // Gemini occasionally emits malformed JSON despite application/json mode.
+    // Ask the same provider to repair syntax only; the normal Zod, evidence,
+    // exact-requirement, and classification checks still run afterwards.
+    const repair = await completeAiTask({
+      task: "job-fit-assessment",
+      responseFormat: "json",
+      temperature: 0,
+      maxOutputTokens: 6000,
+      timeoutMs: 120_000,
+      reasoning: false,
+      systemPrompt: [
+        "Repair the supplied candidate assessment into syntactically valid JSON.",
+        "This is a syntax-only repair. Preserve every value, identifier, requirement wording, assessment, explanation, and evidence reference exactly.",
+        "Do not add, remove, infer, summarize, or change any information. Do not invent evidence references.",
+        "Return one JSON object only, with top-level fields semanticAlignment, summary, alignmentExplanation, requirements, and gaps.",
+        "If a value is malformed or incomplete, preserve the available content and use only the minimum syntax correction needed.",
+      ].join("\\n"),
+      userPrompt: content,
+    });
+    assertCompleteResponse("Candidate assessment JSON repair", repair);
+    return parse("Candidate assessment", repair.content, matchAssessmentInputSchema);
+  }
+}
+
 function assertCompleteResponse(stage: string, response: { provider: string; finishReason?: string }) {
   const finishReason = response.finishReason?.toUpperCase();
   if (finishReason === "MAX_TOKENS" || finishReason === "LENGTH") {
@@ -205,7 +235,7 @@ export async function assessJobWithAi(
   });
 
   assertCompleteResponse("Candidate assessment", response);
-  const assessmentInput = parse("Candidate assessment", response.content, matchAssessmentInputSchema);
+  const assessmentInput = await parseAssessmentWithJsonRepair(response.content);
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
     understanding,
