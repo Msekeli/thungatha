@@ -16,6 +16,25 @@ import { validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 
+function describeJsonShape(value: unknown): string {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return `root=${Array.isArray(value) ? "array" : typeof value}`;
+  }
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).slice(0, 20);
+  const arrays = ["responsibilities", "capabilities", "requirements"]
+    .filter((key) => Array.isArray(record[key]))
+    .map((key) => {
+      const items = record[key] as unknown[];
+      const first = items[0];
+      const itemKeys = first && typeof first === "object" && !Array.isArray(first)
+        ? Object.keys(first as Record<string, unknown>).slice(0, 12)
+        : [];
+      return `${key}=${items.length} items; firstItemKeys=[${itemKeys.join(",")}]`;
+    });
+  return `topLevelKeys=[${keys.join(",")}]; ${arrays.join("; ")}`;
+}
+
 function parse<T>(
   stage: string,
   content: string,
@@ -37,7 +56,7 @@ function parse<T>(
         const path = issue.path.length ? issue.path.join(".") : "(root)";
         return `${path}: ${issue.message}`;
       });
-      throw new Error(`${stage}: AI output failed schema validation: ${issues.join("; ")}`);
+      throw new Error(`${stage}: AI output failed schema validation: ${issues.join("; ")}. Returned shape: ${describeJsonShape(value)}`);
     }
     throw new Error(`${stage}: AI output could not be validated.`);
   }
@@ -101,7 +120,10 @@ export async function understandJobWithAi(description: string) {
       "Every item must cite between one and four exact supplied job evidence IDs. Use only the smallest set of IDs that directly supports the item; never list every related fragment and never invent an ID.",
       "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
       "Keep each statement concise. Return a short role-purpose summary.",
-      "Return JSON conforming exactly to the supplied response schema.",
+      "Return one JSON object at the root. Do not wrap it in a result, data, job, analysis, or response property. Do not return an array or prose.",
+      "The exact required JSON structure is: {\\"summary\\":\\"short role purpose\\",\\"responsibilities\\":[{\\"id\\":\\"resp_1\\",\\"statement\\":\\"specific responsibility\\",\\"sourceEvidenceRefs\\":[\\"exact_job_evidence_id\\"]}],\\"capabilities\\":[{\\"id\\":\\"cap_1\\",\\"name\\":\\"capability name\\",\\"context\\":\\"how it is used in this role\\",\\"sourceEvidenceRefs\\":[\\"exact_job_evidence_id\\"]}],\\"requirements\\":[{\\"id\\":\\"req_1\\",\\"statement\\":\\"requirement wording\\",\\"category\\":\\"skill\\",\\"importance\\":\\"mandatory\\",\\"sourceEvidenceRefs\\":[\\"exact_job_evidence_id\\"]}],\\"coverage\\":\\"complete\\"}.",
+      "Every object and every listed property is required, including when an array is empty. Use empty arrays when no items exist. Do not replace arrays of objects with strings.",
+      "Use only the allowed category and importance values stated below. IDs must be short unique strings within this response. Evidence references must be exact IDs from sourceEvidence.",
       "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
       "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
     ].join("\n"),
