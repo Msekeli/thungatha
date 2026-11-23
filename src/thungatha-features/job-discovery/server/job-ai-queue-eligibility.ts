@@ -78,7 +78,7 @@ export async function getJobAiTaskStatus(input: {
 }
 
 export async function requeueCompletedJobAiTask(input: {
-  userId: string; jobId: string; profileVersion: number; descriptionHash: string;
+  userId: string; jobId: string; profileVersion: number; contextHash: string;
 }): Promise<boolean> {
   const now = new Date().toISOString();
   const { data, error } = await createServiceClient().from("ai_task_queue").update({
@@ -87,7 +87,7 @@ export async function requeueCompletedJobAiTask(input: {
     updated_at: now,
   }).eq("task_type", "job_fit_assessment").eq("user_id", input.userId)
     .eq("job_id", input.jobId).eq("profile_version", input.profileVersion)
-    .eq("job_description_hash", input.descriptionHash)
+    .eq("job_context_hash", input.contextHash)
     .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
     .eq("status", "completed").select("id").maybeSingle();
   if (error) throw error;
