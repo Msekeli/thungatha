@@ -259,3 +259,25 @@ No tests, build, browser checks or live Supabase verification were run. The migr
 - If the `cv_versions` table is missing, the API now returns an actionable M4 migration setup message.
 - **Not verified:** local migration state, Supabase connectivity, API execution, browser behaviour, race behaviour and generated document contents. No tests, lint, build or browser checks were run. The M4 migration remains unapplied in this work session.
 - **Next action:** apply the committed M4 migration to the local Supabase project, reload CV Studio and report the resulting screen/API error if any. Confirm that the master CV content reflects the Profile sections before proceeding with further editor work.
+
+
+### Product correction — CV reuse and no history UI (2026-11-24)
+
+The previous interpretation of M4-C08 as a candidate-facing CV version-history feature is withdrawn.
+
+**Agreed product rules**
+- M2 Profile is the only source of candidate facts. The master CV is generated from the current confirmed Profile.
+- Every tailored CV starts from the current master CV. Additional candidate facts must be added to Profile and confirmed there.
+- CV Studio has no CV history/library screen, no historical-version browser and no history refresh action.
+- Keep only the current master and the most recent/accepted reusable tailored output required for job matching and export. Do not generate a new CV just because CV Studio is opened or a job is selected.
+- Before generating a tailored CV, check whether an existing accepted tailored output can be reused for the selected job.
+- Exact same Discovery job ID or exact pasted-description fingerprint can be matched deterministically. Similar-but-not-identical job suitability must wait for evidence-backed AI assessment; do not infer equivalence from title alone.
+- M5 Job Tracking owns application history and stores the exact immutable CV content/reference used when the candidate confirms an application.
+- Internal persistence is retained only where required for the current master, reusable tailored output and M5 application snapshot. It is not a user-facing history feature.
+
+**Code correction completed**
+- Removed the CV history/library panel and its associated client state and fetch calls from CV Studio.
+- Deleted GET /api/cv-studio/versions and GET /api/cv-studio/versions/[id].
+- Existing cv_versions database rows and migration are not deleted. They are currently still used by the master/tailored workflow and suitability lookup; data deletion requires a separate migration decision and must not be done blindly.
+- The current exact-match lookup remains a technical first step, not a semantic recommendation. It does not yet open/reuse the matching CV or prevent every duplicate draft.
+- No tests, lint, build, browser checks, runtime checks or database migrations were run.
