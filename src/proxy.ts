@@ -63,5 +63,6 @@ export const config = {
     "/sign-up/:path*",
     "/api/profile/:path*",
     "/api/jobs/:path*",
+    "/api/cv-studio/:path*",
   ],
 };
