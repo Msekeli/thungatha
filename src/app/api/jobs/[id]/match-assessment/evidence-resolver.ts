@@ -1,5 +1,6 @@
 import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-ai-evidence";
 import { readCandidateFacts } from "@/thungatha-features/user-profile/server/read-candidate-facts";
+import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 type RawAssessment = {
   semanticAlignment?: { jobEvidenceRefs: string[]; profileEvidenceRefs: string[] };
@@ -10,12 +11,12 @@ type RawAssessment = {
 export async function resolveEvidenceLinkedAssessment(input: {
   userId: string;
   token: () => Promise<string | null>;
-  description: string;
+  context: JobMatchingContext;
   assessment: RawAssessment;
   understandingData?: { understanding?: unknown } | null;
 }) {
   const facts = await readCandidateFacts(input.userId, input.token);
-  const jobEvidence = buildJobEvidence(input.description);
+  const jobEvidence = buildJobEvidence(input.context.description, input.context);
   const evidenceById = new Map([
     ...jobEvidence.map((item) => [item.id, item] as const),
     ...(facts?.evidence ?? []).map((item) => [item.id, item] as const),
