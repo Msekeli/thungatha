@@ -324,24 +324,6 @@
 .th-cv-studio-page .bg-slate-50 {
   background-color: var(--th-panel);
 }
-.th-cv-studio-page .border-slate-200,
-.th-cv-studio-page .border-teal-200 {
-  border-color: var(--th-line);
-}
-.th-cv-studio-page .text-slate-950,
-.th-cv-studio-page .text-slate-900,
-.th-cv-studio-page .text-slate-800 {
-  color: var(--th-fg);
-}
-.th-cv-studio-page .text-slate-700,
-.th-cv-studio-page .text-slate-600,
-.th-cv-studio-page .text-slate-500 {
-  color: var(--th-fg-muted);
-}
-.th-cv-studio-page .text-teal-700,
-.th-cv-studio-page .text-teal-800 {
-  color: var(--th-accent-text);
-}
 .th-cv-studio-page .bg-teal-50\/60,
 .th-cv-studio-page .bg-amber-50 {
   background-color: var(--th-warn-bg);
