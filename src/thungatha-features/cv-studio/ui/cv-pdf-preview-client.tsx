@@ -1,7 +1,7 @@
 "use client";
 
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import { Download, FileText, Printer } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 
 export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accent?: string }) {
