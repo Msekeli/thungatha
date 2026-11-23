@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createJobMatchingContext, hashJobContext } from "./job-ai-queue-eligibility";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
@@ -72,7 +72,7 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
 
   const currentHashes = new Map(data.map((job) => [
     job.id,
-    createHash("sha256").update(job.description ?? "").digest("hex"),
+    hashJobContext(createJobMatchingContext(job)),
   ]));
   const stateByJob = new Map(states.map((s) => [s.job_id, s.state]));
   const { assessmentsByJob, queueStatusByJob, hasError: hasAssessmentError } = userId && profileVersion !== null && data.length
