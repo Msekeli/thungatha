@@ -217,7 +217,7 @@ export function CvStudioStart() {
                       <h2 className="mt-2 text-xl font-semibold text-slate-950">{jobContext.title}</h2>
                       <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={clearSelectedJob}>Change</Button>
+                    <Button variant="outline" size="sm" onClick={clearSelectedJob}>Remove job</Button>
                   </div>
                   <div className="mt-5 border-t border-line pt-4">
                     <h3 className="text-sm font-semibold text-fg">Job description</h3>
@@ -251,8 +251,8 @@ export function CvStudioStart() {
               </section>
             </div>
           ) : (
-          <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <section className="rounded-2xl border border-line bg-panel p-6 text-fg shadow-sm sm:p-8">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <section className="rounded-2xl border border-line bg-panel p-6 text-fg shadow-sm sm:p-8 lg:col-start-2 lg:row-start-1">
               {state.masterCv ? (
                 <>
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -273,7 +273,7 @@ export function CvStudioStart() {
                 </>
               )}
             </section>
-            <aside className="h-fit rounded-2xl border border-line bg-panel p-5 text-fg">
+            <aside className="h-fit rounded-2xl border border-line bg-panel p-5 text-fg lg:col-start-1 lg:row-start-1">
               <h2 className="font-semibold text-fg">Next step</h2>
               <p className="mt-2 text-sm leading-6 text-fg-muted">Select a job from Discovery or paste its description. The current stage checks whether you have an accepted version for the exact same job; AI suitability and tailoring are not active yet.</p>
               <ButtonLink className="mt-4 w-full" href="/jobs">Browse jobs</ButtonLink>
@@ -384,7 +384,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
 
 function MasterCvPreview({ content }: { content: CvContent }) {
   return (
-    <article className="mx-auto min-h-[40rem] max-w-3xl bg-white p-6 text-slate-900 shadow-sm sm:p-10">
+    <article className="th-cv-a4-sheet mx-auto text-slate-900 shadow-sm">
       <header className="border-b-2 border-teal-700 pb-5">
         <h2 className="text-3xl font-bold tracking-tight">{content.fullName}</h2>
         {content.headline && <p className="mt-1 text-lg text-slate-700">{content.headline}</p>}
