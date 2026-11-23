@@ -63,3 +63,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "AI worker execution failed." }, { status: 500 });
   }
 }
+
+/**
+ * Vercel Cron entry point. Configure CRON_SECRET in the deployment environment.
+ * The worker remains safe for overlapping invocations because the database
+ * claim function owns task locking.
+ */
+export async function GET(request: Request) {
+  const expectedSecret = process.env.CRON_SECRET ?? process.env.AI_WORKER_SECRET;
+  const authorization = request.headers.get("authorization") ?? "";
+  const suppliedSecret = authorization.startsWith("Bearer ")
+    ? authorization.slice("Bearer ".length)
+    : "";
+  if (!expectedSecret) {
+    return NextResponse.json({ error: "A cron or AI worker secret is required." }, { status: 503 });
+  }
+  const expected = Buffer.from(expectedSecret);
+  const supplied = Buffer.from(suppliedSecret);
+  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) {
+    return NextResponse.json({ error: "A valid worker secret is required." }, { status: 401 });
+  }
+  try {
+    const result = await processJobAiQueue();
+    const success = result.failed === 0;
+    return NextResponse.json(
+      { success, ...result },
+      { status: success ? 200 : 503 },
+    );
+  } catch (error) {
+    console.error("[AI job matching] Scheduled worker invocation failed:", {
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return NextResponse.json({ error: "Scheduled AI worker execution failed." }, { status: 500 });
+  }
+}
