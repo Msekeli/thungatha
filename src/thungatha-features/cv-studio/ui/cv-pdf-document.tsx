@@ -8,6 +8,8 @@ export type CvPdfContent = {
   email: string;
   phone: string | null;
   location: string | null;
+  linkedinUrl?: string | null;
+  portfolioUrl?: string | null;
   professionalSummary: string;
   workExperience: Array<{
     sourceId: string;
@@ -85,7 +87,7 @@ function Section({ title, accent, children }: { title: string; accent: string; c
 }
 
 export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfContent; accent?: string }) {
-  const contact = [content.email, content.phone, content.location].filter(Boolean).join(" · ");
+  const contact = [content.email, content.phone, content.location, content.linkedinUrl, content.portfolioUrl].filter(Boolean).join(" · ");
 
   return (
     <Document title={`${content.fullName} - CV`} author={content.fullName} subject="Curriculum Vitae">
@@ -117,7 +119,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
 
         <Section title="Personal projects" accent={accent}>
           {content.projects.length ? content.projects.map((item) => (
-            <View key={item.sourceId} style={styles.entry} wrap={false}>
+            <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.entryTitle}>{item.name}</Text>
               {item.role ? <Text style={styles.meta}>{item.role}</Text> : null}
               {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
