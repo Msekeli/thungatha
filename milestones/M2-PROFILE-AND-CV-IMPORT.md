@@ -1,6 +1,6 @@
 # M2 — Profile and CV Import
 
-**Status:** In progress — C02 and C03 accepted; C04 in progress (PDF-only scope).
+**Status:** **Accepted — complete and closed (2026-11-23).** All M2 checkpoints C00–C07 are closed. Do not modify or reopen M2 unless the user explicitly authorizes it.
 **Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has been accepted. On 2026-11-19, the user narrowed ongoing CV import support to PDF only; DOCX is out of scope.
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
@@ -133,10 +133,10 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **M2-C01 — Profile data contract and backend foundation:** implemented in source; user applied migrations. Automated verification and security isolation evidence were not run in this ChatGPT session; do not overstate test coverage.
 - **M2-C02 — Profile view and manual editing:** **Accepted by user (2026-10-24)**. The user reviewed the local result and confirmed that all is well. Implementation includes the existing empty/saved profile states, manual editing, residential-area fields, languages/personal attributes and work achievements. Focused code commit: `e3534b3948a69e2a10cbea6fd962745b85ac29f2`. No tests, lint, builds or browser checks were run by ChatGPT, per user instruction; acceptance is based on the user's review.
 - **M2-C03 — CV upload and private storage:** **Accepted by user (2026-10-24)** — PDF/DOCX was the original accepted scope, 5 MB limit, private Supabase Storage and staged replacement safety. On 2026-11-19, the user narrowed future uploads to PDF only; see the scope-change record below. User applied the migration and reported local testing complete. Commit: `8828f04cbfe31662da841a7c4738d31d294c1bf0`.
-- **M2-C04 — Deterministic extraction and progress/failure states:** **In review** — server-side PDF extraction and deterministic candidate parsing; PDF-only scope is being implemented. Results remain unconfirmed and are not persisted.
-- **M2-C05 — Review and confirmation workflow:** Not started.
-- **M2-C06 — Master CV lifecycle and replacement safety:** Not started.
-- **M2-C07 — End-to-end acceptance and closeout:** Not started.
+- **M2-C04 — Deterministic extraction and progress/failure states:** **Accepted** — PDF-only extraction and its progress, partial-result and failure handling are complete and user-verified.
+- **M2-C05 — Review and confirmation workflow:** **Accepted** — review, correction and explicit confirmation workflow is complete and user-verified.
+- **M2-C06 — Master CV lifecycle and replacement safety:** **Accepted** — master CV lifecycle and safe replacement/removal behaviour are complete and user-verified.
+- **M2-C07 — End-to-end acceptance and closeout:** **Accepted** — the user confirmed on 2026-11-23 that M2 is complete and verified. The supplied screenshots corroborate the populated, confirmed Profile and working Job Discovery workspace.
 
 ## M2-C02 execution record — 2026-10-24
 
@@ -205,3 +205,14 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Verification:** Tests, lint, build, browser checks and migration execution were not run, in accordance with the user's standing instruction. The new tests are authored but unverified.
 - **Known limitations:** Scanned/image-only PDFs remain unsupported. This increment does not guarantee perfect reading order for every multi-column PDF and does not yet extract every Profile section (for example, certifications, projects and languages). Users must review and complete missing or incorrect fields manually.
 - **Next action:** Run the focused extraction tests and review the two representative PDF layouts locally. Keep C04 in progress until the user confirms the results.
+
+
+## M2 final acceptance and permanent closeout — 2026-11-23
+
+- **Milestone status:** Accepted — complete and closed.
+- **User acceptance:** The user explicitly confirmed that all M2 functionality is already implemented, complete and verified, and directed that M2 must not be touched again under any circumstances unless they explicitly reopen it.
+- **Visible evidence supplied:** The 2026-11-23 screenshots show the populated Profile with a confirmed profile state and the Job Discovery workspace operating in the existing application shell. These screenshots are supporting evidence, not a claim that they independently prove every backend or CV lifecycle behaviour.
+- **Checkpoint disposition:** C00–C07 are accepted and closed. Earlier checkpoint entries that describe work as pending, in review, or awaiting user verification are historical records and are superseded by this final acceptance.
+- **Verification integrity:** This closeout records the user's explicit confirmation that implementation and verification are complete. It does not claim that ChatGPT independently ran automated tests, lint, builds, browser checks, or database/security tests during this closeout.
+- **Scope freeze:** Do not edit M2 application code, migrations, tests, UI, APIs, or M2 documentation; do not reopen M2 checkpoints or schedule M2 follow-up work. Any future change requires the user's explicit instruction to reopen M2.
+- **Next milestone:** M3 — AI-Powered Job Matching and Relevance. M2 is a satisfied dependency.
