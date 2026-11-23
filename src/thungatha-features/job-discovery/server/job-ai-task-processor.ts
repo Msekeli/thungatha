@@ -7,12 +7,12 @@ import { assessJobWithAi, parseJobUnderstanding, understandJobWithAi } from "./j
 import { AssessmentUnavailableError } from "./job-ai-classification";
 import type { JobUnderstanding } from "./job-ai-schemas";
 import {
-  JOB_AI_ASSESSMENT_VERSION, JOB_AI_UNDERSTANDING_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
+  JOB_AI_ASSESSMENT_VERSION, JOB_AI_UNDERSTANDING_VERSION, createJobMatchingContext, createServiceClient, hashDescription, hashJobContext, isUsableJobDescription,
 } from "./job-ai-queue-eligibility";
 
 export type QueueTask = {
   id: string; user_id: string; job_id: string; profile_version: number;
-  job_description_hash: string; assessment_version: string; attempts: number;
+  job_description_hash: string; job_context_hash: string; assessment_version: string; attempts: number;
 };
 
 export const createJobAiClient = createServiceClient;
@@ -41,7 +41,7 @@ async function markAssessmentUnavailable(
 export async function processJobAiTask(db: ReturnType<typeof createServiceClient>, task: QueueTask) {
   if (task.assessment_version !== JOB_AI_ASSESSMENT_VERSION) { await completeTask(db, task.id); return "stale"; }
   const [jobResult, profileResult] = await Promise.all([
-    db.from("jobs").select("id,title,description").eq("id", task.job_id).maybeSingle(),
+    db.from("jobs").select("id,title,employer_name,location_text,description").eq("id", task.job_id).maybeSingle(),
     db.from("profiles").select(PROFILE_SELECT_COLUMNS).eq("user_id", task.user_id).maybeSingle(),
   ]);
   if (jobResult.error) throw jobResult.error;
@@ -49,21 +49,22 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   const job = jobResult.data;
   const row = profileResult.data as ProfileDatabaseRow | null;
   if (!job || !row) { await completeTask(db, task.id); return "stale"; }
-  const description = job.description ?? "";
-  if (!isUsableJobDescription(description) || hashDescription(description) !== task.job_description_hash) {
+  const context = createJobMatchingContext(job);
+  const description = context.description;
+  if (!isUsableJobDescription(description) || hashDescription(description) !== task.job_description_hash || hashJobContext(context) !== task.job_context_hash) {
     await completeTask(db, task.id); return "stale";
   }
   const facts = deriveCandidateFacts(mapRowToProfileDto(row));
   if (!facts || facts.profileVersion !== task.profile_version) { await completeTask(db, task.id); return "stale"; }
   console.info("[AI job matching] Task started", { taskId: task.id, jobId: task.job_id, title: job.title });
   const cached = await db.from("job_ai_understandings").select("understanding,provider,model")
-    .eq("description_hash", task.job_description_hash)
+    .eq("context_hash", task.job_context_hash)
     .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
   if (cached.error) throw cached.error;
   let parsedUnderstanding: JobUnderstanding | null = null;
   if (cached.data?.understanding) {
     try {
-      parsedUnderstanding = parseJobUnderstanding(description, cached.data.understanding);
+      parsedUnderstanding = parseJobUnderstanding(context, cached.data.understanding);
       console.info("[AI job matching] Reusing cached job understanding", { jobId: task.job_id });
     } catch (error) {
       const detail = error instanceof Error ? error.message : "Unknown cache validation error";
@@ -73,7 +74,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
       });
       const { error: deleteError } = await db.from("job_ai_understandings")
         .delete()
-        .eq("description_hash", task.job_description_hash)
+        .eq("context_hash", task.job_context_hash)
         .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION);
       if (deleteError) throw deleteError;
     }
@@ -81,7 +82,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
 
   if (!parsedUnderstanding) {
     console.info("[AI job matching] Job understanding started", { jobId: task.job_id });
-    const generatedUnderstanding = await understandJobWithAi(description);
+    const generatedUnderstanding = await understandJobWithAi(context);
     parsedUnderstanding = generatedUnderstanding.analysis;
     console.info("[AI job matching] Job understanding completed", {
       jobId: task.job_id,
@@ -89,7 +90,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
       model: generatedUnderstanding.model,
     });
     const { error } = await db.from("job_ai_understandings").upsert({
-      description_hash: task.job_description_hash,
+      context_hash: task.job_context_hash,
       analysis_version: JOB_AI_UNDERSTANDING_VERSION,
       understanding: generatedUnderstanding.analysis,
       provider: generatedUnderstanding.provider,
@@ -102,7 +103,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   console.info("[AI job matching] Candidate assessment started", { jobId: task.job_id });
   let generated;
   try {
-    generated = await assessJobWithAi(job.title, parsedUnderstanding, description, facts);
+    generated = await assessJobWithAi(context, parsedUnderstanding, facts);
   } catch (error) {
     if (!(error instanceof AssessmentUnavailableError)) throw error;
     await markAssessmentUnavailable(db, task.id, error.message);
@@ -124,6 +125,8 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
     p_profile_version: task.profile_version,
     p_profile_confirmed_at: facts.confirmedAt,
     p_job_description: description,
+    p_job_context_hash: task.job_context_hash,
+    p_job_context: context,
     p_assessment_version: task.assessment_version,
     p_classification: generated.assessment.classification,
     p_assessment: generated.assessment,
