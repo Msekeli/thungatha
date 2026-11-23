@@ -18,13 +18,16 @@ CV Studio creates a master CV from the candidate's confirmed Profile, tailors it
 
 ## Master CV starting screen (M4-C03)
 
-The route /cv-studio now loads the authenticated Profile through the existing Profile repository and exposes a server-side Profile completion/confirmation gate.
+The route /cv-studio loads the authenticated Profile through the existing Profile repository and exposes a server-side Profile completion/confirmation gate. The screen now also accepts a Discovery job ID from the query string, resolves that job through the job-context API, and presents the same job-context workflow when the candidate pastes a description.
 
 - GET /api/cv-studio reports the Profile gate and missing required fields, or returns the current master CV when it matches the current Profile version.
 - POST /api/cv-studio creates a structured master CV from confirmed Profile facts. It reuses an existing current master CV for the same Profile version and supersedes a stale current master before creating a refreshed version.
 - The master CV mapper uses only Profile fields. Source IDs are retained for work experience, education, certifications and projects.
 - The screen shows the missing Profile information and links to /profile when the gate fails. It never offers CV upload or an independent candidate-fact entry route.
 - A generated master CV is previewed in a single-column layout. Job Discovery remains accessible through the Browse jobs action.
+- A Discovery job selected from the shared job detail view can hand off to `/cv-studio?jobId=<job-id>`. CV Studio resolves the selected job and passes its context to the suitability endpoint.
+- Candidates can also enter a job title, optional company/location/source URL and paste the full job description. The screen enforces the server's 200-character minimum and clearly states that URL auto-import is not enabled.
+- The screen displays exact prior-version matches and the server explanation. It does not offer a reuse action because retrieving and rendering a saved tailored version is not implemented yet.
 - A Profile change makes the existing master CV stale; the candidate must explicitly generate the refreshed master version.
 
 This screen and API are committed. No tests, build, browser checks or live Supabase migration execution were performed in this session.
@@ -106,4 +109,4 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Reuse existing Profile, Discovery, matching, authentication and AI contracts. Keep shared capabilities outside CV Studio when they are not feature-specific.
 - Keep the M4 checkpoint IDs and order in `milestones/M4-CV-STUDIO.md`; clarify scope within those checkpoints rather than creating or renumbering checkpoints.
 
-**Current implementation status:** M4-C01 contract documentation is being established. Feature UI and persistence are not yet implemented.
+**Current implementation status:** M4-C01 through M4-C05 have committed contracts and/or implementation. C03 now includes the master CV preview, Discovery job handoff, and pasted-description form. C04 connects Discovery and pasted job context to its validation endpoint. C05 displays exact-match recommendation results, but semantic suitability and saved-version retrieval/reuse remain outstanding. C06-C09 remain outstanding. The migration is not applied and runtime verification has not been performed.
