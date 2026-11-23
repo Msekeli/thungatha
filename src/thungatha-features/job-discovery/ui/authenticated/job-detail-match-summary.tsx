@@ -4,7 +4,7 @@ export function JobDetailMatchSummary({
   classification,
   onViewMatch,
 }: {
-  classification?: "match" | "relevant" | "unclassified";
+  classification?: "match" | "relevant";
   onViewMatch: (anchor: HTMLElement) => void;
 }) {
   if (classification !== "match" && classification !== "relevant") return null;
