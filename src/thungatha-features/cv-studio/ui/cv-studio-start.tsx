@@ -245,7 +245,7 @@ export function CvStudioStart() {
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
                 <div className="mb-5">
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Confirmed Profile · Version {state.profileVersion}</p>
-                  <h2 className="mt-1 text-xl font-semibold text-slate-950">CV preview</h2>
+                  <h2 className="mt-1 text-xl font-semibold text-fg">CV preview</h2>
                   <p className="mt-1 text-xs text-fg-muted">Master CV · Scroll to review the complete document</p>
                 </div>
                 <div className="max-h-[calc(100dvh-13rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-line bg-panel-2 p-4 sm:p-6"><MasterCvPreview content={state.masterCv.content} /></div>
