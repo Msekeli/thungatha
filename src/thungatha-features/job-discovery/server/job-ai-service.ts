@@ -180,8 +180,9 @@ export async function assessJobWithAi(
     ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ]);
   const referencedJobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
+  const metadataEvidence = allJobEvidence.filter((item) => item.sourcePath !== "description");
   const jobEvidence = referencedJobEvidence.length
-    ? referencedJobEvidence
+    ? [...metadataEvidence, ...referencedJobEvidence]
     : allJobEvidence;
   const profileEvidence = buildProfileEvidence(facts);
 
