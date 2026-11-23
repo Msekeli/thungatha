@@ -12,17 +12,15 @@ const items = [
   { href: "/jobs?status=saved", label: "Saved", icon: Bookmark },
 ];
 type Active = (href: string) => boolean;
+type Props = { isActive: Active; publicMode?: boolean; configured?: boolean };
 
-export function MobileWorkspaceBottomNav({
+function MobileWorkspaceBottomNavContent({
   isActive,
-  publicMode = false,
-  configured = true,
-}: {
-  isActive: Active;
-  publicMode?: boolean;
-  configured?: boolean;
-}) {
-  const { isLoaded, isSignedIn } = useAuth();
+  publicMode,
+  configured,
+  isLoaded,
+  isSignedIn,
+}: Props & { isLoaded: boolean; isSignedIn: boolean }) {
   const links = publicMode
     ? [{ ...items[0], href: "/" }, ...items.slice(1)]
     : items;
@@ -58,10 +56,7 @@ export function MobileWorkspaceBottomNav({
               sideOffset={10}
               triggerClassName="th-mobile-auth-trigger"
             >
-              <button
-                type="button"
-                aria-label={`Sign in to access ${item.label}`}
-              >
+              <button type="button" aria-label={`Sign in to access ${item.label}`}>
                 <item.icon size={19} strokeWidth={1.8} />
                 <span>{item.label}</span>
               </button>
@@ -73,4 +68,33 @@ export function MobileWorkspaceBottomNav({
       )}
     </nav>
   );
+}
+
+function ConfiguredMobileWorkspaceBottomNav(props: Props) {
+  const { isLoaded, isSignedIn } = useAuth();
+  return (
+    <MobileWorkspaceBottomNavContent
+      {...props}
+      configured
+      isLoaded={isLoaded}
+      isSignedIn={Boolean(isSignedIn)}
+    />
+  );
+}
+
+export function MobileWorkspaceBottomNav({
+  configured = true,
+  ...props
+}: Props) {
+  if (!configured) {
+    return (
+      <MobileWorkspaceBottomNavContent
+        {...props}
+        configured={false}
+        isLoaded={false}
+        isSignedIn={false}
+      />
+    );
+  }
+  return <ConfiguredMobileWorkspaceBottomNav {...props} configured />;
 }
