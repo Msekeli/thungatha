@@ -3,6 +3,9 @@ export type FeedJob = {
   published_at?: string | null;
   updated_at?: string | null;
   description?: string | null;
+  title?: string | null;
+  employer_name?: string | null;
+  location_text?: string | null;
   matchClassification?: "match" | "relevant";
   matchStatus?: "no_assessment" | "processing" | "failed" | "stale" | "no_confirmed_profile" | "error" | "unavailable" | "match" | "relevant";
   [key: string]: unknown;
