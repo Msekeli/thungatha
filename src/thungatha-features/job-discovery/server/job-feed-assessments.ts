@@ -45,7 +45,7 @@ export async function fetchFeedAssessmentsAndQueue(
             && (item.classification === "match" || item.classification === "relevant")
           ) {
             assessmentsByJob.set(item.job_id, {
-              hash: item.job_description_hash,
+              hash: item.job_context_hash,
               classification: item.classification,
             });
           }
@@ -57,7 +57,7 @@ export async function fetchFeedAssessmentsAndQueue(
         hasError = true;
       } else {
         for (const item of queueResult.data ?? []) {
-          if (currentHashes.get(item.job_id) === item.job_description_hash) {
+          if (currentHashes.get(item.job_id) === item.job_context_hash) {
             queueStatusByJob.set(item.job_id, item.status as QueueStatus);
           }
         }
