@@ -2,6 +2,7 @@ import "server-only";
 import { ZodError } from "zod";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import type { CandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
+import type { JobMatchingContext } from "./job-ai-queue-eligibility";
 import {
   assertEvidenceReferences,
   buildJobEvidence,
@@ -98,7 +99,7 @@ function assertCompleteResponse(stage: string, response: { provider: string; fin
   }
 }
 
-export function parseJobUnderstanding(description: string, value: unknown): JobUnderstanding {
+export function parseJobUnderstanding(context: JobMatchingContext, value: unknown): JobUnderstanding {
   const result = typeof value === "string"
     ? parse("Job understanding", value, jobUnderstandingSchema)
     : (() => {
@@ -115,7 +116,7 @@ export function parseJobUnderstanding(description: string, value: unknown): JobU
           throw new Error("Cached job understanding could not be validated.");
         }
       })();
-  const allowed = new Set(buildJobEvidence(description).map((item) => item.id));
+  const allowed = new Set(buildJobEvidence(context.description).map((item) => item.id));
   const refs = [
     ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
@@ -127,7 +128,7 @@ export function parseJobUnderstanding(description: string, value: unknown): JobU
   return result;
 }
 
-export async function understandJobWithAi(description: string) {
+export async function understandJobWithAi(context: JobMatchingContext) {
   const evidence = buildJobEvidence(description);
   if (evidence.length === 0) {
     throw new Error("The job description does not contain enough readable text.");
@@ -155,21 +156,20 @@ export async function understandJobWithAi(description: string) {
       "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
       "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
     ].join("\n"),
-    userPrompt: json({ sourceEvidence: evidence }),
+    userPrompt: json({ jobContext: context, sourceEvidence: evidence }),
   });
 
   assertCompleteResponse("Job understanding", response);
-  const result = parseJobUnderstanding(description, response.content);
+  const result = parseJobUnderstanding(context, response.content);
   return { analysis: result, provider: response.provider, model: response.model };
 }
 
 export async function assessJobWithAi(
-  title: string,
+  context: JobMatchingContext,
   understanding: JobUnderstanding,
-  description: string,
   facts: CandidateFacts,
 ) {
-  const allJobEvidence = buildJobEvidence(description);
+  const allJobEvidence = buildJobEvidence(context.description);
   const referencedJobIds = new Set([
     ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
     ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
@@ -178,7 +178,7 @@ export async function assessJobWithAi(
   const referencedJobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
   const jobEvidence = referencedJobEvidence.length
     ? referencedJobEvidence
-    : allJobEvidence.slice(0, 3);
+    : allJobEvidence;
   const profileEvidence = buildProfileEvidence(facts);
 
   if (!jobEvidence.length || !profileEvidence.length) {
@@ -196,8 +196,6 @@ export async function assessJobWithAi(
     task: "job-fit-assessment",
     responseFormat: "json",
     temperature: 0.1,
-    // A complete evidence-linked assessment can be substantially larger than
-    // the extraction response. Keep enough headroom for all 24 requirements.
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
@@ -219,7 +217,7 @@ export async function assessJobWithAi(
       "Use no additional fields. Every requirement must exactly preserve the extracted id, wording, and importance. Return only JSON, without markdown.",
     ].join("\n"),
     userPrompt: json({
-      title,
+      jobContext: context,
       jobUnderstanding: compactUnderstanding,
       jobEvidence,
       confirmedProfileEvidence: profileEvidence,
