@@ -45,8 +45,24 @@ begin
       constraint_name
     );
   end loop;
+  -- Remove standalone legacy unique indexes too; otherwise an old narrower
+  -- identity can still block a second assessment for a changed job context.
+  for constraint_name in
+    select idx.relname
+    from pg_catalog.pg_index as i
+    join pg_catalog.pg_class as idx on idx.oid = i.indexrelid
+    where i.indrelid = 'public.job_match_assessments'::regclass
+      and i.indisunique
+      and not exists (
+        select 1
+        from pg_catalog.pg_constraint as con
+        where con.conindid = i.indexrelid
+      )
+  loop
+    execute pg_catalog.format('drop index public.%I', constraint_name);
+  end loop;
 end;
-$$;
+$;
 
 create unique index job_match_assessments_context_unique
   on public.job_match_assessments (
@@ -92,7 +108,9 @@ begin
       or task.job_context_hash is null
       or task.job_context_hash !~ '^[a-f0-9]{64}$'
       or task.assessment_version is null
+      or pg_catalog.btrim(task.assessment_version) = ''
       or task.dedupe_key is null
+      or pg_catalog.btrim(task.dedupe_key) = ''
   ) then
     raise exception 'One or more AI assessment tasks are invalid';
   end if;
@@ -128,9 +146,22 @@ grant execute on function public.enqueue_ai_job_assessment_tasks(text, jsonb)
   to service_role;
 
 -- Extend the atomic freshness check to every field used by the model.
-drop function if exists public.persist_job_match_assessment(
-  uuid, text, uuid, integer, timestamptz, text, text, text, jsonb, text, text
-);
+do $
+declare
+  function_identity text;
+begin
+  for function_identity in
+    select pg_catalog.pg_get_function_identity_arguments(p.oid)
+    from pg_catalog.pg_proc as p
+    join pg_catalog.pg_namespace as n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'persist_job_match_assessment'
+  loop
+    execute 'drop function public.persist_job_match_assessment('
+      || function_identity || ')';
+  end loop;
+end;
+$;
 
 create or replace function public.persist_job_match_assessment(
   p_task_id uuid,
