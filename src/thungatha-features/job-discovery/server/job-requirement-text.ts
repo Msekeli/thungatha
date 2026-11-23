@@ -54,5 +54,5 @@ export function sourceSegments(description: string) {
   return text
     .split(/\n+|(?<=[.!?;])\s+/)
     .map((part) => part.replace(/^[•▪◦*-]\s*/, "").replace(/\s+/g, " ").trim())
-    .filter((part) => part.length >= 8);
+    .filter((part) => part.length > 0);
 }
