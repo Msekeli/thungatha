@@ -170,9 +170,9 @@ Scope includes:
 - Comparing the actual work and requirements semantically with confirmed Profile evidence, including transferable skills and substantially equivalent work expressed with different titles or terminology. Interpret individual requirements in the context of the full advert; do not use one extracted phrase, threshold, title, or missing field as an automatic rejection gate.
 - Preserving job-source snippets/references and confirmed Profile evidence references for every factual comparison.
 - Validating AI output and evidence references in application code; keeping identity, authorization, persistence, freshness, deterministic data integrity, and categorical outcome enforcement application-owned. Use asynchronous, idempotent processing and cached assessments; do not call AI synchronously on every feed request.
-- Producing only **Match**, **Relevant**, or **Unclassified** outcomes. Match means strong evidence-based alignment with the central work and core/mandatory requirements; Relevant means meaningful supported alignment with material gaps/unknowns; Unclassified means evidence is insufficient, ambiguous, unsupported, or contradictory.
-- Showing badges only for Match and Relevant; Unclassified has no badge.
-- Ordering the full filtered catalogue by Match, Relevant, then Unclassified before pagination. Date sorts remain independent.
+- Producing only two public classifications: **Match** and **Relevant**. Match means strong evidence-based alignment with the central work and core requirements; Relevant means meaningful supported alignment with material gaps or unknowns.
+- Representing insufficient evidence, missing confirmation, unusable job content, provider failure, or invalid AI output as an **unavailable assessment**, not as a third classification. Unavailable assessments receive no classification badge.
+- Ordering assessed jobs by Match, then Relevant before pagination. Unavailable assessments are not assigned a relevance rank; date-based fallback behaviour remains available.
 - Explaining the evidence and uncertainty behind each result without inventing candidate or job facts.
 - Testing semantic equivalence across titles and industries, transferable-skill recognition, false positives, false negatives, evidence grounding, provider failures, and stale results.
 
@@ -182,7 +182,7 @@ AI analysis failure must be represented honestly; do not silently substitute key
 
 **Dependencies:** M1 and M2.
 
-**Completion condition:** AI-powered semantic comparison produces explainable and validated categorical outcomes grounded in job-source evidence and confirmed Profile evidence, with representative cross-title/cross-industry evaluation and honest uncertainty/failure handling.
+**Completion condition:** AI-powered semantic comparison produces explainable and validated Match or Relevant classifications grounded in job-source evidence and confirmed Profile evidence. Insufficient evidence or provider failure is represented as unavailable, not as a third public classification. Representative cross-title/cross-industry evaluation and honest uncertainty/failure handling are required.
 
 Detailed checkpoints belong in the M3 milestone document.
 
@@ -441,10 +441,12 @@ Server-side PDF-only deterministic extraction is being revised on `dev` using th
 
 **Status:** Implemented on `dev`; local verification and migration application pending.
 
-The M3 matching pipeline now caches job understanding by description hash and analysis version, reuses that understanding across job records/users, sends a compact evidence subset to candidate assessment, and limits model output to material responsibilities, capabilities, requirements, and concise evidence explanations. Job feed reads are browse-only; assessments are requested on demand for the selected job. Per-user active queue depth is atomically capped at three, explicit backfill is capped at three tasks per request, and worker processing is limited to one task per invocation.
+Historical workload-control implementation (not the approved completion policy): the M3 pipeline cached job understanding by description hash, reused it across records/users, sent a compact evidence subset to candidate assessment, and introduced queue/backfill admission caps. These caps are not an approved way to manage AI consumption because they can prevent valid work from being admitted or completed. The replacement implementation must preserve every accepted task, avoid arbitrary AI call/token/output/queue budgets, and reduce duplicate work through context-aware caching and deduplication. A worker may process tasks incrementally, but it must persist progress and resume until each accepted task reaches a terminal result; an invocation boundary must not truncate an assessment.
 
 **Migration required:** `supabase/migrations/20261121000600_cache_job_understanding_by_description.sql`. Not applied by this change.
 
 **Verification:** No tests, builds, lint, type-checks, worker runs, AI calls, or database operations were executed, per instruction. Code and migration were reviewed manually only.
 
 **Next action:** User pulls `dev`, reviews the change, applies the migration manually, and performs local verification.
+
+**M3 workload policy clarification (2026-11-23):** Do not introduce arbitrary internal AI quotas, per-job call/token budgets, output-count caps, or queue-admission limits that can truncate, reject, or abandon valid matching work. Reduce unnecessary consumption through context-aware caching, request deduplication, compact evidence preparation, and reuse of completed results. When actual provider rate limits or temporary outages prevent progress, persist and defer the task, then resume safely. Never present partial AI output as a completed Match/Relevant assessment. This clarification supersedes the historical queue/backfill caps described above.
