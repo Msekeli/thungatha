@@ -29,28 +29,32 @@ const requiredRefs = refs.min(1);
 const aggregateRefs = z.array(z.string().min(1));
 const requiredAggregateRefs = aggregateRefs.min(1);
 
-export const jobUnderstandingSchema = z.object({
-  summary: z.string().min(1),
-  responsibilities: z.array(z.object({
-    id: z.string().min(1),
-    statement: z.string().min(1),
-    sourceEvidenceRefs: requiredRefs,
-  })),
-  capabilities: z.array(z.object({
-    id: z.string().min(1),
-    name: z.string().min(1),
-    context: z.string(),
-    sourceEvidenceRefs: requiredRefs,
-  })),
-  requirements: z.array(z.object({
-    id: z.string().min(1),
-    statement: z.string().min(1),
-    category: z.enum(["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"]),
-    importance: z.enum(["mandatory", "preferred", "uncertain"]),
-    sourceEvidenceRefs: requiredRefs,
-  })),
-  coverage: z.enum(["complete", "partial", "unavailable"]),
-});
+function createJobUnderstandingSchema(jobEvidenceRef: z.ZodType<string>) {
+  return z.object({
+    summary: z.string().min(1),
+    responsibilities: z.array(z.object({
+      id: z.string().min(1),
+      statement: z.string().min(1),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    capabilities: z.array(z.object({
+      id: z.string().min(1),
+      name: z.string().min(1),
+      context: z.string(),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    requirements: z.array(z.object({
+      id: z.string().min(1),
+      statement: z.string().min(1),
+      category: z.enum(["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"]),
+      importance: z.enum(["mandatory", "preferred", "uncertain"]),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    coverage: z.enum(["complete", "partial", "unavailable"]),
+  });
+}
+
+export const jobUnderstandingSchema = createJobUnderstandingSchema(z.string().min(1));
 
 const requirementAssessment = z.object({
   id: z.string().min(1),
@@ -127,30 +131,7 @@ export type MatchAssessmentInput = z.infer<typeof matchAssessmentInputSchema>;
 export type MatchAssessmentModelOutput = z.infer<ReturnType<typeof createMatchAssessmentResponseSchema>["validator"]>;
 
 export function createJobUnderstandingResponseSchema(jobEvidenceIds: string[]) {
-  const jobEvidenceRef = evidenceEnum(jobEvidenceIds);
-  const responseSchema = z.object({
-    summary: z.string().min(1),
-    responsibilities: z.array(z.object({
-      id: z.string().min(1),
-      statement: z.string().min(1),
-      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
-    })),
-    capabilities: z.array(z.object({
-      id: z.string().min(1),
-      name: z.string().min(1),
-      context: z.string(),
-      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
-    })),
-    requirements: z.array(z.object({
-      id: z.string().min(1),
-      statement: z.string().min(1),
-      category: z.enum(["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"]),
-      importance: z.enum(["mandatory", "preferred", "uncertain"]),
-      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
-    })),
-    coverage: z.enum(["complete", "partial", "unavailable"]),
-  });
-  return toGeminiResponseSchema(responseSchema);
+  return toGeminiResponseSchema(createJobUnderstandingSchema(evidenceEnum(jobEvidenceIds)));
 }
 
 export const jobUnderstandingResponseSchema = toGeminiResponseSchema(jobUnderstandingSchema);
