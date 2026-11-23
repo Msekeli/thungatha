@@ -16,6 +16,19 @@ CV Studio creates a master CV from the candidate's confirmed Profile, tailors it
 10. Save accepted structured versions with their source Profile version, job reference and template metadata. Generate PDF on demand; do not persist the PDF as the canonical CV.
 11. CV Studio does not apply for jobs or create application records. The candidate applies on the employer's website. M5 may associate an immutable accepted CV snapshot with an application only after the candidate explicitly confirms that they applied.
 
+## Master CV starting screen (M4-C03)
+
+The route /cv-studio now loads the authenticated Profile through the existing Profile repository and exposes a server-side Profile completion/confirmation gate.
+
+- GET /api/cv-studio reports the Profile gate and missing required fields, or returns the current master CV when it matches the current Profile version.
+- POST /api/cv-studio creates a structured master CV from confirmed Profile facts. It reuses an existing current master CV for the same Profile version and supersedes a stale current master before creating a refreshed version.
+- The master CV mapper uses only Profile fields. Source IDs are retained for work experience, education, certifications and projects.
+- The screen shows the missing Profile information and links to /profile when the gate fails. It never offers CV upload or an independent candidate-fact entry route.
+- A generated master CV is previewed in a single-column layout. Job Discovery remains accessible through the Browse jobs action.
+- A Profile change makes the existing master CV stale; the candidate must explicitly generate the refreshed master version.
+
+This screen and API are committed. No tests, build, browser checks or live Supabase migration execution were performed in this session.
+
 ## Data model contract (M4-C02)
 
 The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261123000100_cv_studio_versions.sql`.
