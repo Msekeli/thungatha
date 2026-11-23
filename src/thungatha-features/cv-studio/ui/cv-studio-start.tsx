@@ -184,14 +184,6 @@ export function CvStudioStart() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
-      <header className="mb-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">Thungatha / CV Studio</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-brand-ink">Your master CV</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-          Your CV is built from your confirmed Profile. Open a job from Discovery to review it in the context of that opportunity.
-        </p>
-      </header>
-
       {state.status === "loading" && <section className="rounded-2xl border border-slate-200 bg-white p-6" aria-live="polite">Checking your Profile and CV versions…</section>}
 
       {state.status === "error" && (
