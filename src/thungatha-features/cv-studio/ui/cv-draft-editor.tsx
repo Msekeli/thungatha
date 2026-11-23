@@ -155,7 +155,7 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
           </div>
           <div className="min-w-0 space-y-3 xl:sticky xl:top-4 xl:self-start">
             <div className="flex items-center justify-between gap-3"><h4 className="font-semibold">Live A4 preview</h4><span className="text-xs text-fg-muted">{draft.status === "accepted" ? "Accepted version" : "Unsaved edits appear here"}</span></div>
-            <CvPdfPreview content={content} accent={accentHex[draft.accent_colour]} />
+            <CvPdfPreview content={content} accent={accentHex[draft.accent_colour]} allowDownload={draft.status === "accepted"} />
           </div>
         </div>
       )}
