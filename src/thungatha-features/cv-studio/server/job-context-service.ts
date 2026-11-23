@@ -6,12 +6,21 @@ import { cvJobContextSchema, type CvJobContextInput } from "./job-context-schema
 
 const MIN_DESCRIPTION_LENGTH = 200;
 
+type ResolvedJobContext = {
+  source: "discovery" | "pasted";
+  jobId: string | null;
+  title: string;
+  company: string | null;
+  location: string | null;
+  sourceUrl: string | null;
+  description: string;
+};
+
 export async function resolveCvJobContext(
-  userId: string,
   getToken: () => Promise<string | null>,
   input: CvJobContextInput,
 ) {
-  let context: Omit<Parameters<typeof cvJobContextSchema.parse>[0], "descriptionFingerprint" | "retrievedAt">;
+  let context: ResolvedJobContext;
 
   if (input.source === "url") {
     throw new Error("URL_REQUIRES_DESCRIPTION");
