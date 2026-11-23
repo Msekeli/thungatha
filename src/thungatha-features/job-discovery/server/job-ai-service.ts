@@ -66,7 +66,7 @@ function parse<T>(
   }
 }
 
-function attachCanonicalRequirements(
+export function attachCanonicalRequirements(
   modelOutput: MatchAssessmentModelOutput,
   understanding: JobUnderstanding,
 ) {
