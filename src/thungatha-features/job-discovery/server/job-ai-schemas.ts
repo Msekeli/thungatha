@@ -89,7 +89,7 @@ export const matchAssessmentInputSchema = z.object({
 
 function evidenceEnum(values: string[]) {
   const unique = [...new Set(values)];
-  return unique.length ? z.enum(unique as [string, ...string[]]) : z.never();
+  return unique.length ? z.enum(unique as [string, ...string[]]) : z.string().min(1);
 }
 
 // Constrain evidence IDs at generation time as well as validating them after generation.
