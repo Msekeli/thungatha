@@ -52,7 +52,7 @@ function htmlToStructuredText(markup: string) {
 export function sourceSegments(description: string) {
   const text = htmlToStructuredText(description);
   return text
-    .split(/\n+|(?<=[.!?;])\s+/)
+    .split(/\n+/)
     .map((part) => part.replace(/^[•▪◦*-]\s*/, "").replace(/\s+/g, " ").trim())
     .filter((part) => part.length > 0);
 }
