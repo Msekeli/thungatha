@@ -185,7 +185,7 @@ export function CvStudioStart() {
       {state.status === "master_cv_ready" && (
         <div className="space-y-6">
           {jobContext && state.masterCv ? (
-            <div className="space-y-6">
+            <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
               <section className="space-y-5 text-fg">
                 <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
                   <div className="flex items-start justify-between gap-3">
@@ -223,7 +223,7 @@ export function CvStudioStart() {
               </section>
             </div>
           ) : (
-          <div className="space-y-6">
+          <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
               <div className="mb-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Choose a job source</p>
