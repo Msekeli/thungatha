@@ -53,6 +53,6 @@ export function sourceSegments(description: string) {
   const text = htmlToStructuredText(description);
   return text
     .split(/\n+|(?<=[.!?;])\s+/)
-    .map((part) => part.replace(/\s+/g, " ").trim())
+    .map((part) => part.replace(/^[•▪◦*-]\s*/, "").replace(/\s+/g, " ").trim())
     .filter((part) => part.length >= 8);
 }
