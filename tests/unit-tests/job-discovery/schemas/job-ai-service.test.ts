@@ -6,7 +6,7 @@ vi.mock("@/lib/ai/provider-router", () => ({
   completeAiTask: vi.fn(),
 }));
 
-const description = "Responsible for analysing data, preparing reports and maintaining compliance records.";
+const description = "Responsible for analysing data. Preparing reports. Maintaining compliance records. Coordinating teams. Supporting audits.";
 
 describe("job understanding service", () => {
   beforeEach(() => vi.clearAllMocks());
