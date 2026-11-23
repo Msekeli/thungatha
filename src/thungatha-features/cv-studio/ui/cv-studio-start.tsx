@@ -253,7 +253,7 @@ export function CvStudioStart() {
               </section>
             </div>
           ) : (
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="space-y-6">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
               <div className="mb-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Choose a job source</p>
@@ -261,8 +261,8 @@ export function CvStudioStart() {
                 <p className="mt-2 text-sm leading-6 text-fg-muted">Start with a job from Thungatha Discovery, or add an opportunity you found elsewhere.</p>
               </div>
               <div className="mb-6 flex flex-wrap gap-2 border-b border-line pb-3" role="tablist" aria-label="Job source">
-                <button type="button" role="tab" aria-selected={jobInputTab === "discovery"} onClick={() => setJobInputTab("discovery")} className={jobInputTab === "discovery" ? "rounded-lg bg-accent-bg px-4 py-2.5 text-sm font-semibold text-accent-text" : "rounded-lg px-4 py-2.5 text-sm font-medium text-fg-muted hover:bg-panel-2"}>Thungatha Discovery</button>
-                <button type="button" role="tab" aria-selected={jobInputTab === "paste"} onClick={() => setJobInputTab("paste")} className={jobInputTab === "paste" ? "rounded-lg bg-accent-bg px-4 py-2.5 text-sm font-semibold text-accent-text" : "rounded-lg px-4 py-2.5 text-sm font-medium text-fg-muted hover:bg-panel-2"}>Add external job</button>
+                <Button type="button" role="tab" aria-selected={jobInputTab === "discovery"} variant={jobInputTab === "discovery" ? "secondary" : "ghost"} onClick={() => setJobInputTab("discovery")}>Thungatha Discovery</Button>
+                <Button type="button" role="tab" aria-selected={jobInputTab === "paste"} variant={jobInputTab === "paste" ? "secondary" : "ghost"} onClick={() => setJobInputTab("paste")}>Add external job</Button>
               </div>
               {jobInputTab === "discovery" ? (
                 <div role="tabpanel" className="rounded-xl border border-line bg-panel-2 p-5">
@@ -293,13 +293,6 @@ export function CvStudioStart() {
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
               {state.masterCv ? (
                 <>
-                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Confirmed Profile · Version {state.profileVersion}</p>
-                      <h2 className="mt-1 text-xl font-semibold text-fg">Master CV preview</h2>
-                    </div>
-                    <Button variant="outline" disabled={busy} onClick={() => void generate()}>{busy ? "Refreshing…" : state.isStale ? "Refresh master CV" : "Regenerate from Profile"}</Button>
-                  </div>
                   <CvPdfPreview content={state.masterCv.content} />
                 </>
               ) : (
