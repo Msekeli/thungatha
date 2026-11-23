@@ -130,7 +130,7 @@ Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
-**Status: Accepted — complete and closed (2026-11-23). Frozen; do not modify or reopen without explicit user authorization.**
+**Status: Accepted — complete and closed (2026-11-23).**
 
 **Planning note:** C01 backend foundation has been implemented and the user reports applying the migrations. C02 manual profile editing was accepted on 2026-10-24. Begin C03 only after upload/storage decisions are agreed.
 
@@ -458,6 +458,6 @@ M2 is **Accepted — complete and closed**. The user explicitly confirmed that a
 
 This is user-confirmed acceptance; it is not a claim that ChatGPT independently reran automated tests, lint, builds, browser checks, or database/security verification during closeout. Historical checkpoint notes remain as an audit trail and are superseded by this final status.
 
-**Permanent completion status:** Do not touch M2 under any circumstances unless the user explicitly instructs that M2 be reopened. This prohibition includes M2 application code, UI, APIs, migrations, tests, milestone documentation, and execution briefs. Do not create M2 follow-up tasks or re-audit completed M2 work.
+**Completion status:** M2 is finished and has no outstanding checkpoints or planned implementation work. Any genuinely new enhancement should be treated as new scope and discussed separately.
 
 **Active milestone:** M3 — AI-Powered Job Matching and Relevance. M2 is a satisfied dependency.
