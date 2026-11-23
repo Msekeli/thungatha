@@ -87,6 +87,11 @@ export const matchAssessmentInputSchema = z.object({
   }
 });
 
+function evidenceEnum(values: string[]) {
+  const unique = [...new Set(values)];
+  return unique.length ? z.enum(unique as [string, ...string[]]) : z.never();
+}
+
 // Constrain evidence IDs at generation time as well as validating them after generation.
 export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], profileEvidenceIds: string[], requirementIds: string[]) {
   const jobRef = evidenceEnum(jobEvidenceIds);
