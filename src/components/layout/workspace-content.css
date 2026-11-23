@@ -339,15 +339,30 @@
 /* A4 paper preview with visible page boundaries. */
 .th-cv-studio-page .th-cv-a4-sheet {
   box-sizing: border-box;
-  width: min(210mm, 100%);
-  max-width: 100%;
+  width: 100%;
+  max-width: 210mm;
   min-height: 297mm;
-  padding: 18mm 17mm;
+  padding: clamp(24px, 3.8vw, 68px);
+  margin-inline: auto;
   background-color: #fff;
-  background-image: repeating-linear-gradient(to bottom, #fff 0, #fff calc(297mm - 10px), #d8e0e9 calc(297mm - 10px), #d8e0e9 297mm);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #fff 0,
+    #fff calc(297mm - 10px),
+    #d8e0e9 calc(297mm - 10px),
+    #d8e0e9 297mm
+  );
   background-size: 100% 297mm;
   color: #111827;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.th-cv-studio-page .th-cv-a4-sheet h2,
+.th-cv-studio-page .th-cv-a4-sheet h3,
+.th-cv-studio-page .th-cv-a4-sheet p,
+.th-cv-studio-page .th-cv-a4-sheet li {
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 .th-cv-studio-page .th-cv-a4-sheet > section,
 .th-cv-studio-page .th-cv-a4-sheet > header,
