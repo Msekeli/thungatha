@@ -96,7 +96,7 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
       provider: generatedUnderstanding.provider,
       model: generatedUnderstanding.model,
       updated_at: new Date().toISOString(),
-    }, { onConflict: "description_hash,analysis_version" });
+    }, { onConflict: "context_hash,analysis_version" });
     if (error) throw error;
   }
 
