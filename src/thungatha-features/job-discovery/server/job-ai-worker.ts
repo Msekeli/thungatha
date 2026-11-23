@@ -66,6 +66,9 @@ export async function processJobAiQueue(options: { jobIds?: string[] } = {}): Pr
       if (updateError) throw new Error(`Task failed (${sanitized}), and its retry state could not be saved: ${updateError.message}`);
       failed += 1;
       tasks.push({ taskId: task.id, jobId: task.job_id, outcome: "failed", attempts: task.attempts, error: sanitized });
+      // A provider-wide rate limit affects every queued task. Stop this worker run
+      // after scheduling the current task for retry instead of flooding the provider.
+      if (errorRecord?.code === "rate-limited") break;
     }
   }
 
