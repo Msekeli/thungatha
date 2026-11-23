@@ -34,6 +34,10 @@ describe("job understanding service", () => {
     expect(completeAiTask).toHaveBeenCalledOnce();
     const request = vi.mocked(completeAiTask).mock.calls[0]?.[0];
     expect(request?.maxOutputTokens).toBeUndefined();
+    expect(request?.responseSchema).toMatchObject({
+      type: "OBJECT",
+      properties: { responsibilities: { type: "ARRAY" } },
+    });
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
