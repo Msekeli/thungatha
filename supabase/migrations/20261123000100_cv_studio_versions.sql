@@ -23,16 +23,17 @@ create table public.cv_versions (
   constraint cv_versions_user_version_unique unique (user_id, version_number),
   constraint cv_versions_user_id_unique unique (user_id, id),
   constraint cv_versions_parent_fk foreign key (user_id, parent_version_id)
-    references public.cv_versions(user_id, id) on delete set null,
+    references public.cv_versions(user_id, id) on delete set null (parent_version_id),
   constraint cv_versions_profile_version_fk foreign key (user_id, source_profile_version)
-    references public.profile_versions(user_id, version) on delete restrict,
+    references public.profile_versions(user_id, version) on delete cascade,
   constraint cv_versions_status_kind_check check (
     (cv_kind = 'master' and status in ('current', 'superseded'))
-    or (cv_kind = 'tailored' and status in ('draft', 'accepted', 'superseded'))
+    or (cv_kind = 'tailored' and status in ('draft', 'accepted'))
   ),
   constraint cv_versions_accepted_timestamp_check check (
     (status = 'accepted' and accepted_at is not null)
-    or (status <> 'accepted' and accepted_at is null)
+    or (status in ('draft', 'current') and accepted_at is null)
+    or status = 'superseded'
   ),
   constraint cv_versions_tailored_job_snapshot_check check (
     (cv_kind = 'master' and source_job_snapshot is null)
