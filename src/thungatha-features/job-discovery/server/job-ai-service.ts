@@ -15,7 +15,7 @@ import {
   matchAssessmentResponseSchema,
   type JobUnderstanding,
 } from "./job-ai-schemas";
-import { validateAndClassifyAssessment } from "./job-ai-classification";
+import { AssessmentUnavailableError, validateAndClassifyAssessment } from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 
@@ -185,8 +185,11 @@ export async function assessJobWithAi(
     : allJobEvidence;
   const profileEvidence = buildProfileEvidence(facts);
 
-  if (!jobEvidence.length || !profileEvidence.length) {
-    throw new Error("There is insufficient evidence to assess this role.");
+  if (!jobEvidence.length) {
+    throw new Error("The job advert does not contain usable source evidence.");
+  }
+  if (!profileEvidence.length) {
+    throw new AssessmentUnavailableError("The confirmed Profile does not contain enough evidence to assess this role.");
   }
 
   const compactUnderstanding = {
