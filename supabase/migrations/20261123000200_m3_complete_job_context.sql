@@ -62,7 +62,7 @@ begin
     execute pg_catalog.format('drop index public.%I', constraint_name);
   end loop;
 end;
-$;
+$$;
 
 create unique index job_match_assessments_context_unique
   on public.job_match_assessments (
@@ -161,7 +161,7 @@ begin
       || function_identity || ')';
   end loop;
 end;
-$;
+$$;
 
 create or replace function public.persist_job_match_assessment(
   p_task_id uuid,
