@@ -104,7 +104,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
 
         <Section title="Professional experience" accent={accent}>
           {content.workExperience.length ? content.workExperience.map((item) => (
-            <View key={item.sourceId} style={styles.entry} wrap={false}>
+            <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.entryTitle}>{item.jobTitle} · {item.employer}</Text>
               <Text style={styles.meta}>{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}</Text>
               {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
@@ -150,16 +150,10 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
           <Text style={styles.body}>{content.languages.join(" · ") || "No languages recorded in Profile."}</Text>
         </Section>
 
-        <Text
-          fixed
-          style={styles.footer}
-          render={({ pageNumber, totalPages }) => (
-            <>
-              <Text>{content.fullName} · Curriculum Vitae</Text>
-              <Text>Page {pageNumber} of {totalPages}</Text>
-            </>
-          )}
-        />
+        <View fixed style={styles.footer}>
+          <Text>{content.fullName} · Curriculum Vitae</Text>
+          <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+        </View>
       </Page>
     </Document>
   );
