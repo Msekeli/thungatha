@@ -444,7 +444,7 @@ When a decision is approved or changed:
 ### D-050 — Semantic, evidence-grounded AI job matching without scores
 
 - **Date:** 2026-11-21
-- **Status:** Confirmed
+- **Status:** Confirmed for semantic matching and no-score principles; public outcome count superseded by D-052
 - **Context:** Thungatha is an AI-powered job-search platform. Earlier M3 documents restricted matching to deterministic extraction, exact keyword matching, and role-family rules. That restriction undermined the product's core AI purpose and could misclassify equivalent work simply because job titles or wording differ. The user has explicitly directed that AI be used meaningfully in the application and that all numerical scoring language be removed.
 - **Decision:**
   - AI is responsible for understanding job descriptions in context and semantically comparing the actual work and requirements with the user's confirmed Profile evidence. It should interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, transferable skills, and relevant domain context.
