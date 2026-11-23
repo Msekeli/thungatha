@@ -150,3 +150,14 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Reusable tailored outputs are internal working artefacts, not a user-facing CV history. M5 Job Tracking owns the application record and the immutable CV snapshot/reference actually used when the candidate confirms an application.
 - The M4 persistence layer may retain the minimum structured records needed for current master, reusable tailored output and immutable M5 submission references. This does not authorize a CV history screen or unbounded generation of versions.
 - Removed the two CV Studio version-history GET endpoints and their UI. Existing database rows are not deleted by this code change.
+
+## A4 PDF preview and export correction (2026-11-24)
+
+- Replaced the CSS-simulated A4 HTML sheet with a real paginated PDF document rendered by the already-installed `@react-pdf/renderer` package.
+- The document uses A4 page dimensions, fixed page margins, natural text flow, automatic page breaks and a page-number footer. Content is allowed to flow between pages; individual work/project/education entries are not forcibly kept on one page.
+- Added an embedded PDF viewer. Its native PDF toolbar provides zoom controls, page navigation, fit/scale controls where supported by the browser PDF viewer, and print. A dedicated Download PDF action is also provided.
+- The PDF preview is loaded client-side only to avoid invoking the PDF renderer during Next.js server rendering.
+- The same structured Profile-derived CV content feeds both preview and download. The PDF is generated on demand and is not stored as a canonical file.
+- The PDF is a clean white document with dark text; the surrounding preview controls use the active Thungatha theme. The document's section accent is kept separate from the application theme.
+- The former repeating-gradient A4 simulation and HTML page-break CSS have been removed.
+- This implementation has been committed to `dev`, but build, lint, PDF rendering, download, print and browser behaviour have not been tested in this session. Page count and visual fit must be checked against real CV data before acceptance.
