@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 import { apiError, apiFailure } from "@/lib/http/api-response";
@@ -96,7 +95,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const [profileResult, jobResult] = await Promise.all([
       db.from("profiles").select("profile_version,confirmed_at").eq("user_id", identity.userId).maybeSingle(),
-      db.from("jobs").select("description").eq("id", id).maybeSingle(),
+      db.from("jobs").select("title,employer_name,location_text,description").eq("id", id).maybeSingle(),
     ]);
     if (profileResult.error) throw profileResult.error;
     if (jobResult.error) throw jobResult.error;
