@@ -121,23 +121,23 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C05 — CV recommendation and suitability decision
 
-**Goal:** explain how the master CV and any existing accepted tailored versions relate to the selected job.
+**Status:** In review — exact prior-version matching and a candidate-controlled reuse recommendation are implemented. Semantic AI suitability assessment remains outstanding.
 
-**Work**
+**Implemented**
 
-- Assess the master CV against the selected job using available matching capability.
-- Identify relevant existing accepted tailored versions where applicable.
-- Explain the recommendation and its supporting evidence.
-- Let the candidate proceed with tailoring or choose to reuse/retain an existing suitable version.
-- Do not implement a mandatory three-way choice screen or require a candidate to choose between master, existing tailored and new tailored CV as separate fixed paths.
-- Handle unavailable matching results without blocking CV creation/tailoring or presenting uncertain results as facts.
-- Never silently select, accept or submit a CV.
+- Authenticated `POST /api/cv-studio/suitability` verifies the current master CV belongs to the signed-in user and matches the current confirmed Profile version.
+- Finds accepted tailored versions for the same candidate and Profile version using the stable Discovery job ID or exact pasted-description fingerprint.
+- Returns matching version metadata and recommends review/reuse or preparing a new draft. It never silently selects a version.
+- Explicitly reports semantic assessment as unavailable. No title/keyword heuristic is presented as AI suitability.
 
-**Exit criteria**
+**Outstanding**
 
-- Suitability information is explainable and validated.
-- Existing versions are surfaced only when relevant and available.
-- Candidate retains control over whether to tailor or reuse a version.
+- Semantic comparison of the master CV and job description using the approved AI capability.
+- Evidence-backed explanation of relevant confirmed candidate facts, transferable skills and material gaps.
+- Include relevant accepted versions where their relevance can be supported beyond an exact context match.
+- Candidate-facing UI to review the recommendation and choose whether to reuse or prepare a new draft.
+
+No tests, build, browser checks or live Supabase verification were run. C05 is not accepted.
 
 ### M4-C06 — AI-assisted tailoring
 
