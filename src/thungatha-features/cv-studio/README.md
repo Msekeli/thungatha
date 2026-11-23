@@ -109,4 +109,14 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Reuse existing Profile, Discovery, matching, authentication and AI contracts. Keep shared capabilities outside CV Studio when they are not feature-specific.
 - Keep the M4 checkpoint IDs and order in `milestones/M4-CV-STUDIO.md`; clarify scope within those checkpoints rather than creating or renumbering checkpoints.
 
-**Current implementation status:** M4-C01 through M4-C05 have committed contracts and/or implementation. C03 now includes the master CV preview, Discovery job handoff, and pasted-description form. C04 connects Discovery and pasted job context to its validation endpoint. C05 displays exact-match recommendation results, but semantic suitability and saved-version retrieval/reuse remain outstanding. C06-C09 remain outstanding. The migration is not applied and runtime verification has not been performed.
+**Current implementation status:** M4-C01 through M4-C05 have committed contracts and/or implementation. C03 now includes the master CV preview, Discovery job handoff, and pasted-description form. C04 connects Discovery and pasted job context to its validation endpoint. C05 displays exact-match recommendation results, but semantic suitability and saved-version retrieval/reuse remain outstanding. C06-C07 remain outstanding. C08 now has owner-scoped version-history and single-version read APIs plus a read-only history/review panel; editing, acceptance workflow and PDF export remain outstanding. C09 remains outstanding. The migration is not applied and runtime verification has not been performed.
+
+
+## Version history UI (M4-C08 — partial)
+
+- Added authenticated, owner-scoped GET endpoints at `/api/cv-studio/versions` and `/api/cv-studio/versions/[id]`.
+- The history endpoint returns metadata only; the detail endpoint returns the structured content and suggestion decisions for one version after validating the UUID and owner scope.
+- CV Studio lists master and tailored versions with status, version number, source Profile version and job title where available.
+- Candidates can open a saved version in a read-only historical preview and inspect saved suggestion decisions.
+- This is not yet a reuse action: a selected saved version is not copied into a new draft or made current. Editing, explicit acceptance and PDF export remain unimplemented.
+- The database migration remains unapplied; API and UI runtime behaviour is unverified.
