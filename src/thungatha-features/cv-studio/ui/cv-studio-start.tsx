@@ -54,7 +54,6 @@ const emptyJobForm: JobForm = { title: "", company: "", location: "", sourceUrl:
 export function CvStudioStart() {
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
-  const [busy, setBusy] = useState(false);
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobForm, setJobForm] = useState<JobForm>(emptyJobForm);
   const [jobContext, setJobContext] = useState<JobContext | null>(null);
@@ -119,30 +118,6 @@ export function CvStudioStart() {
     void resolveDiscoveryJob(jobId, state.masterCv.id);
   }, [state, jobId, jobContext, resolveDiscoveryJob]);
 
-  async function generate() {
-    setBusy(true);
-    try {
-      const response = await fetch("/api/cv-studio", { method: "POST" });
-      const body = await response.json();
-      if (!response.ok) {
-        if (response.status === 409) {
-          setState(body as State);
-          return;
-        }
-        throw new Error(body.error ?? "The master CV could not be generated.");
-      }
-      const nextState: State = {
-        status: "master_cv_ready",
-        profileVersion: body.masterCv.source_profile_version,
-        masterCv: body.masterCv,
-      };
-      setState(nextState);
-    } catch (error) {
-      setState({ status: "error", message: error instanceof Error ? error.message : "The master CV could not be generated." });
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function submitPastedJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -279,7 +254,7 @@ export function CvStudioStart() {
                       <Textarea required minLength={200} maxLength={30000} rows={9} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the responsibilities, requirements and qualifications from the job advert…" />
                     </Field>
                     {workflowError && <p className="text-sm text-rose-700" role="alert">{workflowError}</p>}
-                    <Button type="submit" disabled={workflowBusy || busy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
+                    <Button type="submit" disabled={workflowBusy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
                   </form>
                 </div>
               )}
