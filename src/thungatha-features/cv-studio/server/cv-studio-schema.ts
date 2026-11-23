@@ -116,8 +116,8 @@ export const cvVersionRecordSchema = z.object({
   if (version.kind === "master" && version.status !== "current" && version.status !== "superseded") {
     context.addIssue({ code: "custom", path: ["status"], message: "Master CV versions are generated from Profile and cannot be tailored drafts." });
   }
-  if (version.kind === "tailored" && version.status === "current") {
-    context.addIssue({ code: "custom", path: ["status"], message: "Tailored CV versions must be drafts, accepted or superseded." });
+  if (version.kind === "tailored" && version.status !== "draft" && version.status !== "accepted") {
+    context.addIssue({ code: "custom", path: ["status"], message: "Tailored CV versions must be drafts or accepted." });
   }
   if (version.status === "accepted" && !version.acceptedAt) {
     context.addIssue({ code: "custom", path: ["acceptedAt"], message: "Accepted versions require an acceptance timestamp." });
