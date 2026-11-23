@@ -180,3 +180,16 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Restored the desktop two-column layout in both states: job source/details on the left and the CV preview on the right. Smaller viewports collapse to one column.
 - Uses shared shadcn Button components and Tailwind theme utilities; no new feature-specific CSS was added.
 - Source changes are committed and fetched from `dev`; local build and browser rendering remain unverified.
+
+## M4 continuation — manual review, exact reuse and acceptance (2026-11-24)
+
+- Added an owner-scoped exact-context reuse endpoint. It only returns an accepted tailored CV when its source Discovery job ID or pasted-description fingerprint exactly matches the selected job and its source Profile version is still current.
+- Connected the candidate-controlled **Use this CV** action to that endpoint. Reused content is displayed with the saved accent colour; no duplicate CV is generated.
+- Draft creation now searches for an existing working draft for the same owner, current Profile version and exact job context before inserting. A matching draft is reopened rather than duplicated.
+- Connected the manual editor to the selected-job workflow. It provides a live A4 PDF preview and editing for contact details, headline, summary, profile links, skills, experience descriptions/achievements, project descriptions, languages and accent colour. Source identity fields such as employer, role and dates remain sourced from Profile.
+- Added an explicit acceptance endpoint. It checks ownership, current confirmed Profile version and draft status. The editor saves the latest edits before accepting. Accepted versions are protected by the existing immutability trigger.
+- Download of a tailored working draft is disabled until acceptance. Accepted tailored CVs and the master CV can be exported on demand.
+- The accepted version ID and structured content are available for the future M5 application snapshot flow. M4 does not create application records.
+- AI tailoring and semantic suitability remain blocked until an AI provider is selected.
+- No CV history UI has been reintroduced.
+- No tests, lint, build, browser checks, database checks or migrations were run. Runtime verification is still required.
