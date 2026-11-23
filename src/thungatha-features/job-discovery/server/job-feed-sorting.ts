@@ -3,8 +3,8 @@ export type FeedJob = {
   published_at?: string | null;
   updated_at?: string | null;
   description?: string | null;
-  matchClassification?: "match" | "relevant" | "unclassified";
-  matchStatus?: "no_assessment" | "processing" | "failed" | "stale" | "no_confirmed_profile" | "error" | "match" | "relevant" | "unclassified";
+  matchClassification?: "match" | "relevant";
+  matchStatus?: "no_assessment" | "processing" | "failed" | "stale" | "no_confirmed_profile" | "error" | "unavailable" | "match" | "relevant";
   [key: string]: unknown;
 };
 
