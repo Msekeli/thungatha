@@ -232,6 +232,12 @@ export async function assessJobWithAi(
     throw new AssessmentUnavailableError("The confirmed Profile does not contain enough evidence to assess this role.");
   }
 
+  const modelSchema = createMatchAssessmentResponseSchema(
+    jobEvidence.map((item) => item.id),
+    profileEvidence.map((item) => item.id),
+    understanding.requirements.map((item) => item.id),
+  );
+
   // Encode evidence as [id, content] tuples. IDs and content remain lossless,
   // while repeated JSON property names and the duplicated full job description
   // are removed from the provider prompt.
