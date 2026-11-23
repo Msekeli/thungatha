@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import { understandJobWithAi, parseJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-service";
+import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 vi.mock("@/lib/ai/provider-router", () => ({
   completeAiTask: vi.fn(),
 }));
 
-const description = "Responsible for analysing data. Preparing reports. Maintaining compliance records. Coordinating teams. Supporting audits.";
+const context: JobMatchingContext = { title: "Data Analyst", employerName: "Example Employer", locationText: "Cape Town", description: "Responsible for analysing data. Preparing reports. Maintaining compliance records. Coordinating teams. Supporting audits." };
 
 describe("job understanding service", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -28,7 +29,7 @@ describe("job understanding service", () => {
       }),
     });
 
-    const parsed = await understandJobWithAi(description);
+    const parsed = await understandJobWithAi(context);
     expect(parsed.analysis.responsibilities).toHaveLength(1);
     expect(completeAiTask).toHaveBeenCalledOnce();
     const request = vi.mocked(completeAiTask).mock.calls[0]?.[0];
@@ -36,7 +37,7 @@ describe("job understanding service", () => {
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
-    expect(() => parseJobUnderstanding(description, {
+    expect(() => parseJobUnderstanding(context, {
       summary: "Role",
       responsibilities: [{
         id: "resp-1",
