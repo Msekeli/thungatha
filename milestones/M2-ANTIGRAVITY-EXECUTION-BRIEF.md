@@ -139,3 +139,10 @@ No tests, lint, build, browser checks or Vercel operations were run, per the use
 - Never block manual Profile creation when extraction fails. Never silently overwrite confirmed Profile facts.
 - Use anonymised test fixtures or generated synthetic PDFs. Do not commit the user's uploaded CVs or their personal information.
 - Do not start DOCX support, OCR, external APIs or AI extraction during this checkpoint.
+
+
+## Archive notice — 2026-11-23
+
+M2 has been explicitly accepted as complete by the user. All checkpoints C00–C07 are closed. This brief is retained only as a historical record of the original execution plan and implementation constraints.
+
+**Do not execute this brief or modify M2** — including code, tests, APIs, migrations, UI, or documentation — unless the user explicitly authorizes reopening M2. The active implementation milestone is M3.
