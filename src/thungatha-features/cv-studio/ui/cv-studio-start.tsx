@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CvDraftEditor } from "./cv-draft-editor";
 
 type CvContent = {
   fullName: string;
@@ -402,6 +403,14 @@ export function CvStudioStart() {
                   <p className="mt-1 text-sm leading-6 text-amber-900">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
                 </div>
               </div>
+            )}
+
+            {jobContext && state.masterCv && (
+              <CvDraftEditor
+                masterVersionId={state.masterCv.id}
+                jobContext={jobContext as Parameters<typeof CvDraftEditor>[0]["jobContext"]}
+                initialContent={state.masterCv.content}
+              />
             )}
           </section>
         </div>
