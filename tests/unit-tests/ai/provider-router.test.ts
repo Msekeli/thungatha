@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { AiCompletionRequest, AiCompletionResult, AiProviderAdapter } from "@/lib/ai/contracts";
 import { AiProviderError } from "@/lib/ai/errors";
-import { completeWithRetry } from "@/lib/ai/provider-router";
+import { completeWithRetry, resolveProviderPlan } from "@/lib/ai/provider-router";
 
 const request: AiCompletionRequest = {
   task: "job-requirement-extraction",
@@ -13,6 +13,47 @@ const request: AiCompletionRequest = {
 function result(): AiCompletionResult {
   return { content: '{"ok":true}', provider: "gemini", model: "test-model" };
 }
+
+describe("AI provider configuration", () => {
+  it("uses only Gemini when it is the sole listed and enabled provider", () => {
+    vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini");
+    vi.stubEnv("AI_PROVIDER", "gemini");
+    vi.stubEnv("AI_DEFAULT_PROVIDER", "gemini");
+    vi.stubEnv("GEMINI_ENABLED", "true");
+    vi.stubEnv("GROQ_ENABLED", "false");
+    vi.stubEnv("OLLAMA_LOCAL_ENABLED", "true");
+
+    expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: [] });
+  });
+
+  it("does not allow a provider-specific enabled flag to override the allow-list", () => {
+    vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini");
+    vi.stubEnv("AI_PROVIDER", "gemini");
+    vi.stubEnv("GEMINI_ENABLED", "true");
+    vi.stubEnv("GROQ_ENABLED", "true");
+
+    expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: [] });
+  });
+
+  it("rejects a selected provider that is disabled", () => {
+    vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini");
+    vi.stubEnv("AI_PROVIDER", "groq");
+    vi.stubEnv("GEMINI_ENABLED", "true");
+    vi.stubEnv("GROQ_ENABLED", "true");
+
+    expect(() => resolveProviderPlan()).toThrow(/not enabled/);
+  });
+
+  it("uses enabled providers after the primary as ordered fallbacks", () => {
+    vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini,groq,ollama-local");
+    vi.stubEnv("AI_PROVIDER", "gemini");
+    vi.stubEnv("GEMINI_ENABLED", "true");
+    vi.stubEnv("GROQ_ENABLED", "true");
+    vi.stubEnv("OLLAMA_LOCAL_ENABLED", "false");
+
+    expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: ["groq"] });
+  });
+});
 
 describe("AI provider retry policy", () => {
   it("retries one transient provider failure and returns the next successful result", async () => {
@@ -43,9 +84,7 @@ describe("AI provider retry policy", () => {
 
   it("does not retry timeouts because queue retry owns long-running failures", async () => {
     const complete = vi.fn<AiProviderAdapter["complete"]>().mockRejectedValue(
-      new AiProviderError("Request timed out.", {
-        code: "timeout", provider: "gemini", retryable: true,
-      }),
+      new AiProviderError("Request timed out.", { code: "timeout", provider: "gemini", retryable: true }),
     );
     const adapter: AiProviderAdapter = { provider: "gemini", complete };
 
