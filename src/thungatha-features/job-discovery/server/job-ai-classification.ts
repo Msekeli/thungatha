@@ -56,7 +56,9 @@ export function validateAndClassifyAssessment(
   }
 
   if (
-    assessment.semanticAlignment.level === "insufficient"
+    understanding.coverage === "unavailable"
+    || (understanding.responsibilities.length === 0 && understanding.capabilities.length === 0 && understanding.requirements.length === 0)
+    || assessment.semanticAlignment.level === "insufficient"
     || assessment.semanticAlignment.profileEvidenceRefs.length === 0
   ) {
     throw new AssessmentUnavailableError(
