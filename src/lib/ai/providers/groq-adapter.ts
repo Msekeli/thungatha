@@ -4,6 +4,35 @@ import { AiProviderError, createProviderHttpError } from "../errors";
 
 const ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
+const JSON_SCHEMA_TYPES: Record<string, string> = {
+  OBJECT: "object", ARRAY: "array", STRING: "string", NUMBER: "number",
+  INTEGER: "integer", BOOLEAN: "boolean",
+};
+
+/** Convert the provider-neutral/Gemini schema representation into strict OpenAI JSON Schema. */
+function toOpenAiJsonSchema(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const schema = value as Record<string, unknown>;
+  const output: Record<string, unknown> = {};
+  if (typeof schema.type === "string") {
+    output.type = JSON_SCHEMA_TYPES[schema.type] ?? schema.type.toLowerCase();
+  }
+  if (Array.isArray(schema.enum)) output.enum = schema.enum;
+  if (typeof schema.description === "string") output.description = schema.description;
+  if (typeof schema.format === "string") output.format = schema.format;
+  if (schema.items && typeof schema.items === "object") output.items = toOpenAiJsonSchema(schema.items);
+  if (schema.properties && typeof schema.properties === "object" && !Array.isArray(schema.properties)) {
+    const properties = schema.properties as Record<string, unknown>;
+    output.properties = Object.fromEntries(
+      Object.entries(properties).map(([key, child]) => [key, toOpenAiJsonSchema(child)]),
+    );
+    // Groq strict structured outputs require every property to be required.
+    output.required = Object.keys(properties);
+    output.additionalProperties = false;
+  }
+  return output;
+}
+
 export function createGroqAdapter(options: { apiKey?: string; model?: string; fetcher?: typeof fetch } = {}): AiProviderAdapter {
   const fetcher = options.fetcher ?? fetch;
   return {
@@ -24,7 +53,14 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
               { role: "system", content: request.systemPrompt },
               { role: "user", content: request.userPrompt },
             ],
-            ...(request.responseFormat === "json" ? { response_format: { type: "json_object" } } : {}),
+            ...(request.responseFormat === "json"
+              ? request.responseSchema
+                ? { response_format: { type: "json_schema", json_schema: {
+                    name: "thungatha_ai_response", strict: true,
+                    schema: toOpenAiJsonSchema(request.responseSchema),
+                  } } }
+                : { response_format: { type: "json_object" } }
+              : {}),
             ...(request.temperature !== undefined ? { temperature: request.temperature } : {}),
             ...(request.maxOutputTokens ? { max_tokens: request.maxOutputTokens } : {}),
           }),
