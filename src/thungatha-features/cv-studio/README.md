@@ -16,6 +16,23 @@ CV Studio creates a master CV from the candidate's confirmed Profile, tailors it
 10. Save accepted structured versions with their source Profile version, job reference and template metadata. Generate PDF on demand; do not persist the PDF as the canonical CV.
 11. CV Studio does not apply for jobs or create application records. The candidate applies on the employer's website. M5 may associate an immutable accepted CV snapshot with an application only after the candidate explicitly confirms that they applied.
 
+## Data model contract (M4-C02)
+
+The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261123000100_cv_studio_versions.sql`.
+
+- A version records its owner, monotonically assigned version number, kind (`master` or `tailored`), lifecycle status, parent version, source Profile version, optional Discovery job ID, preserved job snapshot, structured content, suggestion decisions, template version, accent colour and timestamps.
+- The database links each version to an existing `profile_versions(user_id, version)` record. The source Profile version is therefore explicit and cannot be silently replaced with the latest Profile.
+- A tailored version retains a job snapshot even if the referenced job row is later removed. The optional job foreign key uses `ON DELETE SET NULL`; the snapshot remains.
+- The structured content schema is defined in `server/cv-studio-schema.ts`. It keeps content separate from rendering/layout and preserves source IDs on Profile-derived work, education, certification and project entries.
+- Suggestions contain a stable ID, target path, original/proposed text, reason, evidence references and an individual pending/accepted/rejected decision.
+- Master versions are `current` or `superseded`. Tailored versions are `draft`, `accepted` or `superseded`. Accepted tailored versions require `acceptedAt` and are immutable on update.
+- Accent colours are constrained to the agreed finite palette. Template version is stored so future rendering changes do not silently alter historical CV meaning.
+- PDF bytes are not stored. Export is generated from the selected structured version.
+- RLS scopes read/create/update/delete to the authenticated Clerk subject carried in the Supabase JWT. Server operations must still validate that parent versions belong to the same user and that the supplied Profile/job references are valid.
+- Deletion is owner-scoped for data-removal requests. Accepted versions cannot be edited, but a user may delete their own records.
+
+The migration has been committed but has **not** been applied to Supabase in this session. Runtime RLS and database behaviour remain unverified.
+
 ## State and transition contract
 
 | State | Meaning | Allowed next action |
