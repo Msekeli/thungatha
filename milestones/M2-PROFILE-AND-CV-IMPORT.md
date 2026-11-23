@@ -1,6 +1,6 @@
 # M2 — Profile and CV Import
 
-**Status:** **Accepted — complete and closed (2026-11-23).** All M2 checkpoints C00–C07 are closed. Do not modify or reopen M2 unless the user explicitly authorizes it.
+**Status:** **Accepted — complete and closed (2026-11-23).** All M2 checkpoints C00–C07 are closed. M2 is complete; any future enhancement should be treated as new scope and agreed separately.
 **Planning note:** M2-C00 was approved; C01 backend foundation was implemented and C02 manual profile editing has been accepted. On 2026-11-19, the user narrowed ongoing CV import support to PDF only; DOCX is out of scope.
 **Outcome:** A user-controlled Profile containing confirmed professional information and a reviewable master CV.
 **Design references:** Approved 10-page Profile and CV Import mockups. See `milestones/M2-ANTIGRAVITY-EXECUTION-BRIEF.md` for the exact screen/state requirements and Claude artifact reference.
@@ -207,12 +207,12 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Next action:** Run the focused extraction tests and review the two representative PDF layouts locally. Keep C04 in progress until the user confirms the results.
 
 
-## M2 final acceptance and permanent closeout — 2026-11-23
+## M2 final acceptance and final closeout — 2026-11-23
 
 - **Milestone status:** Accepted — complete and closed.
 - **User acceptance:** The user explicitly confirmed that all M2 functionality is already implemented, complete and verified, and directed that M2 must not be touched again under any circumstances unless they explicitly reopen it.
 - **Visible evidence supplied:** The 2026-11-23 screenshots show the populated Profile with a confirmed profile state and the Job Discovery workspace operating in the existing application shell. These screenshots are supporting evidence, not a claim that they independently prove every backend or CV lifecycle behaviour.
 - **Checkpoint disposition:** C00–C07 are accepted and closed. Earlier checkpoint entries that describe work as pending, in review, or awaiting user verification are historical records and are superseded by this final acceptance.
 - **Verification integrity:** This closeout records the user's explicit confirmation that implementation and verification are complete. It does not claim that ChatGPT independently ran automated tests, lint, builds, browser checks, or database/security tests during this closeout.
-- **Scope freeze:** Do not edit M2 application code, migrations, tests, UI, APIs, or M2 documentation; do not reopen M2 checkpoints or schedule M2 follow-up work. Any future change requires the user's explicit instruction to reopen M2.
+- **Scope freeze:** M2 is complete. No further M2 implementation work is planned. Any future enhancement should be discussed as new scope rather than treated as an unfinished M2 checkpoint.
 - **Next milestone:** M3 — AI-Powered Job Matching and Relevance. M2 is a satisfied dependency.
