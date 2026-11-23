@@ -170,3 +170,13 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Removed the redundant "Master CV preview", Profile version heading and "Regenerate from Profile" action from the preview area. Profile confirmation remains the source of truth; refresh/reconciliation is handled by the CV Studio data workflow rather than a misleading preview button.
 - The job source selector remains above the document. The PDF preview uses the available content width beneath it. When a job is selected, job details and assessment precede the full-width PDF preview.
 - This update is source-committed only. PDF viewer fragment zoom behaviour, browser download and page rendering still require local browser verification.
+
+## PDF viewer and desktop layout correction (2026-11-24)
+
+- Replaced the browser-native PDF iframe viewer with a PDF.js canvas renderer. The browser's internal grey PDF toolbar/background is no longer part of the CV Studio surface.
+- PDF pages render on white canvases inside the themed Thungatha `bg-panel-2` viewer surface. The actual exported PDF remains white A4.
+- Zoom and fit-width controls rerender the canvas pages at the requested scale. Download still uses the exact generated PDF blob.
+- PDF.js is declared directly in package dependencies; its existing lockfile package entry is reused.
+- Restored the desktop two-column layout in both states: job source/details on the left and the CV preview on the right. Smaller viewports collapse to one column.
+- Uses shared shadcn Button components and Tailwind theme utilities; no new feature-specific CSS was added.
+- Source changes are committed and fetched from `dev`; local build and browser rendering remain unverified.
