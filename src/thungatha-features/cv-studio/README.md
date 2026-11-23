@@ -120,3 +120,12 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Candidates can open a saved version in a read-only historical preview and inspect saved suggestion decisions.
 - This is not yet a reuse action: a selected saved version is not copied into a new draft or made current. Editing, explicit acceptance and PDF export remain unimplemented.
 - The database migration remains unapplied; API and UI runtime behaviour is unverified.
+
+
+## Editable working drafts (M4-C07 — partial)
+
+- Added authenticated, owner-scoped draft creation at `POST /api/cv-studio/drafts`. It verifies the confirmed Profile gate, current master ownership/version and validated job context, then copies the master content into a separate tailored draft.
+- Added `PUT /api/cv-studio/drafts` to save validated structured content, suggestion decisions and accent colour. Only owned, unaccepted tailored drafts tied to the current Profile version can be updated.
+- Added a candidate-facing manual editor for the headline, contact details, summary, skills, experience descriptions/achievements, project descriptions, languages and accent colour.
+- AI suggestions remain empty and clearly inactive. No generated content or fabricated suggestion is shown. Individual suggestion review awaits the AI provider decision and evidence-backed generation.
+- Draft acceptance, live styled preview, stale-draft recovery, PDF export and runtime verification remain outstanding.
