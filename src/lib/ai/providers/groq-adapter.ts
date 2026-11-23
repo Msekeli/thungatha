@@ -94,6 +94,12 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
         model?: string; choices?: { message?: { content?: unknown }; finish_reason?: string }[];
         usage?: { prompt_tokens?: number; completion_tokens?: number };
       } | null;
+      const finishReason = payload?.choices?.[0]?.finish_reason;
+      if (finishReason?.toUpperCase() === "LENGTH") {
+        throw new AiProviderError("Groq truncated the structured response at its completion-token limit.", {
+          code: "rate-limited", provider: "groq", retryable: true,
+        });
+      }
       const content = payload?.choices?.[0]?.message?.content;
       if (typeof content !== "string" || !content) throw new AiProviderError("Groq returned no usable completion content.", { code: "invalid-response", provider: "groq" });
       return {
