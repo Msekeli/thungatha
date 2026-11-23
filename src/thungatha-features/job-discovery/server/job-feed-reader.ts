@@ -54,11 +54,11 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
     count = pRes.count ?? count;
   }
 
-  // Gradually enrich only the current discovery candidates. The queue enforces
-  // a strict per-user active-task cap, so browsing cannot flood the AI worker.
+  // Enqueue the complete set of jobs returned for this feed page. Database
+  // deduplication prevents duplicate work; accepted tasks are not capped.
   if (userId && profileVersion !== null && data.length) {
     const assessmentCandidates = rankWhole
-      ? data.slice(from, from + Math.min(input.pageSize, 30))
+      ? data.slice(from, from + input.pageSize)
       : data;
     try {
       await enqueueVisibleJobAssessments(
@@ -66,7 +66,7 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
         assessmentCandidates.map((job) => job.id),
       );
     } catch (error) {
-      console.error("[job-feed-reader] Could not queue bounded assessments:", error);
+      console.error("[job-feed-reader] Could not queue assessments:", error);
     }
   }
 
@@ -90,8 +90,7 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
 
   if (rankWhole) { jobs.sort(relevanceOrder); jobs = jobs.slice(from, from + input.pageSize); }
 
-  // Assessment enrichment is bounded to three active tasks per user; persisted
-  // results are read above so badges reflect only completed current-version work.
+  // Persisted results are read above so badges reflect only completed current-version work.
 
   const safeJobs = jobs.map((job) => {
     const safe = { ...job };
