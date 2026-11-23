@@ -103,11 +103,51 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
     if (!profileResult.data?.confirmed_at) return NextResponse.json({ status: "profile_unconfirmed" }, { status: 409 });
 
     const context = createJobMatchingContext(jobResult.data);
+    const description = context.description;
+    if (!isUsableJobDescription(description)) {
+      return NextResponse.json({ status: "unusable_description" }, { status: 422 });
+    }
+
+    const profileVersion = profileResult.data.profile_version ?? 1;
     const contextHash = hashJobContext(context);
-    const retried = await retryFailedJobAiTask({
-      userId: identity.userId, jobId: id, profileVersion: profileResult.data.profile_version ?? 1, contextHash,
-    });
-    if (!retried) return NextResponse.json({ error: "This assessment is not in a retryable failed state." }, { status: 409 });
-    return NextResponse.json({ status: "pending" }, { status: 202 });
+    const assessmentQuery = await db.from("job_match_assessments")
+      .select("classification,created_at")
+      .eq("user_id", identity.userId)
+      .eq("job_id", id)
+      .eq("profile_version", profileVersion)
+      .eq("job_context_hash", contextHash)
+      .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+      .maybeSingle();
+    if (assessmentQuery.error) throw assessmentQuery.error;
+    if (assessmentQuery.data) {
+      return NextResponse.json({ status: "ready", assessment: assessmentQuery.data });
+    }
+
+    const taskInput = { userId: identity.userId, jobId: id, profileVersion, contextHash };
+    let taskStatus = await getJobAiTaskStatus(taskInput);
+
+    if (!taskStatus) {
+      await enqueueVisibleJobAssessments(identity.userId, [id]);
+      taskStatus = await getJobAiTaskStatus(taskInput);
+    } else if (taskStatus === "failed") {
+      const retried = await retryFailedJobAiTask(taskInput);
+      if (retried) taskStatus = "pending";
+      else taskStatus = await getJobAiTaskStatus(taskInput);
+    } else if (taskStatus === "completed") {
+      const requeued = await requeueCompletedJobAiTask(taskInput);
+      if (requeued) taskStatus = "pending";
+      else taskStatus = await getJobAiTaskStatus(taskInput);
+    }
+
+    if (taskStatus === "unavailable") {
+      return NextResponse.json({ status: "unavailable", assessment: null });
+    }
+    if (taskStatus === "pending" || taskStatus === "processing") {
+      return NextResponse.json({ status: taskStatus, assessment: null }, { status: 202 });
+    }
+    if (taskStatus === "completed") {
+      return NextResponse.json({ status: "completed_without_assessment", assessment: null }, { status: 409 });
+    }
+    return NextResponse.json({ status: "not_queued", assessment: null }, { status: 409 });
   } catch (error) { return apiFailure(error); }
 }
