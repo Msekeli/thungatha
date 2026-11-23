@@ -11,6 +11,8 @@ import {
 import {
   jobUnderstandingSchema,
   matchAssessmentInputSchema,
+  jobUnderstandingResponseSchema,
+  matchAssessmentResponseSchema,
   type JobUnderstanding,
 } from "./job-ai-schemas";
 import { validateAndClassifyAssessment } from "./job-ai-classification";
@@ -75,6 +77,7 @@ async function parseAssessmentWithJsonRepair(content: string) {
     const repair = await completeAiTask({
       task: "job-fit-assessment",
       responseFormat: "json",
+      responseSchema: matchAssessmentResponseSchema,
       temperature: 0,
       timeoutMs: 120_000,
       reasoning: false,
@@ -137,6 +140,7 @@ export async function understandJobWithAi(context: JobMatchingContext) {
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
+    responseSchema: jobUnderstandingResponseSchema,
     temperature: 0.1,
     timeoutMs: 120_000,
     reasoning: false,
@@ -195,6 +199,7 @@ export async function assessJobWithAi(
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
+    responseSchema: matchAssessmentResponseSchema,
     temperature: 0.1,
     timeoutMs: 120_000,
     reasoning: false,
