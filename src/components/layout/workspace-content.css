@@ -290,3 +290,30 @@
     padding: 14px 12px calc(100px + env(safe-area-inset-bottom));
   }
 }
+
+/* CV Studio owns its page scroll inside the fixed workspace shell. */
+.th-workspace-page-content:has(.th-cv-studio-page) {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.th-cv-studio-page {
+  min-height: max-content;
+  padding-bottom: 32px;
+}
+
+@media (max-width: 700px) {
+  .th-workspace-page-content:has(.th-cv-studio-page) {
+    overflow-y: auto;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+  .th-cv-studio-page {
+    padding-bottom: 16px;
+  }
+}
