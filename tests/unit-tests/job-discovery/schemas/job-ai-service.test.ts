@@ -11,7 +11,7 @@ const description = "Responsible for analysing data, preparing reports and maint
 describe("job understanding service", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("sends Gemini a schema that constrains evidence references to the Zod limit", async () => {
+  it("does not impose arbitrary extraction item or evidence-reference limits", async () => {
     vi.mocked(completeAiTask).mockResolvedValue({
       provider: "gemini",
       model: "test-model",
@@ -20,7 +20,7 @@ describe("job understanding service", () => {
         responsibilities: [{
           id: "resp-1",
           statement: "Analyse data and prepare reports.",
-          sourceEvidenceRefs: ["job:segment:1"],
+          sourceEvidenceRefs: ["job:segment:1", "job:segment:2", "job:segment:3", "job:segment:4", "job:segment:5"],
         }],
         capabilities: [],
         requirements: [],
@@ -28,23 +28,11 @@ describe("job understanding service", () => {
       }),
     });
 
-    await understandJobWithAi(description);
-
+    const parsed = await understandJobWithAi(description);
+    expect(parsed.analysis.responsibilities).toHaveLength(1);
     expect(completeAiTask).toHaveBeenCalledOnce();
     const request = vi.mocked(completeAiTask).mock.calls[0]?.[0];
-    expect(request?.responseSchema).toMatchObject({
-      type: "OBJECT",
-      properties: {
-        responsibilities: {
-          maxItems: 12,
-          items: {
-            properties: {
-              sourceEvidenceRefs: { minItems: 1, maxItems: 4 },
-            },
-          },
-        },
-      },
-    });
+    expect(request?.maxOutputTokens).toBeUndefined();
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
