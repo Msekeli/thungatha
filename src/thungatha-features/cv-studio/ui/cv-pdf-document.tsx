@@ -15,16 +15,17 @@ export type CvPdfContent = {
     sourceId: string;
     jobTitle: string;
     employer: string;
+    location?: string | null;
     startDate: string;
     endDate: string | null;
     isCurrent: boolean;
     description: string | null;
     achievements: string[];
   }>;
-  projects: Array<{ sourceId: string; name: string; role: string | null; description: string | null }>;
+  projects: Array<{ sourceId: string; name: string; role: string | null; description: string | null; url?: string | null }>;
   technicalSkills: string[];
-  education: Array<{ sourceId: string; qualification: string; institution: string; fieldOfStudy: string | null }>;
-  certifications: Array<{ sourceId: string; name: string; issuer: string | null }>;
+  education: Array<{ sourceId: string; educationLevel?: string | null; qualification: string; institution: string; fieldOfStudy: string | null; startDate?: string | null; endDate?: string | null; isCurrent?: boolean }>;
+  certifications: Array<{ sourceId: string; type?: string | null; name: string; issuer: string | null; issueDate?: string | null; expiryDate?: string | null; issuingCountry?: string | null; licenceCategories?: string[]; endorsements?: string | null }>;
   languages: string[];
 };
 
@@ -108,7 +109,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
           {content.workExperience.length ? content.workExperience.map((item) => (
             <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.entryTitle}>{item.jobTitle} · {item.employer}</Text>
-              <Text style={styles.meta}>{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}</Text>
+              <Text style={styles.meta}>{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}{item.location ? ` · ${item.location}` : ""}</Text>
               {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
               {item.achievements.map((achievement, index) => (
                 <Text key={`${item.sourceId}-achievement-${index}`} style={styles.bullet}>• {achievement}</Text>
@@ -123,6 +124,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
               <Text style={styles.entryTitle}>{item.name}</Text>
               {item.role ? <Text style={styles.meta}>{item.role}</Text> : null}
               {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
+              {item.url ? <Text style={styles.meta}>{item.url}</Text> : null}
             </View>
           )) : <Text style={styles.body}>No projects recorded in Profile.</Text>}
         </Section>
@@ -136,6 +138,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
             <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.entryTitle}>{item.qualification}</Text>
               <Text style={styles.entryBody}>{item.institution}{item.fieldOfStudy ? ` · ${item.fieldOfStudy}` : ""}</Text>
+              {item.educationLevel || item.startDate || item.endDate ? <Text style={styles.meta}>{[item.educationLevel, item.startDate ? `${item.startDate} – ${item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}` : null].filter(Boolean).join(" · ")}</Text> : null}
             </View>
           )) : <Text style={styles.body}>No education recorded in Profile.</Text>}
         </Section>
@@ -144,6 +147,9 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
           {content.certifications.length ? content.certifications.map((item) => (
             <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.body}>{item.name}{item.issuer ? ` · ${item.issuer}` : ""}</Text>
+              {(item.issueDate || item.expiryDate || item.issuingCountry || item.type) ? <Text style={styles.meta}>{[item.type?.replaceAll("-", " "), item.issueDate, item.expiryDate ? `Expires ${item.expiryDate}` : null, item.issuingCountry].filter(Boolean).join(" · ")}</Text> : null}
+              {item.licenceCategories?.length ? <Text style={styles.meta}>Categories: {item.licenceCategories.join(", ")}</Text> : null}
+              {item.endorsements ? <Text style={styles.entryBody}>{item.endorsements}</Text> : null}
             </View>
           )) : <Text style={styles.body}>No certifications recorded in Profile.</Text>}
         </Section>
