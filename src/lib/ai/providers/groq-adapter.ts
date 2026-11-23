@@ -41,11 +41,16 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
       const apiKey = options.apiKey ?? process.env.GROQ_API_KEY;
       const model = options.model ?? process.env.GROQ_MODEL;
       if (!apiKey || !model) throw new AiProviderError("Groq credentials or model are not configured.", { code: "configuration", provider: "groq" });
-      const tpmLimit = Number(process.env.GROQ_TPM_LIMIT ?? 8_000);
-      const promptCharacters = request.systemPrompt.length + request.userPrompt.length;
-      // Conservative estimate leaves room for tokenizer variance and provider-side overhead.
-      const estimatedInputTokens = Math.ceil(promptCharacters / 3.2);
-      const safetyReserve = 400;
+      const configuredTpmLimit = Number(process.env.GROQ_TPM_LIMIT ?? 8_000);
+      const tpmLimit = Number.isFinite(configuredTpmLimit) && configuredTpmLimit > 0
+        ? configuredTpmLimit
+        : 8_000;
+      const schemaCharacters = request.responseSchema ? JSON.stringify(request.responseSchema).length : 0;
+      const requestCharacters = request.systemPrompt.length + request.userPrompt.length + schemaCharacters;
+      // Conservative estimate includes the structured-output schema and reserves
+      // capacity for tokenizer variance and provider-side overhead.
+      const estimatedInputTokens = Math.ceil(requestCharacters / 3);
+      const safetyReserve = 500;
       const availableCompletionTokens = Math.floor(tpmLimit - estimatedInputTokens - safetyReserve);
       if (request.maxOutputTokens && availableCompletionTokens < 512) {
         throw new AiProviderError(
