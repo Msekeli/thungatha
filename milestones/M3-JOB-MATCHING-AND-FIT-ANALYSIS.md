@@ -1,8 +1,11 @@
 # M3 — AI-Powered Job Matching and Relevance
 
 **Status:** In progress  
-**Outcome:** AI-powered semantic comparison of actual job responsibilities and requirements with confirmed candidate evidence, producing explainable Match, Relevant, or Unclassified outcomes.  
+**Outcome:** AI-powered semantic comparison of actual job responsibilities and requirements with confirmed candidate evidence, producing explainable **Match** or **Relevant** classifications. Insufficient evidence or unavailable AI analysis is represented as an unavailable assessment, not a third classification.  
 **Dependencies:** M1 Job Discovery and M2 Profile/CV Import.
+
+
+**Current policy clarification (2026-11-23):** This milestone follows D-052. The only public classifications are Match and Relevant. Insufficient evidence, missing Profile confirmation, unusable job input, provider failure, or invalid output is an unavailable assessment state, not Unclassified or any other third category. Historical implementation notes below may mention Unclassified because they describe earlier code; those references are not current product requirements.
 
 ## Purpose and scope
 
@@ -25,7 +28,7 @@ The Profile remains the source of truth. Derive reliable candidate facts with a 
 - Use only confirmed Profile evidence for candidate-side factual claims. Imported CV information remains a draft until confirmed.
 - Preserve source evidence for job-side claims and confirmed Profile evidence references for candidate-side claims. Application code validates every reference and rejects unsupported claims.
 - No numerical fit scores, percentages, weights, thresholds, weighted totals, hidden numeric rankings, or hiring probabilities.
-- Exactly three overall outcomes: Match, Relevant, and Unclassified. Match requires strong evidence-based alignment with the central work; Relevant requires meaningful supported alignment but material gaps or unknowns; Unclassified means the available evidence is insufficient, ambiguous, unsupported, or contradictory.
+- Exactly two public classifications: **Match** and **Relevant**. Match requires strong evidence-based alignment with the central work; Relevant requires meaningful supported alignment but material gaps or unknowns. Insufficient, ambiguous, unsupported, contradictory, or unavailable evidence must be represented as an unavailable assessment, not as a third classification.
 - Requirement-level observations explain the assessment; they must not become a rigid checklist total or hidden scoring system.
 - Keep deterministic code for validation, authorization, ownership, persistence, freshness, sorting, and state transitions. These safeguards do not replace AI semantic interpretation.
 
@@ -47,7 +50,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Define how the model handles equivalent work across different titles, transferable skills, alternative pathways, ambiguous wording, and incomplete evidence.
 - Define how mandatory/preferred wording is interpreted in the context of the full advert without keyword-triggered rejection.
 - Define the versioned AI task/output schema, uncertainty handling, provider failure behaviour, freshness, and invalidation.
-- Define the approved Match, Relevant, and Unclassified outcomes.
+- Define the approved Match and Relevant classifications and the separate unavailable-assessment state.
 - No numerical scoring of any kind.
 
 **Requirement-level interpretation**
@@ -58,8 +61,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - The overall category reflects the full semantic comparison, not a checklist total or one isolated requirement.
 
 **Display and sorting**
-- Match uses the existing positive/green semantic token; Relevant uses the existing informational/blue semantic token; Unclassified has no badge.
-- “Most relevant” orders the full filtered catalogue by Match, then Relevant, then Unclassified. Ties use newest publication date and existing stable tie-breakers. Newest and Oldest remain date sorts.
+- Match uses the existing positive/green semantic token; Relevant uses the existing informational/blue semantic token. Unavailable assessments have no classification badge.
+- “Most relevant” orders successfully assessed jobs by Match, then Relevant. Unavailable assessments are not assigned a third rank and use the agreed date-based fallback/tie-break behaviour. Newest and Oldest remain date sorts.
 - Candidate-specific classification requires a confirmed Profile. Without one, do not fabricate relevance; Most relevant falls back to newest-first.
 - Relevance ordering must apply before pagination across the filtered catalogue, not only to the currently loaded page.
 
@@ -160,7 +163,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 - Require source job evidence references and confirmed Profile evidence references for factual claims; validate every reference in application code.
 - Recognise equivalent responsibilities and transferable skills across different titles and industries; titles and role families are context only.
 - Include material gaps, conflicting evidence, unknowns, and uncertainty in the structured result instead of guessing.
-- Apply the approved Match / Relevant / Unclassified categorical rules after AI interpretation and evidence validation.
+- Apply the approved Match / Relevant public classification rules after AI interpretation and evidence validation; represent insufficient evidence or failed analysis as unavailable.
 - Do not calculate, store, return, expose, or sort by any numerical score or hidden numeric ranking.
 - Version the model/task prompt, schema, relevant rules, and source/Profile inputs used for an assessment.
 - Evaluate model output against representative human-reviewed examples, including misleading similar titles and equivalent work with different titles.
@@ -202,9 +205,9 @@ This record describes the earlier deterministic classifier only. It does not sat
 
 **Work**
 - Use persisted, current AI assessments for relevance ordering. Assessments must be generated asynchronously and keyed to the exact job-description and confirmed Profile versions; feed requests must not call AI synchronously.
-- Apply Match, Relevant, Unclassified ordering to the full filtered catalogue before pagination using cached assessment categories, with stable date tie-breakers.
+- Apply Match then Relevant ordering to successfully assessed jobs across the full filtered catalogue before pagination, using stable date tie-breakers. Unavailable assessments must not be treated as a third category.
 - Do not hard-filter or reject a job based on AI-interpreted candidate fit. Keep user-selected objective discovery filters (such as location, work mode, employment type, date, and explicit search terms) separate from candidate matching.
-- Display a green Match badge or blue Relevant badge only when classification is supported; Unclassified has no badge.
+- Display a green Match badge or blue Relevant badge only when that classification is supported. An unavailable assessment has no classification badge.
 - Handle missing Profile, unavailable descriptions, insufficient information, and analysis failure.
 - Preserve existing search, filters, sorting, details, save, and dismiss behaviour.
 
@@ -245,12 +248,12 @@ Role-family taxonomies are not required for M3. If an occupational domain is use
 4. Evaluation examples for transferable skills and cross-title/cross-industry equivalence.
 5. How target-role preference contributes as a soft contextual signal without becoming a hard filter.
 
-C01 remains in progress for representative semantic evaluation and evidence interpretation. Do not turn qualification equivalence examples or requirement wording into universal hard-coded rules. The user-approved Match / Relevant / Unclassified labels and catalogue-ordering rules are sufficient to proceed with AI-assisted C02/C04 implementation. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
+C01 remains in progress for representative semantic evaluation and evidence interpretation. Do not turn qualification equivalence examples or requirement wording into universal hard-coded rules. D-052 supersedes the earlier three-outcome policy: only Match and Relevant are public classifications, while insufficient evidence is an unavailable assessment. The existing deterministic extractor and classifier are interim implementations, not the approved end state.
 
 ## 2026-11-21 implementation continuation
 
 - Removed the model-supplied overall category from the assessment contract. The AI now supplies semantic alignment, requirement-level evidence states, gaps, and explanations only.
-- Application code now derives Match, Relevant, or Unclassified using the versioned `m3-classification-v1` policy after validating the complete requirement set and all job/Profile evidence references. Strong alignment is not Match when material gaps, contradictory evidence, or an unsupported mandatory requirement exists. Insufficient alignment or no overall confirmed Profile evidence is Unclassified.
+- Historical implementation note: application code previously derived Match, Relevant, or Unclassified using the versioned `m3-classification-v1` policy. That three-outcome policy is superseded for public behaviour by D-052. The replacement policy must return Match or Relevant only when evidence supports one; otherwise it must persist/report an unavailable assessment without assigning a third classification.
 - Incremented the AI task/schema version to `m3-ai-v3` so assessments produced under the former model-owned category contract are not reused.
 - Relevance sorting now reads the complete filtered catalogue in batches rather than silently stopping at 5,000 jobs. The feed queues only the jobs on the page being returned; queue processing remains asynchronous and provider failures do not block ordinary feed rendering.
 - Added focused classification-policy tests for the application-owned category, mandatory requirement handling, contradictory evidence, evidence-reference validation, and requirement completeness.
@@ -262,13 +265,18 @@ C01 remains in progress for representative semantic evaluation and evidence inte
 
 **Status:** Implemented on `dev`; runtime verification intentionally not performed.
 
-- Job-understanding cache identity is now the exact description hash plus a dedicated understanding version. The cache is shared across job records and users; it no longer uses `job_id` as its primary key.
+- Historical implementation note: job-understanding cache identity used the exact description hash plus a dedicated understanding version. The replacement design must include the complete matching context (title, employer, location/work arrangement where available, and description) plus relevant parser/prompt/schema versions, while retaining the raw description hash for source-evidence validation.
 - Job understanding still interprets responsibilities, capabilities, material requirements, and full-advert context. Output is compact and capped at 12 responsibilities, 16 capabilities, and 24 material requirements; duplicate/boilerplate items are excluded and incomplete coverage remains explicit.
 - Candidate assessment reuses the cached understanding and receives only the job evidence referenced by that understanding, rather than the complete segmented description a second time. Confirmed Profile evidence remains the only candidate evidence. Duplicate target-role context was removed from the candidate-facts payload; deterministic employment-duration facts remain.
-- Feed reads no longer enqueue assessments. The authenticated selected-job assessment endpoint remains the on-demand entry point. Queue admission is atomically capped at three pending/processing tasks per user, explicit backfill queues at most three per request, and a worker invocation processes one task.
+- Feed reads no longer enqueue assessments. The authenticated selected-job assessment endpoint remains the on-demand entry point. Historical implementation note: queue admission and explicit backfill were capped, and each worker invocation processed one task. D-052 supersedes arbitrary workload caps; accepted matching work must be preserved and resumed rather than rejected or abandoned.
 - Assessment/schema version advanced to `m3-ai-v4`; understanding cache uses `m3-understanding-v2`. Existing evidence-reference validation, exact requirement coverage, classification policy, profile-version checks, job-description hash checks, stale-task handling, retries, and atomic persistence remain in place.
 - Added migration `20261121000600_cache_job_understanding_by_description.sql` to deduplicate existing cache rows, change the cache primary key to `(description_hash, analysis_version)`, and add serialized per-user queue admission. It has **not** been applied.
 
 **Verification:** No tests, builds, lint, type-checks, worker executions, AI provider calls, or Supabase operations were run. Changes were reviewed from source and migration definitions only.
 
 **Next action:** Pull `dev`, manually review the diff, apply the new migration through the approved Supabase workflow, then run the user's local verification and report any failures. Do not claim runtime correctness until those checks are completed.
+
+
+### AI workload continuity — current requirement (2026-11-23)
+
+Do not introduce arbitrary internal AI call, token, output-length, per-job budget, queue-depth, or task-count caps that truncate, reject, or abandon valid matching work. Do not drop material job requirements merely to fit an application-defined output count. Reduce unnecessary consumption through complete-context caching, in-flight request deduplication, compact task-specific evidence, and reuse of valid completed results. When actual provider rate limits or outages prevent completion, persist the task and progress, defer/retry safely, and resume it. A task must not be marked complete or presented as Match/Relevant using partial output. Any historical queue/backfill admission caps and model output-count limits recorded above are superseded by this requirement.
