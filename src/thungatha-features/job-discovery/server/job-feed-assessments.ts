@@ -30,7 +30,7 @@ export async function fetchFeedAssessmentsAndQueue(
           .eq("user_id", userId).eq("profile_version", profileVersion)
           .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).in("job_id", batch),
         db.from("ai_task_queue")
-          .select("job_id,job_description_hash,status")
+          .select("job_id,job_context_hash,status")
           .eq("user_id", userId).eq("profile_version", profileVersion)
           .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).in("job_id", batch),
       ]);
@@ -41,7 +41,7 @@ export async function fetchFeedAssessmentsAndQueue(
       } else {
         for (const item of assessmentResult.data ?? []) {
           if (
-            currentHashes.get(item.job_id) === item.job_description_hash
+            currentHashes.get(item.job_id) === item.job_context_hash
             && (item.classification === "match" || item.classification === "relevant")
           ) {
             assessmentsByJob.set(item.job_id, {
