@@ -52,7 +52,6 @@ export function hashDescription(description: string) {
 export function isUsableJobDescription(description: string | null | undefined): boolean {
   if (!description || typeof description !== "string") return false;
   const trimmed = description.trim();
-  if (trimmed.length < 20) return false;
   return buildJobEvidence(trimmed).length > 0;
 }
 
