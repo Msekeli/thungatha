@@ -129,3 +129,13 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Added a candidate-facing manual editor for the headline, contact details, summary, skills, experience descriptions/achievements, project descriptions, languages and accent colour.
 - AI suggestions remain empty and clearly inactive. No generated content or fabricated suggestion is shown. Individual suggestion review awaits the AI provider decision and evidence-backed generation.
 - Draft acceptance, live styled preview, stale-draft recovery, PDF export and runtime verification remain outstanding.
+
+
+## Profile-to-master-CV integration correction (2026-11-24)
+
+- Opening `GET /api/cv-studio` now reads the authenticated user's existing M2 Profile through the Profile repository and mapper, verifies the Profile completion contract and explicit confirmation, then automatically creates a master CV when no current version exists.
+- If the current master CV references an older Profile version, the endpoint supersedes it and creates a new master from the latest confirmed Profile. Historical and tailored versions are not rewritten.
+- The operation is idempotent for repeated requests and handles a concurrent insert conflict by rereading the current master.
+- `POST /api/cv-studio` uses the same operation for explicit refresh/recovery. The first-time UI no longer asks the candidate to click Generate.
+- A missing `cv_versions` relation now returns a specific database-setup message instructing the developer to apply the M4 migration instead of the generic request failure.
+- This is a source-level implementation. The migration has not been applied or checked against the user's local database in this session; runtime behaviour remains unverified.
