@@ -26,7 +26,7 @@ export async function fetchFeedAssessmentsAndQueue(
     try {
       const [assessmentResult, queueResult] = await Promise.all([
         db.from("job_match_assessments")
-          .select("job_id,job_description_hash,classification")
+          .select("job_id,job_context_hash,classification")
           .eq("user_id", userId).eq("profile_version", profileVersion)
           .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).in("job_id", batch),
         db.from("ai_task_queue")
