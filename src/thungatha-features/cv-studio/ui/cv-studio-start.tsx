@@ -1,7 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type CvContent = {
   fullName: string;
@@ -19,15 +22,43 @@ type CvContent = {
 };
 
 type MasterCv = { id: string; content: CvContent; source_profile_version?: number; version_number?: number };
+type JobContext = {
+  source: "discovery" | "pasted";
+  jobId: string | null;
+  title: string;
+  company: string | null;
+  location: string | null;
+  sourceUrl: string | null;
+  description: string;
+  descriptionFingerprint: string;
+};
+type MatchingVersion = { id: string; versionNumber: number; updatedAt: string; accentColour: string };
+type Suitability = {
+  status: "existing_version_found" | "new_version_recommended" | "assessment_unavailable";
+  matchingVersions: MatchingVersion[];
+  recommendation: "reuse_existing" | "prepare_new_draft" | "review_manually";
+  explanation: string;
+  semanticAssessment: "unavailable";
+};
 type State =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "profile_required"; confirmed: boolean; missing: string[] }
   | { status: "master_cv_ready"; profileVersion: number; masterCv: MasterCv | null; isStale?: boolean };
 
+type JobForm = { title: string; company: string; location: string; sourceUrl: string; description: string };
+const emptyJobForm: JobForm = { title: "", company: "", location: "", sourceUrl: "", description: "" };
+
 export function CvStudioStart() {
+  const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
   const [busy, setBusy] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobForm, setJobForm] = useState<JobForm>(emptyJobForm);
+  const [jobContext, setJobContext] = useState<JobContext | null>(null);
+  const [suitability, setSuitability] = useState<Suitability | null>(null);
+  const [workflowError, setWorkflowError] = useState<string | null>(null);
+  const [workflowBusy, setWorkflowBusy] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -41,7 +72,49 @@ export function CvStudioStart() {
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const selectedJobId = new URLSearchParams(window.location.search).get("jobId");
+    setJobId(selectedJobId);
+    void load();
+  }, [load]);
+
+  const assessContext = useCallback(async (context: JobContext, masterVersionId: string) => {
+    const response = await fetch("/api/cv-studio/suitability", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ masterVersionId, jobContext: context }),
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error ?? "The CV recommendation could not be loaded.");
+    setSuitability(body as Suitability);
+  }, []);
+
+  const resolveDiscoveryJob = useCallback(async (selectedJobId: string, masterVersionId: string) => {
+    setWorkflowBusy(true);
+    setWorkflowError(null);
+    setSuitability(null);
+    try {
+      const response = await fetch("/api/cv-studio/job-context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "discovery", jobId: selectedJobId }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "The selected job could not be loaded.");
+      const context = body.jobContext as JobContext;
+      setJobContext(context);
+      await assessContext(context, masterVersionId);
+    } catch (error) {
+      setWorkflowError(error instanceof Error ? error.message : "The selected job could not be loaded.");
+    } finally {
+      setWorkflowBusy(false);
+    }
+  }, [assessContext]);
+
+  useEffect(() => {
+    if (state.status !== "master_cv_ready" || !state.masterCv || !jobId || jobContext) return;
+    void resolveDiscoveryJob(jobId, state.masterCv.id);
+  }, [state, jobId, jobContext, resolveDiscoveryJob]);
 
   async function generate() {
     setBusy(true);
@@ -55,16 +128,58 @@ export function CvStudioStart() {
         }
         throw new Error(body.error ?? "The master CV could not be generated.");
       }
-      setState({
+      const nextState: State = {
         status: "master_cv_ready",
         profileVersion: body.masterCv.source_profile_version,
         masterCv: body.masterCv,
-      });
+      };
+      setState(nextState);
+      if (jobId) await resolveDiscoveryJob(jobId, body.masterCv.id);
     } catch (error) {
       setState({ status: "error", message: error instanceof Error ? error.message : "The master CV could not be generated." });
     } finally {
       setBusy(false);
     }
+  }
+
+  async function submitPastedJob(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (state.status !== "master_cv_ready" || !state.masterCv) return;
+    setWorkflowBusy(true);
+    setWorkflowError(null);
+    setSuitability(null);
+    try {
+      const response = await fetch("/api/cv-studio/job-context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "pasted",
+          title: jobForm.title,
+          company: jobForm.company || null,
+          location: jobForm.location || null,
+          sourceUrl: jobForm.sourceUrl || null,
+          description: jobForm.description,
+        }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "The job description could not be validated.");
+      const context = body.jobContext as JobContext;
+      setJobContext(context);
+      await assessContext(context, state.masterCv.id);
+    } catch (error) {
+      setWorkflowError(error instanceof Error ? error.message : "The job description could not be validated.");
+    } finally {
+      setWorkflowBusy(false);
+    }
+  }
+
+  function clearSelectedJob() {
+    setJobId(null);
+    setJobContext(null);
+    setSuitability(null);
+    setWorkflowError(null);
+    setJobForm(emptyJobForm);
+    router.replace("/cv-studio");
   }
 
   return (
@@ -73,7 +188,7 @@ export function CvStudioStart() {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">Thungatha / CV Studio</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-brand-ink">Your master CV</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-          Your master CV is generated from your confirmed Profile. It is the source document for job-specific versions.
+          Your master CV is generated from your confirmed Profile. Use a job description to review the next steps for a job-specific version.
         </p>
       </header>
 
@@ -91,9 +206,7 @@ export function CvStudioStart() {
         <section className="grid gap-6 rounded-2xl border border-amber-200 bg-amber-50 p-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <h2 className="text-lg font-semibold text-amber-950">{state.confirmed ? "Your Profile needs more information" : "Complete and confirm your Profile first"}</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-900">
-              CV Studio uses confirmed Profile information as its only source of candidate facts. Complete the missing information and confirm your Profile before generating a CV.
-            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-900">CV Studio uses confirmed Profile information as its only source of candidate facts. Complete the missing information and confirm your Profile before generating a CV.</p>
             {state.missing.length > 0 && <ul className="mt-4 list-inside list-disc space-y-1 text-sm text-amber-950">{state.missing.map((item) => <li key={item}>{item}</li>)}</ul>}
           </div>
           <ButtonLink href="/profile">Complete Profile</ButtonLink>
@@ -101,30 +214,111 @@ export function CvStudioStart() {
       )}
 
       {state.status === "master_cv_ready" && (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            {state.masterCv ? (
-              <MasterCvPreview content={state.masterCv.content} />
-            ) : (
-              <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Profile confirmed · Version {state.profileVersion}</p>
-                <h2 className="mt-2 text-xl font-semibold text-slate-950">Your Profile is ready for a master CV</h2>
-                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">We will organise your confirmed information into the standard ATS-friendly, single-column CV. No new experience or qualifications will be added.</p>
-                {state.isStale && <p className="mt-3 text-sm text-amber-700">Your Profile has changed since the previous master CV. Generate a refreshed version.</p>}
-                <Button className="mt-6" disabled={busy} onClick={() => void generate()}>{busy ? "Generating…" : state.isStale ? "Refresh master CV" : "Generate master CV"}</Button>
-              </>
+        <div className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              {state.masterCv ? (
+                <>
+                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Confirmed Profile · Version {state.profileVersion}</p>
+                      <h2 className="mt-1 text-xl font-semibold text-slate-950">Master CV preview</h2>
+                    </div>
+                    <Button variant="outline" disabled={busy} onClick={() => void generate()}>{busy ? "Refreshing…" : state.isStale ? "Refresh master CV" : "Regenerate from Profile"}</Button>
+                  </div>
+                  <MasterCvPreview content={state.masterCv.content} />
+                </>
+              ) : (
+                <>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Profile confirmed · Version {state.profileVersion}</p>
+                  <h2 className="mt-2 text-xl font-semibold text-slate-950">Your Profile is ready for a master CV</h2>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">We will organise your confirmed information into the standard ATS-friendly, single-column CV. No new experience or qualifications will be added.</p>
+                  {state.isStale && <p className="mt-3 text-sm text-amber-700">Your Profile has changed since the previous master CV. Generate a refreshed version.</p>}
+                  <Button className="mt-6" disabled={busy} onClick={() => void generate()}>{busy ? "Generating…" : state.isStale ? "Refresh master CV" : "Generate master CV"}</Button>
+                </>
+              )}
+            </section>
+            <aside className="h-fit rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="font-semibold text-slate-950">Next step</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Select a job from Discovery or paste its description. The current stage checks whether you have an accepted version for the exact same job; AI suitability and tailoring are not active yet.</p>
+              <ButtonLink className="mt-4 w-full" href="/jobs">Browse jobs</ButtonLink>
+              <p className="mt-4 text-xs leading-5 text-slate-500">Tailoring will never overwrite your master CV or confirmed Profile.</p>
+            </aside>
+          </div>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-7">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Job context</p>
+                <h2 className="mt-1 text-xl font-semibold text-slate-950">Choose the opportunity</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Use the selected Discovery job, or paste the job description below. The description is used as employer context, never as evidence of your experience.</p>
+              </div>
+              {(jobContext || jobId) && <Button variant="ghost" size="sm" onClick={clearSelectedJob}>Clear selection</Button>}
+            </div>
+
+            {jobId && !jobContext && (
+              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-medium text-slate-800">Loading the job you selected in Discovery…</p>
+                {workflowBusy && <p className="mt-1 text-xs text-slate-500">Retrieving the saved job description and checking existing CV versions.</p>}
+              </div>
+            )}
+
+            {jobContext && (
+              <div className="mt-5 rounded-xl border border-teal-200 bg-teal-50/60 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-teal-800">Selected job · {jobContext.source === "discovery" ? "Job Discovery" : "Pasted description"}</p>
+                <h3 className="mt-1 text-lg font-semibold text-slate-950">{jobContext.title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
+                <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-slate-700">{jobContext.description}</p>
+              </div>
+            )}
+
+            <form className="mt-6 space-y-4" onSubmit={submitPastedJob}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
+                <Field label="Company"><Input maxLength={300} value={jobForm.company} onChange={(event) => setJobForm((value) => ({ ...value, company: event.target.value }))} placeholder="Company name" /></Field>
+                <Field label="Location"><Input maxLength={300} value={jobForm.location} onChange={(event) => setJobForm((value) => ({ ...value, location: event.target.value }))} placeholder="e.g. Cape Town / Remote" /></Field>
+                <Field label="Job advert URL (optional)"><Input type="url" maxLength={2000} value={jobForm.sourceUrl} onChange={(event) => setJobForm((value) => ({ ...value, sourceUrl: event.target.value }))} placeholder="https://" /></Field>
+              </div>
+              <Field label="Full job description" required hint="Paste at least 200 characters. Automatic URL importing is not enabled, so the description itself is required.">
+                <Textarea required minLength={200} maxLength={30000} rows={8} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the responsibilities, requirements and qualifications from the job advert…" />
+              </Field>
+              {workflowError && <p className="text-sm text-rose-700" role="alert">{workflowError}</p>}
+              <div className="flex flex-wrap items-center gap-3">
+                <Button type="submit" disabled={workflowBusy || busy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
+                <span className="text-xs text-slate-500">No AI-generated suitability score is shown at this stage.</span>
+              </div>
+            </form>
+
+            {suitability && jobContext && (
+              <div className="mt-6 border-t border-slate-200 pt-6" aria-live="polite">
+                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Current recommendation status</p>
+                <h3 className="mt-1 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV version exists for this exact job" : "No accepted CV version found for this exact job"}</h3>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{suitability.explanation}</p>
+                {suitability.matchingVersions.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {suitability.matchingVersions.map((version) => (
+                      <div key={version.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+                        <div><p className="text-sm font-medium text-slate-900">Accepted tailored CV · Version {version.versionNumber}</p><p className="text-xs text-slate-500">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
+                        <span className="text-xs text-slate-500">Saved version found</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-4 rounded-lg bg-amber-50 p-4">
+                  <p className="text-sm font-medium text-amber-950">AI suitability assessment is not available yet.</p>
+                  <p className="mt-1 text-sm leading-6 text-amber-900">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
+                </div>
+              </div>
             )}
           </section>
-          <aside className="h-fit rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="font-semibold text-slate-950">Next step</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Choose a job from Discovery to assess your master CV and prepare a tailored version.</p>
-            <ButtonLink className="mt-4 w-full" href="/jobs">Browse jobs</ButtonLink>
-            <p className="mt-4 text-xs leading-5 text-slate-500">Tailoring will never overwrite your master CV or confirmed Profile.</p>
-          </aside>
         </div>
       )}
     </main>
   );
+}
+
+function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
+  return <label className="block space-y-1.5"><span className="block text-sm font-medium text-slate-800">{label}{required ? " *" : ""}</span>{children}{hint && <span className="block text-xs leading-5 text-slate-500">{hint}</span>}</label>;
 }
 
 function MasterCvPreview({ content }: { content: CvContent }) {
