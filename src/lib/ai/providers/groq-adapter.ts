@@ -41,6 +41,21 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
       const apiKey = options.apiKey ?? process.env.GROQ_API_KEY;
       const model = options.model ?? process.env.GROQ_MODEL;
       if (!apiKey || !model) throw new AiProviderError("Groq credentials or model are not configured.", { code: "configuration", provider: "groq" });
+      const tpmLimit = Number(process.env.GROQ_TPM_LIMIT ?? 8_000);
+      const promptCharacters = request.systemPrompt.length + request.userPrompt.length;
+      // Conservative estimate leaves room for tokenizer variance and provider-side overhead.
+      const estimatedInputTokens = Math.ceil(promptCharacters / 3.2);
+      const safetyReserve = 400;
+      const availableCompletionTokens = Math.floor(tpmLimit - estimatedInputTokens - safetyReserve);
+      if (request.maxOutputTokens && availableCompletionTokens < 512) {
+        throw new AiProviderError(
+          `Groq request exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens.`,
+          { code: "rate-limited", provider: "groq", retryable: true },
+        );
+      }
+      const completionTokenBudget = request.maxOutputTokens
+        ? Math.min(request.maxOutputTokens, availableCompletionTokens)
+        : undefined;
       let response: Response;
       try {
         response = await fetcher(ENDPOINT, {
@@ -62,7 +77,7 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
                 : { response_format: { type: "json_object" } }
               : {}),
             ...(request.temperature !== undefined ? { temperature: request.temperature } : {}),
-            ...(request.maxOutputTokens ? { max_completion_tokens: request.maxOutputTokens } : {}),
+            ...(completionTokenBudget ? { max_completion_tokens: completionTokenBudget } : {}),
           }),
         });
       } catch (cause) {
