@@ -76,7 +76,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C03 — Master CV and job input screen
 
-**Status:** In review — Profile gate, master CV generation API and preview screen committed; runtime verification and Discovery selection handoff remain pending.
+**Status:** In review — Profile gate, master CV generation API/preview, Discovery job handoff and pasted-description form are committed. Runtime verification remains pending.
 
 **Goal:** implement the CV Studio starting screen and Profile gate.
 
@@ -85,7 +85,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Read the confirmed Profile using existing Profile server contracts.
 - Enforce the Profile completion gate and show a clear route to complete missing Profile information.
 - Generate and display the master CV from confirmed Profile data when the gate is satisfied.
-- Allow the candidate to select a job from Discovery or proceed to supported job-context input.
+- Allow the candidate to select a job from Discovery or proceed to supported job-context input. **Implemented:** the Discovery detail action links to `/cv-studio?jobId=...`; CV Studio resolves that job after the master CV is available. The screen also provides a pasted-description form.
 - Do not offer CV upload as a substitute for a missing master CV or incomplete Profile.
 - Present clear loading, empty, validation and failure states while keeping the route directly accessible.
 
@@ -98,7 +98,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C04 — Job-description acquisition and validation
 
-**Status:** In review — authenticated Discovery-job resolution and pasted-description validation are committed. URL-only requests fail safely to a paste-description fallback; automatic SSRF-safe URL retrieval remains outstanding.
+**Status:** In review — authenticated Discovery-job resolution and pasted-description validation are connected to the candidate-facing screen. URL-only requests fail safely to a paste-description fallback; automatic SSRF-safe URL retrieval remains outstanding.
 
 **Goal:** safely obtain enough job information for tailoring.
 
@@ -130,12 +130,18 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Returns matching version metadata and recommends review/reuse or preparing a new draft. It never silently selects a version.
 - Explicitly reports semantic assessment as unavailable. No title/keyword heuristic is presented as AI suitability.
 
+**Candidate-facing UI now implemented**
+
+- CV Studio displays the exact-match result, explanation and matching accepted version metadata returned by the endpoint.
+- It explicitly explains that this is an exact-context lookup, not a semantic suitability score.
+- The UI does not yet retrieve or open a saved tailored CV. It therefore does not claim that reuse is available.
+
 **Outstanding**
 
 - Semantic comparison of the master CV and job description using the approved AI capability.
 - Evidence-backed explanation of relevant confirmed candidate facts, transferable skills and material gaps.
 - Include relevant accepted versions where their relevance can be supported beyond an exact context match.
-- Candidate-facing UI to review the recommendation and choose whether to reuse or prepare a new draft.
+- Candidate-facing saved-version retrieval/reuse and the candidate decision to proceed with a new draft. (The exact-match recommendation UI is connected, but no tailoring action is available yet.)
 
 No tests, build, browser checks or live Supabase verification were run. C05 is not accepted.
 
