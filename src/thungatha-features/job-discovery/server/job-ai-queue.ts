@@ -5,6 +5,7 @@ import {
   JOB_AI_UNDERSTANDING_VERSION,
   createJobMatchingContext,
   createServiceClient,
+  hashDescription,
   hashJobContext,
   isUsableJobDescription,
   getConfirmedProfileVersion,
@@ -66,7 +67,7 @@ async function enqueueJobRows(
       user_id: userId,
       job_id: job.id,
       profile_version: profileVersion,
-      job_description_hash: hashJobContext({ title: "", employerName: null, locationText: null, description: context.description }),
+      job_description_hash: hashDescription(context.description),
       job_context_hash: contextHash,
       assessment_version: JOB_AI_ASSESSMENT_VERSION,
     };
