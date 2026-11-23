@@ -187,13 +187,15 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 ### M4-C08 — Version management, comparison and export
 
+**Status:** In progress — owner-scoped version-history/read APIs and a read-only historical preview are committed. Reuse, editing, acceptance and export remain outstanding.
+
 **Goal:** save and retrieve the version the candidate actually chooses.
 
 **Work**
 
 - Save accepted tailored versions with job association, source Profile version and template/version metadata.
-- Keep master, working drafts and accepted tailored versions distinct.
-- Support viewing/reusing relevant existing versions and detecting when a version is stale after Profile changes.
+- Keep master, working drafts and accepted tailored versions distinct. **Implemented partially:** CV Studio now lists saved versions and opens one historical version in a read-only preview, including recorded suggestion decisions.
+- Support viewing/reusing relevant existing versions and detecting when a version is stale after Profile changes. **Implemented partially:** viewing saved versions is available; copying/reusing one as a new working draft and explicit stale indicators in the history list remain outstanding.
 - Generate PDF on demand from the accepted structured content; do not permanently store exported PDFs.
 - Ensure exported content matches the accepted structured version.
 - Expose a stable immutable structured snapshot/reference for M5 to associate with an application after candidate confirmation.
