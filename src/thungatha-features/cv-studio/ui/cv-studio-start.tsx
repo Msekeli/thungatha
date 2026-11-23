@@ -134,7 +134,6 @@ export function CvStudioStart() {
         masterCv: body.masterCv,
       };
       setState(nextState);
-      if (jobId) await resolveDiscoveryJob(jobId, body.masterCv.id);
     } catch (error) {
       setState({ status: "error", message: error instanceof Error ? error.message : "The master CV could not be generated." });
     } finally {
