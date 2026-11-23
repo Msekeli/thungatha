@@ -64,7 +64,6 @@ export async function readJobFeed(db: SupabaseClient, userId: string | null, inp
       await enqueueVisibleJobAssessments(
         userId,
         assessmentCandidates.map((job) => job.id),
-        3,
       );
     } catch (error) {
       console.error("[job-feed-reader] Could not queue bounded assessments:", error);
