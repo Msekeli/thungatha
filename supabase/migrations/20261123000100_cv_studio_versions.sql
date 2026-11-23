@@ -21,8 +21,9 @@ create table public.cv_versions (
   updated_at timestamptz not null default now(),
   accepted_at timestamptz,
   constraint cv_versions_user_version_unique unique (user_id, version_number),
-  constraint cv_versions_parent_fk foreign key (parent_version_id)
-    references public.cv_versions(id) on delete set null,
+  constraint cv_versions_user_id_unique unique (user_id, id),
+  constraint cv_versions_parent_fk foreign key (user_id, parent_version_id)
+    references public.cv_versions(user_id, id) on delete set null,
   constraint cv_versions_profile_version_fk foreign key (user_id, source_profile_version)
     references public.profile_versions(user_id, version) on delete restrict,
   constraint cv_versions_status_kind_check check (
