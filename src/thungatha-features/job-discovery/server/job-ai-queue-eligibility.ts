@@ -23,10 +23,10 @@ export type JobMatchingContext = {
 };
 
 export function createJobMatchingContext(input: {
-  title: string | null;
-  employer_name: string | null;
-  location_text: string | null;
-  description: string | null;
+  title?: string | null;
+  employer_name?: string | null;
+  location_text?: string | null;
+  description?: string | null;
 }): JobMatchingContext {
   return {
     title: input.title?.trim() ?? "",
