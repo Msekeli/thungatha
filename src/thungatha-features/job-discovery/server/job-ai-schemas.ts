@@ -87,36 +87,6 @@ export const matchAssessmentInputSchema = z.object({
   }
 });
 
-// The model returns only requirement IDs and its assessment. The canonical
-// requirement wording and importance are attached from job understanding in code.
-export const matchAssessmentModelSchema = z.object({
-  semanticAlignment: z.object({
-    level: z.enum(["strong", "meaningful", "insufficient"]),
-    materialGaps: z.boolean(),
-    jobEvidenceRefs: requiredAggregateRefs,
-    profileEvidenceRefs: aggregateRefs,
-  }),
-  summary: z.string().min(1),
-  alignmentExplanation: z.string().min(1),
-  requirements: z.array(z.object({
-    id: z.string().min(1),
-    assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
-    explanation: z.string().min(1),
-    jobEvidenceRefs: requiredRefs,
-    profileEvidenceRefs: refs,
-  })),
-  gaps: z.array(z.object({
-    description: z.string().min(1),
-    jobEvidenceRefs: requiredRefs,
-    profileEvidenceRefs: refs,
-  })),
-});
-
-function evidenceEnum(values: string[]) {
-  const unique = [...new Set(values)];
-  return unique.length ? z.enum(unique as [string, ...string[]]) : z.never();
-}
-
 // Constrain evidence IDs at generation time as well as validating them after generation.
 export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], profileEvidenceIds: string[]) {
   const jobRef = evidenceEnum(jobEvidenceIds);
@@ -148,6 +118,6 @@ export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], pr
 
 export type JobUnderstanding = z.infer<typeof jobUnderstandingSchema>;
 export type MatchAssessmentInput = z.infer<typeof matchAssessmentInputSchema>;
-export type MatchAssessmentModelOutput = z.infer<typeof matchAssessmentModelSchema>;
+export type MatchAssessmentModelOutput = z.infer<ReturnType<typeof createMatchAssessmentResponseSchema>["validator"]>;
 
 export const jobUnderstandingResponseSchema = toGeminiResponseSchema(jobUnderstandingSchema);
