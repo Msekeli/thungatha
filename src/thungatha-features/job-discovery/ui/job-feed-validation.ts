@@ -35,8 +35,7 @@ export function isValidFeed(value: unknown): value is Feed {
           job.state === "dismissed") &&
         (job.matchClassification === undefined ||
           job.matchClassification === "match" ||
-          job.matchClassification === "relevant" ||
-          job.matchClassification === "unclassified"),
+          job.matchClassification === "relevant"),
     )
   );
 }
