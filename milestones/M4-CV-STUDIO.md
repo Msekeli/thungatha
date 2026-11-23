@@ -76,6 +76,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C03 — Master CV and job input screen
 
+**Status:** In review — Profile gate, master CV generation API and preview screen committed; runtime verification and Discovery selection handoff remain pending.
+
 **Goal:** implement the CV Studio starting screen and Profile gate.
 
 **Work**
