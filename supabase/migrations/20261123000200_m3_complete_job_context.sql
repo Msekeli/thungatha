@@ -165,7 +165,6 @@ begin
   if v_task.user_id is distinct from p_user_id
     or v_task.job_id is distinct from p_job_id
     or v_task.profile_version is distinct from p_profile_version
-    or v_task.job_description_hash is distinct from encode(extensions.digest(convert_to(p_job_description, 'UTF8'), 'sha256'), 'hex')
     or v_task.job_context_hash is distinct from p_job_context_hash
     or v_task.assessment_version is distinct from p_assessment_version
     or v_task.task_type <> 'job_fit_assessment'
@@ -182,9 +181,9 @@ begin
   for update;
 
   if not found
-    or v_job.title is distinct from p_job_context->>'title'
-    or v_job.employer_name is distinct from p_job_context->>'employerName'
-    or v_job.location_text is distinct from p_job_context->>'locationText'
+    or v_job.title is distinct from (p_job_context ->> 'title')
+    or v_job.employer_name is distinct from (p_job_context ->> 'employerName')
+    or v_job.location_text is distinct from (p_job_context ->> 'locationText')
     or v_job.description is distinct from p_job_description
   then
     update public.ai_task_queue
