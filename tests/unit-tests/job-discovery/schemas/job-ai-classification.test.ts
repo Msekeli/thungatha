@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { jobUnderstandingSchema, matchAssessmentInputSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
-import { MATCH_CLASSIFICATION_POLICY_VERSION, validateAndClassifyAssessment } from "@/thungatha-features/job-discovery/server/job-ai-classification";
+import { AssessmentUnavailableError, MATCH_CLASSIFICATION_POLICY_VERSION, validateAndClassifyAssessment } from "@/thungatha-features/job-discovery/server/job-ai-classification";
 
 const jobRefs = new Set(["job:segment:1"]);
 const profileRefs = new Set(["profile:skills[0].name"]);
@@ -15,8 +15,7 @@ const input = {
 
 describe("AI assessment classification policy", () => {
   it("derives Match from strong alignment without material gaps", () => {
-    const parsed = matchAssessmentInputSchema.parse(input);
-    const result = validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs);
+    const result = validateAndClassifyAssessment(matchAssessmentInputSchema.parse(input), understanding, jobRefs, profileRefs);
     expect(result.classification).toBe("match");
     expect(result.classificationPolicyVersion).toBe(MATCH_CLASSIFICATION_POLICY_VERSION);
   });
@@ -28,9 +27,9 @@ describe("AI assessment classification policy", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { ...input.semanticAlignment, level: "meaningful" } });
     expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("relevant");
   });
-  it("derives Unclassified when evidence is insufficient", () => {
+  it("returns an unavailable state instead of a third classification when evidence is insufficient", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, semanticAlignment: { level: "insufficient", materialGaps: true, jobEvidenceRefs: ["job:segment:1"], profileEvidenceRefs: [] } });
-    expect(validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs).classification).toBe("unclassified");
+    expect(() => validateAndClassifyAssessment(parsed, understanding, jobRefs, profileRefs)).toThrow(AssessmentUnavailableError);
   });
   it("rejects a reference outside the supplied evidence", () => {
     const parsed = matchAssessmentInputSchema.parse(input);
@@ -56,12 +55,8 @@ describe("AI assessment classification policy", () => {
     expect(() => validateAndClassifyAssessment(wrongImportance, understanding, jobRefs, profileRefs)).toThrow(/do not match/);
   });
   it("rejects changed requirement wording", () => {
-    const changed = matchAssessmentInputSchema.parse({
-      ...input,
-      requirements: [{ ...input.requirements[0], requirement: "Develop applications" }],
-    });
-    expect(() => validateAndClassifyAssessment(changed, understanding, jobRefs, profileRefs))
-      .toThrow(/changed the extracted wording/);
+    const changed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], requirement: "Develop applications" }] });
+    expect(() => validateAndClassifyAssessment(changed, understanding, jobRefs, profileRefs)).toThrow(/changed the extracted wording/);
   });
   it("prevents Match when contradictory requirement evidence exists", () => {
     const parsed = matchAssessmentInputSchema.parse({ ...input, requirements: [{ ...input.requirements[0], assessment: "contradictory" }] });
