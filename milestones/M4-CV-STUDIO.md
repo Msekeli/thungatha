@@ -225,3 +225,23 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 - One consistent ATS-friendly template is used throughout.
 - CV export is separate from application submission.
 - Verification evidence and limitations are recorded and the user explicitly accepts M4.
+
+
+### M4-C07 — Review and live preview
+
+**Status:** In progress — manual editing and persistent draft saving are now partially implemented; AI suggestion review and final live CV preview remain outstanding.
+
+**Implemented partially**
+- An owned tailored draft can be created from the current master CV and validated job context.
+- Draft creation enforces the confirmed Profile gate, current master version and owner scope.
+- Candidates can edit contact details, headline, summary, skills, experience descriptions/achievements, project descriptions and languages.
+- Draft changes and the selected accent colour are validated and saved separately from the master CV and Profile.
+- AI suggestion controls remain inactive; no synthetic suggestions are displayed.
+
+**Outstanding**
+- Evidence-backed AI suggestions with individual accept/reject decisions after provider selection.
+- Full live A4 preview using the selected accent colour.
+- Editing coverage for all structured CV fields, explicit acceptance/rejection lifecycle, and stale Profile handling.
+- PDF export and end-to-end verification.
+
+No tests, build, browser checks or live Supabase verification were run. The migration remains unapplied.
