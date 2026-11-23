@@ -88,9 +88,10 @@ export const matchAssessmentInputSchema = z.object({
 });
 
 // Constrain evidence IDs at generation time as well as validating them after generation.
-export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], profileEvidenceIds: string[]) {
+export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], profileEvidenceIds: string[], requirementIds: string[]) {
   const jobRef = evidenceEnum(jobEvidenceIds);
   const profileRef = evidenceEnum(profileEvidenceIds);
+  const requirementId = evidenceEnum(requirementIds);
   const modelSchema = z.object({
     semanticAlignment: z.object({
       level: z.enum(["strong", "meaningful", "insufficient"]),
@@ -101,7 +102,7 @@ export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], pr
     summary: z.string().min(1),
     alignmentExplanation: z.string().min(1),
     requirements: z.array(z.object({
-      id: z.string().min(1),
+      id: requirementId,
       assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
       explanation: z.string().min(1),
       jobEvidenceRefs: z.array(jobRef).min(1),
