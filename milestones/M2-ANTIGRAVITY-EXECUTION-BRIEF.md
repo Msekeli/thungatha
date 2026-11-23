@@ -1,7 +1,7 @@
 # M2 — Antigravity Execution Brief
 
 **Working branch:** `dev`  
-**Status:** In progress — C02/C03 accepted; C04 implementation prepared on 2026-10-24 and awaiting user review. Continue one approved checkpoint at a time.
+**Status:** Archived — M2 accepted and closed on 2026-11-23. Historical reference only; do not execute or modify M2 unless the user explicitly authorizes reopening it.
 
 ## Read first
 
