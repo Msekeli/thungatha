@@ -15,6 +15,17 @@ function result(): AiCompletionResult {
 }
 
 describe("AI provider configuration", () => {
+  it("uses Groq as primary and Gemini as fallback when both are enabled in that order", () => {
+    vi.stubEnv("AI_ENABLED_PROVIDERS", "groq,gemini");
+    vi.stubEnv("AI_PROVIDER", "groq");
+    vi.stubEnv("AI_DEFAULT_PROVIDER", "groq");
+    vi.stubEnv("GROQ_ENABLED", "true");
+    vi.stubEnv("GEMINI_ENABLED", "true");
+    vi.stubEnv("OLLAMA_LOCAL_ENABLED", "false");
+
+    expect(resolveProviderPlan()).toEqual({ primary: "groq", fallbacks: ["gemini"] });
+  });
+
   it("uses only Gemini when it is the sole listed and enabled provider", () => {
     vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini");
     vi.stubEnv("AI_PROVIDER", "gemini");
@@ -22,16 +33,14 @@ describe("AI provider configuration", () => {
     vi.stubEnv("GEMINI_ENABLED", "true");
     vi.stubEnv("GROQ_ENABLED", "false");
     vi.stubEnv("OLLAMA_LOCAL_ENABLED", "true");
-
     expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: [] });
   });
 
-  it("does not allow a provider-specific enabled flag to override the allow-list", () => {
+  it("does not allow provider flags to override the allow-list", () => {
     vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini");
     vi.stubEnv("AI_PROVIDER", "gemini");
     vi.stubEnv("GEMINI_ENABLED", "true");
     vi.stubEnv("GROQ_ENABLED", "true");
-
     expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: [] });
   });
 
@@ -40,17 +49,15 @@ describe("AI provider configuration", () => {
     vi.stubEnv("AI_PROVIDER", "groq");
     vi.stubEnv("GEMINI_ENABLED", "true");
     vi.stubEnv("GROQ_ENABLED", "true");
-
     expect(() => resolveProviderPlan()).toThrow(/not enabled/);
   });
 
-  it("uses enabled providers after the primary as ordered fallbacks", () => {
+  it("uses only enabled providers after the primary as ordered fallbacks", () => {
     vi.stubEnv("AI_ENABLED_PROVIDERS", "gemini,groq,ollama-local");
     vi.stubEnv("AI_PROVIDER", "gemini");
     vi.stubEnv("GEMINI_ENABLED", "true");
     vi.stubEnv("GROQ_ENABLED", "true");
     vi.stubEnv("OLLAMA_LOCAL_ENABLED", "false");
-
     expect(resolveProviderPlan()).toEqual({ primary: "gemini", fallbacks: ["groq"] });
   });
 });
@@ -64,7 +71,6 @@ describe("AI provider retry policy", () => {
       .mockResolvedValueOnce(result());
     const adapter: AiProviderAdapter = { provider: "gemini", complete };
     const sleep = vi.fn(async () => undefined);
-
     await expect(completeWithRetry(adapter, request, { sleep, random: () => 0 })).resolves.toEqual(result());
     expect(complete).toHaveBeenCalledTimes(2);
     expect(sleep).toHaveBeenCalledWith(250);
@@ -75,10 +81,7 @@ describe("AI provider retry policy", () => {
       new AiProviderError("Invalid credentials.", { code: "authentication", provider: "gemini" }),
     );
     const adapter: AiProviderAdapter = { provider: "gemini", complete };
-
-    await expect(completeWithRetry(adapter, request, { sleep: vi.fn() })).rejects.toMatchObject({
-      code: "authentication",
-    });
+    await expect(completeWithRetry(adapter, request, { sleep: vi.fn() })).rejects.toMatchObject({ code: "authentication" });
     expect(complete).toHaveBeenCalledTimes(1);
   });
 
@@ -87,10 +90,7 @@ describe("AI provider retry policy", () => {
       new AiProviderError("Request timed out.", { code: "timeout", provider: "gemini", retryable: true }),
     );
     const adapter: AiProviderAdapter = { provider: "gemini", complete };
-
-    await expect(completeWithRetry(adapter, request, { sleep: vi.fn() })).rejects.toMatchObject({
-      code: "timeout",
-    });
+    await expect(completeWithRetry(adapter, request, { sleep: vi.fn() })).rejects.toMatchObject({ code: "timeout" });
     expect(complete).toHaveBeenCalledTimes(1);
   });
 
@@ -102,10 +102,7 @@ describe("AI provider retry policy", () => {
     );
     const adapter: AiProviderAdapter = { provider: "gemini", complete };
     const sleep = vi.fn();
-
-    await expect(completeWithRetry(adapter, request, { sleep })).rejects.toMatchObject({
-      code: "rate-limited",
-    });
+    await expect(completeWithRetry(adapter, request, { sleep })).rejects.toMatchObject({ code: "rate-limited" });
     expect(complete).toHaveBeenCalledTimes(1);
     expect(sleep).not.toHaveBeenCalled();
   });
