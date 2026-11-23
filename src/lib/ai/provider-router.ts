@@ -50,8 +50,6 @@ export async function completeWithRetry(
         throw error;
       }
 
-      // Long Retry-After windows belong to the durable queue retry, not an
-      // in-process wait that could consume the serverless worker's time budget.
       if (error.retryAfterMs !== undefined && error.retryAfterMs > MAX_INLINE_RETRY_DELAY_MS) {
         throw error;
       }
@@ -73,6 +71,56 @@ export async function completeWithRetry(
   });
 }
 
+function configuredFallbackProviders(primary: AiProvider): AiProvider[] {
+  const configured = process.env.AI_PROVIDER_FALLBACKS?.split(",").map((value) => value.trim()).filter(Boolean) ?? [];
+  const valid = new Set<AiProvider>(["ollama-local", "gemini", "groq"]);
+  const fallbacks: AiProvider[] = [];
+
+  for (const value of configured) {
+    if (!valid.has(value as AiProvider)) {
+      throw new AiProviderError(`Unsupported AI_PROVIDER_FALLBACKS entry "${value}".`, { code: "configuration" });
+    }
+    const provider = value as AiProvider;
+    if (provider !== primary && !fallbacks.includes(provider)) fallbacks.push(provider);
+  }
+  return fallbacks;
+}
+
 export async function completeAiTask(request: AiCompletionRequest): Promise<AiCompletionResult> {
-  return completeWithRetry(getAiProviderAdapter(), request);
+  const primary = activeProvider();
+  try {
+    return await completeWithRetry(getAiProviderAdapter(primary), request);
+  } catch (primaryError) {
+    if (!(primaryError instanceof AiProviderError) || !primaryError.retryable) throw primaryError;
+
+    const fallbacks = configuredFallbackProviders(primary);
+    if (!fallbacks.length) throw primaryError;
+
+    for (const provider of fallbacks) {
+      console.warn("[AI provider] Primary provider unavailable; trying explicitly configured fallback", {
+        primary,
+        fallback: provider,
+        task: request.task,
+        code: primaryError.code,
+      });
+      try {
+        const result = await completeWithRetry(getAiProviderAdapter(provider), request);
+        console.info("[AI provider] Fallback provider completed task", {
+          primary,
+          provider: result.provider,
+          model: result.model,
+          task: request.task,
+        });
+        return result;
+      } catch (fallbackError) {
+        if (!(fallbackError instanceof AiProviderError) || !fallbackError.retryable) throw fallbackError;
+        console.warn("[AI provider] Configured fallback is also unavailable", {
+          provider,
+          task: request.task,
+          code: fallbackError.code,
+        });
+      }
+    }
+    throw primaryError;
+  }
 }

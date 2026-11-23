@@ -35,6 +35,14 @@ Ollama Cloud is not part of the current provider plan.
 
 Adapters normalize provider-specific APIs and response formats. The router must select only providers enabled in the current environment and permitted by the task's capability, privacy, and fallback policy. Never silently switch to paid usage or contact a disabled provider.
 
+### Explicit transient-failure fallback
+
+A fallback is opt-in and must be explicitly configured. Set `AI_PROVIDER_FALLBACKS` to a comma-separated ordered list of already approved providers, for example `AI_PROVIDER=gemini` and `AI_PROVIDER_FALLBACKS=groq` in a hosted environment where both providers are enabled and their credentials are configured.
+
+The router tries the primary provider first. If it fails with a retryable provider error (for example HTTP 429 or 503), it performs the bounded primary retry and then tries configured fallbacks in order. Authentication, configuration, invalid-response, and other non-retryable errors do not trigger failover. If all configured providers are temporarily unavailable, the error returns to the durable job queue; the task remains pending for a later retry. A fallback result is still validated by the owning feature's schema and evidence checks. Groq's JSON mode does not replace application-side schema validation.
+
+No provider is contacted merely because its credentials exist. Do not configure a fallback unless that provider is approved for the environment and task.
+
 ## Reasoning and efficient AI use
 
 - Reasoning/thinking is configured per task and provider capability. Context-heavy semantic job understanding and candidate-to-job comparison must be allowed sufficient interpretation; simple extraction or wording tasks may use direct generation where evaluation supports it.
