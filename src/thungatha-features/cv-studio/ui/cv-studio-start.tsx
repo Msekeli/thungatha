@@ -183,7 +183,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
+    <main className="th-cv-studio-page mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
       {state.status === "loading" && <section className="rounded-2xl border border-slate-200 bg-white p-6" aria-live="polite">Checking your Profile and CV versions…</section>}
 
       {state.status === "error" && (
@@ -248,12 +248,12 @@ export function CvStudioStart() {
                   <p className="mt-1 text-xs text-slate-500">Master CV · Scroll to review the complete document</p>
                 </div>
                 <div className="max-h-[calc(100vh-15rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-5 sm:p-7">
-                  <MasterCvPreview content={state.masterCv.content} />
+                  <div className="max-h-[calc(100dvh-13rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-5 sm:p-7"><MasterCvPreview content={state.masterCv.content} /></div>
                 </div>
               </section>
             </div>
           ) : (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               {state.masterCv ? (
                 <>
