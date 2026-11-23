@@ -119,7 +119,7 @@ export function parseJobUnderstanding(context: JobMatchingContext, value: unknow
           throw new Error("Cached job understanding could not be validated.");
         }
       })();
-  const allowed = new Set(buildJobEvidence(context.description).map((item) => item.id));
+  const allowed = new Set(buildJobEvidence(context.description, context).map((item) => item.id));
   const refs = [
     ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
@@ -132,7 +132,7 @@ export function parseJobUnderstanding(context: JobMatchingContext, value: unknow
 }
 
 export async function understandJobWithAi(context: JobMatchingContext) {
-  const evidence = buildJobEvidence(context.description);
+  const evidence = buildJobEvidence(context.description, context);
   if (evidence.length === 0) {
     throw new Error("The job description does not contain enough readable text.");
   }
@@ -173,7 +173,7 @@ export async function assessJobWithAi(
   understanding: JobUnderstanding,
   facts: CandidateFacts,
 ) {
-  const allJobEvidence = buildJobEvidence(context.description);
+  const allJobEvidence = buildJobEvidence(context.description, context);
   const referencedJobIds = new Set([
     ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
     ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
