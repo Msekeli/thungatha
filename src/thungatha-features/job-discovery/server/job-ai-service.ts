@@ -75,7 +75,6 @@ async function parseAssessmentWithJsonRepair(content: string) {
       task: "job-fit-assessment",
       responseFormat: "json",
       temperature: 0,
-      maxOutputTokens: 6000,
       timeoutMs: 120_000,
       reasoning: false,
       systemPrompt: [
@@ -138,7 +137,6 @@ export async function understandJobWithAi(description: string) {
     task: "job-requirement-extraction",
     responseFormat: "json",
     temperature: 0.1,
-    maxOutputTokens: 3600,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
@@ -146,8 +144,8 @@ export async function understandJobWithAi(description: string) {
       "Identify only material responsibilities, capabilities, and requirements that affect the actual work or candidate suitability.",
       "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
       "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
-      "Return at most 12 responsibilities, 16 capabilities, and 24 material requirements. If the advert contains more material information than fits, mark coverage partial rather than silently implying completeness.",
-      "Every item must cite between one and four exact supplied job evidence IDs. Use only the smallest set of IDs that directly supports the item; never list every related fragment and never invent an ID.",
+      "Include every material responsibility, capability, and requirement supported by the advert. Do not impose arbitrary item-count limits or silently omit material information.",
+      "Every item must cite the exact supplied job evidence IDs that support it. Do not invent evidence references or omit material supporting evidence.",
       "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
       "Keep each statement concise. Return a short role-purpose summary.",
       "Return one JSON object at the root. Do not wrap it in a result, data, job, analysis, or response property. Do not return an array or prose.",
@@ -200,7 +198,6 @@ export async function assessJobWithAi(
     temperature: 0.1,
     // A complete evidence-linked assessment can be substantially larger than
     // the extraction response. Keep enough headroom for all 24 requirements.
-    maxOutputTokens: 6000,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
@@ -210,11 +207,11 @@ export async function assessJobWithAi(
       "Missing Profile information means not demonstrated, not proof that the candidate lacks the capability.",
       "Use only supplied jobEvidence and confirmedProfileEvidence IDs. Cite exact IDs for every factual claim.",
       "Assess every extracted requirement exactly once, preserving its exact id, exact wording, and importance. Do not add, omit, duplicate, or reclassify requirements.",
-      "For each requirement, keep explanation to one concise sentence of at most 160 characters. Do not repeat the requirement in the explanation.",
+      "Keep explanations clear and concise while preserving the evidence and reasoning needed to understand the assessment.",
       "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence.",
       "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
       "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
-      "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match, Relevant, or Unclassified.",
+      "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match or Relevant; insufficient evidence produces an unavailable assessment, not a third classification.",
       "Return one JSON object with exactly these top-level fields: semanticAlignment, summary, alignmentExplanation, requirements, gaps.",
       "semanticAlignment must contain level (strong, meaningful, insufficient), materialGaps (boolean), jobEvidenceRefs (array), and profileEvidenceRefs (array).",
       "Each requirements item must contain id, requirement, importance (mandatory, preferred, uncertain), assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, and profileEvidenceRefs.",
