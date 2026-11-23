@@ -44,6 +44,42 @@ describe("Groq adapter", () => {
     });
   });
 
+  it("treats Groq TPM admission failures as retryable capacity limits", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
+      error: { message: "Request too large on tokens per minute (TPM): Limit 8000, Requested 10253." },
+    }), { status: 413 }));
+    const adapter = createGroqAdapter({ apiKey: "test-key", model: "openai/gpt-oss-120b", fetcher });
+
+    await expect(adapter.complete({
+      task: "job-fit-assessment",
+      systemPrompt: "Return JSON.",
+      userPrompt: "Assess.",
+      responseFormat: "json",
+    })).rejects.toMatchObject({
+      code: "rate-limited",
+      provider: "groq",
+      retryable: true,
+    });
+  });
+
+  it("does not treat unrelated HTTP 413 responses as retryable", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
+      error: { message: "Payload exceeds the maximum request size." },
+    }), { status: 413 }));
+    const adapter = createGroqAdapter({ apiKey: "test-key", model: "openai/gpt-oss-120b", fetcher });
+
+    await expect(adapter.complete({
+      task: "job-fit-assessment",
+      systemPrompt: "Return JSON.",
+      userPrompt: "Assess.",
+      responseFormat: "json",
+    })).rejects.toMatchObject({
+      code: "unknown",
+      provider: "groq",
+      retryable: false,
+    });
+  });
+
   it("uses JSON object mode when no schema is supplied", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
       choices: [{ message: { content: '{"ok":true}' } }],

@@ -232,53 +232,60 @@ export async function assessJobWithAi(
     throw new AssessmentUnavailableError("The confirmed Profile does not contain enough evidence to assess this role.");
   }
 
+  // Encode evidence as [id, content] tuples. IDs and content remain lossless,
+  // while repeated JSON property names and the duplicated full job description
+  // are removed from the provider prompt.
   const compactUnderstanding = {
     coverage: understanding.coverage,
-    responsibilities: understanding.responsibilities,
-    capabilities: understanding.capabilities,
-    requirements: understanding.requirements,
+    responsibilities: understanding.responsibilities.map((item) => [
+      item.id, item.statement, item.sourceEvidenceRefs,
+    ]),
+    capabilities: understanding.capabilities.map((item) => [
+      item.id, item.name, item.context, item.sourceEvidenceRefs,
+    ]),
+    requirements: understanding.requirements.map((item) => [
+      item.id, item.statement, item.category, item.importance, item.sourceEvidenceRefs,
+    ]),
   };
-
-  const modelSchema = createMatchAssessmentResponseSchema(
-    jobEvidence.map((item) => item.id),
-    profileEvidence.map((item) => item.id),
-    understanding.requirements.map((item) => item.id),
+  const compactJobEvidence = jobEvidence.map((item) => [item.id, item.content]);
+  const compactProfileEvidence = profileEvidence.map((item) => [item.id, item.content]);
+  const maxOutputTokens = Math.max(
+    1_024,
+    512
+      + understanding.requirements.length * 128
+      + (jobEvidence.length + profileEvidence.length) * 8,
   );
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
     responseSchema: modelSchema.responseSchema,
     temperature: 0.1,
+    maxOutputTokens,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
-      "Compare the actual work and material requirements with the candidate's confirmed Profile evidence.",
-      "Recognise equivalent responsibilities across different titles and transferable capabilities across contexts when the evidence supports the relationship. Titles are context, never gates.",
-      "Treat target-role preference as soft context only, never as proof of a skill or experience.",
-      "Missing Profile information means not demonstrated, not proof that the candidate lacks the capability.",
-      "Use only supplied jobEvidence and confirmedProfileEvidence IDs. Cite exact IDs for every factual claim.",
-      "Assess every extracted requirement exactly once. Return its exact id only; do not repeat, paraphrase, or regenerate requirement wording or importance. Application code attaches the canonical wording and importance.",
-      "Keep explanations clear and concise while preserving the evidence and reasoning needed to understand the assessment.",
-      "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence.",
-      "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
-      "Explain material gaps and uncertainty concisely. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
-      "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match or Relevant; insufficient evidence produces an unavailable assessment, not a third classification.",
-      "Return one JSON object with exactly these top-level fields: semanticAlignment, summary, alignmentExplanation, requirements, gaps.",
-      "semanticAlignment must contain level (strong, meaningful, insufficient), materialGaps (boolean), jobEvidenceRefs (array), and profileEvidenceRefs (array).",
-      "Each requirements item must contain only id, assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, and profileEvidenceRefs. Return the exact requirement IDs supplied in jobUnderstanding, exactly once each.",
-      "Each gaps item must contain description, jobEvidenceRefs, and profileEvidenceRefs.",
-      "Use no additional fields. Do not invent or alter evidence IDs. Every evidence reference must be copied verbatim from the supplied evidence lists. Return only JSON, without markdown.",
-    ].join("\n"),
+      "Assess the actual work and material requirements against the candidate's confirmed Profile evidence.",
+      "Recognise equivalent responsibilities and transferable capabilities when evidence supports the relationship. Titles are context, never gates.",
+      "Target-role preference is soft context, not proof of skill or experience. Missing Profile information means not demonstrated, not proof of inability.",
+      "Input format: jobUnderstanding has coverage plus responsibilities tuples [id, statement, jobEvidenceRefs], capabilities tuples [id, name, context, jobEvidenceRefs], and requirements tuples [id, statement, category, importance, jobEvidenceRefs]. jobEvidence and confirmedProfileEvidence are [exactEvidenceId, verbatimEvidenceContent] tuples.",
+      "Use only supplied evidence IDs. Cite exact IDs for factual claims. Do not invent, alter, or infer evidence references.",
+      "Assess every extracted requirement exactly once. Return its exact ID only; do not repeat requirement wording or importance. Application code attaches canonical wording and importance.",
+      "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence. Explain material gaps and uncertainty clearly and concisely.",
+      "If no material requirements or responsibilities were extracted, return insufficient alignment. Do not calculate scores, percentages, weights, rankings, or hiring predictions.",
+      "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match or Relevant; insufficient evidence produces unavailable, not a third classification.",
+      "Return one JSON object with exactly these fields: semanticAlignment, summary, alignmentExplanation, requirements, gaps.",
+      "semanticAlignment: level, materialGaps, jobEvidenceRefs, profileEvidenceRefs. Each requirement: id, assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, profileEvidenceRefs. Each gap: description, jobEvidenceRefs, profileEvidenceRefs.",
+      "Return every requirement exactly once. Use no additional fields. Return JSON only.",
+    ].join("\\n"),
     userPrompt: json({
-      jobContext: context,
       jobUnderstanding: compactUnderstanding,
-      jobEvidence,
-      confirmedProfileEvidence: profileEvidence,
-      candidateFacts: {
-        knownEmploymentMonths: facts.knownEmploymentMonths,
-        employmentEvidenceRefs: facts.employmentEvidenceRefs,
-        unknownEmploymentPeriodRefs: facts.unknownEmploymentPeriodRefs,
-      },
+      jobEvidence: compactJobEvidence,
+      confirmedProfileEvidence: compactProfileEvidence,
+      employmentFacts: [
+        facts.knownEmploymentMonths,
+        facts.employmentEvidenceRefs,
+        facts.unknownEmploymentPeriodRefs,
+      ],
     }),
   });
 

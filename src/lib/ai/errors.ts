@@ -60,16 +60,19 @@ export function createProviderHttpError(
       ? (payload as { message: string }).message
       : undefined;
   const safeDetail = detail?.replace(/\s+/g, " ").slice(0, 240);
-  const code: AiErrorCode = status === 401 || status === 403
-    ? "authentication"
-    : status === 429
-      ? "rate-limited"
-      : status === 408
-        ? "timeout"
-        : status >= 500
-          ? "unavailable"
-          : "unknown";
-  const retryable = status === 408 || status === 429 || status >= 500;
+  const isTokenCapacityLimit = status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
+  const code: AiErrorCode = isTokenCapacityLimit
+    ? "rate-limited"
+    : status === 401 || status === 403
+      ? "authentication"
+      : status === 429
+        ? "rate-limited"
+        : status === 408
+          ? "timeout"
+          : status >= 500
+            ? "unavailable"
+            : "unknown";
+  const retryable = isTokenCapacityLimit || status === 408 || status === 429 || status >= 500;
   return new AiProviderError(
     `${provider === "ollama-local" ? "Ollama" : provider === "gemini" ? "Gemini" : "Groq"} returned HTTP ${status}.${safeDetail ? ` ${safeDetail}` : ""}`,
     {

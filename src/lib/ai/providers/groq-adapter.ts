@@ -62,7 +62,7 @@ export function createGroqAdapter(options: { apiKey?: string; model?: string; fe
                 : { response_format: { type: "json_object" } }
               : {}),
             ...(request.temperature !== undefined ? { temperature: request.temperature } : {}),
-            ...(request.maxOutputTokens ? { max_tokens: request.maxOutputTokens } : {}),
+            ...(request.maxOutputTokens ? { max_completion_tokens: request.maxOutputTokens } : {}),
           }),
         });
       } catch (cause) {
