@@ -133,7 +133,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
 
         <Section title="Education" accent={accent}>
           {content.education.length ? content.education.map((item) => (
-            <View key={item.sourceId} style={styles.entry} wrap={false}>
+            <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.entryTitle}>{item.qualification}</Text>
               <Text style={styles.entryBody}>{item.institution}{item.fieldOfStudy ? ` · ${item.fieldOfStudy}` : ""}</Text>
             </View>
@@ -142,7 +142,7 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
 
         <Section title="Certifications" accent={accent}>
           {content.certifications.length ? content.certifications.map((item) => (
-            <View key={item.sourceId} style={styles.entry} wrap={false}>
+            <View key={item.sourceId} style={styles.entry}>
               <Text style={styles.body}>{item.name}{item.issuer ? ` · ${item.issuer}` : ""}</Text>
             </View>
           )) : <Text style={styles.body}>No certifications recorded in Profile.</Text>}
