@@ -25,7 +25,7 @@ type MatchAssessment = {
   understandingCoverage?: "complete" | "partial" | "unavailable";
   gaps: Array<{ description: string; jobEvidenceRefs: string[]; profileEvidenceRefs: string[]; jobEvidence?: EvidenceItem[]; profileEvidence?: EvidenceItem[] }>;
 };
-type AssessmentStatus = "idle" | "loading" | "pending" | "failed" | "unavailable" | "profile_unconfirmed" | "ready" | "error";
+type AssessmentStatus = "idle" | "loading" | "pending" | "failed" | "unavailable" | "unusable_description" | "profile_unconfirmed" | "ready" | "error";
 type Props = { open: boolean; anchorEl: HTMLElement | null; jobId: string | null; onClose: () => void };
 
 export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) {
@@ -114,6 +114,7 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
           {retryError && <p role="alert" className="mt-2 text-fg-muted">{retryError}</p>}
         </div>}
         {status === "profile_unconfirmed" && <p className="text-fg-muted">Confirm your Profile before Thungatha can assess how your experience aligns with this role.</p>}
+        {status === "unusable_description" && <p className="text-fg-muted">This advert does not contain enough readable job information for a reliable assessment.</p>}
         {status === "error" && <p className="text-fg-muted">The assessment could not be loaded. Close this panel and try again.</p>}
         {status === "ready" && assessment && <>
           <div><span className="text-xs text-fg-muted">Classification</span><h3 className="mt-1 font-semibold">{assessment.classification === "match" ? "Match" : "Relevant"}</h3><p className="mt-1 text-fg-muted">{assessment.summary}</p></div>
