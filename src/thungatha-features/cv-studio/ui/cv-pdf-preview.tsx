@@ -15,6 +15,6 @@ const CvPdfPreviewClient = dynamic(
   },
 );
 
-export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accent?: string }) {
-  return <CvPdfPreviewClient content={content} accent={accent} />;
+export function CvPdfPreview({ content, accent, allowDownload = true }: { content: CvPdfContent; accent?: string; allowDownload?: boolean }) {
+  return <CvPdfPreviewClient content={content} accent={accent} allowDownload={allowDownload} />;
 }
