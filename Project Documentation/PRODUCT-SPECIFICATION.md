@@ -106,24 +106,29 @@ Job titles and role-family labels are contextual signals only. They must never b
 - Interpret qualifications, experience durations, credentials, subject marks, mandatory/preferred wording, and alternative pathways in the context of the full advert. No single phrase, field, threshold, or extracted requirement is an automatic rejection rule or universal gate.
 - Missing Profile information is not evidence that the person lacks the requirement. Contradictory or ambiguous evidence must remain visible as uncertainty.
 - Validate AI output against feature-owned schemas and verify all evidence references in application code. Treat model output as untrusted data, not as an instruction or authority.
-- Application code validates evidence, authorization, persistence, freshness, sorting, and the three approved categorical outcomes. It must not introduce rigid requirement checklists, keyword-triggered rejection, role-family gates, or a hidden score as a substitute for the AI's full-context assessment.
-- Explain why a role is a **Match**, **Relevant**, or **Unclassified**, citing job-side and candidate-side evidence. Do not present a hiring prediction.
+- Application code validates evidence, authorization, persistence, freshness, sorting, and the two approved public classifications. It must not introduce rigid requirement checklists, keyword-triggered rejection, role-family gates, or a hidden score as a substitute for the AI's full-context assessment.
+- Explain why an assessed role is a **Match** or **Relevant**, citing job-side and candidate-side evidence. Do not present a hiring prediction.
 
 ### Approved result labels
 
 - **Match:** strong, supported alignment with the central work and genuinely core requirements, grounded in confirmed Profile evidence. A different job title or industry does not prevent this result when the underlying work and capabilities align. Interpret stated mandatory requirements in context; do not mechanically reject on one extracted phrase or missing field.
 - **Relevant:** meaningful supported alignment exists, including transferable skills or related responsibilities, but material gaps, unknowns, or incomplete evidence prevent a strong Match conclusion.
-- **Unclassified:** available evidence is insufficient, ambiguous, unsupported, or materially contradictory. Do not show a badge for this state.
+- **Unavailable assessment (not a classification):** there is not enough trustworthy evidence to assess the role, the Profile is not confirmed, the job description is unusable, or the AI/provider response is unavailable or fails validation. Show no Match/Relevant badge and do not expose this state as a third relevance label.
 
-Only these three labels are permitted. Do not create intermediate labels, hidden ranking scores, numerical scores, percentages, weights, thresholds, weighted totals, score bands, fit points, or hiring-probability estimates. Do not persist, return, display, or sort by a numerical matching score.
+**Match and Relevant are the only public matching classifications.** Do not create a third classification, intermediate labels, hidden ranking scores, numerical scores, percentages, weights, thresholds, weighted totals, score bands, fit points, or hiring-probability estimates. Do not persist, return, display, or sort by a numerical matching score.
 
 ### Sorting and freshness
 
-- "Most relevant" orders the full filtered catalogue by **Match**, then **Relevant**, then **Unclassified**. Within each category, retain the agreed stable tie-breakers, including publication date.
+- "Most relevant" orders assessed jobs by **Match**, then **Relevant**. Jobs without a valid assessment are not assigned a third category; keep them outside the classified ordering and use the agreed date-based fallback/tie-break behaviour.
 - Newest and Oldest remain date sorts and do not depend on Profile availability.
 - Candidate-specific results require a confirmed Profile. Without one, do not fabricate a personalised result; use the agreed newest-first fallback.
 - Reassess or mark results stale when the job description, confirmed Profile, AI task/prompt/schema version, or applicable business rules change.
-- If AI analysis is unavailable or cannot be validated, show the analysis as unavailable or unclassified and keep the job feed usable. Do not silently fall back to title or keyword matching and present it as equivalent AI analysis.
+- If evidence is insufficient or AI analysis is unavailable or cannot be validated, represent the assessment as unavailable, without assigning a classification or badge, and keep the job feed usable. Do not silently fall back to title or keyword matching and present it as equivalent AI analysis.
+
+
+### AI workload continuity
+
+Reduce unnecessary AI work through reusable, versioned job understanding, valid assessment caching, compact task-specific inputs, and by avoiding duplicate requests. Do not impose arbitrary internal AI call, token, output-length, queue-depth, or per-request task budgets that truncate or abandon an otherwise valid assessment. If a provider's actual rate limit or temporary availability prevents completion, persist the task and its progress, defer/retry it safely, and resume without presenting partial output as a completed assessment. Respect provider terms and actual hard limits; do not silently incur paid usage or route work to a disabled provider. Keep model output complete enough to cover all material job content rather than dropping requirements to fit an arbitrary application-defined count.
 
 ## 7. CV Studio
 
@@ -203,7 +208,7 @@ AI is a first-class product capability in Thungatha. It should materially improv
 
 ### Core AI responsibilities
 
-- **Job Discovery and matching (M3):** understand job descriptions semantically; identify responsibilities, skills, technologies, qualifications, experience and context; compare roles with confirmed Profile evidence; recognise equivalent work across different titles and industries; identify transferable skills; and produce evidence-grounded Match, Relevant, or Unclassified explanations.
+- **Job Discovery and matching (M3):** understand complete job context semantically; identify responsibilities, skills, technologies, qualifications, experience and context; compare roles with confirmed Profile evidence; recognise equivalent work across different titles and industries; identify transferable skills; and produce evidence-grounded Match or Relevant explanations. When assessment cannot be supported, return an unavailable state rather than a third classification.
 - **CV Studio (M4):** assist with role-specific CV recommendations, tailoring, restructuring, and wording using only confirmed facts. Users review proposed changes. AI must not fabricate or silently overwrite the master CV.
 - **Profile and CV import (M2):** the current approved PDF-import checkpoint remains governed by its explicit local extraction and privacy constraints. AI-based interpretation of imported personal data is not automatically enabled by this product strategy; it requires a separately approved task, privacy review, and user-facing confirmation flow.
 - **Other experiences:** add AI assistance only where an agreed user problem benefits from it. Do not invent autonomous actions or allow AI to submit applications, change application status, or make irreversible decisions.
@@ -215,7 +220,7 @@ AI is a first-class product capability in Thungatha. It should materially improv
 - Validate structured output with the owning feature's Zod schema and validate evidence references against trusted application data. Schema validity alone does not prove factual correctness.
 - Treat job descriptions, imported documents, user content, and model responses as untrusted data. External content must never override system or product instructions.
 - Send only task-required information. Do not send raw CVs or unnecessary personal data to hosted providers without a task-specific privacy review and appropriate user notice/consent.
-- Reuse valid prior results when the exact source content and task/schema version have not changed. Do not make repeated AI calls without a reason.
+- Reuse valid prior results when the complete job context, confirmed Profile version, task/prompt/schema version, and applicable policy version have not changed. Do not make repeated AI calls without a reason.
 - Use task-appropriate reasoning settings. Simple extraction or rewriting may use direct generation; semantic comparison must be allowed sufficient contextual interpretation and must be evaluated on representative cases. Do not globally disable model capabilities that a core product task requires.
 - Keep discovery, authentication, authorization, persistence, validation, and application lifecycle operations functional when AI is unavailable. AI-dependent features must fail honestly and recover safely; do not silently downgrade them to keyword-only logic.
 
