@@ -1,6 +1,6 @@
 # Thungatha — Master Implementation Plan
 
-**Document status:** Maintained roadmap — M1 and M2 accepted and closed; M2 frozen  
+**Document status:** Maintained roadmap — M1 and M2 accepted and closed; M2 completed  
 **Purpose:** Master roadmap, milestone scope, dependencies, progress and acceptance tracking  
 **Product:** Thungatha  
 **Architecture:** Next.js modular monolith  
@@ -46,7 +46,7 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | **Accepted — complete and closed (2026-11-23); frozen** |
+| M2 | Profile and CV Import | **Accepted — complete and closed (2026-11-23)** |
 | M3 | Job Matching and Fit Analysis | In progress |
 | M4 | CV Studio | Not started |
 | M5 | Job Tracking | Not started |
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Current milestone:** M3 — AI-Powered Job Matching and Relevance. M2 — Profile and CV Import — was explicitly accepted as complete by the user on 2026-11-23 and is permanently closed/frozen unless the user explicitly reopens it. All M2 checkpoints C00–C07 are accepted. The user's confirmation is the acceptance authority; supplied screenshots support the visible Profile and Job Discovery state. Do not schedule or perform further M2 work. M0, M1 and M2 are closed.
+**Current milestone:** M3 — AI-Powered Job Matching and Relevance. M2 — Profile and CV Import — was explicitly accepted as complete by the user on 2026-11-23 and is completed and closed unless the user explicitly reopens it. All M2 checkpoints C00–C07 are accepted. The user's confirmation is the acceptance authority; supplied screenshots support the visible Profile and Job Discovery state. M2 has no outstanding work. M0, M1 and M2 are closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -452,12 +452,12 @@ Historical workload-control implementation (not the approved completion policy):
 **M3 workload policy clarification (2026-11-23):** Do not introduce arbitrary internal AI quotas, per-job call/token budgets, output-count caps, or queue-admission limits that can truncate, reject, or abandon valid matching work. Reduce unnecessary consumption through context-aware caching, request deduplication, compact evidence preparation, and reuse of completed results. When actual provider rate limits or temporary outages prevent progress, persist and defer the task, then resume safely. Never present partial AI output as a completed Match/Relevant assessment. This clarification supersedes the historical queue/backfill caps described above.
 
 
-## M2 final acceptance and scope freeze — 2026-11-23
+## M2 final acceptance and completion status — 2026-11-23
 
 M2 is **Accepted — complete and closed**. The user explicitly confirmed that all M2 functionality is already implemented, complete and verified. All checkpoints C00–C07 are accepted. The supplied screenshots show the populated, confirmed Profile and the functioning Job Discovery workspace.
 
 This is user-confirmed acceptance; it is not a claim that ChatGPT independently reran automated tests, lint, builds, browser checks, or database/security verification during closeout. Historical checkpoint notes remain as an audit trail and are superseded by this final status.
 
-**Permanent scope freeze:** Do not touch M2 under any circumstances unless the user explicitly instructs that M2 be reopened. This prohibition includes M2 application code, UI, APIs, migrations, tests, milestone documentation, and execution briefs. Do not create M2 follow-up tasks or re-audit completed M2 work.
+**Permanent completion status:** Do not touch M2 under any circumstances unless the user explicitly instructs that M2 be reopened. This prohibition includes M2 application code, UI, APIs, migrations, tests, milestone documentation, and execution briefs. Do not create M2 follow-up tasks or re-audit completed M2 work.
 
 **Active milestone:** M3 — AI-Powered Job Matching and Relevance. M2 is a satisfied dependency.
