@@ -42,6 +42,19 @@ The authenticated endpoint `POST /api/cv-studio/job-context` accepts either a Di
 
 The API and validation contracts are committed. No tests, build, browser checks or live Supabase verification were run.
 
+## CV suitability and version reuse (M4-C05)
+
+The authenticated endpoint `POST /api/cv-studio/suitability` validates the selected current master CV against the authenticated candidate's current Profile version and searches that candidate's accepted tailored versions for an exact prior job-context match.
+
+- Discovery contexts match by stable job ID. Pasted contexts match by the SHA-256 description fingerprint.
+- Only accepted tailored versions created from the current Profile version are surfaced as reuse candidates.
+- An exact prior match is a prompt to review that saved version, not an automatic selection or application.
+- If no exact match exists, the endpoint indicates that a new draft may be prepared.
+- The response explicitly marks semantic suitability as unavailable. It does not claim that the master CV is suitable or unsuitable and does not substitute keyword rules for AI assessment.
+- No AI provider is selected for CV Studio yet. Semantic comparison of master CV evidence with job requirements, and explaining transferable skills or gaps, remains outstanding until the provider decision and C05 integration are completed.
+
+The endpoint and schemas are committed. No tests, build, browser checks or live Supabase verification were run.
+
 ## Data model contract (M4-C02)
 
 The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261123000100_cv_studio_versions.sql`.
