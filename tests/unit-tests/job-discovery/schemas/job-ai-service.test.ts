@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { completeAiTask } from "@/lib/ai/provider-router";
-import { understandJobWithAi, parseJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-service";
+import { understandJobWithAi, parseJobUnderstanding, attachCanonicalRequirements } from "@/thungatha-features/job-discovery/server/job-ai-service";
 import { createMatchAssessmentResponseSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
@@ -130,5 +130,78 @@ describe("candidate assessment response contract", () => {
       gaps: [],
     });
     expect(result.success).toBe(false);
+  });
+});
+
+
+describe("canonical requirement hydration", () => {
+  it("attaches exact extracted wording and importance without asking the model to generate them", () => {
+    const understanding = {
+      summary: "Role",
+      responsibilities: [],
+      capabilities: [],
+      requirements: [{
+        id: "req_1",
+        statement: "At least three years of professional software development experience.",
+        category: "experience" as const,
+        importance: "mandatory" as const,
+        sourceEvidenceRefs: ["job:segment:1"],
+      }],
+      coverage: "complete" as const,
+    };
+    const hydrated = attachCanonicalRequirements({
+      semanticAlignment: {
+        level: "meaningful",
+        materialGaps: true,
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      },
+      summary: "Relevant transferable experience.",
+      alignmentExplanation: "The candidate has related software development evidence.",
+      requirements: [{
+        id: "req_1",
+        assessment: "not_demonstrated",
+        explanation: "The confirmed profile does not establish the required duration.",
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: [],
+      }],
+      gaps: [],
+    }, understanding);
+
+    expect(hydrated.requirements[0]).toMatchObject({
+      id: "req_1",
+      requirement: "At least three years of professional software development experience.",
+      importance: "mandatory",
+      assessment: "not_demonstrated",
+    });
+  });
+
+  it("rejects missing or duplicate requirement IDs rather than silently dropping requirements", () => {
+    const understanding = {
+      summary: "Role",
+      responsibilities: [],
+      capabilities: [],
+      requirements: [{
+        id: "req_1",
+        statement: "Build software.",
+        category: "skill" as const,
+        importance: "preferred" as const,
+        sourceEvidenceRefs: ["job:segment:1"],
+      }],
+      coverage: "complete" as const,
+    };
+    const output = {
+      semanticAlignment: {
+        level: "meaningful" as const,
+        materialGaps: true,
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      },
+      summary: "Assessment.",
+      alignmentExplanation: "Evidence is limited.",
+      requirements: [],
+      gaps: [],
+    };
+    expect(() => attachCanonicalRequirements(output, understanding)).toThrow(/omitted extracted requirement IDs/);
   });
 });
