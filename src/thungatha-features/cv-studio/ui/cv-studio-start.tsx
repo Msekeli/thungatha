@@ -312,6 +312,59 @@ export function CvStudioStart() {
               </div>
             )}
 
+            <section className="mt-8 border-t border-slate-200 pt-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">CV library</p>
+                  <h3 className="mt-1 text-lg font-semibold text-slate-950">Version history</h3>
+                  <p className="mt-1 text-sm text-slate-600">Review saved master and tailored CV versions. Each version remains tied to its source Profile version.</p>
+                </div>
+                <Button variant="outline" size="sm" disabled={historyLoading} onClick={() => void loadVersionHistory()}>{historyLoading ? "Refreshing…" : "Refresh history"}</Button>
+              </div>
+              {historyError && <p className="mt-3 text-sm text-rose-700" role="alert">{historyError}</p>}
+              {historyLoading && versionHistory.length === 0 && <p className="mt-3 text-sm text-slate-500">Loading saved versions…</p>}
+              {!historyLoading && versionHistory.length === 0 && <p className="mt-3 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">No saved versions were found.</p>}
+              {versionHistory.length > 0 && (
+                <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+                  <div className="space-y-2">
+                    {versionHistory.map((version) => (
+                      <div key={version.id} className={`rounded-xl border p-3 ${selectedVersion?.id === version.id ? "border-teal-500 bg-teal-50/50" : "border-slate-200"}`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-slate-900">{version.cv_kind === "master" ? "Master CV" : "Tailored CV"} · v{version.version_number}</p>
+                            <p className="mt-1 text-xs text-slate-600">{version.source_job_snapshot?.title ?? "Generated from Profile"}</p>
+                            <p className="mt-1 text-xs text-slate-500">Profile v{version.source_profile_version} · {version.status} · {new Date(version.updated_at).toLocaleDateString()}</p>
+                          </div>
+                          <Button size="sm" variant="outline" disabled={selectedVersionLoading} onClick={() => void openVersion(version.id)}>{selectedVersion?.id === version.id ? "Viewing" : "View"}</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    {selectedVersionLoading && <p className="text-sm text-slate-500">Opening saved CV version…</p>}
+                    {!selectedVersionLoading && !selectedVersion && <p className="text-sm leading-6 text-slate-600">Select a version to inspect its saved content.</p>}
+                    {selectedVersion && (
+                      <>
+                        <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+                          <div><p className="font-semibold text-slate-950">{selectedVersion.cv_kind === "master" ? "Master CV" : "Tailored CV"} · v{selectedVersion.version_number}</p><p className="text-xs text-slate-500">Profile version {selectedVersion.source_profile_version}</p></div>
+                          <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium capitalize text-slate-700">{selectedVersion.status}</span>
+                        </div>
+                        {selectedVersion.source_job_snapshot && <p className="mb-4 text-sm text-slate-600">For {selectedVersion.source_job_snapshot.title}{selectedVersion.source_job_snapshot.company ? ` at ${selectedVersion.source_job_snapshot.company}` : ""}</p>}
+                        <MasterCvPreview content={selectedVersion.content} />
+                        {selectedVersion.cv_kind === "tailored" && (
+                          <div className="mt-5 border-t border-slate-200 pt-4">
+                            <h4 className="text-sm font-semibold text-slate-900">Suggestion decisions</h4>
+                            {selectedVersion.suggestions.length === 0 ? <p className="mt-2 text-sm text-slate-500">No suggestion history was saved with this version.</p> : <ul className="mt-2 space-y-2">{selectedVersion.suggestions.map((suggestion) => <li key={suggestion.id} className="rounded-lg bg-white p-3 text-sm"><p className="font-medium text-slate-800">{suggestion.targetPath} · {suggestion.decision}</p><p className="mt-1 text-slate-600">{suggestion.reason}</p><p className="mt-1 text-xs text-slate-500">Evidence: {suggestion.evidenceRefs.join(", ")}</p></li>)}</ul>}
+                          </div>
+                        )}
+                        <p className="mt-4 text-xs leading-5 text-slate-500">Historical versions are read-only here. Editing and PDF export are not active yet.</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
+
             <form className="mt-6 space-y-4" onSubmit={submitPastedJob}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
