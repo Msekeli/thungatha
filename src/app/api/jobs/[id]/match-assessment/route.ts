@@ -14,6 +14,7 @@ import {
 } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 import { resolveEvidenceLinkedAssessment } from "./evidence-resolver";
 import { requireAuthIdentity } from "./auth-helper";
+import { createJobMatchingContext, hashJobContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 export const maxDuration = 120;
 const idSchema = z.string().uuid();
@@ -30,26 +31,27 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const [profileResult, jobResult] = await Promise.all([
       db.from("profiles").select("profile_version,confirmed_at").eq("user_id", identity.userId).maybeSingle(),
-      db.from("jobs").select("description").eq("id", id).maybeSingle(),
+      db.from("jobs").select("title,employer_name,location_text,description").eq("id", id).maybeSingle(),
     ]);
     if (profileResult.error) throw profileResult.error;
     if (jobResult.error) throw jobResult.error;
     if (!jobResult.data) return apiError("Job not found", 404);
     if (!profileResult.data?.confirmed_at) return NextResponse.json({ status: "profile_unconfirmed", assessment: null });
 
-    const description = jobResult.data.description ?? "";
+    const context = createJobMatchingContext(jobResult.data);
+    const description = context.description;
     if (!isUsableJobDescription(description)) return NextResponse.json({ status: "unusable_description", assessment: null });
 
-    const descriptionHash = createHash("sha256").update(description).digest("hex");
+    const contextHash = hashJobContext(context);
     const { data, error } = await db.from("job_match_assessments")
       .select("classification,assessment,created_at").eq("user_id", identity.userId).eq("job_id", id)
       .eq("profile_version", profileResult.data.profile_version)
-      .eq("job_description_hash", descriptionHash).eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
+      .eq("job_context_hash", contextHash).eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
     if (error) throw error;
 
     if (data && (data.classification === "match" || data.classification === "relevant")) {
       const { data: understandingData } = await db.from("job_ai_understandings").select("understanding")
-        .eq("description_hash", descriptionHash)
+        .eq("context_hash", contextHash)
         .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
       const assessment = await resolveEvidenceLinkedAssessment({
         userId: identity.userId, token: identity.getToken, description,
@@ -63,7 +65,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       userId: identity.userId,
       jobId: id,
       profileVersion: profileResult.data.profile_version ?? 1,
-      descriptionHash,
+      contextHash,
     };
     let taskStatus = await getJobAiTaskStatus(taskInput);
     if (taskStatus === "completed") {
@@ -101,10 +103,10 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
     if (!jobResult.data) return apiError("Job not found", 404);
     if (!profileResult.data?.confirmed_at) return NextResponse.json({ status: "profile_unconfirmed" }, { status: 409 });
 
-    const description = jobResult.data.description ?? "";
-    const descriptionHash = createHash("sha256").update(description).digest("hex");
+    const context = createJobMatchingContext(jobResult.data);
+    const contextHash = hashJobContext(context);
     const retried = await retryFailedJobAiTask({
-      userId: identity.userId, jobId: id, profileVersion: profileResult.data.profile_version ?? 1, descriptionHash,
+      userId: identity.userId, jobId: id, profileVersion: profileResult.data.profile_version ?? 1, contextHash,
     });
     if (!retried) return NextResponse.json({ error: "This assessment is not in a retryable failed state." }, { status: 409 });
     return NextResponse.json({ status: "pending" }, { status: 202 });
