@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CvDraftEditor } from "./cv-draft-editor";
 import { CvPdfPreview } from "./cv-pdf-preview";
+import { CvDraftEditor } from "./cv-draft-editor";
 
 type CvContent = {
   fullName: string;
@@ -35,6 +36,7 @@ type JobContext = {
   descriptionFingerprint: string;
 };
 type MatchingVersion = { id: string; versionNumber: number; updatedAt: string; accentColour: string };
+type ReusableCv = { id: string; version_number: number; content: CvContent; accent_colour: "teal" | "navy" | "burgundy" | "forest" };
 type Suitability = {
   status: "existing_version_found" | "new_version_recommended" | "assessment_unavailable";
   matchingVersions: MatchingVersion[];
@@ -58,6 +60,7 @@ export function CvStudioStart() {
   const [jobForm, setJobForm] = useState<JobForm>(emptyJobForm);
   const [jobContext, setJobContext] = useState<JobContext | null>(null);
   const [suitability, setSuitability] = useState<Suitability | null>(null);
+  const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
   const [jobInputTab, setJobInputTab] = useState<"discovery" | "paste">("discovery");
@@ -119,6 +122,26 @@ export function CvStudioStart() {
   }, [state, jobId, jobContext, resolveDiscoveryJob]);
 
 
+  async function useAcceptedCv(versionId: string) {
+    if (!jobContext) return;
+    setWorkflowBusy(true);
+    setWorkflowError(null);
+    try {
+      const response = await fetch("/api/cv-studio/reuse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ versionId, jobContext }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "The saved CV could not be reused.");
+      setReusableCv(body.version as ReusableCv);
+    } catch (error) {
+      setWorkflowError(error instanceof Error ? error.message : "The saved CV could not be reused.");
+    } finally {
+      setWorkflowBusy(false);
+    }
+  }
+
   async function submitPastedJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (state.status !== "master_cv_ready" || !state.masterCv) return;
@@ -154,6 +177,7 @@ export function CvStudioStart() {
     setJobId(null);
     setJobContext(null);
     setSuitability(null);
+    setReusableCv(null);
     setWorkflowError(null);
     setJobForm(emptyJobForm);
     router.replace("/cv-studio");
@@ -209,7 +233,7 @@ export function CvStudioStart() {
                   {suitability && <>
                     <h3 className="mt-2 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV exists for this exact job" : "No accepted CV exists for this exact job"}</h3>
                     <p className="mt-2 text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
-                    {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>)}
+                    {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p><Button className="mt-3 w-full" size="sm" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use this CV</Button></div>)}
                   </>}
                   <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
                     <p className="text-sm font-medium text-warn">AI suitability and tailoring are not active yet.</p>
@@ -219,9 +243,10 @@ export function CvStudioStart() {
                 </div>
               </section>
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
-                <CvPdfPreview content={state.masterCv.content} />
+                {reusableCv ? <div className="space-y-2"><p className="text-sm font-medium text-fg">Reusing accepted CV · Version {reusableCv.version_number}</p><Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button><CvPdfPreview content={reusableCv.content} accent={reusableCv.accent_colour} /></div> : <CvPdfPreview content={state.masterCv.content} />}
               </section>
             </div>
+            {!reusableCv && <CvDraftEditor masterVersionId={state.masterCv.id} jobContext={jobContext} initialContent={state.masterCv.content} />}
           ) : (
           <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
