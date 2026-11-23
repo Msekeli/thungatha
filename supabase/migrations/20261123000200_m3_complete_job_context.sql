@@ -209,7 +209,7 @@ begin
     return false;
   end if;
 
-  if p_classification not in ('match', 'relevant') then
+  if p_classification is null or p_classification not in ('match', 'relevant') then
     raise exception 'Invalid M3 match classification';
   end if;
 
