@@ -3,6 +3,7 @@ import { JOB_AI_ASSESSMENT_VERSION } from "./job-ai-queue-eligibility";
 import type { AssessmentRecord } from "./job-feed-status";
 
 const BATCH_SIZE = 500;
+type QueueStatus = "pending" | "processing" | "failed" | "completed" | "unavailable";
 
 export async function fetchFeedAssessmentsAndQueue(
   db: SupabaseClient,
@@ -12,11 +13,11 @@ export async function fetchFeedAssessmentsAndQueue(
   currentHashes: Map<string, string>,
 ): Promise<{
   assessmentsByJob: Map<string, AssessmentRecord>;
-  queueStatusByJob: Map<string, "pending" | "processing" | "failed" | "completed">;
+  queueStatusByJob: Map<string, QueueStatus>;
   hasError: boolean;
 }> {
   const assessmentsByJob = new Map<string, AssessmentRecord>();
-  const queueStatusByJob = new Map<string, "pending" | "processing" | "failed" | "completed">();
+  const queueStatusByJob = new Map<string, QueueStatus>();
   if (!jobIds.length) return { assessmentsByJob, queueStatusByJob, hasError: false };
 
   let hasError = false;
@@ -39,7 +40,10 @@ export async function fetchFeedAssessmentsAndQueue(
         hasError = true;
       } else {
         for (const item of assessmentResult.data ?? []) {
-          if (currentHashes.get(item.job_id) === item.job_description_hash) {
+          if (
+            currentHashes.get(item.job_id) === item.job_description_hash
+            && (item.classification === "match" || item.classification === "relevant")
+          ) {
             assessmentsByJob.set(item.job_id, {
               hash: item.job_description_hash,
               classification: item.classification,
@@ -54,7 +58,7 @@ export async function fetchFeedAssessmentsAndQueue(
       } else {
         for (const item of queueResult.data ?? []) {
           if (currentHashes.get(item.job_id) === item.job_description_hash) {
-            queueStatusByJob.set(item.job_id, item.status);
+            queueStatusByJob.set(item.job_id, item.status as QueueStatus);
           }
         }
       }
