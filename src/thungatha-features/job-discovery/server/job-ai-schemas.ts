@@ -26,8 +26,7 @@ export function toGeminiResponseSchema(schema: z.ZodType): Record<string, unknow
 
 const refs = z.array(z.string().min(1));
 const requiredRefs = refs.min(1);
-// Semantic alignment cites evidence across the whole assessment, so its
-// aggregate reference lists can legitimately exceed the per-item limit.
+// Aggregate evidence references are kept separate from per-requirement references.
 const aggregateRefs = z.array(z.string().min(1));
 const requiredAggregateRefs = aggregateRefs.min(1);
 
