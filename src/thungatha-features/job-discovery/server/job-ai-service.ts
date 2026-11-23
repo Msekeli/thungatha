@@ -117,6 +117,7 @@ async function parseAssessmentWithJsonRepair(
       responseFormat: "json",
       responseSchema: modelSchema.responseSchema,
       temperature: 0,
+      maxOutputTokens: 2_048,
       timeoutMs: 120_000,
       reasoning: false,
       systemPrompt: [
@@ -181,6 +182,7 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     responseFormat: "json",
     responseSchema: createJobUnderstandingResponseSchema(evidence.map((item) => item.id)),
     temperature: 0.1,
+    maxOutputTokens: 4_096,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: [
