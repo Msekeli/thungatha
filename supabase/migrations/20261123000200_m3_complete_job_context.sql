@@ -146,7 +146,7 @@ grant execute on function public.enqueue_ai_job_assessment_tasks(text, jsonb)
   to service_role;
 
 -- Extend the atomic freshness check to every field used by the model.
-do $
+do $$
 declare
   function_identity text;
 begin
