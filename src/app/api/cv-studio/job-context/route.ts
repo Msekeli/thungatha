@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     if (!completion.complete || !profile.confirmedAt) {
       return NextResponse.json({ status: "profile_required", missing: completion.missing }, { status: 409 });
     }
-    const jobContext = await resolveCvJobContext(identity.userId, identity.getToken, parsed.data);
+    const jobContext = await resolveCvJobContext(identity.getToken, parsed.data);
     return NextResponse.json({ status: "job_context_ready", jobContext });
   } catch (error) {
     if (error instanceof SupabaseConfigurationError) return apiError("CV Studio storage is not configured.", 503);
