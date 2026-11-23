@@ -255,12 +255,13 @@ export async function assessJobWithAi(
   };
   const compactJobEvidence = jobEvidence.map((item) => [item.id, item.content]);
   const compactProfileEvidence = profileEvidence.map((item) => [item.id, item.content]);
-  const maxOutputTokens = Math.max(
-    1_024,
-    512
-      + understanding.requirements.length * 128
-      + (jobEvidence.length + profileEvidence.length) * 8,
-  );
+  // Reserve enough completion capacity for the full structured assessment.
+  // Each requirement produces an explanation and two evidence-reference arrays;
+  // GPT-OSS may also consume completion tokens for internal reasoning.
+  const maxOutputTokens =
+    2_048
+    + understanding.requirements.length * 384
+    + (jobEvidence.length + profileEvidence.length) * 32;
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
