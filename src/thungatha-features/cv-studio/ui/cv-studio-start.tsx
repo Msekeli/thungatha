@@ -60,6 +60,7 @@ export function CvStudioStart() {
   const [suitability, setSuitability] = useState<Suitability | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
+  const [jobInputTab, setJobInputTab] = useState<"discovery" | "paste">("discovery");
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -183,7 +184,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
+    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
       {state.status === "loading" && <section className="rounded-2xl border border-slate-200 bg-white p-6" aria-live="polite">Checking your Profile and CV versions…</section>}
 
       {state.status === "error" && (
@@ -251,112 +252,64 @@ export function CvStudioStart() {
               </section>
             </div>
           ) : (
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-            <section className="rounded-2xl border border-line bg-panel p-6 text-fg shadow-sm sm:p-8 lg:col-start-2 lg:row-start-1">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
+              <div className="mb-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Choose a job source</p>
+                <h2 className="mt-1 text-xl font-semibold text-fg">What opportunity are you applying for?</h2>
+                <p className="mt-2 text-sm leading-6 text-fg-muted">Start with a job from Thungatha Discovery, or add an opportunity you found elsewhere.</p>
+              </div>
+              <div className="mb-6 flex flex-wrap gap-2 border-b border-line pb-3" role="tablist" aria-label="Job source">
+                <button type="button" role="tab" aria-selected={jobInputTab === "discovery"} onClick={() => setJobInputTab("discovery")} className={jobInputTab === "discovery" ? "rounded-lg bg-accent-bg px-4 py-2.5 text-sm font-semibold text-accent-text" : "rounded-lg px-4 py-2.5 text-sm font-medium text-fg-muted hover:bg-panel-2"}>Thungatha Discovery</button>
+                <button type="button" role="tab" aria-selected={jobInputTab === "paste"} onClick={() => setJobInputTab("paste")} className={jobInputTab === "paste" ? "rounded-lg bg-accent-bg px-4 py-2.5 text-sm font-semibold text-accent-text" : "rounded-lg px-4 py-2.5 text-sm font-medium text-fg-muted hover:bg-panel-2"}>Add external job</button>
+              </div>
+              {jobInputTab === "discovery" ? (
+                <div role="tabpanel" className="rounded-xl border border-line bg-panel-2 p-5">
+                  <h3 className="text-base font-semibold text-fg">Find a job in Thungatha</h3>
+                  <p className="mt-2 text-sm leading-6 text-fg-muted">Browse jobs in Discovery. When you choose “Tailor my CV” on a job, Thungatha will bring its details here and check whether an accepted CV already exists for that exact opportunity.</p>
+                  <ButtonLink className="mt-5 w-full sm:w-auto" href="/jobs">Browse job discovery</ButtonLink>
+                </div>
+              ) : (
+                <div role="tabpanel">
+                  <h3 className="mb-4 text-base font-semibold text-fg">Add a job from another source</h3>
+                  <form className="space-y-4" onSubmit={submitPastedJob}>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
+                      <Field label="Company"><Input maxLength={300} value={jobForm.company} onChange={(event) => setJobForm((value) => ({ ...value, company: event.target.value }))} placeholder="Company name" /></Field>
+                      <Field label="Location"><Input maxLength={300} value={jobForm.location} onChange={(event) => setJobForm((value) => ({ ...value, location: event.target.value }))} placeholder="e.g. Cape Town / Remote" /></Field>
+                      <Field label="Job advert URL (optional)"><Input type="url" maxLength={2000} value={jobForm.sourceUrl} onChange={(event) => setJobForm((value) => ({ ...value, sourceUrl: event.target.value }))} placeholder="https://" /></Field>
+                    </div>
+                    <Field label="Full job description" required hint="Paste at least 200 characters. You can add the advert URL for reference; the description is required.">
+                      <Textarea required minLength={200} maxLength={30000} rows={9} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the responsibilities, requirements and qualifications from the job advert…" />
+                    </Field>
+                    {workflowError && <p className="text-sm text-rose-700" role="alert">{workflowError}</p>}
+                    <Button type="submit" disabled={workflowBusy || busy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
+                  </form>
+                </div>
+              )}
+              <p className="mt-5 border-t border-line pt-4 text-xs leading-5 text-fg-muted">Your master CV is generated only from your confirmed Profile. Adding a job never changes your Profile or master CV.</p>
+            </section>
+            <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
               {state.masterCv ? (
                 <>
-                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Confirmed Profile · Version {state.profileVersion}</p>
-                      <h2 className="mt-1 text-xl font-semibold text-slate-950">Master CV preview</h2>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Confirmed Profile · Version {state.profileVersion}</p>
+                      <h2 className="mt-1 text-xl font-semibold text-fg">Master CV preview</h2>
                     </div>
                     <Button variant="outline" disabled={busy} onClick={() => void generate()}>{busy ? "Refreshing…" : state.isStale ? "Refresh master CV" : "Regenerate from Profile"}</Button>
                   </div>
-                  <MasterCvPreview content={state.masterCv.content} />
+                  <div className="th-cv-preview-viewport">
+                    <MasterCvPreview content={state.masterCv.content} />
+                  </div>
                 </>
               ) : (
-                <>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Profile confirmed · Version {state.profileVersion}</p>
-                  <h2 className="mt-2 text-xl font-semibold text-slate-950">Your master CV is being prepared</h2>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">CV Studio normally creates this document automatically from your confirmed Profile. No new experience or qualifications are added.</p>
-                  <Button className="mt-6" variant="outline" onClick={() => void load()}>Try again</Button>
-                </>
+                <p className="text-sm text-fg-muted">Your master CV is being prepared.</p>
               )}
             </section>
-            <aside className="h-fit rounded-2xl border border-line bg-panel p-5 text-fg lg:col-start-1 lg:row-start-1">
-              <h2 className="font-semibold text-fg">Next step</h2>
-              <p className="mt-2 text-sm leading-6 text-fg-muted">Select a job from Discovery or paste its description. The current stage checks whether you have an accepted version for the exact same job; AI suitability and tailoring are not active yet.</p>
-              <ButtonLink className="mt-4 w-full" href="/jobs">Browse jobs</ButtonLink>
-              <p className="mt-4 text-xs leading-5 text-fg-muted">Tailoring will never overwrite your master CV or confirmed Profile.</p>
-            </aside>
           </div>
           )}
 
-          {!jobContext && !jobId && (
-          <section className="rounded-2xl border border-line bg-panel p-5 text-fg sm:p-7">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Job context</p>
-                <h2 className="mt-1 text-xl font-semibold text-fg">Choose the opportunity</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-fg-muted">Use the selected Discovery job, or paste the job description below. The description is used as employer context, never as evidence of your experience.</p>
-              </div>
-              {(jobContext || jobId) && <Button variant="ghost" size="sm" onClick={clearSelectedJob}>Clear selection</Button>}
-            </div>
-
-            {jobId && !jobContext && (
-              <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
-                <p className="text-sm font-medium text-fg">Loading the job you selected in Discovery…</p>
-                {workflowBusy && <p className="mt-1 text-xs text-fg-muted">Retrieving the saved job description and checking existing CV versions.</p>}
-              </div>
-            )}
-
-            {jobContext && (
-              <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Selected job · {jobContext.source === "discovery" ? "Job Discovery" : "Pasted description"}</p>
-                <h3 className="mt-1 text-lg font-semibold text-fg">{jobContext.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
-                <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</p>
-              </div>
-            )}
-
-            <form className="mt-6 space-y-4" onSubmit={submitPastedJob}>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
-                <Field label="Company"><Input maxLength={300} value={jobForm.company} onChange={(event) => setJobForm((value) => ({ ...value, company: event.target.value }))} placeholder="Company name" /></Field>
-                <Field label="Location"><Input maxLength={300} value={jobForm.location} onChange={(event) => setJobForm((value) => ({ ...value, location: event.target.value }))} placeholder="e.g. Cape Town / Remote" /></Field>
-                <Field label="Job advert URL (optional)"><Input type="url" maxLength={2000} value={jobForm.sourceUrl} onChange={(event) => setJobForm((value) => ({ ...value, sourceUrl: event.target.value }))} placeholder="https://" /></Field>
-              </div>
-              <Field label="Full job description" required hint="Paste at least 200 characters. Automatic URL importing is not enabled, so the description itself is required.">
-                <Textarea required minLength={200} maxLength={30000} rows={8} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the responsibilities, requirements and qualifications from the job advert…" />
-              </Field>
-              {workflowError && <p className="text-sm text-rose-700" role="alert">{workflowError}</p>}
-              <div className="flex flex-wrap items-center gap-3">
-                <Button type="submit" disabled={workflowBusy || busy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
-                <span className="text-xs text-slate-500">No AI-generated suitability score is shown at this stage.</span>
-              </div>
-            </form>
-
-            {suitability && jobContext && (
-              <div className="mt-6 border-t border-line pt-6" aria-live="polite">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Current recommendation status</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV version exists for this exact job" : "No accepted CV version found for this exact job"}</h3>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
-                {suitability.matchingVersions.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    {suitability.matchingVersions.map((version) => (
-                      <div key={version.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel-2 p-3">
-                        <div><p className="text-sm font-medium text-fg">Accepted tailored CV · Version {version.versionNumber}</p><p className="text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
-                        <span className="text-xs text-fg-muted">Saved version found</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
-                  <p className="text-sm font-medium text-warn">AI suitability assessment is not available yet.</p>
-                  <p className="mt-1 text-sm leading-6 text-warn">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
-                </div>
-              </div>
-            )}
-
-            {jobContext && state.masterCv && (
-              <CvDraftEditor
-                masterVersionId={state.masterCv.id}
-                jobContext={jobContext as Parameters<typeof CvDraftEditor>[0]["jobContext"]}
-                initialContent={state.masterCv.content}
-              />
-            )}
-          </section>
-          )}
         </div>
       )}
     </main>
