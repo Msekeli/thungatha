@@ -49,6 +49,11 @@ export function createGeminiAdapter(options: { apiKey?: string; model?: string; 
       }
       const payload = await response.json().catch(() => null);
       const candidate = extractCandidate(payload);
+      if (candidate?.finishReason?.toUpperCase() === "MAX_TOKENS" || candidate?.finishReason?.toUpperCase() === "LENGTH") {
+        throw new AiProviderError("Gemini truncated the structured response at its output-token limit.", {
+          code: "rate-limited", provider: "gemini", retryable: true,
+        });
+      }
       if (!candidate?.content) {
         const finishReason = candidate?.finishReason;
         const blocked = finishReason === "SAFETY" || finishReason === "RECITATION";
