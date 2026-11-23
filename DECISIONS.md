@@ -424,6 +424,23 @@ When a decision is approved or changed:
 - **Consequences:** Update the product specification, architecture, M3 milestone, implementation plan, AI guidance, and agent instructions. Retire the legacy semantic gates as part of M3 implementation; do not delete unrelated validation, source normalization, user-selected discovery filters, or security safeguards.
 - **Review trigger:** Representative evaluation shows material false positives/negatives or the user explicitly changes the approved interpretation approach.
 
+### D-052 — Two public matching classifications and completion-safe AI workload
+
+- **Date:** 2026-11-23
+- **Status:** Confirmed
+- **Context:** The earlier M3 documentation exposed Unclassified as a third relevance outcome. The user has clarified that the public product should show only Match and Relevant. The user also rejected arbitrary internal AI usage limits because a task can be cut off or prevented from completing when a budget is reached.
+- **Decision:**
+  - The only public matching classifications are **Match** and **Relevant**. Match means strong, evidence-supported alignment with the central work and core requirements. Relevant means meaningful supported alignment exists, while material gaps or unknowns prevent Match.
+  - Insufficient evidence, an unconfirmed Profile, unusable job content, provider unavailability, or invalid model output is an **unavailable assessment state**, not a third classification. It receives no Match/Relevant badge and is not presented as a relevance category.
+  - "Most relevant" orders successfully assessed jobs by Match and then Relevant. Jobs with unavailable assessments receive no inferred relevance ranking; the agreed date-based fallback remains available. No numerical score or hidden ranking is introduced.
+  - Do not impose arbitrary internal AI call, token, output-length, per-job budget, queue-depth, or task-count caps that truncate, reject, or abandon otherwise valid matching work. Do not deliberately shorten a semantic assessment by dropping material requirements to fit an application-defined output count.
+  - Reduce unnecessary AI consumption through context-aware caching, deduplication of in-flight requests, compact task-specific evidence, and reuse of valid completed results. Reuse is allowed only while all relevant job context, Profile, prompt/schema, parser, and policy versions remain current.
+  - Respect actual provider rate limits, terms, and enabled-provider configuration. When a provider limit or outage prevents completion, persist the task and its progress, defer/retry safely, and resume it. Never silently route to a disabled provider, incur unapproved paid usage, or present partial output as a completed assessment.
+  - Keep bounded retry handling only as protection against endless retry loops; exhausted transient retries must leave recoverable task state and a clear unavailable/retry path, not silently discard the work.
+- **Rationale:** The product needs complete, trustworthy assessments. Efficiency should come from avoiding duplicate work, not from arbitrary budgets that can interrupt a valid job.
+- **Consequences:** Update the product specification, architecture, implementation plan, M3 milestone, and agent instructions. Existing Unclassified category references are historical implementation details and are superseded for public behaviour. Existing queue/backfill admission caps must be reviewed and removed or redesigned so they cannot reject or abandon valid M3 work. Cache identity must include complete matching context, not description text alone.
+- **Review trigger:** Representative evaluation shows the two public classifications are insufficient, provider terms change, or the user explicitly revises this policy.
+
 ### D-050 — Semantic, evidence-grounded AI job matching without scores
 
 - **Date:** 2026-11-21
