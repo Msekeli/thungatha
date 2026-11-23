@@ -29,6 +29,19 @@ The route /cv-studio now loads the authenticated Profile through the existing Pr
 
 This screen and API are committed. No tests, build, browser checks or live Supabase migration execution were performed in this session.
 
+## Job-context validation (M4-C04)
+
+The authenticated endpoint `POST /api/cv-studio/job-context` accepts either a Discovery job ID or a pasted job description with title and optional company, location and source URL.
+
+- Discovery input is resolved from the persisted `jobs` catalogue using the authenticated Supabase client. The response preserves the job ID, title, employer, location, application URL and stored description.
+- Pasted descriptions are validated for minimum useful content and a maximum request size. Source URL is metadata only; it is not fetched.
+- Every accepted job context receives a SHA-256 description fingerprint and retrieval timestamp so later AI work can identify the exact description version.
+- The endpoint enforces the confirmed Profile gate before accepting job context for CV tailoring.
+- A URL-only request is deliberately not fetched. It returns a clear 422 response asking the candidate to paste the description. Automatic URL retrieval remains blocked until a dedicated SSRF-safe fetcher can enforce DNS/IP checks, redirect validation, response limits, timeouts and content-type restrictions.
+- Invalid, missing, too-short and unavailable job inputs return explicit errors. Job content is untrusted context and never candidate evidence.
+
+The API and validation contracts are committed. No tests, build, browser checks or live Supabase verification were run.
+
 ## Data model contract (M4-C02)
 
 The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261123000100_cv_studio_versions.sql`.
