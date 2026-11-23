@@ -21,6 +21,7 @@ export async function processJobAiQueue(options: { jobIds?: string[] } = {}): Pr
   const tasks: TaskDiagnostic[] = [];
   let processed = 0; let stale = 0; let unavailable = 0; let failed = 0;
   while (true) {
+    if (jobIds && tasks.length >= jobIds.length) break;
     const { data, error } = await db.rpc("claim_ai_job_matching_task", { p_job_ids: jobIds });
     if (error) throw error;
     const task = (data?.[0] ?? null) as QueueTask | null;
