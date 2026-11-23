@@ -14,13 +14,14 @@ export type WorkerDiagnostics = {
   tasks: TaskDiagnostic[];
 };
 
-export async function processJobAiQueue(): Promise<WorkerDiagnostics> {
+export async function processJobAiQueue(options: { jobIds?: string[] } = {}): Promise<WorkerDiagnostics> {
+  const jobIds = options.jobIds?.length ? [...new Set(options.jobIds)] : null;
   const startTime = Date.now();
   const db = createJobAiClient();
   const tasks: TaskDiagnostic[] = [];
   let processed = 0; let stale = 0; let unavailable = 0; let failed = 0;
   while (true) {
-    const { data, error } = await db.rpc("claim_ai_job_matching_task");
+    const { data, error } = await db.rpc("claim_ai_job_matching_task", { p_job_ids: jobIds });
     if (error) throw error;
     const task = (data?.[0] ?? null) as QueueTask | null;
     if (!task) break;
