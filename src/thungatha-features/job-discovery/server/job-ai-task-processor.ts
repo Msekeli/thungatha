@@ -4,6 +4,7 @@ import type { ProfileDatabaseRow } from "@/thungatha-features/user-profile/serve
 import { PROFILE_SELECT_COLUMNS } from "@/thungatha-features/user-profile/server/repository";
 import { deriveCandidateFacts } from "@/thungatha-features/user-profile/server/candidate-facts";
 import { assessJobWithAi, parseJobUnderstanding, understandJobWithAi } from "./job-ai-service";
+import { AssessmentUnavailableError } from "./job-ai-classification";
 import type { JobUnderstanding } from "./job-ai-schemas";
 import {
   JOB_AI_ASSESSMENT_VERSION, JOB_AI_UNDERSTANDING_VERSION, createServiceClient, hashDescription, isUsableJobDescription,
@@ -20,6 +21,20 @@ async function completeTask(db: ReturnType<typeof createServiceClient>, id: stri
   const { error } = await db.from("ai_task_queue").update({
     status: "completed", locked_at: null, last_error: null, updated_at: new Date().toISOString(),
   }).eq("id", id);
+  if (error) throw error;
+}
+
+async function markAssessmentUnavailable(
+  db: ReturnType<typeof createServiceClient>,
+  id: string,
+  reason: string,
+) {
+  const { error } = await db.from("ai_task_queue").update({
+    status: "unavailable",
+    locked_at: null,
+    last_error: reason,
+    updated_at: new Date().toISOString(),
+  }).eq("id", id).eq("status", "processing");
   if (error) throw error;
 }
 
@@ -85,7 +100,19 @@ export async function processJobAiTask(db: ReturnType<typeof createServiceClient
   }
 
   console.info("[AI job matching] Candidate assessment started", { jobId: task.job_id });
-  const generated = await assessJobWithAi(job.title, parsedUnderstanding, description, facts);
+  let generated;
+  try {
+    generated = await assessJobWithAi(job.title, parsedUnderstanding, description, facts);
+  } catch (error) {
+    if (!(error instanceof AssessmentUnavailableError)) throw error;
+    await markAssessmentUnavailable(db, task.id, error.message);
+    console.info("[AI job matching] Assessment unavailable; no classification assigned", {
+      jobId: task.job_id,
+      reason: error.message,
+    });
+    return "unavailable";
+  }
+
   console.info("[AI job matching] Candidate assessment completed", {
     jobId: task.job_id, classification: generated.assessment.classification,
     provider: generated.provider, model: generated.model,
