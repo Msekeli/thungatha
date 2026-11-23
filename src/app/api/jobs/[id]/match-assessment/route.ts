@@ -53,7 +53,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
         .eq("context_hash", contextHash)
         .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
       const assessment = await resolveEvidenceLinkedAssessment({
-        userId: identity.userId, token: identity.getToken, description,
+        userId: identity.userId, token: identity.getToken, context,
         assessment: data.assessment as Parameters<typeof resolveEvidenceLinkedAssessment>[0]["assessment"],
         understandingData,
       });
