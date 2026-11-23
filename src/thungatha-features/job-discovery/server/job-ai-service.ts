@@ -242,6 +242,7 @@ export async function assessJobWithAi(
   const modelSchema = createMatchAssessmentResponseSchema(
     jobEvidence.map((item) => item.id),
     profileEvidence.map((item) => item.id),
+    understanding.requirements.map((item) => item.id),
   );
   const response = await completeAiTask({
     task: "job-fit-assessment",
