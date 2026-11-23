@@ -66,9 +66,28 @@ export async function processJobAiQueue(options: { jobIds?: string[] } = {}): Pr
       if (updateError) throw new Error(`Task failed (${sanitized}), and its retry state could not be saved: ${updateError.message}`);
       failed += 1;
       tasks.push({ taskId: task.id, jobId: task.job_id, outcome: "failed", attempts: task.attempts, error: sanitized });
-      // A provider-wide rate limit affects every queued task. Stop this worker run
-      // after scheduling the current task for retry instead of flooding the provider.
-      if (errorRecord?.code === "rate-limited") break;
+      // A provider-wide rate limit affects every queued task. Defer the rest of
+      // the matching queue for at least one provider reset window and stop this run.
+      if (errorRecord?.code === "rate-limited") {
+        const cooldownMs = Math.max(providerRetryAfterMs, 60_000);
+        const cooldownUntil = new Date(Date.now() + cooldownMs).toISOString();
+        const { error: deferError } = await db.from("ai_task_queue").update({
+          available_at: cooldownUntil,
+          updated_at: new Date().toISOString(),
+        }).eq("task_type", "job_fit_assessment")
+          .eq("status", "pending")
+          .lt("available_at", cooldownUntil);
+        if (deferError) {
+          console.error("[AI job matching] Could not defer remaining tasks after provider rate limit", {
+            error: deferError.message,
+          });
+        } else {
+          console.warn("[AI job matching] Deferred remaining queued assessments after provider rate limit", {
+            cooldownMs,
+          });
+        }
+        break;
+      }
     }
   }
 
