@@ -129,7 +129,7 @@ export function parseJobUnderstanding(context: JobMatchingContext, value: unknow
 }
 
 export async function understandJobWithAi(context: JobMatchingContext) {
-  const evidence = buildJobEvidence(description);
+  const evidence = buildJobEvidence(context.description);
   if (evidence.length === 0) {
     throw new Error("The job description does not contain enough readable text.");
   }
