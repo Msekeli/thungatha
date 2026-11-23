@@ -47,7 +47,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       .eq("job_description_hash", descriptionHash).eq("assessment_version", JOB_AI_ASSESSMENT_VERSION).maybeSingle();
     if (error) throw error;
 
-    if (data) {
+    if (data && (data.classification === "match" || data.classification === "relevant")) {
       const { data: understandingData } = await db.from("job_ai_understandings").select("understanding")
         .eq("description_hash", descriptionHash)
         .eq("analysis_version", JOB_AI_UNDERSTANDING_VERSION).maybeSingle();
@@ -74,9 +74,10 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       await enqueueVisibleJobAssessments(identity.userId, [id]);
       taskStatus = "pending";
     }
-    // A completed queue row without a matching persisted assessment is an
-    // inconsistent terminal state. Stop polling and expose it as retryable.
     if (taskStatus === "completed") taskStatus = "failed";
+    if (taskStatus === "unavailable") {
+      return NextResponse.json({ status: "unavailable", assessment: null });
+    }
     return NextResponse.json({ status: taskStatus === "failed" ? "failed" : "pending", assessment: null });
   } catch (error) { return apiFailure(error); }
 }
