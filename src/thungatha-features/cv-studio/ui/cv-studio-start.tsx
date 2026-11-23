@@ -209,52 +209,50 @@ export function CvStudioStart() {
         <div className="space-y-6">
           {jobContext && state.masterCv ? (
             <div className="grid items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
-              <section className="space-y-5">
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <section className="space-y-5 text-fg">
+                <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Job from Discovery</p>
                       <h2 className="mt-2 text-xl font-semibold text-slate-950">{jobContext.title}</h2>
-                      <p className="mt-1 text-sm text-slate-600">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
+                      <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
                     </div>
                     <Button variant="ghost" size="sm" onClick={clearSelectedJob}>Change</Button>
                   </div>
-                  <div className="mt-5 border-t border-slate-200 pt-4">
-                    <h3 className="text-sm font-semibold text-slate-900">Job description</h3>
-                    <div className="mt-2 max-h-64 overflow-y-auto whitespace-pre-line pr-2 text-sm leading-6 text-slate-600">{jobContext.description}</div>
+                  <div className="mt-5 border-t border-line pt-4">
+                    <h3 className="text-sm font-semibold text-fg">Job description</h3>
+                    <div className="mt-2 max-h-64 overflow-y-auto whitespace-pre-line pr-2 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
                   </div>
-                  {jobContext.sourceUrl && <a className="mt-4 inline-flex text-sm font-medium text-teal-700 underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
+                  {jobContext.sourceUrl && <a className="mt-4 inline-flex text-sm font-medium text-accent-text underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-live="polite">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">CV assessment</p>
-                  {workflowBusy && <p className="mt-2 text-sm text-slate-600">Checking this job against your saved CV versions…</p>}
+                <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6" aria-live="polite">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV assessment</p>
+                  {workflowBusy && <p className="mt-2 text-sm text-fg-muted">Checking this job against your saved CV versions…</p>}
                   {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
                   {suitability && <>
                     <h3 className="mt-2 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV exists for this exact job" : "No accepted CV exists for this exact job"}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{suitability.explanation}</p>
-                    {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-slate-200 p-3"><p className="text-sm font-medium text-slate-900">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-slate-500">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>)}
+                    <p className="mt-2 text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
+                    {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>)}
                   </>}
-                  <div className="mt-4 rounded-lg bg-amber-50 p-4">
-                    <p className="text-sm font-medium text-amber-950">AI suitability and tailoring are not active yet.</p>
-                    <p className="mt-1 text-sm leading-6 text-amber-900">This stage checks exact job matches only. It does not assess your skills against job requirements or generate tailored content yet.</p>
+                  <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
+                    <p className="text-sm font-medium text-warn">AI suitability and tailoring are not active yet.</p>
+                    <p className="mt-1 text-sm leading-6 text-warn">This stage checks exact job matches only. It does not assess your skills against job requirements or generate tailored content yet.</p>
                   </div>
                   <ButtonLink className="mt-4 w-full" href="/jobs">Back to Job Discovery</ButtonLink>
                 </div>
               </section>
-              <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+              <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
                 <div className="mb-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Confirmed Profile · Version {state.profileVersion}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Confirmed Profile · Version {state.profileVersion}</p>
                   <h2 className="mt-1 text-xl font-semibold text-slate-950">CV preview</h2>
-                  <p className="mt-1 text-xs text-slate-500">Master CV · Scroll to review the complete document</p>
+                  <p className="mt-1 text-xs text-fg-muted">Master CV · Scroll to review the complete document</p>
                 </div>
-                <div className="max-h-[calc(100vh-15rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-5 sm:p-7">
-                  <div className="max-h-[calc(100dvh-13rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-5 sm:p-7"><MasterCvPreview content={state.masterCv.content} /></div>
-                </div>
+                <div className="max-h-[calc(100dvh-13rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-line bg-panel-2 p-4 sm:p-6"><MasterCvPreview content={state.masterCv.content} /></div>
               </section>
             </div>
           ) : (
           <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <section className="rounded-2xl border border-line bg-panel p-6 text-fg shadow-sm sm:p-8">
               {state.masterCv ? (
                 <>
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -275,39 +273,39 @@ export function CvStudioStart() {
                 </>
               )}
             </section>
-            <aside className="h-fit rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <h2 className="font-semibold text-slate-950">Next step</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Select a job from Discovery or paste its description. The current stage checks whether you have an accepted version for the exact same job; AI suitability and tailoring are not active yet.</p>
+            <aside className="h-fit rounded-2xl border border-line bg-panel p-5 text-fg">
+              <h2 className="font-semibold text-fg">Next step</h2>
+              <p className="mt-2 text-sm leading-6 text-fg-muted">Select a job from Discovery or paste its description. The current stage checks whether you have an accepted version for the exact same job; AI suitability and tailoring are not active yet.</p>
               <ButtonLink className="mt-4 w-full" href="/jobs">Browse jobs</ButtonLink>
-              <p className="mt-4 text-xs leading-5 text-slate-500">Tailoring will never overwrite your master CV or confirmed Profile.</p>
+              <p className="mt-4 text-xs leading-5 text-fg-muted">Tailoring will never overwrite your master CV or confirmed Profile.</p>
             </aside>
           </div>
           )}
 
           {!jobContext && !jobId && (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-7">
+          <section className="rounded-2xl border border-line bg-panel p-5 text-fg sm:p-7">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Job context</p>
-                <h2 className="mt-1 text-xl font-semibold text-slate-950">Choose the opportunity</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Use the selected Discovery job, or paste the job description below. The description is used as employer context, never as evidence of your experience.</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Job context</p>
+                <h2 className="mt-1 text-xl font-semibold text-fg">Choose the opportunity</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-fg-muted">Use the selected Discovery job, or paste the job description below. The description is used as employer context, never as evidence of your experience.</p>
               </div>
               {(jobContext || jobId) && <Button variant="ghost" size="sm" onClick={clearSelectedJob}>Clear selection</Button>}
             </div>
 
             {jobId && !jobContext && (
-              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-sm font-medium text-slate-800">Loading the job you selected in Discovery…</p>
-                {workflowBusy && <p className="mt-1 text-xs text-slate-500">Retrieving the saved job description and checking existing CV versions.</p>}
+              <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
+                <p className="text-sm font-medium text-fg">Loading the job you selected in Discovery…</p>
+                {workflowBusy && <p className="mt-1 text-xs text-fg-muted">Retrieving the saved job description and checking existing CV versions.</p>}
               </div>
             )}
 
             {jobContext && (
-              <div className="mt-5 rounded-xl border border-teal-200 bg-teal-50/60 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal-800">Selected job · {jobContext.source === "discovery" ? "Job Discovery" : "Pasted description"}</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">{jobContext.title}</h3>
+              <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Selected job · {jobContext.source === "discovery" ? "Job Discovery" : "Pasted description"}</p>
+                <h3 className="mt-1 text-lg font-semibold text-fg">{jobContext.title}</h3>
                 <p className="mt-1 text-sm text-slate-600">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
-                <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-slate-700">{jobContext.description}</p>
+                <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</p>
               </div>
             )}
 
@@ -329,23 +327,23 @@ export function CvStudioStart() {
             </form>
 
             {suitability && jobContext && (
-              <div className="mt-6 border-t border-slate-200 pt-6" aria-live="polite">
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Current recommendation status</p>
+              <div className="mt-6 border-t border-line pt-6" aria-live="polite">
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Current recommendation status</p>
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV version exists for this exact job" : "No accepted CV version found for this exact job"}</h3>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{suitability.explanation}</p>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
                 {suitability.matchingVersions.length > 0 && (
                   <div className="mt-4 space-y-2">
                     {suitability.matchingVersions.map((version) => (
-                      <div key={version.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
-                        <div><p className="text-sm font-medium text-slate-900">Accepted tailored CV · Version {version.versionNumber}</p><p className="text-xs text-slate-500">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
-                        <span className="text-xs text-slate-500">Saved version found</span>
+                      <div key={version.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel-2 p-3">
+                        <div><p className="text-sm font-medium text-fg">Accepted tailored CV · Version {version.versionNumber}</p><p className="text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
+                        <span className="text-xs text-fg-muted">Saved version found</span>
                       </div>
                     ))}
                   </div>
                 )}
-                <div className="mt-4 rounded-lg bg-amber-50 p-4">
-                  <p className="text-sm font-medium text-amber-950">AI suitability assessment is not available yet.</p>
-                  <p className="mt-1 text-sm leading-6 text-amber-900">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
+                <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
+                  <p className="text-sm font-medium text-warn">AI suitability assessment is not available yet.</p>
+                  <p className="mt-1 text-sm leading-6 text-warn">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
                 </div>
               </div>
             )}
@@ -365,13 +363,28 @@ export function CvStudioStart() {
   );
 }
 
+function formatJobDescription(value: string) {
+  return value
+    .replace(/<\/(p|div|li|h[1-6]|br)\s*>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return <label className="block space-y-1.5"><span className="block text-sm font-medium text-slate-800">{label}{required ? " *" : ""}</span>{children}{hint && <span className="block text-xs leading-5 text-slate-500">{hint}</span>}</label>;
 }
 
 function MasterCvPreview({ content }: { content: CvContent }) {
   return (
-    <article className="mx-auto max-w-3xl text-slate-900">
+    <article className="mx-auto min-h-[40rem] max-w-3xl bg-white p-6 text-slate-900 shadow-sm sm:p-10">
       <header className="border-b-2 border-teal-700 pb-5">
         <h2 className="text-3xl font-bold tracking-tight">{content.fullName}</h2>
         {content.headline && <p className="mt-1 text-lg text-slate-700">{content.headline}</p>}
