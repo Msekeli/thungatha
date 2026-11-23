@@ -161,3 +161,12 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - The PDF is a clean white document with dark text; the surrounding preview controls use the active Thungatha theme. The document's section accent is kept separate from the application theme.
 - The former repeating-gradient A4 simulation and HTML page-break CSS have been removed.
 - This implementation has been committed to `dev`, but build, lint, PDF rendering, download, print and browser behaviour have not been tested in this session. Page count and visual fit must be checked against real CV data before acceptance.
+
+## CV Studio PDF controls and layout refinement (2026-11-24)
+
+- The embedded browser PDF toolbar is hidden. CV Studio owns the visible controls: zoom out, zoom in, fit width, reset to 100%, and Download PDF.
+- Controls use the shared Thungatha shadcn-based `Button` component and theme tokens. Do not add feature-specific CSS for these controls.
+- The PDF document remains A4 and is generated from the structured Profile-derived CV. Zoom changes the viewer fragment only; it does not alter PDF page dimensions, typography, margins or pagination.
+- Removed the redundant "Master CV preview", Profile version heading and "Regenerate from Profile" action from the preview area. Profile confirmation remains the source of truth; refresh/reconciliation is handled by the CV Studio data workflow rather than a misleading preview button.
+- The job source selector remains above the document. The PDF preview uses the available content width beneath it. When a job is selected, job details and assessment precede the full-width PDF preview.
+- This update is source-committed only. PDF viewer fragment zoom behaviour, browser download and page rendering still require local browser verification.
