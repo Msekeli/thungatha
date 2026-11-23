@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import { understandJobWithAi, parseJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-service";
+import { createMatchAssessmentResponseSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 vi.mock("@/lib/ai/provider-router", () => ({
@@ -52,5 +53,82 @@ describe("job understanding service", () => {
       requirements: [],
       coverage: "complete",
     })).toThrow(/outside the current job description/);
+  });
+});
+
+
+describe("candidate assessment response contract", () => {
+  const contract = createMatchAssessmentResponseSchema(
+    ["job:segment:1", "job:context:title"],
+    ["profile:skills[0].name"],
+    ["req_1", "req_2"],
+  );
+
+  it("asks the model for requirement IDs without asking it to rewrite canonical wording", () => {
+    const parsed = contract.validator.parse({
+      semanticAlignment: {
+        level: "strong",
+        materialGaps: false,
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      },
+      summary: "The evidence aligns with the role.",
+      alignmentExplanation: "The supplied evidence supports the core work.",
+      requirements: [{
+        id: "req_1",
+        assessment: "supported",
+        explanation: "The profile demonstrates the required capability.",
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      }, {
+        id: "req_2",
+        assessment: "not_demonstrated",
+        explanation: "The confirmed profile does not demonstrate this requirement.",
+        jobEvidenceRefs: ["job:context:title"],
+        profileEvidenceRefs: [],
+      }],
+      gaps: [],
+    });
+    expect(parsed.requirements.map((item) => item.id)).toEqual(["req_1", "req_2"]);
+    expect(parsed.requirements[0]).not.toHaveProperty("requirement");
+    expect(parsed.requirements[0]).not.toHaveProperty("importance");
+  });
+
+  it("rejects evidence IDs that were not supplied to the model", () => {
+    const result = contract.validator.safeParse({
+      semanticAlignment: {
+        level: "meaningful",
+        materialGaps: true,
+        jobEvidenceRefs: ["job:segment:999"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      },
+      summary: "Assessment.",
+      alignmentExplanation: "Evidence is limited.",
+      requirements: [],
+      gaps: [],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects requirement IDs that were not extracted", () => {
+    const result = contract.validator.safeParse({
+      semanticAlignment: {
+        level: "meaningful",
+        materialGaps: true,
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: ["profile:skills[0].name"],
+      },
+      summary: "Assessment.",
+      alignmentExplanation: "Evidence is limited.",
+      requirements: [{
+        id: "invented_requirement",
+        assessment: "uncertain",
+        explanation: "Uncertain.",
+        jobEvidenceRefs: ["job:segment:1"],
+        profileEvidenceRefs: [],
+      }],
+      gaps: [],
+    });
+    expect(result.success).toBe(false);
   });
 });
