@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       descriptionFingerprint: job.descriptionFingerprint,
     };
     const { data: existingDrafts, error: existingDraftsError } = await db.from("cv_versions")
-      .select("id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_profile_version,parent_version_id")
+      .select("id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id")
       .eq("user_id", auth.identity.userId)
       .eq("cv_kind", "tailored")
       .eq("status", "draft")
