@@ -18,8 +18,16 @@ async function loadProfile(userId: string, getToken: () => Promise<string | null
 }
 
 function isMissingCvStorage(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error &&
-    (error as { code?: string }).code === "42P01";
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return false;
+  }
+
+  const code = (error as { code?: string }).code;
+
+  // Postgres reports an absent relation as 42P01. PostgREST reports a table
+  // missing from its schema cache as PGRST205. Both indicate that the M4
+  // CV versions migration has not been applied (or the schema cache is stale).
+  return code === "42P01" || code === "PGRST205";
 }
 
 async function getOrCreateMasterCv(
