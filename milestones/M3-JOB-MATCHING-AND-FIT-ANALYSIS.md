@@ -280,3 +280,26 @@ C01 remains in progress for representative semantic evaluation and evidence inte
 ### AI workload continuity — current requirement (2026-11-23)
 
 Do not introduce arbitrary internal AI call, token, output-length, per-job budget, queue-depth, or task-count caps that truncate, reject, or abandon valid matching work. Do not drop material job requirements merely to fit an application-defined output count. Reduce unnecessary consumption through complete-context caching, in-flight request deduplication, compact task-specific evidence, and reuse of valid completed results. When actual provider rate limits or outages prevent completion, persist the task and progress, defer/retry safely, and resume it. A task must not be marked complete or presented as Match/Relevant using partial output. Any historical queue/backfill admission caps and model output-count limits recorded above are superseded by this requirement.
+
+
+## 2026-11-23 — M3 implementation rebuild started
+
+**Status: In progress. This is a replacement effort, not a declaration that the previous implementation worked.**
+
+The existing M3 pipeline was treated as unverified and materially incomplete. The following rebuild changes have been committed to `dev`:
+
+- Removed the third public classification from application logic. Only Match and Relevant are returned as classifications. Insufficient evidence is recorded as an unavailable queue outcome with no classification.
+- Added unavailable-state handling to feed status, the assessment API, and the job-detail assessment UI.
+- Reworked job identity to include title, employer, location and the exact description. The context hash now keys queue deduplication, assessment freshness, and the reusable job-understanding cache. Raw description hashing remains separately available for description evidence validation.
+- Added title, employer and location as explicit job-side evidence references, in addition to parsed description evidence.
+- Replaced regex-only HTML stripping with the `parse5` HTML parser. Paragraphs and list structure are retained, entities are decoded, and script/style/template content is excluded from evidence.
+- Added Gemini structured-output schemas derived from the Zod contracts. Other providers still rely on JSON mode and application validation.
+- Removed application-defined item-count and evidence-reference-count limits, matching-task output-token limits, per-user queue admission limits, and backfill scan limits. Queue deduplication remains. The worker drains available work and transient provider failures are deferred for durable retry.
+- Added forward migrations for the two-classification policy, unavailable queue status, missing queue-enqueue RPC, complete-context cache identity, and atomic complete-context persistence checks.
+
+**Verification and rollout constraints**
+
+- GitHub Actions on an intermediate revision completed TypeScript checking, linting (warnings only), and the then-current unit suite (35 files, 113 tests). The production build failed on an existing Clerk-provider boundary in the mobile bottom navigation when Clerk is not configured. A narrow guard was subsequently added; the latest revision still requires a completed quality run.
+- Database migrations have not been applied.
+- No live Gemini/provider assessment, queue execution, Supabase integration run, or browser assessment workflow has been performed.
+- No M3 checkpoint is accepted by this implementation increment. Representative semantic evaluation, end-to-end runtime verification, and explicit user acceptance remain outstanding.
