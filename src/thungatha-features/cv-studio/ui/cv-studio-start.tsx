@@ -210,7 +210,7 @@ export function CvStudioStart() {
       {state.status === "master_cv_ready" && (
         <div className="space-y-6">
           {jobContext && state.masterCv ? (
-            <div className="grid items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
+            <div className="space-y-6">
               <section className="space-y-5 text-fg">
                 <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
                   <div className="flex items-start justify-between gap-3">
@@ -243,12 +243,7 @@ export function CvStudioStart() {
                   <ButtonLink className="mt-4 w-full" href="/jobs">Back to Job Discovery</ButtonLink>
                 </div>
               </section>
-              <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
-                <div className="mb-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Confirmed Profile · Version {state.profileVersion}</p>
-                  <h2 className="mt-1 text-xl font-semibold text-fg">CV preview</h2>
-                  <p className="mt-1 text-xs text-fg-muted">Master CV · Scroll to review the complete document</p>
-                </div>
+              <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
                 <CvPdfPreview content={state.masterCv.content} />
               </section>
             </div>
