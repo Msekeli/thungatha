@@ -54,6 +54,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C02 — CV data model and version management
 
+**Status:** In review — structured schema and migration committed; database application and runtime verification pending.
+
 **Goal:** define safe storage for the master CV and job-specific versions.
 
 **Work**
