@@ -12,8 +12,9 @@ import {
   jobUnderstandingSchema,
   matchAssessmentInputSchema,
   jobUnderstandingResponseSchema,
-  matchAssessmentResponseSchema,
+  createMatchAssessmentResponseSchema,
   type JobUnderstanding,
+  type MatchAssessmentModelOutput,
 } from "./job-ai-schemas";
 import { AssessmentUnavailableError, validateAndClassifyAssessment } from "./job-ai-classification";
 
@@ -65,33 +66,71 @@ function parse<T>(
   }
 }
 
-async function parseAssessmentWithJsonRepair(content: string) {
+function attachCanonicalRequirements(
+  modelOutput: MatchAssessmentModelOutput,
+  understanding: JobUnderstanding,
+) {
+  const extracted = new Map(understanding.requirements.map((item) => [item.id, item]));
+  if (extracted.size !== understanding.requirements.length) {
+    throw new Error("Extracted job requirements contain duplicate identifiers.");
+  }
+
+  const seen = new Set<string>();
+  for (const item of modelOutput.requirements) {
+    if (!extracted.has(item.id)) {
+      throw new Error(`AI assessment returned unknown requirement ID "${item.id}".`);
+    }
+    if (seen.has(item.id)) {
+      throw new Error(`AI assessment returned duplicate requirement ID "${item.id}".`);
+    }
+    seen.add(item.id);
+  }
+  const missing = [...extracted.keys()].filter((id) => !seen.has(id));
+  if (missing.length) {
+    throw new Error(`AI assessment omitted extracted requirement IDs: ${missing.join(", ")}.`);
+  }
+
+  return matchAssessmentInputSchema.parse({
+    ...modelOutput,
+    requirements: modelOutput.requirements.map((item) => {
+      const source = extracted.get(item.id)!;
+      return {
+        ...item,
+        requirement: source.statement,
+        importance: source.importance,
+      };
+    }),
+  });
+}
+
+async function parseAssessmentWithJsonRepair(
+  content: string,
+  modelSchema: ReturnType<typeof createMatchAssessmentResponseSchema>,
+) {
   try {
-    return parse("Candidate assessment", content, matchAssessmentInputSchema);
+    return parse("Candidate assessment", content, modelSchema.validator);
   } catch (error) {
     if (!(error instanceof Error) || !error.message.includes("AI returned invalid JSON")) throw error;
 
-    // Gemini occasionally emits malformed JSON despite application/json mode.
-    // Ask the same provider to repair syntax only; the normal Zod, evidence,
-    // exact-requirement, and classification checks still run afterwards.
     const repair = await completeAiTask({
       task: "job-fit-assessment",
       responseFormat: "json",
-      responseSchema: matchAssessmentResponseSchema,
+      responseSchema: modelSchema.responseSchema,
       temperature: 0,
       timeoutMs: 120_000,
       reasoning: false,
       systemPrompt: [
         "Repair the supplied candidate assessment into syntactically valid JSON.",
-        "This is a syntax-only repair. Preserve every value, identifier, requirement wording, assessment, explanation, and evidence reference exactly.",
+        "This is a syntax-only repair. Preserve every identifier, assessment, explanation, and evidence reference exactly.",
         "Do not add, remove, infer, summarize, or change any information. Do not invent evidence references.",
         "Return one JSON object only, with top-level fields semanticAlignment, summary, alignmentExplanation, requirements, and gaps.",
+        "Each requirement item contains only id, assessment, explanation, jobEvidenceRefs, and profileEvidenceRefs.",
         "If a value is malformed or incomplete, preserve the available content and use only the minimum syntax correction needed.",
       ].join("\\n"),
       userPrompt: content,
     });
     assertCompleteResponse("Candidate assessment JSON repair", repair);
-    return parse("Candidate assessment", repair.content, matchAssessmentInputSchema);
+    return parse("Candidate assessment", repair.content, modelSchema.validator);
   }
 }
 
@@ -200,10 +239,14 @@ export async function assessJobWithAi(
     requirements: understanding.requirements,
   };
 
+  const modelSchema = createMatchAssessmentResponseSchema(
+    jobEvidence.map((item) => item.id),
+    profileEvidence.map((item) => item.id),
+  );
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
-    responseSchema: matchAssessmentResponseSchema,
+    responseSchema: modelSchema.responseSchema,
     temperature: 0.1,
     timeoutMs: 120_000,
     reasoning: false,
@@ -213,7 +256,7 @@ export async function assessJobWithAi(
       "Treat target-role preference as soft context only, never as proof of a skill or experience.",
       "Missing Profile information means not demonstrated, not proof that the candidate lacks the capability.",
       "Use only supplied jobEvidence and confirmedProfileEvidence IDs. Cite exact IDs for every factual claim.",
-      "Assess every extracted requirement exactly once, preserving its exact id, exact wording, and importance. Do not add, omit, duplicate, or reclassify requirements.",
+      "Assess every extracted requirement exactly once. Return its exact id only; do not repeat, paraphrase, or regenerate requirement wording or importance. Application code attaches the canonical wording and importance.",
       "Keep explanations clear and concise while preserving the evidence and reasoning needed to understand the assessment.",
       "A supported requirement must cite confirmed Profile evidence. Every requirement must cite job evidence.",
       "If no material requirements or responsibilities were extracted, return insufficient alignment and do not infer candidate fit.",
@@ -221,9 +264,9 @@ export async function assessJobWithAi(
       "Return semanticAlignment as strong, meaningful, or insufficient and state whether material gaps remain. Application code derives Match or Relevant; insufficient evidence produces an unavailable assessment, not a third classification.",
       "Return one JSON object with exactly these top-level fields: semanticAlignment, summary, alignmentExplanation, requirements, gaps.",
       "semanticAlignment must contain level (strong, meaningful, insufficient), materialGaps (boolean), jobEvidenceRefs (array), and profileEvidenceRefs (array).",
-      "Each requirements item must contain id, requirement, importance (mandatory, preferred, uncertain), assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, and profileEvidenceRefs.",
+      "Each requirements item must contain only id, assessment (supported, not_demonstrated, contradictory, uncertain), explanation, jobEvidenceRefs, and profileEvidenceRefs. Return the exact requirement IDs supplied in jobUnderstanding, exactly once each.",
       "Each gaps item must contain description, jobEvidenceRefs, and profileEvidenceRefs.",
-      "Use no additional fields. Every requirement must exactly preserve the extracted id, wording, and importance. Return only JSON, without markdown.",
+      "Use no additional fields. Do not invent or alter evidence IDs. Every evidence reference must be copied verbatim from the supplied evidence lists. Return only JSON, without markdown.",
     ].join("\n"),
     userPrompt: json({
       jobContext: context,
@@ -239,7 +282,8 @@ export async function assessJobWithAi(
   });
 
   assertCompleteResponse("Candidate assessment", response);
-  const assessmentInput = await parseAssessmentWithJsonRepair(response.content);
+  const modelOutput = await parseAssessmentWithJsonRepair(response.content, modelSchema);
+  const assessmentInput = attachCanonicalRequirements(modelOutput, understanding);
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
     understanding,
