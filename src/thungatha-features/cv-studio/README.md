@@ -60,7 +60,7 @@ The endpoint and schemas are committed. No tests, build, browser checks or live 
 
 ## Data model contract (M4-C02)
 
-The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261123000100_cv_studio_versions.sql`.
+The canonical record is a structured CV version in `public.cv_versions`. The migration is `supabase/migrations/20261124000100_cv_studio_versions.sql`.
 
 - A version records its owner, monotonically assigned version number, kind (`master` or `tailored`), lifecycle status, parent version, source Profile version, optional Discovery job ID, preserved job snapshot, structured content, suggestion decisions, template version, accent colour and timestamps.
 - The database links each version to an existing `profile_versions(user_id, version)` record. The source Profile version is therefore explicit and cannot be silently replaced with the latest Profile.
