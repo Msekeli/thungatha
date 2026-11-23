@@ -1,11 +1,53 @@
 # CV Studio
 
-Reserved feature boundary for the master CV, tailored CV versions, review, preview, comparison, and export workflows.
+CV Studio creates a master CV from the candidate's confirmed Profile, tailors it for a selected job, and exports accepted versions. This feature must not become a second source of candidate facts.
 
-Planned areas:
-- `ui/` — CV editing, review, preview, and version-management experiences.
-- `server/` — CV parsing, validation, persistence, and export orchestration.
+## Workflow contract (M4-C01)
 
-Matching is a shared capability used by Job Discovery and CV Studio; keep shared matching logic separate from UI-specific workflows when it is implemented.
+1. The candidate can open `/cv-studio` directly or arrive with a job selected from Job Discovery.
+2. Job browsing and discovery remain available even when the Profile is incomplete. Creating a master CV or tailoring a CV requires a sufficiently complete, confirmed Profile.
+3. If the Profile gate fails, show which Profile information needs attention and link to Profile completion. Do not offer CV upload or independent CV creation as a bypass.
+4. When the gate passes, derive the master CV from confirmed Profile facts. The master CV is a presentation of Profile data, not an editable replacement for it.
+5. The candidate supplies job context by selecting a Discovery job, pasting a job description, or using a supported job URL flow. Job context must never be treated as evidence of candidate experience.
+6. Assess the master CV and any relevant accepted tailored versions against the job. Explain the recommendation; do not force a fixed three-way choice screen.
+7. Generate a tailored draft through the existing provider-independent AI boundary. Every proposed factual change must point to confirmed source evidence.
+8. The candidate reviews each suggestion independently, accepts or rejects it, and can make manual edits. These edits affect the CV draft only and do not update Profile.
+9. Preview and export use one official ATS-friendly, single-column A4 template. There is no layout/template selector. A small predefined accent-colour preference may be changed and is retained across tailored CVs.
+10. Save accepted structured versions with their source Profile version, job reference and template metadata. Generate PDF on demand; do not persist the PDF as the canonical CV.
+11. CV Studio does not apply for jobs or create application records. The candidate applies on the employer's website. M5 may associate an immutable accepted CV snapshot with an application only after the candidate explicitly confirms that they applied.
 
-This is structural scaffolding only. The CV Studio workflow is not implemented here yet.
+## State and transition contract
+
+| State | Meaning | Allowed next action |
+|---|---|---|
+| `profile_required` | No sufficiently complete, confirmed Profile | Complete Profile; return to CV Studio |
+| `master_cv_ready` | Profile gate passed and master CV is available | Select/provide job context |
+| `job_context_required` | No usable job context is attached | Select Discovery job or provide supported job input |
+| `job_context_invalid` | Job input is incomplete, invalid or unreadable | Correct input or paste job description |
+| `suitability_ready` | Job context and available CV versions have been assessed | Review explanation; choose whether to tailor or reuse |
+| `tailoring_pending` | A tailored draft is being prepared | Wait or cancel safely |
+| `tailoring_failed` | AI/provider or validation failed | Retry or return without losing saved work |
+| `draft_review` | Structured draft and evidence-backed suggestions are ready | Accept/reject suggestions, edit, preview |
+| `version_accepted` | Candidate explicitly accepted the structured CV version | View history or export |
+| `export_failed` | On-demand PDF generation failed | Retry export; accepted structured version remains intact |
+
+Transitions must be explicit. A route load, job selection, URL visit or PDF download must not imply that the candidate applied or that a CV version was accepted.
+
+## Data and trust boundaries
+
+- Candidate facts originate from the confirmed Profile/candidate-facts contracts.
+- Job descriptions describe employer requirements; they are never evidence that the candidate has a skill or qualification.
+- AI output is untrusted until schema-validated and reconciled to source evidence.
+- Manual CV edits do not silently write back to Profile.
+- Drafts cannot overwrite the master CV or accepted versions.
+- M4 exports a CV; M5 owns application records and candidate-confirmed application events.
+- Use the existing AI provider abstraction. Do not couple CV Studio to a specific provider.
+
+## Implementation boundaries
+
+- `ui/` — CV Studio screens, editor, review, preview and version history.
+- `server/` — Profile/job-context orchestration, validation, persistence and export orchestration.
+- Reuse existing Profile, Discovery, matching, authentication and AI contracts. Keep shared capabilities outside CV Studio when they are not feature-specific.
+- Keep the M4 checkpoint IDs and order in `milestones/M4-CV-STUDIO.md`; clarify scope within those checkpoints rather than creating or renumbering checkpoints.
+
+**Current implementation status:** M4-C01 contract documentation is being established. Feature UI and persistence are not yet implemented.
