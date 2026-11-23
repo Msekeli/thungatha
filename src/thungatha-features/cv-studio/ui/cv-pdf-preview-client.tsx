@@ -4,7 +4,7 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { Download, FileText } from "lucide-react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 
-export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accent?: string }) {
+export function CvPdfPreviewClient({ content, accent }: { content: CvPdfContent; accent?: string }) {
   const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
 
   return (
