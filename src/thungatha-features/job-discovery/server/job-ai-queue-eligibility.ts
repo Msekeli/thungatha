@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { buildJobEvidence } from "./job-ai-evidence";
 
-export const JOB_AI_UNDERSTANDING_VERSION = "m3-understanding-v2";
-export const JOB_AI_ASSESSMENT_VERSION = "m3-ai-v5";
+export const JOB_AI_UNDERSTANDING_VERSION = "m3-understanding-v3";
+export const JOB_AI_ASSESSMENT_VERSION = "m3-ai-v6";
 
 export function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -36,7 +36,7 @@ export async function getConfirmedProfileVersion(userId: string) {
 
 export async function getJobAiTaskStatus(input: {
   userId: string; jobId: string; profileVersion: number; descriptionHash: string;
-}): Promise<"pending" | "processing" | "failed" | "completed" | null> {
+}): Promise<"pending" | "processing" | "failed" | "completed" | "unavailable" | null> {
   const { data, error } = await createServiceClient().from("ai_task_queue").select("status")
     .eq("task_type", "job_fit_assessment").eq("user_id", input.userId)
     .eq("job_id", input.jobId).eq("profile_version", input.profileVersion)
@@ -44,7 +44,7 @@ export async function getJobAiTaskStatus(input: {
     .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (error) throw error;
-  return (data?.status as "pending" | "processing" | "failed" | "completed" | undefined) ?? null;
+  return (data?.status as "pending" | "processing" | "failed" | "completed" | "unavailable" | undefined) ?? null;
 }
 
 export async function requeueCompletedJobAiTask(input: {
