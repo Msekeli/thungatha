@@ -10,7 +10,7 @@ const MIN_ZOOM = 50;
 const MAX_ZOOM = 200;
 const ZOOM_STEP = 10;
 
-export function CvPdfPreviewClient({ content, accent }: { content: CvPdfContent; accent?: string }) {
+export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { content: CvPdfContent; accent?: string; allowDownload?: boolean }) {
   const [zoom, setZoom] = useState(100);
   const [fitMode, setFitMode] = useState<"width" | "actual">("width");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -136,7 +136,7 @@ export function CvPdfPreviewClient({ content, accent }: { content: CvPdfContent;
         </div>
         <div className="flex items-center gap-3">
           {pageCount > 0 && <span className="text-xs text-fg-muted">{pageCount} {pageCount === 1 ? "page" : "pages"}</span>}
-          <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}><Download />{isPreparing ? "Preparing PDF…" : "Download PDF"}</Button>
+          {allowDownload && <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}><Download />{isPreparing ? "Preparing PDF…" : "Download PDF"}</Button>}
         </div>
       </div>
 
