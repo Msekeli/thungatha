@@ -26,7 +26,6 @@ export function toGeminiResponseSchema(schema: z.ZodType): Record<string, unknow
 
 const refs = z.array(z.string().min(1));
 const requiredRefs = refs.min(1);
-// Aggregate evidence references are kept separate from per-requirement references.
 const aggregateRefs = z.array(z.string().min(1));
 const requiredAggregateRefs = aggregateRefs.min(1);
 
@@ -88,8 +87,67 @@ export const matchAssessmentInputSchema = z.object({
   }
 });
 
+// The model returns only requirement IDs and its assessment. The canonical
+// requirement wording and importance are attached from job understanding in code.
+export const matchAssessmentModelSchema = z.object({
+  semanticAlignment: z.object({
+    level: z.enum(["strong", "meaningful", "insufficient"]),
+    materialGaps: z.boolean(),
+    jobEvidenceRefs: requiredAggregateRefs,
+    profileEvidenceRefs: aggregateRefs,
+  }),
+  summary: z.string().min(1),
+  alignmentExplanation: z.string().min(1),
+  requirements: z.array(z.object({
+    id: z.string().min(1),
+    assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
+    explanation: z.string().min(1),
+    jobEvidenceRefs: requiredRefs,
+    profileEvidenceRefs: refs,
+  })),
+  gaps: z.array(z.object({
+    description: z.string().min(1),
+    jobEvidenceRefs: requiredRefs,
+    profileEvidenceRefs: refs,
+  })),
+});
+
+function evidenceEnum(values: string[]) {
+  const unique = [...new Set(values)];
+  return unique.length ? z.enum(unique as [string, ...string[]]) : z.never();
+}
+
+// Constrain evidence IDs at generation time as well as validating them after generation.
+export function createMatchAssessmentResponseSchema(jobEvidenceIds: string[], profileEvidenceIds: string[]) {
+  const jobRef = evidenceEnum(jobEvidenceIds);
+  const profileRef = evidenceEnum(profileEvidenceIds);
+  const modelSchema = z.object({
+    semanticAlignment: z.object({
+      level: z.enum(["strong", "meaningful", "insufficient"]),
+      materialGaps: z.boolean(),
+      jobEvidenceRefs: z.array(jobRef).min(1),
+      profileEvidenceRefs: z.array(profileRef),
+    }),
+    summary: z.string().min(1),
+    alignmentExplanation: z.string().min(1),
+    requirements: z.array(z.object({
+      id: z.string().min(1),
+      assessment: z.enum(["supported", "not_demonstrated", "contradictory", "uncertain"]),
+      explanation: z.string().min(1),
+      jobEvidenceRefs: z.array(jobRef).min(1),
+      profileEvidenceRefs: z.array(profileRef),
+    })),
+    gaps: z.array(z.object({
+      description: z.string().min(1),
+      jobEvidenceRefs: z.array(jobRef).min(1),
+      profileEvidenceRefs: z.array(profileRef),
+    })),
+  });
+  return { validator: modelSchema, responseSchema: toGeminiResponseSchema(modelSchema) };
+}
+
 export type JobUnderstanding = z.infer<typeof jobUnderstandingSchema>;
 export type MatchAssessmentInput = z.infer<typeof matchAssessmentInputSchema>;
+export type MatchAssessmentModelOutput = z.infer<typeof matchAssessmentModelSchema>;
 
 export const jobUnderstandingResponseSchema = toGeminiResponseSchema(jobUnderstandingSchema);
-export const matchAssessmentResponseSchema = toGeminiResponseSchema(matchAssessmentInputSchema);
