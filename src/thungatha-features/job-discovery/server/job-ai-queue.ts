@@ -93,6 +93,31 @@ export async function enqueueVisibleJobAssessments(userId: string, jobIds: strin
   return enqueueJobRows(userId, profileVersion, data ?? []);
 }
 
+/**
+ * Queue imported Scout jobs for every user with a confirmed Profile.
+ * Idempotency is enforced by the job context hash and database queue dedupe key.
+ */
+export async function enqueueImportedJobAssessments(jobIds: string[]) {
+  const uniqueIds = [...new Set(jobIds)].filter(Boolean);
+  if (!uniqueIds.length) return { users: 0, queued: 0, eligible: 0 };
+
+  const db = createServiceClient();
+  const [{ data: profiles, error: profileError }, { data: jobs, error: jobError }] = await Promise.all([
+    db.from("profiles").select("user_id,profile_version").not("confirmed_at", "is", null),
+    db.from("jobs").select("id,title,employer_name,location_text,description").in("id", uniqueIds),
+  ]);
+  if (profileError) throw profileError;
+  if (jobError) throw jobError;
+
+  const eligible = (jobs ?? []).filter((job) => isUsableJobDescription(job.description)).length;
+  let queued = 0;
+  for (const profile of profiles ?? []) {
+    const profileVersion = profile.profile_version ?? 1;
+    queued += await enqueueJobRows(profile.user_id, profileVersion, jobs ?? []);
+  }
+  return { users: profiles?.length ?? 0, queued, eligible };
+}
+
 /** Backfill the complete catalogue in pages; database deduplication prevents duplicate work. */
 export async function enqueueAllJobAssessments(userId: string) {
   const profileVersion = await getConfirmedProfileVersion(userId);
