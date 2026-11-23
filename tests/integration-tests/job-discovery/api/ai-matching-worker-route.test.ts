@@ -16,6 +16,7 @@ describe("AI matching worker route", () => {
       claimed: 1,
       processed: 0,
       stale: 0,
+      unavailable: 0,
       failed: 1,
       durationMs: 1200,
       tasks: [{
