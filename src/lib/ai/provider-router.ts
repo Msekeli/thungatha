@@ -109,6 +109,7 @@ export async function completeAiTask(request: AiCompletionRequest): Promise<AiCo
   } catch (primaryError) {
     if (!(primaryError instanceof AiProviderError) || !primaryError.retryable || !fallbacks.length) throw primaryError;
     const fallbackFailures: string[] = [];
+    const fallbackErrors: AiProviderError[] = [];
     for (const provider of fallbacks) {
       console.warn("[AI provider] Primary provider unavailable; trying enabled fallback", {
         primary, fallback: provider, task: request.task, code: primaryError.code,
@@ -122,27 +123,35 @@ export async function completeAiTask(request: AiCompletionRequest): Promise<AiCo
       } catch (fallbackError) {
         const detail = fallbackError instanceof Error ? fallbackError.message : "Unknown provider failure";
         fallbackFailures.push(`${provider}: ${detail}`);
+        if (fallbackError instanceof AiProviderError) fallbackErrors.push(fallbackError);
         console.warn("[AI provider] Enabled fallback failed", {
           provider, task: request.task,
           code: fallbackError instanceof AiProviderError ? fallbackError.code : "unknown",
           error: detail.slice(0, 300),
         });
-        if (!(fallbackError instanceof AiProviderError) || !fallbackError.retryable) {
-          throw new AiProviderError(
-            `Primary provider ${primary} failed (${primaryError instanceof Error ? primaryError.message : "unknown error"}); fallback ${provider} failed (${detail}).`,
-            { code: fallbackError instanceof AiProviderError ? fallbackError.code : "unknown", provider, retryable: false, cause: fallbackError },
-          );
-        }
+
       }
     }
     const primaryDetail = primaryError instanceof Error ? primaryError.message : "Unknown primary provider failure";
+    const providerErrors = [
+      ...(primaryError instanceof AiProviderError ? [primaryError] : []),
+      ...fallbackErrors,
+    ];
+    const retryableErrors = providerErrors.filter((error) => error.retryable);
+    const retryAfterMs = retryableErrors.reduce(
+      (maximum, error) => Math.max(maximum, error.retryAfterMs ?? 0),
+      0,
+    );
+    const code = providerErrors.some((error) => error.code === "rate-limited")
+      ? "rate-limited"
+      : primaryError instanceof AiProviderError ? primaryError.code : "unavailable";
     throw new AiProviderError(
       `All configured AI providers failed. Primary ${primary}: ${primaryDetail}${fallbackFailures.length ? `; ${fallbackFailures.join("; ")}` : ""}`,
       {
-        code: primaryError instanceof AiProviderError ? primaryError.code : "unavailable",
+        code,
         provider: primary,
-        retryable: primaryError instanceof AiProviderError && primaryError.retryable,
-        retryAfterMs: primaryError instanceof AiProviderError ? primaryError.retryAfterMs : undefined,
+        retryable: retryableErrors.length > 0,
+        retryAfterMs: retryAfterMs || undefined,
         cause: primaryError,
       },
     );
