@@ -51,8 +51,14 @@ export function validateAndClassifyAssessment(
     ...assessment.requirements.flatMap((item) => item.profileEvidenceRefs),
     ...assessment.gaps.flatMap((item) => item.profileEvidenceRefs),
   ];
-  if (jobReferences.some((ref) => !allowedJobRefs.has(ref)) || profileReferences.some((ref) => !allowedProfileRefs.has(ref))) {
-    throw new Error("AI assessment referenced evidence outside the supplied job description or confirmed Profile.");
+  const invalidJobReferences = [...new Set(jobReferences.filter((ref) => !allowedJobRefs.has(ref)))];
+  const invalidProfileReferences = [...new Set(profileReferences.filter((ref) => !allowedProfileRefs.has(ref)))];
+  if (invalidJobReferences.length || invalidProfileReferences.length) {
+    const details = [
+      invalidJobReferences.length ? `unknown job evidence IDs: ${invalidJobReferences.join(", ")}` : null,
+      invalidProfileReferences.length ? `unknown Profile evidence IDs: ${invalidProfileReferences.join(", ")}` : null,
+    ].filter(Boolean).join("; ");
+    throw new Error(`AI assessment referenced evidence outside the supplied sources (${details}).`);
   }
 
   if (
