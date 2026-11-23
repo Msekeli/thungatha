@@ -22,9 +22,9 @@ type JobContext = {
 };
 type Draft = { id: string; content: CvContent; suggestions: Array<never>; accent_colour: "teal" | "navy" | "burgundy" | "forest"; version_number: number };
 
-export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: { masterVersionId: string; jobContext: JobContext; initialContent: CvContent }) {
+export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: { masterVersionId: string; jobContext: JobContext; initialContent: unknown }) {
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [content, setContent] = useState<CvContent>(initialContent);
+  const [content, setContent] = useState<CvContent>(initialContent as CvContent);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
