@@ -272,10 +272,9 @@ export function CvStudioStart() {
               ) : (
                 <>
                   <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Profile confirmed · Version {state.profileVersion}</p>
-                  <h2 className="mt-2 text-xl font-semibold text-slate-950">Your Profile is ready for a master CV</h2>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">We will organise your confirmed information into the standard ATS-friendly, single-column CV. No new experience or qualifications will be added.</p>
-                  {state.isStale && <p className="mt-3 text-sm text-amber-700">Your Profile has changed since the previous master CV. Generate a refreshed version.</p>}
-                  <Button className="mt-6" disabled={busy} onClick={() => void generate()}>{busy ? "Generating…" : state.isStale ? "Refresh master CV" : "Generate master CV"}</Button>
+                  <h2 className="mt-2 text-xl font-semibold text-slate-950">Your master CV is being prepared</h2>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">CV Studio normally creates this document automatically from your confirmed Profile. No new experience or qualifications are added.</p>
+                  <Button className="mt-6" variant="outline" onClick={() => void load()}>Try again</Button>
                 </>
               )}
             </section>
