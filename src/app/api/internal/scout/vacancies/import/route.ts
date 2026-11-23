@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { scoutExportPageSchema } from "@/thungatha-features/job-discovery/server/scout-export-schema";
 import { mapScoutVacancies } from "@/thungatha-features/job-discovery/server/scout-vacancy-mapper";
 import { isScoutImportAuthorised } from "@/thungatha-features/job-discovery/server/scout-import-auth";
+import { enqueueImportedJobAssessments } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 
 export async function POST(request: Request) {
   if (!isScoutImportAuthorised(request)) {
@@ -47,15 +48,29 @@ export async function POST(request: Request) {
     const rows = await mapScoutVacancies(parsed.data.items);
 
     if (rows.length > 0) {
-      const { error } = await database
+      const { data: persistedRows, error } = await database
         .from("jobs")
-        .upsert(rows, { onConflict: "scout_vacancy_id" });
+        .upsert(rows, { onConflict: "scout_vacancy_id" })
+        .select("id");
       if (error) throw error;
+
+      // Import persistence is idempotent. Matching queueing is also idempotent
+      // and uses the current confirmed Profile version for each Thungatha user.
+      const matching = await enqueueImportedJobAssessments(
+        (persistedRows ?? []).map((row) => row.id),
+      );
+      return NextResponse.json({
+        success: true,
+        received: rows.length,
+        stored: persistedRows?.length ?? 0,
+        matching,
+      });
     }
     return NextResponse.json({
       success: true,
-      received: rows.length,
-      stored: rows.length,
+      received: 0,
+      stored: 0,
+      matching: { users: 0, queued: 0, eligible: 0 },
     });
   } catch (error) {
     const databaseError =
