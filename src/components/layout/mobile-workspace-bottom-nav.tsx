@@ -48,7 +48,7 @@ function MobileWorkspaceBottomNavContent({
           {links.slice(1).map((item) => (
             <PublicAuthPrompt
               key={item.href}
-              configured={configured}
+              configured={Boolean(configured)}
               title={`Access ${item.label}`}
               description={`Sign in or create a free account to access ${item.label.toLowerCase()} and keep your job search organised.`}
               side="top"
