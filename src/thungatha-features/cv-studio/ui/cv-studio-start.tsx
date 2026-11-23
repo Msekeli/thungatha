@@ -37,6 +37,7 @@ type JobContext = {
 };
 type MatchingVersion = { id: string; versionNumber: number; updatedAt: string; accentColour: string };
 type ReusableCv = { id: string; version_number: number; content: CvContent; accent_colour: "teal" | "navy" | "burgundy" | "forest" };
+const cvAccentHex = { teal: "#0F766E", navy: "#1D4ED8", burgundy: "#9F1239", forest: "#166534" } as const;
 type Suitability = {
   status: "existing_version_found" | "new_version_recommended" | "assessment_unavailable";
   matchingVersions: MatchingVersion[];
@@ -243,7 +244,7 @@ export function CvStudioStart() {
                 </div>
               </section>
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
-                {reusableCv ? <div className="space-y-2"><p className="text-sm font-medium text-fg">Reusing accepted CV · Version {reusableCv.version_number}</p><Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button><CvPdfPreview content={reusableCv.content} accent={reusableCv.accent_colour} /></div> : <CvPdfPreview content={state.masterCv.content} />}
+                {reusableCv ? <div className="space-y-2"><p className="text-sm font-medium text-fg">Reusing accepted CV · Version {reusableCv.version_number}</p><Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button><CvPdfPreview content={reusableCv.content} accent={cvAccentHex[reusableCv.accent_colour]} /></div> : <CvPdfPreview content={state.masterCv.content} />}
               </section>
             </div>
             {!reusableCv && <CvDraftEditor masterVersionId={state.masterCv.id} jobContext={jobContext} initialContent={state.masterCv.content} />}
