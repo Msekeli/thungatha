@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import { understandJobWithAi, parseJobUnderstanding, attachCanonicalRequirements } from "@/thungatha-features/job-discovery/server/job-ai-service";
-import { createMatchAssessmentResponseSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
+import { createJobUnderstandingResponseSchema, createMatchAssessmentResponseSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 vi.mock("@/lib/ai/provider-router", () => ({
@@ -37,7 +37,36 @@ describe("job understanding service", () => {
     expect(request?.maxOutputTokens).toBeUndefined();
     expect(request?.responseSchema).toMatchObject({
       type: "OBJECT",
-      properties: { responsibilities: { type: "ARRAY" } },
+      properties: {
+        responsibilities: {
+          type: "ARRAY",
+          items: {
+            properties: {
+              sourceEvidenceRefs: {
+                items: { enum: [
+                  "job:context:title", "job:context:employer", "job:context:location",
+                  "job:segment:1", "job:segment:2", "job:segment:3", "job:segment:4", "job:segment:5",
+                ] },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it("constrains job-understanding evidence references to the supplied evidence IDs", () => {
+    const responseSchema = createJobUnderstandingResponseSchema(["job:segment:1", "job:segment:2"]);
+    expect(responseSchema).toMatchObject({
+      properties: {
+        responsibilities: {
+          items: {
+            properties: {
+              sourceEvidenceRefs: { items: { enum: ["job:segment:1", "job:segment:2"] } },
+            },
+          },
+        },
+      },
     });
   });
 

@@ -126,4 +126,31 @@ export type JobUnderstanding = z.infer<typeof jobUnderstandingSchema>;
 export type MatchAssessmentInput = z.infer<typeof matchAssessmentInputSchema>;
 export type MatchAssessmentModelOutput = z.infer<ReturnType<typeof createMatchAssessmentResponseSchema>["validator"]>;
 
+export function createJobUnderstandingResponseSchema(jobEvidenceIds: string[]) {
+  const jobEvidenceRef = evidenceEnum(jobEvidenceIds);
+  const responseSchema = z.object({
+    summary: z.string().min(1),
+    responsibilities: z.array(z.object({
+      id: z.string().min(1),
+      statement: z.string().min(1),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    capabilities: z.array(z.object({
+      id: z.string().min(1),
+      name: z.string().min(1),
+      context: z.string(),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    requirements: z.array(z.object({
+      id: z.string().min(1),
+      statement: z.string().min(1),
+      category: z.enum(["experience", "skill", "technology", "qualification", "certification", "licence", "language", "location", "work_mode", "other"]),
+      importance: z.enum(["mandatory", "preferred", "uncertain"]),
+      sourceEvidenceRefs: z.array(jobEvidenceRef).min(1),
+    })),
+    coverage: z.enum(["complete", "partial", "unavailable"]),
+  });
+  return toGeminiResponseSchema(responseSchema);
+}
+
 export const jobUnderstandingResponseSchema = toGeminiResponseSchema(jobUnderstandingSchema);

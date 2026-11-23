@@ -11,7 +11,7 @@ import {
 import {
   jobUnderstandingSchema,
   matchAssessmentInputSchema,
-  jobUnderstandingResponseSchema,
+  createJobUnderstandingResponseSchema,
   createMatchAssessmentResponseSchema,
   type JobUnderstanding,
   type MatchAssessmentModelOutput,
@@ -179,7 +179,7 @@ export async function understandJobWithAi(context: JobMatchingContext) {
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
-    responseSchema: jobUnderstandingResponseSchema,
+    responseSchema: createJobUnderstandingResponseSchema(evidence.map((item) => item.id)),
     temperature: 0.1,
     timeoutMs: 120_000,
     reasoning: false,
