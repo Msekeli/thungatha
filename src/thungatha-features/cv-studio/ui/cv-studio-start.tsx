@@ -33,6 +33,8 @@ type JobContext = {
   descriptionFingerprint: string;
 };
 type MatchingVersion = { id: string; versionNumber: number; updatedAt: string; accentColour: string };
+type HistoryVersion = { id: string; version_number: number; cv_kind: "master" | "tailored"; status: "current" | "draft" | "accepted" | "superseded"; source_profile_version: number; source_job_snapshot: { title?: string; company?: string | null } | null; updated_at: string; accepted_at: string | null };
+type SelectedVersion = HistoryVersion & { content: CvContent; suggestions: Array<{ id: string; targetPath: string; reason: string; evidenceRefs: string[]; decision: "pending" | "accepted" | "rejected" }> };
 type Suitability = {
   status: "existing_version_found" | "new_version_recommended" | "assessment_unavailable";
   matchingVersions: MatchingVersion[];
@@ -59,6 +61,11 @@ export function CvStudioStart() {
   const [suitability, setSuitability] = useState<Suitability | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
+  const [versionHistory, setVersionHistory] = useState<HistoryVersion[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<SelectedVersion | null>(null);
+  const [selectedVersionLoading, setSelectedVersionLoading] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -77,6 +84,40 @@ export function CvStudioStart() {
     setJobId(selectedJobId);
     void load();
   }, [load]);
+
+  const loadVersionHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    setHistoryError(null);
+    try {
+      const response = await fetch("/api/cv-studio/versions", { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "Version history could not be loaded.");
+      setVersionHistory((body.versions ?? []) as HistoryVersion[]);
+    } catch (error) {
+      setHistoryError(error instanceof Error ? error.message : "Version history could not be loaded.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  const openVersion = useCallback(async (id: string) => {
+    setSelectedVersionLoading(true);
+    setHistoryError(null);
+    try {
+      const response = await fetch(`/api/cv-studio/versions/${encodeURIComponent(id)}`, { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "This CV version could not be opened.");
+      setSelectedVersion(body.version as SelectedVersion);
+    } catch (error) {
+      setHistoryError(error instanceof Error ? error.message : "This CV version could not be opened.");
+    } finally {
+      setSelectedVersionLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.status === "master_cv_ready" && state.masterCv) void loadVersionHistory();
+  }, [state, loadVersionHistory]);
 
   const assessContext = useCallback(async (context: JobContext, masterVersionId: string) => {
     const response = await fetch("/api/cv-studio/suitability", {
