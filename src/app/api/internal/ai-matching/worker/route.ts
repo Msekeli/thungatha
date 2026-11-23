@@ -21,7 +21,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A valid AI worker secret is required." }, { status: 401 });
   }
   try {
-    const result = await processJobAiQueue();
+    let jobIds: string[] | undefined;
+    const rawBody = await request.text();
+    if (rawBody.trim()) {
+      let body: unknown;
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
+      }
+      if (!body || typeof body !== "object" || !("jobIds" in body)
+        || !Array.isArray((body as { jobIds: unknown }).jobIds)
+        || (body as { jobIds: unknown[] }).jobIds.length === 0
+        || !(body as { jobIds: unknown[] }).jobIds.every(
+          (id) => typeof id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id),
+        )) {
+        return NextResponse.json({ error: "Provide a non-empty jobIds array containing valid UUIDs." }, { status: 400 });
+      }
+      jobIds = [...new Set((body as { jobIds: string[] }).jobIds)];
+    }
+    const result = await processJobAiQueue({ jobIds });
     const success = result.failed === 0;
     return NextResponse.json(
       { success, ...result },
