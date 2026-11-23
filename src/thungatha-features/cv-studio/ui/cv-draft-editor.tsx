@@ -68,6 +68,14 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
     if (!draft || draft.status !== "draft") return;
     setBusy(true); setError(null); setMessage(null);
     try {
+      const saveResponse = await fetch("/api/cv-studio/drafts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: draft.id, content, suggestions: draft.suggestions, accentColour: draft.accent_colour }),
+      });
+      const savedBody = await saveResponse.json();
+      if (!saveResponse.ok) throw new Error(savedBody.error ?? "Save your latest edits before accepting the CV.");
+
       const response = await fetch("/api/cv-studio/drafts/accept", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: draft.id }) });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error ?? "The CV could not be accepted.");
