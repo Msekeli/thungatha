@@ -139,3 +139,14 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - `POST /api/cv-studio` uses the same operation for explicit refresh/recovery. The first-time UI no longer asks the candidate to click Generate.
 - A missing `cv_versions` relation now returns a specific database-setup message instructing the developer to apply the M4 migration instead of the generic request failure.
 - This is a source-level implementation. The migration has not been applied or checked against the user's local database in this session; runtime behaviour remains unverified.
+
+
+## Product correction — no CV history UI (2026-11-24)
+
+- CV Studio must not expose a CV library, version-history list, historical preview browser or refresh-history action. Those have been removed.
+- The confirmed Profile is the single source of candidate facts. The master CV is its structured presentation. New tailored CVs must always originate from the current master CV; candidate facts are changed in Profile, not by creating independent CVs.
+- Keep only the current master CV and the most recent/accepted reusable tailored output needed by the workflow. Do not create a new tailored CV merely because the candidate opens CV Studio or selects a job.
+- Before tailoring, check whether an existing accepted tailored output is suitable for the selected job. An exact job-reference/description match can be detected deterministically now. Similar-job semantic suitability is not implemented and must not be guessed; it requires the approved AI assessment.
+- Reusable tailored outputs are internal working artefacts, not a user-facing CV history. M5 Job Tracking owns the application record and the immutable CV snapshot/reference actually used when the candidate confirms an application.
+- The M4 persistence layer may retain the minimum structured records needed for current master, reusable tailored output and immutable M5 submission references. This does not authorize a CV history screen or unbounded generation of versions.
+- Removed the two CV Studio version-history GET endpoints and their UI. Existing database rows are not deleted by this code change.
