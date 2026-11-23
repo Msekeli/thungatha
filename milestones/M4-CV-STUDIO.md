@@ -121,7 +121,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C05 — CV recommendation and suitability decision
 
-**Status:** In review — exact prior-version matching and a candidate-controlled reuse recommendation are implemented. Semantic AI suitability assessment remains outstanding.
+**Status:** In progress — exact prior-version matching and an explicit exact-context reuse action are implemented. Semantic AI suitability assessment remains blocked pending provider selection.
 
 **Implemented**
 
@@ -147,6 +147,8 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 ### M4-C06 — AI-assisted tailoring
 
+**Status:** Blocked — AI provider selection is intentionally deferred; no provider or generated suggestions are enabled.
+
 **Goal:** generate a job-specific draft without inventing candidate facts.
 
 **Work**
@@ -168,6 +170,8 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 ### M4-C07 — Review and live preview
 
+**Status:** In progress — manual draft editing, live A4 PDF preview, draft saving and explicit acceptance are implemented in source; runtime verification remains outstanding.
+
 **Goal:** let the candidate inspect and edit the proposed CV before accepting it.
 
 **Work**
@@ -187,7 +191,7 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 ### M4-C08 — Version management, comparison and export
 
-**Status:** In progress — owner-scoped version-history/read APIs and a read-only historical preview are committed. Reuse, editing, acceptance and export remain outstanding.
+**Status:** In progress — candidate-facing history UI remains removed by product decision. Exact-context accepted-version reuse, draft deduplication, immutable acceptance and on-demand PDF export are implemented in source; M5 snapshot integration and runtime verification remain outstanding.
 
 **Goal:** save and retrieve the version the candidate actually chooses.
 
@@ -281,3 +285,41 @@ The previous interpretation of M4-C08 as a candidate-facing CV version-history f
 - Existing cv_versions database rows and migration are not deleted. They are currently still used by the master/tailored workflow and suitability lookup; data deletion requires a separate migration decision and must not be done blindly.
 - The current exact-match lookup remains a technical first step, not a semantic recommendation. It does not yet open/reuse the matching CV or prevent every duplicate draft.
 - No tests, lint, build, browser checks, runtime checks or database migrations were run.
+
+## M4 continuation update — 2026-11-24
+
+This update supersedes earlier checkpoint notes that described a candidate-facing CV history screen or claimed that reuse, editing and acceptance were unavailable.
+
+### M4-C05 — Exact accepted-version reuse
+
+- Added `POST /api/cv-studio/reuse`. It requires the signed-in owner, a complete confirmed current Profile, an accepted tailored CV and an exact Discovery job ID or exact pasted-description fingerprint match.
+- The endpoint rejects versions based on an older Profile version and refuses fuzzy/title-only matches.
+- The selected-job UI now offers an explicit **Use this CV** action. The returned accepted content is previewed with its stored accent colour; the candidate can return to the master CV.
+- Semantic suitability remains unavailable and is not simulated.
+
+### M4-C06 — AI-assisted tailoring
+
+- Remains **Blocked** until the AI provider is selected. No provider was installed or invoked and no AI-generated suggestions are presented.
+
+### M4-C07 — Manual review and acceptance
+
+- The manual editor is now connected to the selected-job workflow.
+- It supports edits to candidate-facing contact details, headline, summary, links, skills, experience descriptions/achievements, project descriptions, languages and accent colour. Confirmed Profile facts and the master CV are not mutated.
+- The editor displays a live A4 PDF preview of the current draft.
+- Draft saving remains owner-scoped and Profile-version guarded.
+- Added an explicit acceptance endpoint. It accepts only an owned tailored draft based on the current confirmed Profile version. Acceptance stores `accepted_at`; the existing database trigger prevents later mutation of accepted content.
+- The tailored draft's PDF download remains disabled until acceptance. The master CV remains independently exportable.
+
+### M4-C08 — Reuse, persistence and export
+
+- Draft creation now reopens a matching working draft for the same current Profile version and exact job context instead of inserting another duplicate.
+- Accepted tailored versions can be reused only for an exact job reference/description match and the same current Profile version.
+- PDF export remains on-demand. The accepted structured content is the source for its export; PDFs are not persisted.
+- M5's immutable application snapshot/reference contract is not yet implemented. M4 acceptance does not create an application record.
+
+### Verification and limitations
+
+- Source files and commits were fetched from the `dev` branch after changes.
+- No build, lint, unit/integration tests, browser checks, live database checks or migrations were run.
+- PDF.js rendering, acceptance against the deployed schema/trigger, exact reuse and draft deduplication require runtime verification.
+- M4-C09 remains not started. M4 is not accepted.
