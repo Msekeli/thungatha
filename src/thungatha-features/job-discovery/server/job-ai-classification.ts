@@ -1,7 +1,15 @@
 import type { JobUnderstanding, MatchAssessmentInput } from "./job-ai-schemas";
 
-export type MatchClassification = "match" | "relevant" | "unclassified";
-export const MATCH_CLASSIFICATION_POLICY_VERSION = "m3-classification-v2";
+export type MatchClassification = "match" | "relevant";
+export const MATCH_CLASSIFICATION_POLICY_VERSION = "m3-classification-v3";
+
+export class AssessmentUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AssessmentUnavailableError";
+  }
+}
+
 export type MatchAssessment = MatchAssessmentInput & {
   classification: MatchClassification;
   classificationPolicyVersion: string;
@@ -17,6 +25,7 @@ export function validateAndClassifyAssessment(
   if (extracted.size !== understanding.requirements.length) {
     throw new Error("Extracted job requirements contain duplicate identifiers.");
   }
+
   const assessedIds = new Set<string>();
   for (const item of assessment.requirements) {
     const source = extracted.get(item.id);
@@ -46,22 +55,26 @@ export function validateAndClassifyAssessment(
     throw new Error("AI assessment referenced evidence outside the supplied job description or confirmed Profile.");
   }
 
-  const insufficient = assessment.semanticAlignment.level === "insufficient"
-    || assessment.semanticAlignment.profileEvidenceRefs.length === 0;
+  if (
+    assessment.semanticAlignment.level === "insufficient"
+    || assessment.semanticAlignment.profileEvidenceRefs.length === 0
+  ) {
+    throw new AssessmentUnavailableError(
+      "There is insufficient confirmed Profile evidence to classify this job.",
+    );
+  }
+
   const contradictoryEvidence = assessment.requirements.some((item) => item.assessment === "contradictory");
   const unsupportedMandatory = assessment.requirements.some(
     (item) => item.importance === "mandatory" && item.assessment !== "supported",
   );
 
-  // The model supplies semantic evidence and explanations. Application code owns
-  // the public category so model output cannot bypass the approved classification policy.
-  const classification: MatchClassification = insufficient
-    ? "unclassified"
-    : assessment.semanticAlignment.level === "strong"
-      && !assessment.semanticAlignment.materialGaps
-      && !contradictoryEvidence
-      && !unsupportedMandatory
-      && understanding.coverage === "complete"
+  const classification: MatchClassification =
+    assessment.semanticAlignment.level === "strong"
+    && !assessment.semanticAlignment.materialGaps
+    && !contradictoryEvidence
+    && !unsupportedMandatory
+    && understanding.coverage === "complete"
       ? "match"
       : "relevant";
 
