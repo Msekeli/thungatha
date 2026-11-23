@@ -6,6 +6,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CvDraftEditor } from "./cv-draft-editor";
+import { CvPdfPreview } from "./cv-pdf-preview";
 
 type CvContent = {
   fullName: string;
@@ -248,7 +249,7 @@ export function CvStudioStart() {
                   <h2 className="mt-1 text-xl font-semibold text-fg">CV preview</h2>
                   <p className="mt-1 text-xs text-fg-muted">Master CV · Scroll to review the complete document</p>
                 </div>
-                <div className="max-h-[calc(100dvh-13rem)] min-h-[32rem] overflow-y-auto overscroll-contain rounded-xl border border-line bg-panel-2 p-4 sm:p-6"><MasterCvPreview content={state.masterCv.content} /></div>
+                <CvPdfPreview content={state.masterCv.content} />
               </section>
             </div>
           ) : (
@@ -299,9 +300,7 @@ export function CvStudioStart() {
                     </div>
                     <Button variant="outline" disabled={busy} onClick={() => void generate()}>{busy ? "Refreshing…" : state.isStale ? "Refresh master CV" : "Regenerate from Profile"}</Button>
                   </div>
-                  <div className="th-cv-preview-viewport">
-                    <MasterCvPreview content={state.masterCv.content} />
-                  </div>
+                  <CvPdfPreview content={state.masterCv.content} />
                 </>
               ) : (
                 <p className="text-sm text-fg-muted">Your master CV is being prepared.</p>
@@ -335,34 +334,3 @@ function Field({ label, required, hint, children }: { label: string; required?: 
   return <label className="block space-y-1.5"><span className="block text-sm font-medium text-slate-800">{label}{required ? " *" : ""}</span>{children}{hint && <span className="block text-xs leading-5 text-slate-500">{hint}</span>}</label>;
 }
 
-function MasterCvPreview({ content }: { content: CvContent }) {
-  return (
-    <article className="th-cv-a4-sheet mx-auto text-slate-900 shadow-sm">
-      <header className="border-b-2 border-teal-700 pb-5">
-        <h2 className="text-3xl font-bold tracking-tight">{content.fullName}</h2>
-        {content.headline && <p className="mt-1 text-lg text-slate-700">{content.headline}</p>}
-        <p className="mt-3 text-sm text-slate-600">{[content.email, content.phone, content.location].filter(Boolean).join(" · ")}</p>
-      </header>
-      <CvSection title="Professional summary"><p className="whitespace-pre-line text-sm leading-6">{content.professionalSummary}</p></CvSection>
-      <CvSection title="Professional experience">
-        {content.workExperience.length ? content.workExperience.map((item) => (
-          <div key={item.sourceId} className="mb-4">
-            <h3 className="font-semibold">{item.jobTitle} · {item.employer}</h3>
-            <p className="text-xs text-slate-500">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}</p>
-            {item.description && <p className="mt-1 whitespace-pre-line text-sm leading-5">{item.description}</p>}
-            {item.achievements.length > 0 && <ul className="mt-1 list-inside list-disc text-sm">{item.achievements.map((value) => <li key={value}>{value}</li>)}</ul>}
-          </div>
-        )) : <p className="text-sm text-slate-500">No work experience recorded in Profile.</p>}
-      </CvSection>
-      <CvSection title="Personal projects">{content.projects.length ? content.projects.map((item) => <div key={item.sourceId} className="mb-3"><h3 className="font-semibold">{item.name}</h3>{item.role && <p className="text-xs text-slate-500">{item.role}</p>}{item.description && <p className="text-sm">{item.description}</p>}</div>) : <p className="text-sm text-slate-500">No projects recorded in Profile.</p>}</CvSection>
-      <CvSection title="Technical skills"><p className="text-sm">{content.technicalSkills.join(" · ") || "No skills recorded in Profile."}</p></CvSection>
-      <CvSection title="Education">{content.education.map((item) => <div key={item.sourceId} className="mb-3"><h3 className="font-semibold">{item.qualification}</h3><p className="text-sm">{item.institution}{item.fieldOfStudy ? " · " + item.fieldOfStudy : ""}</p></div>)}</CvSection>
-      <CvSection title="Certifications">{content.certifications.length ? content.certifications.map((item) => <p key={item.sourceId} className="mb-2 text-sm">{item.name}{item.issuer ? " · " + item.issuer : ""}</p>) : <p className="text-sm text-slate-500">No certifications recorded in Profile.</p>}</CvSection>
-      <CvSection title="Languages"><p className="text-sm">{content.languages.join(" · ") || "No languages recorded in Profile."}</p></CvSection>
-    </article>
-  );
-}
-
-function CvSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return <section className="mt-6 border-t border-slate-200 pt-4"><h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-teal-800">{title}</h3>{children}</section>;
-}
