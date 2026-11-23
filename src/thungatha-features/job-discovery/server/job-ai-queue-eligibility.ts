@@ -15,6 +15,36 @@ export function createServiceClient() {
   });
 }
 
+export type JobMatchingContext = {
+  title: string;
+  employerName: string | null;
+  locationText: string | null;
+  description: string;
+};
+
+export function createJobMatchingContext(input: {
+  title: string | null;
+  employer_name: string | null;
+  location_text: string | null;
+  description: string | null;
+}): JobMatchingContext {
+  return {
+    title: input.title?.trim() ?? "",
+    employerName: input.employer_name?.trim() || null,
+    locationText: input.location_text?.trim() || null,
+    description: input.description ?? "",
+  };
+}
+
+export function hashJobContext(context: JobMatchingContext) {
+  return createHash("sha256").update(JSON.stringify({
+    title: context.title,
+    employerName: context.employerName,
+    locationText: context.locationText,
+    description: context.description,
+  })).digest("hex");
+}
+
 export function hashDescription(description: string) {
   return createHash("sha256").update(description).digest("hex");
 }
@@ -35,12 +65,12 @@ export async function getConfirmedProfileVersion(userId: string) {
 }
 
 export async function getJobAiTaskStatus(input: {
-  userId: string; jobId: string; profileVersion: number; descriptionHash: string;
+  userId: string; jobId: string; profileVersion: number; contextHash: string;
 }): Promise<"pending" | "processing" | "failed" | "completed" | "unavailable" | null> {
   const { data, error } = await createServiceClient().from("ai_task_queue").select("status")
     .eq("task_type", "job_fit_assessment").eq("user_id", input.userId)
     .eq("job_id", input.jobId).eq("profile_version", input.profileVersion)
-    .eq("job_description_hash", input.descriptionHash)
+    .eq("job_context_hash", input.contextHash)
     .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (error) throw error;
