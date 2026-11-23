@@ -245,3 +245,17 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 - PDF export and end-to-end verification.
 
 No tests, build, browser checks or live Supabase verification were run. The migration remains unapplied.
+
+
+#### M4-C03 integration correction — 2026-11-24
+
+**Status:** In progress — automatic Profile-to-master-CV generation is implemented in source; local database/runtime verification pending.
+
+- `GET /api/cv-studio` now reads the signed-in user's M2 Profile using the existing Profile repository and mapper.
+- The server requires both the existing M2 completion contract and a non-null Profile confirmation timestamp.
+- When no current master CV exists, the endpoint creates it automatically from the confirmed Profile. The first-time UI no longer requires a manual Generate action.
+- When the Profile version has advanced, the previous current master is marked superseded and a new master is created from the latest confirmed Profile. Tailored and accepted historical versions are not rewritten.
+- Repeated requests reuse the current master for the same Profile version. A concurrent unique-index conflict triggers a reread before failing.
+- If the `cv_versions` table is missing, the API now returns an actionable M4 migration setup message.
+- **Not verified:** local migration state, Supabase connectivity, API execution, browser behaviour, race behaviour and generated document contents. No tests, lint, build or browser checks were run. The M4 migration remains unapplied in this work session.
+- **Next action:** apply the committed M4 migration to the local Supabase project, reload CV Studio and report the resulting screen/API error if any. Confirm that the master CV content reflects the Profile sections before proceeding with further editor work.
