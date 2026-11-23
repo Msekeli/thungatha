@@ -56,8 +56,22 @@ export async function POST(request: Request) {
       company: job.company,
       location: job.location,
       sourceUrl: job.sourceUrl,
+      jobId: job.jobId,
       descriptionFingerprint: job.descriptionFingerprint,
     };
+    const { data: existingDrafts, error: existingDraftsError } = await db.from("cv_versions")
+      .select("id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_profile_version,parent_version_id")
+      .eq("user_id", auth.identity.userId)
+      .eq("cv_kind", "tailored")
+      .eq("status", "draft")
+      .eq("source_profile_version", auth.profile.profileVersion)
+      .order("updated_at", { ascending: false });
+    if (existingDraftsError) throw existingDraftsError;
+    const reusableDraft = (existingDrafts ?? []).find((item) => job.jobId
+      ? item.source_job_snapshot?.jobId === job.jobId || item.source_job_id === job.jobId
+      : item.source_job_snapshot?.descriptionFingerprint === job.descriptionFingerprint);
+    if (reusableDraft) return NextResponse.json({ draft: reusableDraft, reusedDraft: true });
+
     const { data, error } = await db.from("cv_versions").insert({
       user_id: auth.identity.userId,
       cv_kind: "tailored",
