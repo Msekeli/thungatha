@@ -19,7 +19,7 @@ export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accen
           <PDFDownloadLink
             document={<CvPdfDocument content={content} accent={accent} />}
             fileName={fileName}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-foreground hover:opacity-90"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-accent-bg px-3 text-sm font-semibold text-accent-text hover:opacity-90"
           >
             {({ loading, error }) => (
               <>
