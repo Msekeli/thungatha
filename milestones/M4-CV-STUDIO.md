@@ -98,6 +98,8 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C04 — Job-description acquisition and validation
 
+**Status:** In review — authenticated Discovery-job resolution and pasted-description validation are committed. URL-only requests fail safely to a paste-description fallback; automatic SSRF-safe URL retrieval remains outstanding.
+
 **Goal:** safely obtain enough job information for tailoring.
 
 **Work**
