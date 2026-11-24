@@ -30,6 +30,8 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
+  const active = (href: string) => pathname === href;
+
   // WorkspaceShell owns navigation for authenticated workspace routes.
   // Rendering the global app shell here duplicates its header and mobile nav.
   if (isPublicDiscovery || isWorkspaceRoute || isAuthenticationRoute)
