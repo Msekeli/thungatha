@@ -11,7 +11,7 @@ const CvPdfPreviewClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-[620px] items-center justify-center rounded-xl border border-line bg-panel-2 text-sm text-fg-muted">
+      <div className="flex min-h-[320px] items-center justify-center rounded-xl border border-line bg-panel-2 text-sm text-fg-muted sm:min-h-[620px]">
         Preparing A4 document preview…
       </div>
     ),
