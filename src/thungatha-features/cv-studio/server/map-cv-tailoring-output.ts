@@ -24,8 +24,12 @@ export function mapCvTailoringOutput(
     if (!target || item.originalText !== target.currentText) {
       throw new Error("AI returned a suggestion for changed or unknown CV text.");
     }
-    if (!target.profileEvidenceRef || !item.profileEvidenceRefs.includes(target.profileEvidenceRef)) {
-      throw new Error("AI suggestion is not supported by the exact source evidence for its CV field.");
+    if (
+      !target.profileEvidenceRef ||
+      item.profileEvidenceRefs.length !== 1 ||
+      item.profileEvidenceRefs[0] !== target.profileEvidenceRef
+    ) {
+      throw new Error("AI suggestion must cite only the exact source evidence for its CV field.");
     }
 
     const citedRequirements = item.requirementIds.map((id) => {
