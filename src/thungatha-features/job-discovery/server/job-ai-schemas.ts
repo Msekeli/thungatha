@@ -214,9 +214,13 @@ export type MatchAssessmentModelOutput = z.infer<
   ReturnType<typeof createMatchAssessmentResponseSchema>["validator"]
 >;
 
-export function createJobUnderstandingResponseSchema(jobEvidenceIds: string[]) {
+export function createJobUnderstandingResponseSchema() {
+  // Keep the provider-facing schema independent of the number of evidence
+  // segments. Exact evidence membership is validated after parsing by
+  // parseJobUnderstanding(), so repeating every evidence ID in JSON Schema
+  // enums only inflates the prompt without adding a security boundary.
   return toGeminiResponseSchema(
-    createJobUnderstandingSchema(evidenceEnum(jobEvidenceIds)),
+    createJobUnderstandingSchema(z.string().min(1)),
   );
 }
 
