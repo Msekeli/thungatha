@@ -478,7 +478,7 @@ export function CvDraftEditor({
                 }
               />
             </Field>
-            <Field label="Technical skills" hint="One skill per line.">
+            <Field label="Skills" hint="One skill per line.">
               <Textarea
                 disabled={draft.status === "accepted"}
                 rows={4}
