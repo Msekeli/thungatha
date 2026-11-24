@@ -47,6 +47,7 @@ export async function generateCvTailoringSuggestions(
     profileEvidence.map((item) => item.id),
     jobEvidence.map((item) => item.id),
     editableTargets.map((item) => item.path),
+    understanding.analysis.requirements.map((item) => item.id),
   );
   const response = await completeAiTask({
     task: "cv-tailoring",
@@ -88,7 +89,17 @@ export async function generateCvTailoringSuggestions(
   });
   return {
     suggestions,
-    gaps: parsed.gaps,
+    gaps: parsed.gaps.map((gap) => {
+      const requirement = understanding.analysis.requirements.find(
+        (item) => item.id === gap.requirementId,
+      );
+      if (!requirement) throw new Error("AI returned an unknown job requirement.");
+      return {
+        requirement: requirement.statement,
+        explanation: gap.explanation,
+        jobEvidenceRefs: gap.jobEvidenceRefs,
+      };
+    }),
     provider: response.provider,
     model: response.model,
     taskVersion: CV_TAILORING_VERSION,
