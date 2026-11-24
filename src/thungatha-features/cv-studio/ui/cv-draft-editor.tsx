@@ -178,7 +178,12 @@ export function CvDraftEditor({
     const suggestion = draft?.suggestions.find((item) => item.id === id);
     if (!suggestion || suggestion.decision !== "pending") return;
     if (decision === "accepted") {
-      setContent((current) => applyCvSuggestion(current, suggestion));
+      try {
+        setContent((current) => applyCvSuggestion(current, suggestion));
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "This suggestion can no longer be applied.");
+        return;
+      }
     }
     setDraft((current) => current ? {
       ...current,
