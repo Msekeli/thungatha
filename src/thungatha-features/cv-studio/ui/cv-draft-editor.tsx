@@ -396,7 +396,7 @@ export function CvDraftEditor({
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
                     return (
-                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
+                      <div key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
                         <h4 className="text-base font-semibold">{item.jobTitle}</h4>
                         <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
                         <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
@@ -441,10 +441,10 @@ export function CvDraftEditor({
             <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
               {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.map((gap, index) => (
-                <article key={index} className="rounded-xl border border-line bg-panel-2 p-4 text-fg">
-                  <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-warn bg-warn-bg px-2 py-0.5 text-xs font-semibold text-warn">Not demonstrated</span><h4 className="text-sm font-semibold text-[var(--th-fg)]">{gap.requirement}</h4></div>
+                <div key={index} className="rounded-xl border border-line bg-panel-2 p-4 text-fg">
+                  <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-warn bg-warn-bg px-2 py-0.5 text-xs font-semibold text-warn">Not demonstrated</span><h4 className="text-sm font-semibold text-fg">{gap.requirement}</h4></div>
                   <p className="mt-2 text-sm leading-5 text-fg-muted">{gap.explanation}</p>
-                </article>
+                </div>
               )) : (
                 <div className="rounded-xl border border-line bg-panel-2 p-4">
                   <p className="text-sm font-medium">{draft.tailoring_assessment ? "No outstanding requirements were identified." : "The job requirements assessment is not available yet."}</p>
