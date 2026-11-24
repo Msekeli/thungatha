@@ -20,15 +20,15 @@ CV Studio creates a master CV from the candidate's confirmed Profile, tailors it
 
 The route /cv-studio loads the authenticated Profile through the existing Profile repository and exposes a server-side Profile completion/confirmation gate. The screen now also accepts a Discovery job ID from the query string, resolves that job through the job-context API, and presents the same job-context workflow when the candidate pastes a description.
 
-- GET /api/cv-studio reports the Profile gate and missing required fields, or returns the current master CV when it matches the current Profile version.
-- POST /api/cv-studio creates a structured master CV from confirmed Profile facts. It reuses an existing current master CV for the same Profile version and supersedes a stale current master before creating a refreshed version.
+- GET /api/cv-studio reports the Profile gate and idempotently ensures that a current master CV exists for the confirmed Profile version, creating or refreshing it when required.
+- POST /api/cv-studio uses the same operation for explicit refresh/recovery.
 - The master CV mapper uses only Profile fields. Source IDs are retained for work experience, education, certifications and projects.
 - The screen shows the missing Profile information and links to /profile when the gate fails. It never offers CV upload or an independent candidate-fact entry route.
 - A generated master CV is previewed in a single-column layout. Job Discovery remains accessible through the Browse jobs action.
 - A Discovery job selected from the shared job detail view can hand off to `/cv-studio?jobId=<job-id>`. CV Studio resolves the selected job and passes its context to the suitability endpoint.
 - Candidates can also enter an external job using exactly three fields: job title, company name and pasted job description. The screen enforces the server's 200-character minimum. No location field, URL fetching or advert scraping is offered.
-- The screen displays exact prior-version matches and the server explanation. It does not offer a reuse action because retrieving and rendering a saved tailored version is not implemented yet.
-- A Profile change makes the existing master CV stale; the candidate must explicitly generate the refreshed master version.
+- The screen displays exact prior-version matches and the server explanation. The candidate can explicitly choose **Use saved CV for this job**, which retrieves and previews the accepted version after the server verifies exact context and current Profile version.
+- When the confirmed Profile version changes, the existing master is superseded and GET /api/cv-studio creates the new current master. Previously accepted tailored versions are not rewritten.
 
 This screen and API are committed. No tests, build, browser checks or live Supabase migration execution were performed in this session.
 
@@ -109,18 +109,17 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - Reuse existing Profile, Discovery, matching, authentication and AI contracts. Keep shared capabilities outside CV Studio when they are not feature-specific.
 - Keep the M4 checkpoint IDs and order in `milestones/M4-CV-STUDIO.md`; clarify scope within those checkpoints rather than creating or renumbering checkpoints.
 
-**Current implementation status:** M4-C01 through M4-C05 have committed contracts and/or implementation. C03 now includes the master CV preview, Discovery job handoff, and pasted-description form. C04 connects Discovery and pasted job context to its validation endpoint. C05 displays exact-match recommendation results, but semantic suitability and saved-version retrieval/reuse remain outstanding. C06-C07 remain outstanding. C08 now has owner-scoped version-history and single-version read APIs plus a read-only history/review panel; editing, acceptance workflow and PDF export remain outstanding. C09 remains outstanding. The migration is not applied and runtime verification has not been performed.
+**Current implementation status:** M4-C01 through M4-C05 have committed contracts and/or implementation. C03 includes the Profile-backed master CV preview, Discovery job handoff and three-field external-job form. C04 validates Discovery and pasted job context. C05 supports exact accepted-version reuse; semantic suitability remains unavailable. C06 is blocked pending an explicit AI-provider decision. C07 has manual editing, persistent drafts, live A4 preview and explicit acceptance in source; AI suggestion review and full editing coverage remain outstanding. C08 has exact-context reuse, draft deduplication, immutable accepted versions and on-demand PDF export; candidate-facing comparison and the M5 snapshot handoff contract remain outstanding. C09 remains outstanding. The migration has not been runtime-verified and the implementation has not been accepted.
 
 
-## Version history UI (M4-C08 — partial)
+## Version management (M4-C08)
 
-- Added authenticated, owner-scoped GET endpoints at `/api/cv-studio/versions` and `/api/cv-studio/versions/[id]`.
-- The history endpoint returns metadata only; the detail endpoint returns the structured content and suggestion decisions for one version after validating the UUID and owner scope.
-- CV Studio lists master and tailored versions with status, version number, source Profile version and job title where available.
-- Candidates can open a saved version in a read-only historical preview and inspect saved suggestion decisions.
-- This is not yet a reuse action: a selected saved version is not copied into a new draft or made current. Editing, explicit acceptance and PDF export remain unimplemented.
-- The database migration remains unapplied; API and UI runtime behaviour is unverified.
+CV Studio does not expose a candidate-facing CV history/library, historical-version browser or refresh-history action. Internal structured version records remain necessary for the current master, working tailored drafts, accepted tailored CV reuse and the future M5 snapshot handoff.
 
+- Exact accepted-version reuse is available only for the same Discovery job ID or exact pasted-description fingerprint and the current confirmed Profile version.
+- Stale accepted versions are rejected for reuse; stale draft updates/acceptance are rejected server-side when the Profile version no longer matches.
+- The candidate returns to the current master or explicitly starts a new tailored draft. No application record is created by reuse or export.
+- A dedicated master-versus-tailored comparison is not yet implemented.
 
 ## Editable working drafts (M4-C07 — partial)
 

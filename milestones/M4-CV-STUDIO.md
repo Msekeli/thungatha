@@ -133,14 +133,14 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 - CV Studio displays the exact-match result, explanation and matching accepted version metadata returned by the endpoint.
 - It explicitly explains that this is an exact-context lookup, not a semantic suitability score.
-- The UI does not yet retrieve or open a saved tailored CV. It therefore does not claim that reuse is available.
+- The candidate can explicitly choose **Use saved CV for this job**. The accepted content is retrieved through the owner-scoped reuse endpoint and shown in the PDF preview. Reuse requires the same Discovery job ID or exact pasted-description fingerprint and the current confirmed Profile version.
 
 **Outstanding**
 
 - Semantic comparison of the master CV and job description using the approved AI capability.
 - Evidence-backed explanation of relevant confirmed candidate facts, transferable skills and material gaps.
 - Include relevant accepted versions where their relevance can be supported beyond an exact context match.
-- Candidate-facing saved-version retrieval/reuse and the candidate decision to proceed with a new draft. (The exact-match recommendation UI is connected, but no tailoring action is available yet.)
+- Semantic reuse of similar-but-not-identical opportunities, only when supported by evidence-backed assessment.
 
 No tests, build, browser checks or live Supabase verification were run. C05 is not accepted.
 
@@ -197,8 +197,8 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 **Work**
 
 - Save accepted tailored versions with job association, source Profile version and template/version metadata.
-- Keep master, working drafts and accepted tailored versions distinct. **Implemented partially:** CV Studio now lists saved versions and opens one historical version in a read-only preview, including recorded suggestion decisions.
-- Support viewing/reusing relevant existing versions and detecting when a version is stale after Profile changes. **Implemented partially:** viewing saved versions is available; copying/reusing one as a new working draft and explicit stale indicators in the history list remain outstanding.
+- Keep master, working drafts and accepted tailored versions distinct. Internal version records support the workflow; CV Studio must not expose a candidate-facing history/library or historical-version browser.
+- Support exact-context reuse and detect stale versions after Profile changes. Exact job reuse is implemented for accepted versions based on the current Profile version; stale versions are rejected by the server. Candidate-facing stale-draft recovery and clearer stale explanations remain to be reviewed.
 - Generate PDF on demand from the accepted structured content; do not permanently store exported PDFs.
 - Ensure exported content matches the accepted structured version.
 - Expose a stable immutable structured snapshot/reference for M5 to associate with an application after candidate confirmation.
@@ -232,7 +232,7 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 ### M4-C07 — Review and live preview
 
-**Status:** In progress — manual editing and persistent draft saving are now partially implemented; AI suggestion review and final live CV preview remain outstanding.
+**Status:** In progress — manual editing, live A4 preview, draft saving and explicit acceptance are implemented in source; AI suggestion review, full editing coverage and runtime verification remain outstanding.
 
 **Implemented partially**
 - An owned tailored draft can be created from the current master CV and validated job context.
@@ -243,9 +243,8 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 
 **Outstanding**
 - Evidence-backed AI suggestions with individual accept/reject decisions after provider selection.
-- Full live A4 preview using the selected accent colour.
-- Editing coverage for all structured CV fields, explicit acceptance/rejection lifecycle, and stale Profile handling.
-- PDF export and end-to-end verification.
+- Complete editing coverage for all structured CV fields and a clear stale-Profile recovery path.
+- Runtime verification of draft save/accept, live preview and PDF export.
 
 No tests, build, browser checks or live Supabase verification were run. The migration remains unapplied.
 
