@@ -209,6 +209,7 @@ export function CvStudioStart() {
       {state.status === "master_cv_ready" && (
         <div className="space-y-6">
           {jobContext && state.masterCv ? (
+            <>
             <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
               <section className="space-y-5 text-fg">
                 <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
@@ -243,6 +244,7 @@ export function CvStudioStart() {
               </section>
             </div>
             {!reusableCv && <CvDraftEditor masterVersionId={state.masterCv.id} jobContext={jobContext} initialContent={state.masterCv.content} />}
+            </>
           ) : (
           <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
