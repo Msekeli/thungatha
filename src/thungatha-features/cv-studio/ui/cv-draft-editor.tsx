@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
@@ -124,10 +122,10 @@ export function CvDraftEditor({
     if (draft?.id) onContentChange?.(content as unknown as CvPdfContent, accentHex[draft.accent_colour]);
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tailoringBusy, setTailoringBusy] = useState(false);
-  const [workflowStage, setWorkflowStage] = useState<string | null>(null);
+  const [, setWorkflowStage] = useState<string | null>(null);
   const [tailoringGaps, setTailoringGaps] = useState<Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>>([]);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills">("summary");
@@ -138,12 +136,6 @@ export function CvDraftEditor({
     { id: "skills" as const, label: "Skills", target: "cv-review-skills" },
   ];
 
-  function navigateReviewSection(next: "summary" | "experience" | "skills") {
-    setActiveSection(next);
-    window.requestAnimationFrame(() => {
-      window.document.getElementById(`cv-review-${next}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
 
   async function createDraft() {
     setBusy(true);
@@ -309,78 +301,6 @@ export function CvDraftEditor({
     }
   }
 
-  async function acceptDraft() {
-    if (!draft || draft.status !== "draft") return;
-    setBusy(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const saveResponse = await fetch("/api/cv-studio/drafts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: draft.id,
-          content,
-          suggestions: draft.suggestions,
-          accentColour: draft.accent_colour,
-        }),
-      });
-      const savedBody = await saveResponse.json();
-      if (!saveResponse.ok)
-        throw new Error(
-          savedBody.error ?? "Save your latest edits before accepting the CV.",
-        );
-
-      const response = await fetch("/api/cv-studio/drafts/accept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: draft.id }),
-      });
-      const body = await response.json();
-      if (!response.ok)
-        throw new Error(body.error ?? "The CV could not be accepted.");
-      setDraft({
-        ...draft,
-        ...(body.version as Partial<Draft>),
-        status: "accepted",
-      });
-      setMessage(
-        "CV accepted. This version is now immutable and can be downloaded. No job application has been recorded.",
-      );
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "The CV could not be accepted.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function updateExperience(
-    index: number,
-    patch: Partial<CvContent["workExperience"][number]>,
-  ) {
-    setContent((current) => ({
-      ...current,
-      workExperience: current.workExperience.map((item, i) =>
-        i === index ? { ...item, ...patch } : item,
-      ),
-    }));
-  }
-  function updateProject(
-    index: number,
-    patch: Partial<CvContent["projects"][number]>,
-  ) {
-    setContent((current) => ({
-      ...current,
-      projects: current.projects.map((item, i) =>
-        i === index ? { ...item, ...patch } : item,
-      ),
-    }));
-  }
-
-  const activeIndex = reviewSections.findIndex((item) => item.id === activeSection);
-  const pendingSuggestion = draft?.suggestions.some((item) => item.targetPath === "professionalSummary" && item.decision === "pending") ?? false;
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm">
@@ -414,7 +334,7 @@ export function CvDraftEditor({
             <CvAiSuggestions
               open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}
               suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
-              gaps={tailoringGaps} hasCompletedReview={draft.tailoring_assessment !== null}
+              hasCompletedReview={draft.tailoring_assessment !== null}
               generating={tailoringBusy} generationError={tailoringFailed ? error : null}
               disabled={busy || draft.status !== "draft"}
               onAccept={(id) => decideSuggestion(id, "accepted")} onReject={(id) => decideSuggestion(id, "rejected")}
@@ -443,20 +363,3 @@ export function CvDraftEditor({
   );
 }
 
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block min-w-0 space-y-1.5">
-      <span className="block text-sm font-medium text-fg">{label}</span>
-      {children}
-      {hint && <span className="block text-xs leading-5 text-fg-muted">{hint}</span>}
-    </label>
-  );
-}
