@@ -37,6 +37,11 @@ describe("job source evidence text", () => {
       .toBe("Candidate's role & responsibilities\nIt's full-time.");
   });
 
+  it("decodes double-encoded entities found in imported job adverts", () => {
+    expect(jobDescriptionToText("Ozow&amp;#x27;s integrations and 1 to 3 years&amp;#x27; experience."))
+      .toBe("Ozow's integrations and 1 to 3 years' experience.");
+  });
+
   it("does not expose encoded HTML tags as markup", () => {
     expect(jobDescriptionToText("&lt;p&gt;Build with React&lt;/p&gt;"))
       .toBe("<p>Build with React</p>");
