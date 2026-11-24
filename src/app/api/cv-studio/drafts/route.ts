@@ -136,6 +136,28 @@ export async function POST(request: Request) {
         "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
       )
       .single();
+    if (error?.code === "23505") {
+      const { data: racedDrafts, error: racedDraftsError } = await db
+        .from("cv_versions")
+        .select(
+          "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
+        )
+        .eq("user_id", auth.identity.userId)
+        .eq("cv_kind", "tailored")
+        .eq("status", "draft")
+        .eq("source_profile_version", auth.profile.profileVersion)
+        .order("updated_at", { ascending: false });
+      if (racedDraftsError) throw racedDraftsError;
+      const racedDraft = (racedDrafts ?? []).find((item) =>
+        job.jobId
+          ? item.source_job_snapshot?.jobId === job.jobId ||
+            item.source_job_id === job.jobId
+          : item.source_job_snapshot?.descriptionFingerprint ===
+            job.descriptionFingerprint,
+      );
+      if (racedDraft)
+        return NextResponse.json({ draft: racedDraft, reusedDraft: true });
+    }
     if (error) throw error;
     return NextResponse.json({ draft: data }, { status: 201 });
   } catch (error) {
