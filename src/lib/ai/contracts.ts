@@ -11,6 +11,7 @@ export const AI_TASKS = [
   "job-fit-assessment",
   "cv-profile-extraction",
   "job-fit-explanation",
+  "cv-tailoring",
   "cover-letter-draft",
   "interview-preparation",
 ] as const;
