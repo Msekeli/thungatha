@@ -42,6 +42,16 @@ describe("job source evidence text", () => {
       .toBe("Ozow's integrations and 1 to 3 years' experience.");
   });
 
+  it("decodes a second layer of numeric and named entities in text nodes", () => {
+    expect(jobDescriptionToText("Ozow&amp;#x27;s role &amp;amp; responsibilities &amp;quot;today&amp;quot;."))
+      .toBe('Ozow\'s role & responsibilities "today".');
+  });
+
+  it("keeps unknown second-layer entities unchanged", () => {
+    expect(jobDescriptionToText("Keep &amp;unknownentity; as supplied."))
+      .toBe("Keep &unknownentity; as supplied.");
+  });
+
   it("does not expose encoded HTML tags as markup", () => {
     expect(jobDescriptionToText("&lt;p&gt;Build with React&lt;/p&gt;"))
       .toBe("<p>Build with React</p>");
