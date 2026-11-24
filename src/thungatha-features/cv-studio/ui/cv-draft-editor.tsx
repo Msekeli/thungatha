@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, Check, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -124,6 +125,20 @@ export function CvDraftEditor({
   const [workflowStage, setWorkflowStage] = useState<string | null>(null);
   const [tailoringGaps, setTailoringGaps] = useState<Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>>([]);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills">("summary");
+
+  const reviewSections = [
+    { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
+    { id: "experience" as const, label: "Work Experience", target: "cv-review-experience" },
+    { id: "skills" as const, label: "Skills", target: "cv-review-skills" },
+  ];
+
+  function navigateReviewSection(next: "summary" | "experience" | "skills") {
+    setActiveSection(next);
+    window.requestAnimationFrame(() => {
+      window.document.getElementById(`cv-review-${next}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   async function createDraft() {
     setBusy(true);
@@ -527,7 +542,7 @@ export function CvDraftEditor({
                 />
               </Field>
             </div>
-            <section className="space-y-3 rounded-xl border border-line bg-panel-2 p-4">
+            <section id="cv-review-summary" className="scroll-mt-28 space-y-3 rounded-xl border border-line bg-panel-2 p-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">AI-assisted tailoring</p>
                 <h4 className="mt-1 font-semibold">Professional summary</h4>
@@ -568,7 +583,7 @@ export function CvDraftEditor({
                 }
               />
             </Field>
-            <Field label="Skills" hint="One skill per line.">
+            <div id="cv-review-skills" className="scroll-mt-28"><Field label="Skills" hint="One skill per line.">
               <Textarea
                 disabled={draft.status === "accepted"}
                 rows={4}
