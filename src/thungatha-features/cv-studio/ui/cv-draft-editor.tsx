@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -106,6 +106,7 @@ export function CvDraftEditor({
   initialContent: unknown;
   startImmediately?: boolean;
 }) {
+  const createStarted = useRef(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [content, setContent] = useState<CvContent>(
     initialContent as CvContent,
@@ -195,7 +196,9 @@ export function CvDraftEditor({
   }
 
   useEffect(() => {
-    if (startImmediately && !draft && !busy) void createDraft();
+    if (!startImmediately || createStarted.current) return;
+    createStarted.current = true;
+    void createDraft();
     // The editor is mounted only after the user chooses Tailor my CV.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startImmediately]);
