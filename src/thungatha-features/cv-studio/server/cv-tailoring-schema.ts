@@ -18,6 +18,13 @@ const GEMINI_TYPES: Record<string, string> = {
 function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const schema = value as Record<string, unknown>;
+  if (Array.isArray(schema.anyOf)) {
+    const alternatives = schema.anyOf as Record<string, unknown>[];
+    const nonNull = alternatives.filter((item) => item.type !== "null");
+    if (nonNull.length === 1 && nonNull.length !== alternatives.length) {
+      return { ...toGeminiSchemaNode(nonNull[0]), nullable: true };
+    }
+  }
   const output: Record<string, unknown> = {};
   if (typeof schema.type === "string") {
     output.type = GEMINI_TYPES[schema.type] ?? schema.type.toUpperCase();
