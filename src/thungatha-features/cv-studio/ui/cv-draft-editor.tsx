@@ -130,7 +130,7 @@ export function CvDraftEditor({
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills" | "requirements">("summary");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
   const [newSkill, setNewSkill] = useState("");
-  const [experienceTailorNotice, setExperienceTailorNotice] = useState(false);
+  const [experienceTailorNoticeFor, setExperienceTailorNoticeFor] = useState<string | null>(null);
 
   const reviewSections = [
     { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
@@ -333,16 +333,16 @@ export function CvDraftEditor({
       <header className="shrink-0 border-b border-line px-5 pb-3 pt-4 sm:px-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-3"><span className="text-2xl text-sky-600" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
+            <div className="flex items-center gap-3"><span className="text-2xl text-accent" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
             <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
           </div>
-          <span className="shrink-0 rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
+          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg text-accent px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
         </div>
         <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-4 gap-2">
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
-              className={`flex min-w-0 items-center justify-center gap-2 border-b-2 px-1 pb-3 pt-2 text-xs font-semibold sm:text-sm ${activeSection === item.id ? "border-sky-500 text-fg" : "border-transparent text-fg-muted hover:text-fg"}`}>
-              <span className={`flex size-7 shrink-0 items-center justify-center rounded-full border text-xs ${activeSection === item.id ? "border-sky-500 bg-sky-500 text-white" : "border-line bg-panel"}`}>{index + 1}</span><span className="truncate">{item.label}</span>
+              className={`flex min-w-0 items-center justify-center gap-2 border-b-2 px-1 pb-3 pt-2 text-xs font-semibold sm:text-sm ${activeSection === item.id ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}>
+              <span className={`flex size-7 shrink-0 items-center justify-center rounded-full border text-xs ${activeSection === item.id ? "border-accent bg-accent text-btn-fg" : "border-line bg-panel"}`}>{index + 1}</span><span className="truncate">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -380,10 +380,10 @@ export function CvDraftEditor({
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3">
             <div className="shrink-0"><h3 className="text-lg font-bold">Work Experience</h3><p className="text-sm text-fg-muted">Review the experience included in your tailored CV.</p></div>
-            <div className="flex min-h-0 flex-1 flex-col gap-3">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 text-fg">
               {content.workExperience.length ? (
                 <>
-                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2">
+                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] px-3 py-2 text-[var(--th-fg)]">
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-fg-muted">Work experience {activeExperienceIndex + 1} of {content.workExperience.length}</p>
                       <p className="truncate text-sm font-semibold">{content.workExperience[activeExperienceIndex]?.employer}</p>
@@ -396,7 +396,7 @@ export function CvDraftEditor({
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
                     return (
-                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
+                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] p-4 text-[var(--th-fg)]">
                         <h4 className="text-base font-semibold">{item.jobTitle}</h4>
                         <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
                         <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
@@ -411,8 +411,8 @@ export function CvDraftEditor({
                           </section>
                         </div>
                         <div className="mt-5 border-t border-line pt-4">
-                          <Button type="button" variant="outline" disabled={busy || draft.status !== "draft"} onClick={() => setExperienceTailorNotice(true)}>Tailor this experience</Button>
-                          {experienceTailorNotice && <p className="mt-2 text-xs text-fg-muted" role="status">Section-specific work-experience tailoring will be connected when the backend workflow is implemented. Your original experience remains unchanged.</p>}
+                          <Button type="button" disabled={busy || draft.status !== "draft"} onClick={() => setExperienceTailorNoticeFor(item.sourceId)}>Tailor this experience</Button>
+                          {experienceTailorNoticeFor === item.sourceId && <p className="mt-2 text-xs text-fg-muted" role="status">Work-experience AI tailoring is not connected yet. This button is ready for that workflow; your profile experience remains unchanged.</p>}
                         </div>
                       </article>
                     );
