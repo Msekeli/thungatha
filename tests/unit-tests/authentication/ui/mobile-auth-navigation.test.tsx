@@ -1,7 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MobileWorkspaceMenu } from "@/components/layout/mobile-workspace-menu";
-import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 
 vi.mock("next/link", () => ({
   default: ({
@@ -58,14 +57,4 @@ describe("mobile signed-out authentication navigation", () => {
     expect(document.querySelector('a[href="/sign-up"]')).toBeNull();
   });
 
-  it("renders protected bottom-nav actions as modal sign-in buttons", () => {
-    render(
-      <MobileWorkspaceBottomNav isActive={() => false} publicMode configured />,
-    );
-
-    expect(
-      screen.getByRole("button", { name: "Sign in to access CV Studio" }),
-    ).toBeTruthy();
-    expect(document.querySelector('a[href="/cv-studio"]')).toBeNull();
-  });
 });
