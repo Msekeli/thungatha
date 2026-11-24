@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CvDraftEditor } from "./cv-draft-editor";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvDraftEditor } from "./cv-draft-editor";
 
@@ -51,8 +50,8 @@ type State =
   | { status: "profile_required"; confirmed: boolean; missing: string[] }
   | { status: "master_cv_ready"; profileVersion: number; masterCv: MasterCv | null; isStale?: boolean };
 
-type JobForm = { title: string; company: string; location: string; sourceUrl: string; description: string };
-const emptyJobForm: JobForm = { title: "", company: "", location: "", sourceUrl: "", description: "" };
+type JobForm = { title: string; company: string; description: string };
+const emptyJobForm: JobForm = { title: "", company: "", description: "" };
 
 export function CvStudioStart() {
   const router = useRouter();
@@ -64,7 +63,7 @@ export function CvStudioStart() {
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
-  const [jobInputTab, setJobInputTab] = useState<"discovery" | "paste">("discovery");
+  const [externalJobOpen, setExternalJobOpen] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -156,9 +155,7 @@ export function CvStudioStart() {
         body: JSON.stringify({
           source: "pasted",
           title: jobForm.title,
-          company: jobForm.company || null,
-          location: jobForm.location || null,
-          sourceUrl: jobForm.sourceUrl || null,
+          company: jobForm.company,
           description: jobForm.description,
         }),
       });
@@ -166,6 +163,7 @@ export function CvStudioStart() {
       if (!response.ok) throw new Error(body.error ?? "The job description could not be validated.");
       const context = body.jobContext as JobContext;
       setJobContext(context);
+      setExternalJobOpen(false);
       await assessContext(context, state.masterCv.id);
     } catch (error) {
       setWorkflowError(error instanceof Error ? error.message : "The job description could not be validated.");
@@ -181,6 +179,7 @@ export function CvStudioStart() {
     setReusableCv(null);
     setWorkflowError(null);
     setJobForm(emptyJobForm);
+    setExternalJobOpen(false);
     router.replace("/cv-studio");
   }
 
@@ -215,7 +214,7 @@ export function CvStudioStart() {
                 <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Job from Discovery</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">{jobContext.source === "discovery" ? "Job from Thungatha Discovery" : "External job opportunity"}</p>
                       <h2 className="mt-2 text-xl font-semibold text-slate-950">{jobContext.title}</h2>
                       <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
                     </div>
@@ -223,7 +222,7 @@ export function CvStudioStart() {
                   </div>
                   <div className="mt-5 border-t border-line pt-4">
                     <h3 className="text-sm font-semibold text-fg">Job description</h3>
-                    <div className="mt-2 max-h-64 overflow-y-auto whitespace-pre-line pr-2 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
+                    <div className="mt-2 h-[55vh] max-h-[60vh] min-h-[320px] overflow-y-auto whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
                   </div>
                   {jobContext.sourceUrl && <a className="mt-4 inline-flex text-sm font-medium text-accent-text underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
                 </div>
@@ -236,10 +235,6 @@ export function CvStudioStart() {
                     <p className="mt-2 text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
                     {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p><Button className="mt-3 w-full" size="sm" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use this CV</Button></div>)}
                   </>}
-                  <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
-                    <p className="text-sm font-medium text-warn">AI suitability and tailoring are not active yet.</p>
-                    <p className="mt-1 text-sm leading-6 text-warn">This stage checks exact job matches only. It does not assess your skills against job requirements or generate tailored content yet.</p>
-                  </div>
                   <ButtonLink className="mt-4 w-full" href="/jobs">Back to Job Discovery</ButtonLink>
                 </div>
               </section>
@@ -251,52 +246,59 @@ export function CvStudioStart() {
           ) : (
           <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
-              <div className="mb-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Choose a job source</p>
-                <h2 className="mt-1 text-xl font-semibold text-fg">What opportunity are you applying for?</h2>
-                <p className="mt-2 text-sm leading-6 text-fg-muted">Start with a job from Thungatha Discovery, or add an opportunity you found elsewhere.</p>
-              </div>
-              <div className="mb-6 flex flex-wrap gap-2 border-b border-line pb-3" role="tablist" aria-label="Job source">
-                <Button type="button" role="tab" aria-selected={jobInputTab === "discovery"} variant={jobInputTab === "discovery" ? "secondary" : "ghost"} onClick={() => setJobInputTab("discovery")}>Thungatha Discovery</Button>
-                <Button type="button" role="tab" aria-selected={jobInputTab === "paste"} variant={jobInputTab === "paste" ? "secondary" : "ghost"} onClick={() => setJobInputTab("paste")}>Add external job</Button>
-              </div>
-              {jobInputTab === "discovery" ? (
-                <div role="tabpanel" className="rounded-xl border border-line bg-panel-2 p-5">
-                  <h3 className="text-base font-semibold text-fg">Find a job in Thungatha</h3>
-                  <p className="mt-2 text-sm leading-6 text-fg-muted">Browse jobs in Discovery. When you choose “Tailor my CV” on a job, Thungatha will bring its details here and check whether an accepted CV already exists for that exact opportunity.</p>
-                  <ButtonLink className="mt-5 w-full sm:w-auto" href="/jobs">Browse job discovery</ButtonLink>
+              {!externalJobOpen ? (
+                <div className="space-y-5">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV Studio</p>
+                    <h2 className="mt-1 text-xl font-semibold text-fg">Prepare your CV for an opportunity</h2>
+                    <p className="mt-2 text-sm leading-6 text-fg-muted">Your master CV is ready. Provide the job details to prepare a CV for that opportunity.</p>
+                  </div>
+                  <div className="rounded-xl border border-line bg-panel-2 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-lg bg-panel p-2 text-accent-text"><span aria-hidden="true">↗</span></div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-fg">Applying for an external opportunity?</h3>
+                        <p className="mt-1 text-sm leading-6 text-fg-muted">Found a job on LinkedIn, a company website or elsewhere? Add its title, company and description here.</p>
+                        <Button className="mt-4 w-full sm:w-auto" onClick={() => setExternalJobOpen(true)}>Add external job</Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-line p-4">
+                    <h3 className="font-semibold text-fg">Found a job on Thungatha?</h3>
+                    <p className="mt-1 text-sm leading-6 text-fg-muted">Open Job Discovery, select an opportunity and choose <span className="font-medium text-fg">Tailor my CV</span>. The job will appear here automatically.</p>
+                    <ButtonLink className="mt-4 w-full sm:w-auto" variant="outline" href="/jobs">Go to Job Discovery</ButtonLink>
+                  </div>
+                  <p className="border-t border-line pt-4 text-xs leading-5 text-fg-muted">Your master CV is built from your confirmed Profile. Adding a job never changes your Profile or master CV.</p>
                 </div>
               ) : (
-                <div role="tabpanel">
-                  <h3 className="mb-4 text-base font-semibold text-fg">Add a job from another source</h3>
-                  <form className="space-y-4" onSubmit={submitPastedJob}>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
-                      <Field label="Company"><Input maxLength={300} value={jobForm.company} onChange={(event) => setJobForm((value) => ({ ...value, company: event.target.value }))} placeholder="Company name" /></Field>
-                      <Field label="Location"><Input maxLength={300} value={jobForm.location} onChange={(event) => setJobForm((value) => ({ ...value, location: event.target.value }))} placeholder="e.g. Cape Town / Remote" /></Field>
-                      <Field label="Job advert URL (optional)"><Input type="url" maxLength={2000} value={jobForm.sourceUrl} onChange={(event) => setJobForm((value) => ({ ...value, sourceUrl: event.target.value }))} placeholder="https://" /></Field>
+                <div>
+                  <div className="mb-5 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">External opportunity</p>
+                      <h2 className="mt-1 text-xl font-semibold text-fg">Add job details</h2>
+                      <p className="mt-2 text-sm leading-6 text-fg-muted">Enter the job title and company, then paste the full job description.</p>
                     </div>
-                    <Field label="Full job description" required hint="Paste at least 200 characters. You can add the advert URL for reference; the description is required.">
-                      <Textarea required minLength={200} maxLength={30000} rows={9} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the responsibilities, requirements and qualifications from the job advert…" />
+                    <Button type="button" variant="ghost" size="sm" onClick={() => { setExternalJobOpen(false); setWorkflowError(null); }}>Cancel</Button>
+                  </div>
+                  <form className="space-y-4" onSubmit={submitPastedJob}>
+                    <Field label="Job title" required><Input required minLength={2} maxLength={300} value={jobForm.title} onChange={(event) => setJobForm((value) => ({ ...value, title: event.target.value }))} placeholder="e.g. Software Developer" /></Field>
+                    <Field label="Company name" required><Input required minLength={2} maxLength={300} value={jobForm.company} onChange={(event) => setJobForm((value) => ({ ...value, company: event.target.value }))} placeholder="e.g. Example Technologies" /></Field>
+                    <Field label="Job description" required hint="Paste the job advert text. A minimum of 200 characters is required.">
+                      <Textarea required minLength={200} maxLength={30000} rows={12} value={jobForm.description} onChange={(event) => setJobForm((value) => ({ ...value, description: event.target.value }))} placeholder="Paste the complete job description here…" />
                     </Field>
                     {workflowError && <p className="text-sm text-rose-700" role="alert">{workflowError}</p>}
-                    <Button type="submit" disabled={workflowBusy || !state.masterCv}>{workflowBusy ? "Checking job…" : "Use this job description"}</Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button type="submit" disabled={workflowBusy || !state.masterCv}>{workflowBusy ? "Adding job…" : "Continue with this job"}</Button>
+                      <Button type="button" variant="outline" onClick={() => { setExternalJobOpen(false); setJobForm(emptyJobForm); setWorkflowError(null); }}>Cancel</Button>
+                    </div>
                   </form>
                 </div>
               )}
-              <p className="mt-5 border-t border-line pt-4 text-xs leading-5 text-fg-muted">Your master CV is generated only from your confirmed Profile. Adding a job never changes your Profile or master CV.</p>
             </section>
-            <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
-              {state.masterCv ? (
-                <>
-                  <CvPdfPreview content={state.masterCv.content} />
-                </>
-              ) : (
-                <p className="text-sm text-fg-muted">Your master CV is being prepared.</p>
-              )}
+            <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
+              {state.masterCv ? <CvPdfPreview content={state.masterCv.content} /> : <p className="text-sm text-fg-muted">Your master CV is being prepared.</p>}
             </section>
-          </div>
-          )}
+          </div>          )}
 
         </div>
       )}
