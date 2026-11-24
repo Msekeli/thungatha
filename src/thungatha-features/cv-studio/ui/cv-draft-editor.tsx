@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
@@ -122,6 +123,11 @@ export function CvDraftEditor({
   const [tailoringBusy, setTailoringBusy] = useState(false);
   const [workflowStage, setWorkflowStage] = useState<string | null>(null);
   const [tailoringGaps, setTailoringGaps] = useState<Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>>([]);
+  const [previewSuggestionId, setPreviewSuggestionId] = useState<string | null>(null);
+  const previewSuggestion = draft?.suggestions.find((item) => item.id === previewSuggestionId && item.decision === "pending");
+  const previewContent: CvContent = previewSuggestion
+    ? { ...content, professionalSummary: previewSuggestion.proposedText }
+    : content;
 
   async function createDraft() {
     setBusy(true);
@@ -194,7 +200,8 @@ export function CvDraftEditor({
         const requestId = typeof body.requestId === "string" ? ` (Request ID: ${body.requestId})` : "";
         throw new Error(`${body.error ?? "AI tailoring failed."}${requestId}`);
       }
-      setDraft((current) => current ? {
+      setPreviewSuggestionId(null);
+    setDraft((current) => current ? {
         ...current,
         suggestions: body.suggestions,
         tailoring_assessment: body.assessment,
@@ -436,7 +443,7 @@ export function CvDraftEditor({
         <>
           <div className="xl:hidden">
             <CvPdfPreviewDialog
-              content={content}
+              content={previewContent
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
             />
@@ -532,13 +539,29 @@ export function CvDraftEditor({
                 <h4 className="mt-1 font-semibold">Review your tailored summary</h4>
                 <p className="mt-1 text-sm text-fg-muted">The AI proposes a change using confirmed Profile evidence and this job description. Nothing is applied until you accept it.</p>
               </div>
-              <CvAiSuggestions
-                suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
-                gaps={tailoringGaps}
-                disabled={busy || tailoringBusy || draft.status !== "draft"}
-                onAccept={(id) => decideSuggestion(id, "accepted")}
-                onReject={(id) => decideSuggestion(id, "rejected")}
-              />
+              {tailoringBusy ? (
+                <div className="space-y-3 rounded-xl border border-line p-4" role="status" aria-label="Generating professional summary suggestions">
+                  <Skeleton className="h-4 w-44" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-5/6" />
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Skeleton className="h-28 w-full" />
+                    <Skeleton className="h-28 w-full" />
+                  </div>
+                  <Skeleton className="h-8 w-36" />
+                  <p className="text-xs text-fg-muted">Generating a proposal from your confirmed Profile evidence and the job description…</p>
+                </div>
+              ) : (
+                <CvAiSuggestions
+                  suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+                  gaps={tailoringGaps}
+                  disabled={busy || draft.status !== "draft"}
+                  previewingSuggestionId={previewSuggestionId}
+                  onPreview={(id) => setPreviewSuggestionId((current) => current === id ? null : id)}
+                  onAccept={(id) => decideSuggestion(id, "accepted")}
+                  onReject={(id) => decideSuggestion(id, "rejected")}
+                />
+              )}
             </div>
             <Field label="Professional summary">
               <Textarea
@@ -727,11 +750,13 @@ export function CvDraftEditor({
               <span className="text-xs text-fg-muted">
                 {draft.status === "accepted"
                   ? "Accepted version"
-                  : "Unsaved edits appear here"}
+                  : previewSuggestion
+                    ? "Previewing proposal · Not applied"
+                    : "Unsaved edits appear here"}
               </span>
             </div>
             <CvPdfPreview
-              content={content}
+              content={previewContent}
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
             />
