@@ -767,13 +767,67 @@ function Field({
   hint?: string;
   children: React.ReactNode;
 }) {
+  const activeIndex = reviewSections.findIndex((item) => item.id === activeSection);
+  const pendingSuggestion = draft?.suggestions.some((item) => item.targetPath === "professionalSummary" && item.decision === "pending") ?? false;
+
   return (
-    <label className="block min-w-0 space-y-1.5">
-      <span className="block text-sm font-medium text-fg">{label}</span>
-      {children}
-      {hint && (
-        <span className="block text-xs leading-5 text-fg-muted">{hint}</span>
-      )}
-    </label>
+    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm">
+      <header className="shrink-0 border-b border-line px-5 pb-3 pt-4 sm:px-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3"><span className="text-2xl text-sky-600" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
+            <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
+          </div>
+          <span className="shrink-0 rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 3</span>
+        </div>
+        <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-3 gap-2">
+          {reviewSections.map((item, index) => (
+            <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
+              className={`flex min-w-0 items-center justify-center gap-2 border-b-2 px-1 pb-3 pt-2 text-xs font-semibold sm:text-sm ${activeSection === item.id ? "border-sky-500 text-fg" : "border-transparent text-fg-muted hover:text-fg"}`}>
+              <span className={`flex size-7 shrink-0 items-center justify-center rounded-full border text-xs ${activeSection === item.id ? "border-sky-500 bg-sky-500 text-white" : "border-line bg-panel"}`}>{index + 1}</span><span className="truncate">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+      </header>
+      <div className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-6">
+        {!draft ? (
+          <div className="flex h-full flex-col justify-center gap-4" role="status" aria-live="polite">
+            <p className="text-sm font-medium">Preparing your tailored CV…</p><Skeleton className="h-5 w-2/5" /><Skeleton className="h-24 w-full" /><Skeleton className="h-16 w-full" />
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            {createFailed && <Button className="w-fit" size="sm" onClick={() => void createDraft()} disabled={busy}>Retry</Button>}
+          </div>
+        ) : activeSection === "summary" ? (
+          <div className="flex h-full min-h-0 flex-col gap-3">
+            <div className="shrink-0"><h3 className="text-lg font-bold">Professional Summary</h3><p className="text-sm text-fg-muted">A suggested improvement to better align your CV with the selected job.</p></div>
+            <CvAiSuggestions
+              open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}
+              suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+              gaps={tailoringGaps} hasCompletedReview={draft.tailoring_assessment !== null}
+              generating={tailoringBusy} generationError={tailoringFailed ? error : null}
+              disabled={busy || draft.status !== "draft"}
+              onAccept={(id) => decideSuggestion(id, "accepted")} onReject={(id) => decideSuggestion(id, "rejected")}
+              onRegenerate={() => void generateSuggestions()} onDiscard={() => setSummaryDialogOpen(false)}
+            />
+            {!summaryDialogOpen && !tailoringBusy && <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" disabled={busy || draft.status !== "draft"} onClick={() => void generateSuggestions()}>{pendingSuggestion ? "Review suggestion" : "Generate suggestion"}</Button></div>}
+            {error && !tailoringFailed && <p className="text-sm text-destructive" role="alert">{error}</p>}
+          </div>
+        ) : activeSection === "experience" ? (
+          <div className="flex h-full min-h-0 flex-col gap-3">
+            <div className="shrink-0"><h3 className="text-lg font-bold">Work Experience</h3><p className="text-sm text-fg-muted">Review the experience included in your tailored CV.</p></div>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+              {content.workExperience.length ? content.workExperience.map((item) => <article key={item.sourceId} className="rounded-xl border border-line bg-panel-2 p-3"><h4 className="text-sm font-semibold">{item.jobTitle}</h4><p className="text-xs text-fg-muted">{item.employer} · {item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>{item.description && <p className="mt-2 text-sm leading-5">{item.description}</p>}{item.achievements.length > 0 && <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul>}</article>) : <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>}
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-full min-h-0 flex-col gap-3"><div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review the skills included in your tailored CV.</p></div><div className="flex flex-wrap content-start gap-2">{content.technicalSkills.map((skill) => <span key={skill} className="rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-sm">{skill}</span>)}{!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}</div></div>
+        )}
+      </div>
+      <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-6">
+        <Button type="button" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-4" /> Previous</Button>
+        {draft?.status === "draft" && <Button type="button" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button>}
+        <Button type="button" disabled={activeIndex === 2} onClick={() => setActiveSection(reviewSections[Math.min(2, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>
+      </footer>
+    </section>
   );
+}
 }
