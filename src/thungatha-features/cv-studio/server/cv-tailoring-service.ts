@@ -59,8 +59,13 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     locationText: job.location,
     description: job.description,
   };
-  const { profileEvidence, editableTargets } =
+  const { profileEvidence, editableTargets: allEditableTargets } =
     buildCvTailoringEvidence(masterContent, draftContent);
+  // M4 currently reviews only the professional summary. Keep other CV sections
+  // unchanged until their own section-by-section review experience is ready.
+  const editableTargets = allEditableTargets.filter(
+    (target) => target.path === "professionalSummary",
+  );
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
   const referencedJobIds = new Set([
     ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
