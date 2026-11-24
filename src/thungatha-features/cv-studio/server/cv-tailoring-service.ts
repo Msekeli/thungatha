@@ -214,27 +214,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     }),
   };
   // Length-only diagnostics make prompt growth observable without logging CV/job content.
-  console.info("[cv-tailoring] prompt breakdown", {
-    jobDescriptionCharacters: job.description.length,
-    requirementCount: understanding.requirements.length,
-    requirementCharacters: JSON.stringify(
-      compactRequirements(understanding.requirements),
-    ).length,
-    summaryEvidenceCount: summaryEvidence.length,
-    summaryEvidenceCharacters: JSON.stringify(summaryEvidence).length,
-    jobEvidenceCount: jobEvidence.length,
-    jobEvidenceCharacters: JSON.stringify(jobEvidence).length,
-    editableTargetCharacters: JSON.stringify(
-      editableTargets.map((item) => [
-        item.path,
-        item.currentText,
-        item.profileEvidenceRef,
-      ]),
-    ).length,
-    responseSchemaCharacters: JSON.stringify(schema.responseSchema).length,
-    systemPromptCharacters: request.systemPrompt.length,
-    userPromptCharacters: request.userPrompt.length,
-  });
+
 
   const response = provider
     ? await completeAiTaskWithProvider(provider, request)
