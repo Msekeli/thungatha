@@ -341,8 +341,8 @@ export function CvDraftEditor({
         <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-4 gap-2">
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
-              className={`flex min-w-0 items-center justify-center gap-2 border-b-2 px-1 pb-3 pt-2 text-xs font-semibold sm:text-sm ${activeSection === item.id ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}>
-              <span className={`flex size-7 shrink-0 items-center justify-center rounded-full border text-xs ${activeSection === item.id ? "border-accent bg-accent text-btn-fg" : "border-line bg-panel"}`}>{index + 1}</span><span className="truncate">{item.label}</span>
+              className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 pb-2 pt-2 text-center text-[11px] font-semibold leading-tight sm:flex-row sm:gap-2 sm:text-xs ${activeSection === item.id ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}>
+              <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] ${activeSection === item.id ? "border-accent bg-accent text-btn-fg" : "border-line bg-panel"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -378,12 +378,12 @@ export function CvDraftEditor({
             {error && !tailoringFailed && <p className="text-sm text-destructive" role="alert">{error}</p>}
           </div>
         ) : activeSection === "experience" ? (
-          <div className="flex h-full min-h-0 flex-col gap-3">
+          <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0"><h3 className="text-lg font-bold">Work Experience</h3><p className="text-sm text-fg-muted">Review the experience included in your tailored CV.</p></div>
             <div className="flex min-h-0 flex-1 flex-col gap-3 text-fg">
               {content.workExperience.length ? (
                 <>
-                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] px-3 py-2 text-[var(--th-fg)]">
+                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2 text-fg">
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-fg-muted">Work experience {activeExperienceIndex + 1} of {content.workExperience.length}</p>
                       <p className="truncate text-sm font-semibold">{content.workExperience[activeExperienceIndex]?.employer}</p>
@@ -396,7 +396,7 @@ export function CvDraftEditor({
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
                     return (
-                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] p-4 text-[var(--th-fg)]">
+                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
                         <h4 className="text-base font-semibold">{item.jobTitle}</h4>
                         <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
                         <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
@@ -441,9 +441,9 @@ export function CvDraftEditor({
             <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
               {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.map((gap, index) => (
-                <article key={index} className="rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] p-4 text-[var(--th-fg)]">
-                  <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-[var(--th-warn)]/30 bg-[var(--th-warn-bg)] px-2 py-0.5 text-xs font-semibold text-[var(--th-warn)]">Not demonstrated</span><h4 className="text-sm font-semibold text-[var(--th-fg)]">{gap.requirement}</h4></div>
-                  <p className="mt-2 text-sm leading-5 text-[var(--th-fg-muted)]">{gap.explanation}</p>
+                <article key={index} className="rounded-xl border border-line bg-panel-2 p-4 text-fg">
+                  <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-warn bg-warn-bg px-2 py-0.5 text-xs font-semibold text-warn">Not demonstrated</span><h4 className="text-sm font-semibold text-[var(--th-fg)]">{gap.requirement}</h4></div>
+                  <p className="mt-2 text-sm leading-5 text-fg-muted">{gap.explanation}</p>
                 </article>
               )) : (
                 <div className="rounded-xl border border-line bg-panel-2 p-4">
