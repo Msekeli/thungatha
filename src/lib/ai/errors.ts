@@ -15,7 +15,6 @@ export interface AiProviderErrorOptions {
   provider?: AiProvider;
   retryable?: boolean;
   retryAfterMs?: number;
-  diagnostic?: string;
   cause?: unknown;
 }
 
@@ -24,7 +23,6 @@ export class AiProviderError extends Error {
   readonly provider?: AiProvider;
   readonly retryable: boolean;
   readonly retryAfterMs?: number;
-  readonly diagnostic?: string;
 
   constructor(message: string, options: AiProviderErrorOptions) {
     super(message, { cause: options.cause });
@@ -33,7 +31,6 @@ export class AiProviderError extends Error {
     this.provider = options.provider;
     this.retryable = options.retryable ?? false;
     this.retryAfterMs = options.retryAfterMs;
-    this.diagnostic = options.diagnostic;
   }
 }
 
@@ -67,21 +64,9 @@ export function createProviderHttpError(
           typeof (payload as { message?: unknown }).message === "string"
         ? (payload as { message: string }).message
         : undefined;
-  const failedGeneration =
-    errorObject && typeof errorObject === "object"
-      ? (errorObject as { failed_generation?: unknown }).failed_generation
-      : payload && typeof payload === "object"
-        ? (payload as { failed_generation?: unknown }).failed_generation
-        : undefined;
-  // Keep this diagnostic out of normal user-facing errors. The development
-  // test route may expose it for the fixed, non-personal Alex fixture only.
-  const diagnostic =
-    typeof failedGeneration === "string"
-      ? failedGeneration.replace(/\s+/g, " ").slice(0, 2_000)
-      : undefined;
-  const safeDetail = detail?.replace(/\s+/g, " ").slice(0, 240);
+  const safeDetail = detail?.replace(/\\s+/g, " ").slice(0, 240);
   const isTokenCapacityLimit =
-    status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
+    status === 413 && /tokens per minute|TPM|requested \\d+/i.test(detail ?? "");
   const code: AiErrorCode = isTokenCapacityLimit
     ? "rate-limited"
     : status === 401 || status === 403
@@ -102,7 +87,6 @@ export function createProviderHttpError(
       provider,
       retryable,
       retryAfterMs: parseRetryAfterMs(retryAfterHeader),
-      diagnostic,
     },
   );
 }
