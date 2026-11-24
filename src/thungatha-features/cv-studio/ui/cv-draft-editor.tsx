@@ -242,6 +242,7 @@ export function CvDraftEditor({
         return;
       }
     }
+    setPreviewSuggestionId(null);
     setDraft((current) => current ? {
       ...current,
       suggestions: current.suggestions.map((item) =>
@@ -443,7 +444,7 @@ export function CvDraftEditor({
         <>
           <div className="xl:hidden">
             <CvPdfPreviewDialog
-              content={previewContent
+              content={previewContent}
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
             />
