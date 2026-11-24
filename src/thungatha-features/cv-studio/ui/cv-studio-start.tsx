@@ -338,7 +338,7 @@ export function CvStudioStart() {
         <div className="flex min-h-0 flex-1 flex-col">
           {jobContext && state.masterCv ? (
             <>
-              <div className={`grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:items-stretch ${tailoringStarted ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]"}`}>
+              <div className="grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
                 <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
                   <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -358,16 +358,6 @@ export function CvStudioStart() {
                         </p>
                       </div>
                       <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-                        {tailoringStarted && (
-                          <Button
-                            className="w-full sm:w-auto"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setTailoringStarted(false)}
-                          >
-                            Back to job overview
-                          </Button>
-                        )}
                         <Button
                           className="w-full shrink-0 whitespace-normal sm:w-auto"
                           variant="outline"
@@ -378,8 +368,6 @@ export function CvStudioStart() {
                         </Button>
                       </div>
                     </div>
-                    {!tailoringStarted && (
-                      <>
                     <div className="mt-5 border-t border-line pt-4">
                       <h3 className="text-sm font-semibold text-fg">
                         Job description
@@ -442,7 +430,6 @@ export function CvStudioStart() {
                         </p>
                       )}
                     </div>
-                    </>)}
                     <div className="mt-3 flex flex-wrap gap-2">
                       {!reusableCv && !tailoringStarted && (
                         <Button
@@ -472,8 +459,7 @@ export function CvStudioStart() {
                       )}
                     </div>
                   </div>
-                  {!tailoringStarted && (
-                    <div className="lg:hidden">
+                  <div className="lg:hidden">
                       <CvPdfPreviewDialog
                         content={reusableCv?.content ?? state.masterCv.content}
                         accent={
@@ -482,8 +468,7 @@ export function CvStudioStart() {
                             : undefined
                         }
                       />
-                    </div>
-                  )}
+                  </div>
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
@@ -493,7 +478,7 @@ export function CvStudioStart() {
                     />
                   )}
                 </section>
-                <section className={`hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:h-full lg:overflow-y-auto ${tailoringStarted ? "lg:hidden" : "lg:block"}`}>
+                <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block lg:h-full lg:overflow-y-auto">
                   {reusableCv ? (
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-fg">
