@@ -6,7 +6,8 @@ export type CvTailoringEvidence = {
 };
 
 export function buildCvTailoringEvidence(
-  content: CvContent,
+  sourceContent: CvContent,
+  currentContent: CvContent = sourceContent,
 ): CvTailoringEvidence {
   const profileEvidence: CvTailoringEvidence["profileEvidence"] = [];
   const editableTargets: CvTailoringEvidence["editableTargets"] = [];
@@ -19,44 +20,54 @@ export function buildCvTailoringEvidence(
     editableTargets.push({ path, currentText: value });
   };
 
-  addEvidence("headline", content.headline);
-  addTarget("headline", content.headline);
-  addEvidence("professionalSummary", content.professionalSummary);
-  addTarget("professionalSummary", content.professionalSummary);
+  addEvidence("headline", sourceContent.headline);
+  addTarget("headline", currentContent.headline);
+  addEvidence("professionalSummary", sourceContent.professionalSummary);
+  addTarget("professionalSummary", currentContent.professionalSummary);
 
-  content.technicalSkills.forEach((skill, index) =>
+  sourceContent.technicalSkills.forEach((skill, index) =>
     addEvidence(`technicalSkills[${index}]`, skill),
   );
-  content.workExperience.forEach((item) => {
+  sourceContent.workExperience.forEach((item) => {
     const base = `workExperience[${item.sourceId}]`;
     addEvidence(`${base}.jobTitle`, item.jobTitle);
     addEvidence(`${base}.employer`, item.employer);
     addEvidence(`${base}.description`, item.description);
-    addTarget(`${base}.description`, item.description);
-    item.achievements.forEach((achievement, index) => {
-      addEvidence(`${base}.achievements[${index}]`, achievement);
-      addTarget(`${base}.achievements[${index}]`, achievement);
-    });
+    const current = currentContent.workExperience.find(
+      (entry) => entry.sourceId === item.sourceId,
+    );
+    if (current) {
+      addTarget(`${base}.description`, current.description);
+      current.achievements.forEach((achievement, index) =>
+        addTarget(`${base}.achievements[${index}]`, achievement),
+      );
+    }
+    item.achievements.forEach((achievement, index) =>
+      addEvidence(`${base}.achievements[${index}]`, achievement),
+    );
   });
-  content.projects.forEach((item) => {
+  sourceContent.projects.forEach((item) => {
     const base = `projects[${item.sourceId}]`;
     addEvidence(`${base}.name`, item.name);
     addEvidence(`${base}.role`, item.role);
     addEvidence(`${base}.description`, item.description);
-    addTarget(`${base}.description`, item.description);
+    const current = currentContent.projects.find(
+      (entry) => entry.sourceId === item.sourceId,
+    );
+    if (current) addTarget(`${base}.description`, current.description);
   });
-  content.education.forEach((item) => {
+  sourceContent.education.forEach((item) => {
     const base = `education[${item.sourceId}]`;
     addEvidence(`${base}.qualification`, item.qualification);
     addEvidence(`${base}.institution`, item.institution);
     addEvidence(`${base}.fieldOfStudy`, item.fieldOfStudy);
   });
-  content.certifications.forEach((item) => {
+  sourceContent.certifications.forEach((item) => {
     const base = `certifications[${item.sourceId}]`;
     addEvidence(`${base}.name`, item.name);
     addEvidence(`${base}.issuer`, item.issuer);
   });
-  content.languages.forEach((language, index) =>
+  sourceContent.languages.forEach((language, index) =>
     addEvidence(`languages[${index}]`, language),
   );
 
