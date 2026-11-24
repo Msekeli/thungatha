@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvDraftEditor } from "./cv-draft-editor";
@@ -369,7 +370,7 @@ export function CvStudioStart() {
                         Job description
                       </h3>
                       <div className="mt-2 h-[35dvh] min-h-[10rem] max-h-[22rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:min-h-[12rem] lg:max-h-[50dvh]">
-                        {formatJobDescription(jobContext.description)}
+                        {jobDescriptionToText(jobContext.description)}
                       </div>
                     </div>
                     <div
