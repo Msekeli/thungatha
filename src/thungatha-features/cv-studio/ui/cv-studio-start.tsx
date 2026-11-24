@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
+import type { CvPdfContent } from "./cv-pdf-document";
 import { CvDraftEditor } from "./cv-draft-editor";
 
 type CvContent = {
@@ -118,6 +119,7 @@ export function CvStudioStart() {
   const [workflowBusy, setWorkflowBusy] = useState(false);
   const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
+  const [tailoredPreview, setTailoredPreview] = useState<{ content: CvPdfContent; accent: string } | null>(null);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -275,6 +277,7 @@ export function CvStudioStart() {
     setJobForm(emptyJobForm);
     setExternalJobOpen(false);
     setTailoringStarted(false);
+    setTailoredPreview(null);
     router.replace("/cv-studio");
   }
 
@@ -462,6 +465,7 @@ export function CvStudioStart() {
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
+                      onContentChange={(content, accent) => setTailoredPreview({ content, accent })}
                       jobContext={jobContext}
                       initialContent={state.masterCv.content}
                       startImmediately
@@ -481,7 +485,7 @@ export function CvStudioStart() {
                       />
                     </div>
                   ) : (
-                    <CvPdfPreview content={state.masterCv.content} />
+                    <CvPdfPreview content={tailoredPreview?.content ?? state.masterCv.content} accent={tailoredPreview?.accent} />
                   )}
                 </section>
               </div>
