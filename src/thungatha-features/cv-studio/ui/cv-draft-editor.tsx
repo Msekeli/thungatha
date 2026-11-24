@@ -548,6 +548,7 @@ export function CvDraftEditor({
               gaps={tailoringGaps}
               hasCompletedReview={draft.tailoring_assessment !== null}
               generating={tailoringBusy}
+              generationError={tailoringFailed ? error : null}
               disabled={busy || draft.status !== "draft"}
               onAccept={(id) => decideSuggestion(id, "accepted")}
               onReject={(id) => decideSuggestion(id, "rejected")}
