@@ -217,18 +217,32 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     );
   }
 
-  const response = await completeAiTask({
-    task: "job-requirement-extraction",
-    responseFormat: "json",
-    responseSchema: createJobUnderstandingResponseSchema(
-      evidence.map((item) => item.id),
-    ),
+  const responseSchema = createJobUnderstandingResponseSchema();
+  const userPrompt = json({
+    jobContext: {
+      title: context.title,
+      employerName: context.employerName,
+      locationText: context.locationText,
+    },
+    sourceEvidence: evidence.map((item) => [item.id, item.content]),
+  });
+  console.info("[job-understanding] prompt breakdown", {
+    descriptionCharacters: context.description.length,
+    evidenceCount: evidence.length,
+    evidenceCharacters: JSON.stringify(
+      evidence.map((item) => [item.id, item.content]),
+    ).length,
+    systemPromptCharacters: 0,
+    userPromptCharacters: userPrompt.length,
+    responseSchemaCharacters: JSON.stringify(responseSchema).length,
+  });
+
+  const systemPrompt = [
     temperature: 0.1,
     maxOutputTokens: 4_096,
     timeoutMs: 120_000,
     reasoning: false,
-    systemPrompt: [
-      "Understand the complete job advert in context, not just its title or familiar keywords.",
+    "Understand the complete job advert in context, not just its title or familiar keywords.",
       "Identify only material responsibilities, capabilities, and requirements that affect the actual work or candidate suitability.",
       "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
       "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
@@ -241,10 +255,22 @@ export async function understandJobWithAi(context: JobMatchingContext) {
       "Every object and every listed property is required, including when an array is empty. Use empty arrays when no items exist. Do not replace arrays of objects with strings.",
       "Use only the allowed category and importance values stated below. IDs must be short unique strings within this response. Evidence references must be exact IDs from sourceEvidence.",
       "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
-      "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
-    ].join("\n"),
-    userPrompt: json({ jobContext: context, sourceEvidence: evidence }),
+    "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
+  ].join("\n");
+  console.info("[job-understanding] prompt breakdown", {
+    descriptionCharacters: context.description.length,
+    evidenceCount: evidence.length,
+    evidenceCharacters: JSON.stringify(
+      evidence.map((item) => [item.id, item.content]),
+    ).length,
+    systemPromptCharacters: systemPrompt.length,
+    userPromptCharacters: userPrompt.length,
+    responseSchemaCharacters: JSON.stringify(responseSchema).length,
   });
+  const response = await completeAiTask({
+    task: "job-requirement-extraction",
+    responseFormat: "json",
+    responseSchema,
 
   assertCompleteResponse("Job understanding", response);
   const result = parseJobUnderstanding(context, response.content);
