@@ -176,6 +176,7 @@ export function CvDraftEditor({
 
   async function generateSuggestionsForDraft(draftId: string) {
     setTailoringFailed(false);
+    setPreviewSuggestionId(null);
     setTailoringBusy(true);
     setWorkflowStage("Analysing the job description and preparing your professional summary…");
     setError(null);
@@ -200,8 +201,7 @@ export function CvDraftEditor({
         const requestId = typeof body.requestId === "string" ? ` (Request ID: ${body.requestId})` : "";
         throw new Error(`${body.error ?? "AI tailoring failed."}${requestId}`);
       }
-      setPreviewSuggestionId(null);
-    setDraft((current) => current ? {
+      setDraft((current) => current ? {
         ...current,
         suggestions: body.suggestions,
         tailoring_assessment: body.assessment,
