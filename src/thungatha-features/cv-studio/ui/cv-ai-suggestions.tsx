@@ -4,14 +4,12 @@ import type { CvSuggestion } from "../server/cv-studio-schema";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type Gap = { requirement: string; explanation: string; jobEvidenceRefs: string[] };
-
 export function CvAiSuggestions({
-  open, onOpenChange, suggestions, gaps, hasCompletedReview, generating,
+  open, onOpenChange, suggestions, hasCompletedReview, generating,
   generationError, disabled, onAccept, onReject, onRegenerate, onDiscard,
 }: {
   open: boolean; onOpenChange: (open: boolean) => void; suggestions: CvSuggestion[];
-  gaps: Gap[]; hasCompletedReview: boolean; generating: boolean; generationError: string | null; disabled: boolean;
+  hasCompletedReview: boolean; generating: boolean; generationError: string | null; disabled: boolean;
   onAccept: (id: string) => void; onReject: (id: string) => void;
   onRegenerate: () => void; onDiscard: () => void;
 }) {
