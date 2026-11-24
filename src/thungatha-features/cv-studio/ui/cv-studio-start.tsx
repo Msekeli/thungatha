@@ -185,7 +185,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px] px-3 py-2 sm:px-6 sm:py-3 lg:px-8">
+    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px]">
       {state.status === "loading" && <section className="rounded-2xl border border-slate-200 bg-white p-6" aria-live="polite">Checking your Profile and CV versions…</section>}
 
       {state.status === "error" && (
@@ -208,10 +208,10 @@ export function CvStudioStart() {
       )}
 
       {state.status === "master_cv_ready" && (
-        <div className="space-y-6">
+        <div className="flex min-h-0 flex-1 flex-col">
           {jobContext && state.masterCv ? (
             <>
-              <div className="grid min-w-0 items-start gap-6 lg:h-[calc(100dvh-190px)] lg:min-h-0 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
+              <div className="grid min-w-0 items-start gap-6 lg:h-full lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
                 <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
                   <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
                     <div className="flex items-start justify-between gap-3">
