@@ -47,6 +47,11 @@ describe("job source evidence text", () => {
       .toBe('Ozow\'s role & responsibilities "today".');
   });
 
+  it("decodes decimal double-encoded references and replaces invalid code points", () => {
+    expect(jobDescriptionToText("It&amp;#39;s available; invalid: &amp;#0;."))
+      .toBe("It's available; invalid: \uFFFD.");
+  });
+
   it("keeps unknown second-layer entities unchanged", () => {
     expect(jobDescriptionToText("Keep &amp;unknownentity; as supplied."))
       .toBe("Keep &unknownentity; as supplied.");
