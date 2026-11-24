@@ -8,42 +8,22 @@ type HtmlNode = {
 };
 
 const BLOCK_TAGS = new Set([
-  "address",
-  "article",
-  "blockquote",
-  "dd",
-  "div",
-  "dl",
-  "dt",
-  "fieldset",
-  "figcaption",
-  "figure",
-  "footer",
-  "form",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "header",
-  "hr",
-  "li",
-  "main",
-  "ol",
-  "p",
-  "pre",
-  "section",
-  "table",
-  "tbody",
-  "td",
-  "tfoot",
-  "th",
-  "thead",
-  "tr",
-  "ul",
+  "address", "article", "blockquote", "dd", "div", "dl", "dt", "fieldset",
+  "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5",
+  "h6", "header", "hr", "li", "main", "ol", "p", "pre", "section", "table",
+  "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
 ]);
 const IGNORED_TAGS = new Set(["script", "style", "template", "noscript"]);
+const HTML_TAG = /<\/?[a-z][^>]*>/i;
+
+function normalizeText(value: string) {
+  return value
+    .replace(/\u00a0/g, " ")
+    .replace(/[\t\f\v ]+/g, " ")
+    .replace(/ *\n+ */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
 function htmlToStructuredText(markup: string) {
   const root = parseFragment(markup) as unknown as HtmlNode;
@@ -52,38 +32,33 @@ function htmlToStructuredText(markup: string) {
   function visit(node: HtmlNode) {
     const tag = node.tagName?.toLowerCase();
     if (tag && IGNORED_TAGS.has(tag)) return;
-
     if (node.nodeName === "#text") {
       if (node.value) output.push(node.value);
       return;
     }
-
     if (tag === "br" || tag === "hr") {
       output.push("\n");
       return;
     }
     if (tag === "li") output.push("\n• ");
     else if (tag && BLOCK_TAGS.has(tag)) output.push("\n");
-
     for (const child of node.childNodes ?? []) visit(child);
-
     if (tag && BLOCK_TAGS.has(tag)) output.push("\n");
   }
 
   visit(root);
-  return output
-    .join("")
-    .replace(/\u00a0/g, " ")
-    .replace(/[\t\f\v ]+/g, " ")
-    .replace(/ *\n+ */g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return normalizeText(output.join(""));
 }
 
 export function sourceSegments(description: string) {
-  const text = htmlToStructuredText(description);
+  // Do not send plain text through an HTML parser: preserve its exact word
+  // boundaries and line structure before splitting it into evidence units.
+  const isHtml = HTML_TAG.test(description);
+  const text = isHtml
+    ? htmlToStructuredText(description)
+    : normalizeText(description);
   const blocks = text.split(/\n+/);
-  const segments = /<\/?[a-z][^>]*>/i.test(description)
+  const segments = isHtml
     ? blocks
     : blocks.flatMap((block) => block.split(/(?<=[.!?;])\s+/));
 
