@@ -162,6 +162,7 @@ export function CvDraftEditor({
         throw new Error(body.error ?? "Draft could not be created.");
       const createdDraft = body.draft as Draft;
       setDraft(createdDraft);
+      setSummaryDialogOpen(createdDraft.status === "draft");
       setContent(createdDraft.content as CvContent);
       setTailoringGaps(body.draft.tailoring_assessment?.gaps ?? []);
       setMessage(
