@@ -184,7 +184,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
       {state.status === "loading" && <section className="rounded-2xl border border-slate-200 bg-white p-6" aria-live="polite">Checking your Profile and CV versions…</section>}
 
       {state.status === "error" && (
@@ -223,7 +223,7 @@ export function CvStudioStart() {
                   </div>
                   <div className="mt-5 border-t border-line pt-4">
                     <h3 className="text-sm font-semibold text-fg">Job description</h3>
-                    <div className="mt-2 h-[55vh] max-h-[60vh] min-h-[320px] overflow-y-auto whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
+                    <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] overflow-y-auto whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
                   </div>
                   {jobContext.sourceUrl && <a className="mt-4 inline-flex text-sm font-medium text-accent-text underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
                 </div>
