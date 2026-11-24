@@ -50,7 +50,10 @@ Expected:
 - AWS, Kubernetes, team leadership, and five years of experience should be identified as unsupported gaps.
 - No suggestion should claim Alex has any of those skills or experiences.
 - React/TypeScript may still be tailored where a truthful improvement is justified.
-- Every suggestion must include profile and job evidence references.
+- Every suggestion must cite exactly the CV evidence ID belonging to its edited field.
+- Every suggestion must name the job requirement it addresses, and its job evidence references must belong to that requirement.
+- A suggestion with unrelated profile or job evidence must be rejected by the server mapper.
+- Review spacing and grammar in every generated sentence; structured output validates shape, not writing quality.
 
 ## What this test verifies
 
@@ -60,4 +63,4 @@ Expected:
 - The response is validated against the same dynamic Zod schema used by the production tailoring flow.
 - No database writes occur.
 
-This is a model-behavior test, not a formal proof that all generated wording is factually safe. Review every proposed sentence against its cited profile evidence. The endpoint returns 404 outside `NODE_ENV=development`; it is not a production API or a substitute for testing the authenticated CV Studio workflow.
+This is a model-behavior test, not a formal proof that all generated wording is factually safe. The server now enforces exact target-to-profile evidence and requirement-to-job-evidence relationships, but it cannot prove semantic equivalence between a source sentence and a paraphrase. Review every proposed sentence against its cited profile evidence and job requirement. The endpoint returns 404 outside `NODE_ENV=development`; it is not a production API or a substitute for testing the authenticated CV Studio workflow.
