@@ -50,6 +50,7 @@ describe("CV tailoring evidence", () => {
       evidence.profileEvidence.map((item) => item.id),
       ["job:description:0"],
       evidence.editableTargets.map((item) => item.path),
+      ["requirement-1"],
     );
     expect(result.responseSchema.type).toBe("OBJECT");
     const properties = result.responseSchema.properties as Record<string, unknown>;
@@ -80,6 +81,7 @@ describe("CV tailoring evidence", () => {
       evidence.profileEvidence.map((item) => item.id),
       ["job:description:0"],
       evidence.editableTargets.map((item) => item.path),
+      ["requirement-1"],
     );
     expect(() => schema.validator.parse({
       suggestions: [{
