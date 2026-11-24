@@ -125,8 +125,6 @@ export function CvDraftEditor({
   const [, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tailoringBusy, setTailoringBusy] = useState(false);
-  const [, setWorkflowStage] = useState<string | null>(null);
-  const [tailoringGaps, setTailoringGaps] = useState<Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>>([]);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills">("summary");
 
@@ -156,7 +154,6 @@ export function CvDraftEditor({
       setDraft(createdDraft);
       setSummaryDialogOpen(createdDraft.status === "draft");
       setContent(createdDraft.content as CvContent);
-      setTailoringGaps(body.draft.tailoring_assessment?.gaps ?? []);
       setMessage(
         body.reusedDraft
           ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
@@ -187,7 +184,6 @@ export function CvDraftEditor({
     setTailoringFailed(false);
     setSummaryDialogOpen(true);
     setTailoringBusy(true);
-    setWorkflowStage("Analysing the job description and preparing your professional summary…");
     setError(null);
     setMessage(null);
     try {
@@ -215,14 +211,11 @@ export function CvDraftEditor({
         suggestions: body.suggestions,
         tailoring_assessment: body.assessment,
       } : current);
-      setTailoringGaps(body.assessment?.gaps ?? body.gaps ?? []);
-      setWorkflowStage(null);
       setTailoringFailed(false);
       setMessage(body.suggestions.length
         ? "Your professional summary proposal is ready. Review it, then accept or reject it."
         : "No summary change was recommended. Your existing summary remains unchanged.");
     } catch (e) {
-      setWorkflowStage(null);
       setTailoringFailed(true);
       setError(
         e instanceof DOMException && e.name === "TimeoutError"
@@ -272,6 +265,9 @@ export function CvDraftEditor({
     // The editor is mounted only after the user chooses Tailor my CV.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startImmediately]);
+
+  const activeIndex = reviewSections.findIndex((item) => item.id === activeSection);
+  const pendingSuggestion = draft?.suggestions.some((item) => item.targetPath === "professionalSummary" && item.decision === "pending") ?? false;
 
   async function saveDraft() {
     if (!draft || draft.status !== "draft") return;
