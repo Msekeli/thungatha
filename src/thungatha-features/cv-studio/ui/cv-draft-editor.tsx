@@ -414,7 +414,7 @@ export function CvDraftEditor({
                           <Button type="button" disabled={busy || draft.status !== "draft"} onClick={() => setExperienceTailorNoticeFor(item.sourceId)}>Tailor this experience</Button>
                           {experienceTailorNoticeFor === item.sourceId && <p className="mt-2 text-xs text-fg-muted" role="status">Work-experience AI tailoring is not connected yet. This button is ready for that workflow; your profile experience remains unchanged.</p>}
                         </div>
-                      </article>
+                      </div>
                     );
                   })()}
                 </>
