@@ -12,6 +12,7 @@ type Gap = {
 export function CvAiSuggestions({
   suggestions,
   gaps,
+  hasCompletedReview,
   disabled,
   onAccept,
   onReject,
@@ -20,6 +21,7 @@ export function CvAiSuggestions({
 }: {
   suggestions: CvSuggestion[];
   gaps: Gap[];
+  hasCompletedReview: boolean;
   disabled: boolean;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
@@ -38,9 +40,18 @@ export function CvAiSuggestions({
         </span>
       </div>
       {!suggestions.length && !gaps.length && (
-        <p className="text-sm text-fg-muted">
-          No suggestions have been generated yet.
-        </p>
+        <div className="rounded-lg border border-line bg-panel-2 p-4">
+          <p className="text-sm font-medium text-fg">
+            {hasCompletedReview
+              ? "No summary changes recommended"
+              : "Summary review has not started"}
+          </p>
+          <p className="mt-1 text-sm text-fg-muted">
+            {hasCompletedReview
+              ? "Your current professional summary is being retained. The AI did not identify a change it could support with confirmed Profile evidence."
+              : "Generate a summary proposal to see suggested changes and their supporting evidence here."}
+          </p>
+        </div>
       )}
       {suggestions.map((item) => (
         <article key={item.id} className="space-y-3 rounded-xl border border-line bg-panel-2 p-4 shadow-sm">
