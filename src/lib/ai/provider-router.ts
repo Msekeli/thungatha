@@ -165,6 +165,20 @@ export async function completeWithRetry(
   });
 }
 
+export async function completeAiTaskWithProvider(
+  provider: SupportedProvider,
+  request: AiCompletionRequest,
+): Promise<AiCompletionResult> {
+  const configured = parseProviderList(process.env.AI_ENABLED_PROVIDERS);
+  if (!configured.includes(provider) || !providerFlagIsEnabled(provider)) {
+    throw new AiProviderError(
+      `Provider "${provider}" must be included in AI_ENABLED_PROVIDERS and its provider-specific flag must be true.`,
+      { code: "configuration", provider },
+    );
+  }
+  return completeWithRetry(getAiProviderAdapter(provider), request);
+}
+
 export async function completeAiTask(
   request: AiCompletionRequest,
 ): Promise<AiCompletionResult> {
