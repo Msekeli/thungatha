@@ -12,7 +12,6 @@ import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
 import { mapCvTailoringOutput } from "./map-cv-tailoring-output";
-import { verifyCvTailoringSuggestions } from "./verify-cv-tailoring-suggestions";
 import {
   CV_TAILORING_VERSION,
   createCvTailoringResponseSchema,
@@ -90,12 +89,20 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     temperature: 0.2,
     timeoutMs: 120_000,
     systemPrompt: buildCvTailoringSystemPrompt(),
+    // The job description is already represented by jobEvidence and the
+    // canonical understanding. Avoid sending a second copy of the advert.
     userPrompt: JSON.stringify({
-      job: { title: job.title, company: job.company },
-      jobUnderstanding: understanding,
-      jobEvidence,
-      confirmedCvEvidence: profileEvidence,
-      editableTargets,
+      job: [job.title, job.company],
+      understanding: {
+        summary: understanding.summary,
+        coverage: understanding.coverage,
+        responsibilities: understanding.responsibilities.map((item) => [item.id, item.statement, item.sourceEvidenceRefs]),
+        capabilities: understanding.capabilities.map((item) => [item.id, item.name, item.context, item.sourceEvidenceRefs]),
+        requirements: understanding.requirements.map((item) => [item.id, item.statement, item.category, item.importance, item.sourceEvidenceRefs]),
+      },
+      jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
   };
   const response = provider
@@ -103,15 +110,8 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     : await completeAiTask(request);
 
   const parsed = schema.validator.parse(JSON.parse(response.content));
-  const verifiedSuggestions = await verifyCvTailoringSuggestions(
-    parsed.suggestions,
-    profileEvidence,
-    jobEvidence,
-    understanding.requirements,
-    provider,
-  );
   const mapped = mapCvTailoringOutput(
-    { ...parsed, suggestions: verifiedSuggestions },
+    parsed,
     profileEvidence,
     jobEvidence,
     editableTargets,
