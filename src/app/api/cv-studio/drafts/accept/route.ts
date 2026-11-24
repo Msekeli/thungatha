@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       .eq("status", "draft")
       .eq("source_profile_version", profile.profileVersion)
       .select(
-        "id,cv_kind,status,source_profile_version,content,suggestions,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version,accepted_at,updated_at",
+        "id,cv_kind,status,source_profile_version,content,suggestions,tailoring_assessment,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version,accepted_at,updated_at",
       )
       .single();
     if (error) throw error;
