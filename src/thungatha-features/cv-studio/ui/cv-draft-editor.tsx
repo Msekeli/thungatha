@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
@@ -129,6 +129,8 @@ export function CvDraftEditor({
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills" | "requirements">("summary");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  const [newSkill, setNewSkill] = useState("");
+  const [experienceTailorNotice, setExperienceTailorNotice] = useState(false);
 
   const reviewSections = [
     { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
@@ -155,20 +157,13 @@ export function CvDraftEditor({
         throw new Error(body.error ?? "Draft could not be created.");
       const createdDraft = body.draft as Draft;
       setDraft(createdDraft);
-      setSummaryDialogOpen(createdDraft.status === "draft");
+      setSummaryDialogOpen(false);
       setContent(createdDraft.content as CvContent);
       setMessage(
         body.reusedDraft
           ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
           : "Your separate working draft is ready. Your master CV and Profile remain unchanged.",
       );
-      if (
-        createdDraft.status === "draft" &&
-        createdDraft.suggestions.length === 0 &&
-        !createdDraft.tailoring_assessment
-      ) {
-        await generateSuggestionsForDraft(createdDraft.id);
-      }
     } catch (e) {
       setCreateFailed(true);
       setError(
@@ -360,9 +355,18 @@ export function CvDraftEditor({
             {createFailed && <Button className="w-fit" size="sm" onClick={() => void createDraft()} disabled={busy}>Retry</Button>}
           </div>
         ) : activeSection === "summary" ? (
-          <div className="flex h-full min-h-0 flex-col gap-3">
-            <div className="shrink-0"><h3 className="text-lg font-bold">Professional Summary</h3><p className="text-sm text-fg-muted">A suggested improvement to better align your CV with the selected job.</p></div>
-            <CvAiSuggestions
+          <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
+            <div className="shrink-0"><h3 className="text-lg font-bold">Professional Summary</h3><p className="text-sm text-fg-muted">Your original summary stays unchanged until you request and accept a proposal.</p></div>
+            <section className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
+            </section>
+            {!summaryDialogOpen && !tailoringBusy && (
+              <Button type="button" className="w-fit" disabled={busy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); void generateSuggestions(); }}>
+                {pendingSuggestion ? "Review summary suggestion" : "Tailor professional summary"}
+              </Button>
+            )}
+            {summaryDialogOpen && <CvAiSuggestions
               open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}
               suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
               hasCompletedReview={draft.tailoring_assessment !== null}
@@ -370,8 +374,7 @@ export function CvDraftEditor({
               disabled={busy || draft.status !== "draft"}
               onAccept={(id) => decideSuggestion(id, "accepted")} onReject={(id) => decideSuggestion(id, "rejected")}
               onRegenerate={() => void generateSuggestions()} onDiscard={() => setSummaryDialogOpen(false)}
-            />
-            {!summaryDialogOpen && !tailoringBusy && <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" disabled={busy || draft.status !== "draft"} onClick={() => void generateSuggestions()}>{pendingSuggestion ? "Review suggestion" : "Generate suggestion"}</Button></div>}
+            />}
             {error && !tailoringFailed && <p className="text-sm text-destructive" role="alert">{error}</p>}
           </div>
         ) : activeSection === "experience" ? (
@@ -393,7 +396,7 @@ export function CvDraftEditor({
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
                     return (
-                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4">
+                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
                         <h4 className="text-base font-semibold">{item.jobTitle}</h4>
                         <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
                         <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
@@ -407,6 +410,10 @@ export function CvDraftEditor({
                             {item.achievements.length ? <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-2 text-sm text-fg-muted">No achievements listed.</p>}
                           </section>
                         </div>
+                        <div className="mt-5 border-t border-line pt-4">
+                          <Button type="button" variant="outline" disabled={busy || draft.status !== "draft"} onClick={() => setExperienceTailorNotice(true)}>Tailor this experience</Button>
+                          {experienceTailorNotice && <p className="mt-2 text-xs text-fg-muted" role="status">Section-specific work-experience tailoring will be connected when the backend workflow is implemented. Your original experience remains unchanged.</p>}
+                        </div>
                       </article>
                     );
                   })()}
@@ -415,7 +422,20 @@ export function CvDraftEditor({
             </div>
           </div>
         ) : activeSection === "skills" ? (
-          <div className="flex h-full min-h-0 flex-col gap-3"><div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review the skills included in your tailored CV.</p></div><div className="flex flex-wrap content-start gap-2">{content.technicalSkills.map((skill) => <span key={skill} className="rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-sm">{skill}</span>)}{!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}</div></div>
+          <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
+            <div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review existing skills or add another skill to this CV.</p></div>
+            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+              <div className="flex flex-wrap content-start gap-2">
+                {content.technicalSkills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-accent/30 bg-accent-bg px-3 py-1.5 text-sm text-fg">{skill}</span>)}
+                {!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}
+              </div>
+              <form className="flex max-w-xl gap-2" onSubmit={(event) => { event.preventDefault(); const value = newSkill.trim(); if (!value || content.technicalSkills.some((skill) => skill.toLowerCase() === value.toLowerCase())) return; setContent((current) => ({ ...current, technicalSkills: [...current.technicalSkills, value] })); setNewSkill(""); }}>
+                <input value={newSkill} onChange={(event) => setNewSkill(event.target.value)} maxLength={50} placeholder="Add a skill" aria-label="New skill" className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-panel px-3 text-sm text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" />
+                <Button type="submit" variant="outline" disabled={!newSkill.trim() || busy || draft.status !== "draft"}><Plus className="mr-1 size-4" /> Add skill</Button>
+              </form>
+              <p className="text-xs text-fg-muted">Only add skills you genuinely have. Added skills update this draft and its PDF preview when saved.</p>
+            </div>
+          </div>
         ) : (
           <div className="flex h-full min-h-0 flex-col gap-3">
             <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
