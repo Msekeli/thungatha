@@ -6,6 +6,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CvPdfPreview } from "./cv-pdf-preview";
+import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvDraftEditor } from "./cv-draft-editor";
 
 type CvContent = {
@@ -276,7 +277,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-y-auto overscroll-contain pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-visible pb-6 lg:overflow-y-auto lg:pb-0">
       {state.status === "loading" && (
         <section
           className="rounded-2xl border border-slate-200 bg-white p-6"
@@ -452,6 +453,18 @@ export function CvStudioStart() {
                       )}
                     </div>
                   </div>
+                  {!tailoringStarted && (
+                    <div className="lg:hidden">
+                      <CvPdfPreviewDialog
+                        content={reusableCv?.content ?? state.masterCv.content}
+                        accent={
+                          reusableCv
+                            ? cvAccentHex[reusableCv.accent_colour]
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
@@ -461,7 +474,7 @@ export function CvStudioStart() {
                     />
                   )}
                 </section>
-                <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:h-full lg:overflow-y-auto">
+                <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block lg:h-full lg:overflow-y-auto">
                   {reusableCv ? (
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-fg">
@@ -482,6 +495,11 @@ export function CvStudioStart() {
           ) : (
             <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
+                {state.masterCv && (
+                  <div className="mb-5 lg:hidden">
+                    <CvPdfPreviewDialog content={state.masterCv.content} />
+                  </div>
+                )}
                 {!externalJobOpen ? (
                   <div className="space-y-5">
                     <div>
@@ -651,7 +669,7 @@ export function CvStudioStart() {
                   </div>
                 )}
               </section>
-              <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
+              <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block">
                 {state.masterCv ? (
                   <CvPdfPreview content={state.masterCv.content} />
                 ) : (
