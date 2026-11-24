@@ -32,7 +32,7 @@ export function CvAiSuggestions({
       )}
       {suggestions.map((item) => (
         <article key={item.id} className="space-y-2 rounded-lg bg-panel-2 p-3">
-          <p className="text-sm font-medium">{item.targetPath}</p>
+          <p className="text-sm font-semibold">{item.targetPath === "professionalSummary" ? "Professional summary" : item.targetPath}</p>
           <p className="text-sm text-fg-muted">{item.reason}</p>
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="rounded-md border border-line p-2">
