@@ -8,7 +8,7 @@ CV Studio creates a master CV from the candidate's confirmed Profile, tailors it
 2. Job browsing and discovery remain available even when the Profile is incomplete. Creating a master CV or tailoring a CV requires a sufficiently complete, confirmed Profile.
 3. If the Profile gate fails, show which Profile information needs attention and link to Profile completion. Do not offer CV upload or independent CV creation as a bypass.
 4. When the gate passes, derive the master CV from confirmed Profile facts. The master CV is a presentation of Profile data, not an editable replacement for it.
-5. The candidate supplies job context by selecting a Discovery job, pasting a job description, or using a supported job URL flow. Job context must never be treated as evidence of candidate experience.
+5. The candidate supplies job context by selecting a Discovery job or entering an external job title, company name and pasted job description. CV Studio does not fetch job URLs, scrape adverts or collect a separate location field. Job context must never be treated as evidence of candidate experience.
 6. Assess the master CV and any relevant accepted tailored versions against the job. Explain the recommendation; do not force a fixed three-way choice screen.
 7. Generate a tailored draft through the existing provider-independent AI boundary. Every proposed factual change must point to confirmed source evidence.
 8. The candidate reviews each suggestion independently, accepts or rejects it, and can make manual edits. These edits affect the CV draft only and do not update Profile.
@@ -26,7 +26,7 @@ The route /cv-studio loads the authenticated Profile through the existing Profil
 - The screen shows the missing Profile information and links to /profile when the gate fails. It never offers CV upload or an independent candidate-fact entry route.
 - A generated master CV is previewed in a single-column layout. Job Discovery remains accessible through the Browse jobs action.
 - A Discovery job selected from the shared job detail view can hand off to `/cv-studio?jobId=<job-id>`. CV Studio resolves the selected job and passes its context to the suitability endpoint.
-- Candidates can also enter a job title, optional company/location/source URL and paste the full job description. The screen enforces the server's 200-character minimum and clearly states that URL auto-import is not enabled.
+- Candidates can also enter an external job using exactly three fields: job title, company name and pasted job description. The screen enforces the server's 200-character minimum. No location field, URL fetching or advert scraping is offered.
 - The screen displays exact prior-version matches and the server explanation. It does not offer a reuse action because retrieving and rendering a saved tailored version is not implemented yet.
 - A Profile change makes the existing master CV stale; the candidate must explicitly generate the refreshed master version.
 
@@ -40,7 +40,7 @@ The authenticated endpoint `POST /api/cv-studio/job-context` accepts either a Di
 - Pasted descriptions are validated for minimum useful content and a maximum request size. Source URL is metadata only; it is not fetched.
 - Every accepted job context receives a SHA-256 description fingerprint and retrieval timestamp so later AI work can identify the exact description version.
 - The endpoint enforces the confirmed Profile gate before accepting job context for CV tailoring.
-- A URL-only request is deliberately not fetched. It returns a clear 422 response asking the candidate to paste the description. Automatic URL retrieval remains blocked until a dedicated SSRF-safe fetcher can enforce DNS/IP checks, redirect validation, response limits, timeouts and content-type restrictions.
+- CV Studio does not expose URL-only job input and does not fetch or scrape external adverts. The supported external path is a candidate-supplied job title, company name and pasted description.
 - Invalid, missing, too-short and unavailable job inputs return explicit errors. Job content is untrusted context and never candidate evidence.
 
 The API and validation contracts are committed. No tests, build, browser checks or live Supabase verification were run.

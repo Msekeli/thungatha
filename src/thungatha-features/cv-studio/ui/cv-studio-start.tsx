@@ -276,7 +276,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto w-full max-w-[1600px]">
+    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-y-auto overscroll-contain pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
       {state.status === "loading" && (
         <section
           className="rounded-2xl border border-slate-200 bg-white p-6"
@@ -334,10 +334,10 @@ export function CvStudioStart() {
         <div className="flex min-h-0 flex-1 flex-col">
           {jobContext && state.masterCv ? (
             <>
-              <div className="grid min-w-0 items-start gap-6 lg:h-full lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
+              <div className="grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
                 <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
                   <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
                           {jobContext.source === "discovery"
@@ -354,6 +354,7 @@ export function CvStudioStart() {
                         </p>
                       </div>
                       <Button
+                        className="w-full shrink-0 whitespace-normal sm:w-auto"
                         variant="outline"
                         size="sm"
                         onClick={clearSelectedJob}
@@ -365,7 +366,7 @@ export function CvStudioStart() {
                       <h3 className="text-sm font-semibold text-fg">
                         Job description
                       </h3>
-                      <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] lg:h-[50dvh] lg:max-h-[50dvh] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">
+                      <div className="mt-2 h-[45dvh] min-h-[12rem] max-h-[28rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:max-h-[50dvh]">
                         {formatJobDescription(jobContext.description)}
                       </div>
                     </div>

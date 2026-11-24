@@ -48,7 +48,7 @@ The product specification and architecture document will define these experience
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
 | M2 | Profile and CV Import | **Accepted — complete and closed (2026-11-23)** |
 | M3 | Job Matching and Fit Analysis | In progress |
-| M4 | CV Studio | Not started |
+| M4 | CV Studio | **In progress** |
 | M5 | Job Tracking | Not started |
 | M6 | Account, Integration and Release Readiness | Not started |
 
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Current milestone:** M3 — AI-Powered Job Matching and Relevance. M2 — Profile and CV Import — was explicitly accepted as complete by the user on 2026-11-23 and is completed and closed unless the user explicitly reopens it. All M2 checkpoints C00–C07 are accepted. The user's confirmation is the acceptance authority; supplied screenshots support the visible Profile and Job Discovery state. M2 has no outstanding work. M0, M1 and M2 are closed.
+**Current milestone:** M4 — CV Studio. M3 — AI-Powered Job Matching and Relevance — remains In progress. M4 work must not make master-CV generation or user-directed CV creation dependent on matching availability. M2 — Profile and CV Import — was explicitly accepted as complete by the user on 2026-11-23 and is completed and closed unless the user explicitly reopens it. All M2 checkpoints C00–C07 are accepted. The user's confirmation is the acceptance authority; supplied screenshots support the visible Profile and Job Discovery state. M2 has no outstanding work. M0, M1 and M2 are closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -188,7 +188,7 @@ Detailed checkpoints belong in the M3 milestone document.
 
 ### M4 — CV Studio
 
-**Status: Not started**
+**Status: In progress — the Profile-backed master CV, job-context flow, exact-context reuse, manual draft editing, A4 preview, acceptance and PDF export are present in source; AI tailoring, comparison and final verification remain outstanding.**
 
 **Outcome:** An AI-powered workflow that interprets a target role and helps users create accurate, evidence-grounded CV versions tailored to specific opportunities.
 

@@ -108,7 +108,7 @@ export function CvPdfPreviewClient({
 
         const firstPage = await pdfDocument.getPage(1);
         const baseWidth = firstPage.getViewport({ scale: 1 }).width;
-        const fitScale = Math.max(0.25, (containerWidth - 32) / baseWidth);
+        const fitScale = Math.max(0.25, containerWidth / baseWidth);
         const scale = fitMode === "width" ? fitScale : zoom / 100;
         const canvases: HTMLCanvasElement[] = [];
 
@@ -170,7 +170,7 @@ export function CvPdfPreviewClient({
   return (
     <section className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <Button
             type="button"
             variant="outline"
@@ -221,7 +221,7 @@ export function CvPdfPreviewClient({
             100%
           </Button>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end">
           {pageCount > 0 && (
             <span className="text-xs text-fg-muted">
               {pageCount} {pageCount === 1 ? "page" : "pages"}
@@ -249,7 +249,7 @@ export function CvPdfPreviewClient({
       ) : (
         <div
           ref={viewerRef}
-          className="flex h-[min(72dvh,900px)] min-h-[360px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-4"
+          className="flex h-[min(72dvh,900px)] min-h-[280px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-2 sm:min-h-[360px] sm:p-4"
           aria-label="CV document pages"
         >
           {isPreparing ? (

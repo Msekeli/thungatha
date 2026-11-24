@@ -242,7 +242,7 @@ export function CvDraftEditor({
   }
 
   return (
-    <section className="space-y-5 rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:space-y-6 sm:p-7">
+    <section className="min-w-0 space-y-5 rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:space-y-6 sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
@@ -262,7 +262,7 @@ export function CvDraftEditor({
           </span>
         )}
         {draft?.status === "draft" && (
-          <div className="flex gap-2">
+          <div className="flex w-full flex-wrap gap-2 sm:w-auto">
             <Button
               variant="outline"
               disabled={busy}
@@ -556,15 +556,16 @@ export function CvDraftEditor({
               invented candidate information.
             </p>
             {draft.status === "draft" && (
-              <div className="flex flex-wrap justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button
+                  className="w-full sm:w-auto"
                   variant="outline"
                   disabled={busy}
                   onClick={() => void saveDraft()}
                 >
                   {busy ? "Saving…" : "Save draft"}
                 </Button>
-                <Button disabled={busy} onClick={() => void acceptDraft()}>
+                <Button className="w-full sm:w-auto" disabled={busy} onClick={() => void acceptDraft()}>
                   {busy ? "Processing…" : "Accept this CV"}
                 </Button>
               </div>

@@ -12,7 +12,7 @@ These decisions govern every M4 checkpoint:
 - The candidate's confirmed Profile is the source of truth. The master CV is generated from sufficiently complete, confirmed Profile data.
 - A candidate must complete the Profile gate before creating a master CV or tailoring a CV. CV Studio must not provide an independent CV-creation route, an uploaded-CV bypass, or a way to bypass missing Profile facts.
 - CV Studio is accessible directly at `/cv-studio` and can also receive a job selected from Job Discovery. Browsing jobs does not require a complete Profile; tailoring does.
-- Job input may include a selected Discovery job, a pasted job URL, or a pasted job description where supported. These are job-context inputs, not alternative sources for candidate facts.
+- Job input comes from a selected Discovery job or an external opportunity entered with exactly three fields: job title, company name and pasted job description. CV Studio does not fetch job URLs, scrape adverts, or request external-job location fields. Job context is never candidate evidence.
 - There is one official, ATS-friendly, single-column A4 CV template. There is no template/layout selector, two-column layout, drag-and-drop layout editor or font marketplace. Candidates may choose from a small predefined set of accent colours; that preference persists across tailored CVs.
 - Tailoring changes content emphasis, wording and ordering within the same template. It must not redesign the layout or alter the meaning of verified facts.
 - AI may select, reorder, emphasise and rephrase confirmed facts. It must not invent or infer employers, job titles, dates, skills, qualifications, responsibilities, achievements, metrics, projects or experience.
@@ -36,7 +36,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 - Define direct-route and Discovery-selected-job entry paths.
 - Define the Profile completion gate and the master-CV-from-Profile rule.
-- Define the job-context input contract: selected Discovery job, pasted URL, or pasted description where supported.
+- Define the job-context input contract: selected Discovery job or external job title, company name and pasted description. URL fetching, advert scraping and external-job location fields are out of scope.
 - Define workflow states: Profile required/incomplete, master CV absent/available/stale, job context missing/invalid/unreadable, tailoring pending/failed, draft ready, review in progress, accepted version, and export failure.
 - Define the transitions and candidate actions for loading, validation, empty, cancellation and recoverable failure states.
 - Define the single-template and accent-colour contract.
@@ -98,24 +98,23 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 
 ### M4-C04 — Job-description acquisition and validation
 
-**Status:** In review — authenticated Discovery-job resolution and pasted-description validation are connected to the candidate-facing screen. URL-only requests fail safely to a paste-description fallback; automatic SSRF-safe URL retrieval remains outstanding.
+**Status:** In review — authenticated Discovery-job resolution and pasted-description validation are connected to the candidate-facing screen. The external-job form is limited to title, company name and pasted description; URL fetching and advert scraping are deliberately excluded.
 
 **Goal:** safely obtain enough job information for tailoring.
 
 **Work**
 
 - Resolve selected Discovery jobs through existing job contracts and preserve their stable reference.
-- Support pasted descriptions and, if enabled in the agreed UI, pasted URLs as job-context sources.
-- Fetch a pasted URL only through a controlled server-side mechanism with protections against SSRF, private/internal addresses, unsafe redirects, oversized responses and unsupported content.
+- Support external job context through the job title, company name and pasted job description fields.
+- Do not fetch, scrape or resolve external job URLs from CV Studio. The candidate supplies the description directly.
 - Do not bypass authentication or access controls on job sites.
-- If a URL is unreadable or blocked, ask the candidate to paste the description.
 - Preserve the source URL and distinguish retrieved text from user-pasted text.
 - Validate content length and quality before analysis.
 
 **Exit criteria**
 
 - Supported job-context inputs produce a validated, traceable job context.
-- Unsafe, blocked and unreadable URLs fail safely and show a paste-description fallback.
+- External job input validates the title, company name and description length before analysis.
 - Incomplete job details are clearly identified; no unsupported requirements are fabricated.
 - Security and extraction verification evidence is recorded.
 
@@ -323,3 +322,34 @@ This update supersedes earlier checkpoint notes that described a candidate-facin
 - No build, lint, unit/integration tests, browser checks, live database checks or migrations were run.
 - PDF.js rendering, acceptance against the deployed schema/trigger, exact reuse and draft deduplication require runtime verification.
 - M4-C09 remains not started. M4 is not accepted.
+
+## M4 mobile-responsiveness prerequisite — 2026-11-24
+
+This is a focused responsive pass within the existing M4 UI work, not a new checkpoint and not a change to the checkpoint IDs or order.
+
+- **Status:** In review — responsive source changes are committed; user runtime review remains outstanding.
+- **Scope:** CV Studio workspace scrolling, selected-job header and description panel, editor actions, PDF toolbar and viewer sizing.
+- **Changes:** The CV Studio page now owns a bounded vertical scroll area with mobile bottom safe-area padding. The selected-job header stacks on narrow screens and the description panel uses a mobile-safe height range. Draft editor actions can wrap and stack. PDF controls wrap, the viewer uses smaller mobile padding/minimum height, and fit-to-width uses the measured content box. Desktop two-column layout remains behind the existing large-screen Tailwind breakpoints.
+- **Not changed:** External job entry remains exactly job title, company name and pasted job description. No location field, URL fetching or advert scraping was added. Existing job selection, exact-job CV reuse, explicit tailoring action, Profile ownership and M5 boundary remain unchanged.
+- **Verification:** Current dev source and relevant workspace shell styles were inspected. No build, lint, automated tests, browser automation, live runtime checks or database migration was run.
+- **Acceptance condition:** User verifies at narrow mobile widths (including 320px and 360px), a typical phone width, tablet and desktop. Check page scrolling, job-description scrolling, close action, PDF fit/zoom/download, editor actions, external job form, mobile navigation clearance and desktop two-column regression.
+- **Next action:** User pulls dev, tests the responsive experience locally and reports any concrete viewport-specific defects. M4-C09 remains responsible for final milestone verification and acceptance.
+
+## Repository-grounded M4 gap review — 2026-11-24
+
+The following is the current source-level picture, not a claim of runtime acceptance:
+
+1. **Master CV:** confirmed-Profile mapping, source IDs and Profile-version-aware master creation are implemented. Accuracy and migration/runtime behaviour still need user verification.
+2. **Job context:** Discovery job resolution and the three-field external job form are implemented. External URL fetching/scraping is intentionally not part of this workflow.
+3. **Exact reuse:** accepted tailored versions can be reused for the exact same Discovery job ID or pasted-description fingerprint, provided they use the current Profile version. Semantic similarity is not implemented and must not be claimed.
+4. **AI tailoring and evidence:** M4-C06 remains blocked pending an explicit AI-provider decision. No evidence-backed generated proposals or individual AI accept/reject controls are active.
+5. **Manual editing and preview:** draft creation, saving, manual edits, live A4 PDF preview and explicit acceptance exist in source. Education/certification and several source-identity fields are currently displayed read-only in the editor; full editing coverage still needs review.
+6. **Comparison:** a dedicated comparison of master versus tailored CV content is not evident in the current CV Studio UI.
+7. **Export:** on-demand PDF generation/download exists for the master CV and accepted tailored CV. Draft downloads are disabled. PDF.js rendering and export parity have not been runtime-verified.
+8. **Version/stale handling:** master CV refresh is Profile-version-aware; draft save/accept and reuse reject stale Profile versions. A clear candidate-facing stale-draft recovery path and explicit stale explanation still need review. No candidate-facing CV history/library is permitted.
+9. **M5 boundary:** CV records retain structured content and job/Profile metadata, but the immutable application snapshot/reference integration remains for M5. CV Studio must not create applications.
+10. **Persistence and failures:** owner-scoped routes and the cv_versions migration exist in source. The migration has not been applied/verified in this work session; runtime ownership/RLS, persistence, concurrency and failure states remain unverified.
+
+**Recommended remaining sequence:** (a) resolve the AI-provider decision and complete C06's evidence-backed tailoring contract; (b) finish C07 suggestion review, editing coverage, stale-draft recovery and acceptance UX; (c) finish C08 comparison, exact reuse/version lifecycle, export verification and the M5 snapshot handoff contract; (d) complete C09 with user-run runtime, security, responsive and regression review. Matching availability must not prevent master CV generation or a user-directed manual CV workflow.
+
+**Important:** M4 is not Accepted. Source presence and commits do not establish runtime correctness.
