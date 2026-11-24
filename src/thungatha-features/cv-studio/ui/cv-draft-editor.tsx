@@ -111,6 +111,7 @@ export function CvDraftEditor({
 }) {
   const createStarted = useRef(false);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [createFailed, setCreateFailed] = useState(false);
   const [content, setContent] = useState<CvContent>(
     initialContent as CvContent,
   );
@@ -123,6 +124,7 @@ export function CvDraftEditor({
 
   async function createDraft() {
     setBusy(true);
+    setCreateFailed(false);
     setError(null);
     setMessage(null);
     try {
@@ -152,6 +154,7 @@ export function CvDraftEditor({
         await generateSuggestionsForDraft(createdDraft.id);
       }
     } catch (e) {
+      setCreateFailed(true);
       setError(
         e instanceof DOMException && e.name === "TimeoutError"
           ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
@@ -180,11 +183,15 @@ export function CvDraftEditor({
           };
       const response = await fetch("/api/cv-studio/drafts/tailor", {
         method: "POST",
+        signal: AbortSignal.timeout(180_000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ draftId, job }),
       });
       const body = await response.json();
-      if (!response.ok) throw new Error(body.error ?? "AI tailoring failed.");
+      if (!response.ok) {
+        const requestId = typeof body.requestId === "string" ? ` (Request ID: ${body.requestId})` : "";
+        throw new Error(`${body.error ?? "AI tailoring failed."}${requestId}`);
+      }
       setDraft((current) => current ? {
         ...current,
         suggestions: body.suggestions,
@@ -197,7 +204,11 @@ export function CvDraftEditor({
         : "No summary change was recommended. Your existing summary remains unchanged.");
     } catch (e) {
       setWorkflowStage(null);
-      setError(e instanceof Error ? e.message : "AI summary generation failed.");
+      setError(
+        e instanceof DOMException && e.name === "TimeoutError"
+          ? "AI tailoring exceeded three minutes. Your draft is still available; retry the summary generation."
+          : e instanceof Error ? e.message : "AI summary generation failed.",
+      );
     } finally {
       setTailoringBusy(false);
     }
@@ -383,7 +394,13 @@ export function CvDraftEditor({
         )}
       </div>
 
-      {error && (
+      {error && !draft && createFailed && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+          <p className="min-w-0 flex-1 text-sm text-destructive" role="alert">{error}</p>
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => void createDraft()}>Retry draft creation</Button>
+        </div>
+      )}
+      {error && (draft || !createFailed) && (
         <p
           className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           role="alert"
@@ -406,6 +423,11 @@ export function CvDraftEditor({
         </p>
       )}
 
+      {draft && error && !tailoringBusy && draft.status === "draft" && (
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="sm" variant="outline" onClick={() => void generateSuggestions()} disabled={busy || tailoringBusy}>Retry summary generation</Button>
+        </div>
+      )}
       {draft && (
         <>
           <div className="xl:hidden">
