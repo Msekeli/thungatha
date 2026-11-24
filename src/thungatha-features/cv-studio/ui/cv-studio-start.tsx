@@ -337,7 +337,7 @@ export function CvStudioStart() {
         <div className="flex min-h-0 flex-1 flex-col">
           {jobContext && state.masterCv ? (
             <>
-              <div className="grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
+              <div className={`grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:items-stretch ${tailoringStarted ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]"}`}>
                 <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
                   <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -428,21 +428,22 @@ export function CvStudioStart() {
                       )}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && (
+                      {!reusableCv && !tailoringStarted && (
                         <Button
                           size="lg"
                           className="mx-auto w-[98%] rounded-md"
-                          disabled={workflowBusy || tailoringStarted}
+                          disabled={workflowBusy}
                           onClick={() => setTailoringStarted(true)}
                         >
-                          {tailoringStarted ? (
-                            "Preparing your tailored CV…"
-                          ) : (
-                            <span className="font-bold">
-                              Create a new CV tailored to this job
-                            </span>
-                          )}
+                          <span className="font-bold">
+                            Create a new CV tailored to this job
+                          </span>
                         </Button>
+                      )}
+                      {tailoringStarted && (
+                        <p className="w-full rounded-lg border border-accent/30 bg-accent-bg/40 px-3 py-2 text-center text-sm font-medium text-accent-text">
+                          CV tailoring workspace is open below.
+                        </p>
                       )}
                       {reusableCv && (
                         <Button
@@ -476,7 +477,7 @@ export function CvStudioStart() {
                     />
                   )}
                 </section>
-                <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block lg:h-full lg:overflow-y-auto">
+                <section className={`hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:h-full lg:overflow-y-auto ${tailoringStarted ? "lg:hidden" : "lg:block"}`}>
                   {reusableCv ? (
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-fg">
