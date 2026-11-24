@@ -63,7 +63,7 @@ export function CvStudioStart() {
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
-  const [externalJobOpen, setExternalJobOpen] = useState(false);
+  const [externalJobOpen, setExternalJobOpen] = useState(false);\n  const [tailoringStarted, setTailoringStarted] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -210,42 +210,44 @@ export function CvStudioStart() {
         <div className="space-y-6">
           {jobContext && state.masterCv ? (
             <>
-            <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
-              <section className="space-y-5 text-fg">
-                <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">{jobContext.source === "discovery" ? "Job from Thungatha Discovery" : "External job opportunity"}</p>
-                      <h2 className="mt-2 text-xl font-semibold text-slate-950">{jobContext.title}</h2>
-                      <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
+              <div className="grid min-w-0 items-start gap-6 lg:h-[calc(100dvh-230px)] lg:min-h-0 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)]">
+                <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
+                  <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">{jobContext.source === "discovery" ? "Job from Thungatha Discovery" : "External job opportunity"}</p>
+                        <h2 className="mt-2 break-words text-xl font-semibold text-fg">{jobContext.title}</h2>
+                        <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={clearSelectedJob}>Close job</Button>
                     </div>
-                    <Button variant="outline" size="sm" onClick={clearSelectedJob}>Remove job</Button>
+                    <div className="mt-5 border-t border-line pt-4">
+                      <h3 className="text-sm font-semibold text-fg">Job description</h3>
+                      <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
+                    </div>
+                    {jobContext.sourceUrl && <a className="mt-3 inline-flex text-sm font-medium text-accent-text underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
+                    <div className="mt-4 border-t border-line pt-4" aria-live="polite">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV assessment</p>
+                      {workflowBusy && <p className="mt-2 text-sm text-fg-muted">Checking saved CV versions…</p>}
+                      {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
+                      {suitability && <>
+                        <h3 className="mt-2 text-base font-semibold text-fg">{suitability.matchingVersions.length ? "An accepted CV exists for this exact job" : "No accepted CV exists for this exact job"}</h3>
+                        <p className="mt-1 text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
+                        {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p><Button className="mt-3 w-full" size="sm" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use this CV</Button></div>)}
+                      </>}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-4">
+                      {!reusableCv && <Button className="w-full sm:w-auto" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor my CV"}</Button>}
+                      {reusableCv && <Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button>}
+                    </div>
                   </div>
-                  <div className="mt-5 border-t border-line pt-4">
-                    <h3 className="text-sm font-semibold text-fg">Job description</h3>
-                    <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] overflow-y-auto whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
-                  </div>
-                  {jobContext.sourceUrl && <a className="mt-4 inline-flex text-sm font-medium text-accent-text underline underline-offset-4" href={jobContext.sourceUrl} target="_blank" rel="noreferrer">Open original job advert</a>}
-                </div>
-                <div className="rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-6" aria-live="polite">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV assessment</p>
-                  {workflowBusy && <p className="mt-2 text-sm text-fg-muted">Checking this job against your saved CV versions…</p>}
-                  {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
-                  {suitability && <>
-                    <h3 className="mt-2 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV exists for this exact job" : "No accepted CV exists for this exact job"}</h3>
-                    <p className="mt-2 text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
-                    {suitability.matchingVersions.map((version) => <div key={version.id} className="mt-3 rounded-lg border border-line bg-panel-2 p-3"><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="mt-1 text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p><Button className="mt-3 w-full" size="sm" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use this CV</Button></div>)}
-                  </>}
-                  <ButtonLink className="mt-4 w-full" href="/jobs">Back to Job Discovery</ButtonLink>
-                </div>
-              </section>
-              <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4">
-                {reusableCv ? <div className="space-y-2"><p className="text-sm font-medium text-fg">Reusing accepted CV · Version {reusableCv.version_number}</p><Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button><CvPdfPreview content={reusableCv.content} accent={cvAccentHex[reusableCv.accent_colour]} /></div> : <CvPdfPreview content={state.masterCv.content} />}
-              </section>
-            </div>
-            {!reusableCv && <CvDraftEditor masterVersionId={state.masterCv.id} jobContext={jobContext} initialContent={state.masterCv.content} />}
+                  {tailoringStarted && !reusableCv && <CvDraftEditor masterVersionId={state.masterCv.id} jobContext={jobContext} initialContent={state.masterCv.content} startImmediately />}
+                </section>
+                <section className="min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:h-full lg:overflow-y-auto">
+                  {reusableCv ? <div className="space-y-2"><p className="text-sm font-medium text-fg">Reusing accepted CV · Version {reusableCv.version_number}</p><CvPdfPreview content={reusableCv.content} accent={cvAccentHex[reusableCv.accent_colour]} /></div> : <CvPdfPreview content={state.masterCv.content} />}
+                </section>
+              </div>
             </>
-          ) : (
           <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
             <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
               {!externalJobOpen ? (
