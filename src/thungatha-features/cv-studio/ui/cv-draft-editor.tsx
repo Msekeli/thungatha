@@ -336,12 +336,12 @@ export function CvDraftEditor({
             <div className="flex items-center gap-3"><span className="text-2xl text-accent" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
             <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
           </div>
-          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg text-accent px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
+          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg text-accent-text px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
         </div>
         <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-4 gap-2">
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
-              className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 pb-2 pt-2 text-center text-[11px] font-semibold leading-tight sm:flex-row sm:gap-2 sm:text-xs ${activeSection === item.id ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}>
+              className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 pb-2 pt-2 text-center text-[11px] font-semibold leading-tight sm:flex-row sm:gap-2 sm:text-xs ${activeSection === item.id ? "border-accent-text text-accent-text font-bold" : "border-transparent text-fg-muted hover:text-fg"}`}>
               <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] ${activeSection === item.id ? "border-accent bg-accent text-btn-fg" : "border-line bg-panel"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
             </button>
           ))}
