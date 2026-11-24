@@ -78,5 +78,5 @@ export function mapCvTailoringOutput(
       jobEvidenceRefs: gap.jobEvidenceRefs,
     };
   });
-  return { suggestions, gaps };
+  return { suggestions, gaps, coveredRequirementIds: parsed.coveredRequirementIds };
 }
