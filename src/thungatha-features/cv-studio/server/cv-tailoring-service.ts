@@ -6,6 +6,7 @@ import type { JobMatchingContext } from "@/thungatha-features/job-discovery/serv
 import type { CvContent, CvSuggestion } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
+import { mapCvTailoringOutput } from "./map-cv-tailoring-output";
 import {
   CV_TAILORING_VERSION,
   createCvTailoringResponseSchema,
@@ -66,49 +67,15 @@ export async function generateCvTailoringSuggestions(
   });
 
   const parsed = schema.validator.parse(JSON.parse(response.content));
-  const targetMap = new Map(editableTargets.map((item) => [item.path, item]));
-  const evidenceMap = new Map([
-    ...profileEvidence.map((item) => [item.id, { source: "profile" as const, excerpt: item.content }] as const),
-    ...jobEvidence.map((item) => [item.id, { source: "job" as const, excerpt: item.content }] as const),
-  ]);
-  const seenTargets = new Set<string>();
-  const suggestions: CvSuggestion[] = parsed.suggestions.map((item) => {
-    if (seenTargets.has(item.targetPath)) {
-      throw new Error("AI returned more than one suggestion for the same CV field.");
-    }
-    seenTargets.add(item.targetPath);
-    const target = targetMap.get(item.targetPath);
-    if (!target || item.originalText !== target.currentText) {
-      throw new Error("AI returned a suggestion for changed or unknown CV text.");
-    }
-    return {
-      id: crypto.randomUUID(),
-      targetPath: item.targetPath,
-      originalText: item.originalText,
-      proposedText: item.proposedText,
-      reason: item.reason,
-      evidenceRefs: [...item.profileEvidenceRefs, ...item.jobEvidenceRefs],
-      evidence: [...item.profileEvidenceRefs, ...item.jobEvidenceRefs].map((ref) => {
-        const evidence = evidenceMap.get(ref);
-        if (!evidence) throw new Error("AI returned an unknown evidence reference.");
-        return { ref, ...evidence };
-      }),
-      decision: "pending",
-    };
-  });
+  const mapped = mapCvTailoringOutput(
+    parsed,
+    profileEvidence,
+    jobEvidence,
+    editableTargets,
+    understanding.analysis.requirements,
+  );
   return {
-    suggestions,
-    gaps: parsed.gaps.map((gap) => {
-      const requirement = understanding.analysis.requirements.find(
-        (item) => item.id === gap.requirementId,
-      );
-      if (!requirement) throw new Error("AI returned an unknown job requirement.");
-      return {
-        requirement: requirement.statement,
-        explanation: gap.explanation,
-        jobEvidenceRefs: gap.jobEvidenceRefs,
-      };
-    }),
+    ...mapped,
     provider: response.provider,
     model: response.model,
     taskVersion: CV_TAILORING_VERSION,
