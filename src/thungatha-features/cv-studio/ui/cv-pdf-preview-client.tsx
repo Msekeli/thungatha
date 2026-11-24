@@ -46,6 +46,9 @@ export function CvPdfPreviewClient({
     let objectUrl: string | null = null;
     setIsPreparing(true);
     setPdfError(null);
+    setPdfUrl(null);
+    setPageCount(0);
+    setRenderedCanvases([]);
 
     void pdf(document)
       .toBlob()
