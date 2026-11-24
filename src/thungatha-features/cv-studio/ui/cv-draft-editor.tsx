@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
 import { applyCvSuggestion } from "../server/apply-cv-suggestion";
@@ -399,20 +398,6 @@ export function CvDraftEditor({
             {busy ? "Preparing your CV editor…" : "Preparing your CV editor…"}
           </span>
         )}
-        {draft?.status === "draft" && (
-          <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-            <Button
-              variant="outline"
-              disabled={busy}
-              onClick={() => void saveDraft()}
-            >
-              {busy ? "Saving…" : "Save version"}
-            </Button>
-            <Button disabled={busy} onClick={() => void acceptDraft()}>
-              {busy ? "Processing…" : "Accept CV"}
-            </Button>
-          </div>
-        )}
         {draft?.status === "accepted" && (
           <span className="rounded-full bg-accent-bg px-3 py-1.5 text-sm font-medium text-accent-text">
             Accepted · Version {draft.version_number}
@@ -761,7 +746,7 @@ export function CvDraftEditor({
                   {busy ? "Saving…" : "Save version"}
                 </Button>
                 <Button className="w-full sm:w-auto" disabled={busy} onClick={() => void acceptDraft()}>
-                  {busy ? "Processing…" : "Accept this CV"}
+                  {busy ? "Processing…" : "Accept CV"}
                 </Button>
               </div>
             )}
