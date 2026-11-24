@@ -70,7 +70,7 @@ export function createCvTailoringResponseSchema(
         proposedText: z.string().min(1),
         reason: z.string().min(1),
         profileEvidenceRefs: z.array(profileRef).min(1),
-        requirementIds: z.array(requirementId).min(1),
+        requirementIds: z.array(requirementId),
         jobEvidenceRefs: z.array(jobRef).min(1),
       }).strict(),
     ),
@@ -83,6 +83,13 @@ export function createCvTailoringResponseSchema(
       }).strict(),
     ),
   }).strict().superRefine((output, context) => {
+    if (requirementIds.length === 0 && output.suggestions.length > 0) {
+      context.addIssue({
+        code: "custom",
+        path: ["suggestions"],
+        message: "Suggestions cannot be generated without an extracted job requirement to justify relevance.",
+      });
+    }
     const classified = [
       ...output.coveredRequirementIds,
       ...output.gaps.map((gap) => gap.requirementId),
