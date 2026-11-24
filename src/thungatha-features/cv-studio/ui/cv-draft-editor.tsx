@@ -122,8 +122,8 @@ export function CvDraftEditor({
   );
 
   useEffect(() => {
-    if (draft) onContentChange?.(content as unknown as CvPdfContent, accentHex[draft.accent_colour]);
-  }, [content, draft?.accent_colour, draft, onContentChange]);
+    if (draft?.id) onContentChange?.(content as unknown as CvPdfContent, accentHex[draft.accent_colour]);
+  }, [content, draft?.id, draft?.accent_colour, onContentChange]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -758,7 +758,7 @@ export function CvDraftEditor({
                   disabled={busy}
                   onClick={() => void saveDraft()}
                 >
-                  {busy ? "Saving…" : "Save draft"}
+                  {busy ? "Saving…" : "Save version"}
                 </Button>
                 <Button className="w-full sm:w-auto" disabled={busy} onClick={() => void acceptDraft()}>
                   {busy ? "Processing…" : "Accept this CV"}
