@@ -75,9 +75,11 @@ export async function verifyCvTailoringSuggestions(
     reasoning: false,
     systemPrompt: [
       "Independently verify each proposed CV edit. You are a strict reviewer, not a rewriter.",
-      "Approve only when proposedText preserves the exact factual meaning and scope of the cited profile evidence, addresses the cited job requirements, and is grammatical, readable English with normal word spacing.",
+      "Approve only when proposedText preserves the exact factual meaning and scope of the cited profile evidence, directly addresses the cited job requirements, and is grammatical, readable English with normal word spacing.",
+      "The edit must materially improve the CV for this specific role through clearer relevance, stronger information hierarchy, or more concise expression without losing useful detail.",
+      "Reject cosmetic paraphrases, synonym swaps, or sentence combinations that do not provide a clear improvement over originalText. A truthful but low-value rewrite must be rejected.",
       "Reject invented or strengthened claims, changed dates/metrics/tools/responsibilities, unrelated requirement links, awkward wording, missing spaces, or unsupported implications.",
-      "Do not reject a truthful edit merely because it uses different wording. Do not infer facts from the job description.",
+      "Do not reject a genuinely useful edit merely because it uses different wording. Do not infer facts from the job description.",
       "Review every suggestion exactly once by its zero-based index. Return one review per index, with decision approve or reject and a concise issue string (empty when approved). Return JSON only.",
     ].join("\n"),
     userPrompt: JSON.stringify({ suggestions, profileEvidence, jobEvidence, requirements }),
