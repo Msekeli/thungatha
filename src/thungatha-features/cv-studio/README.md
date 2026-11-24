@@ -193,3 +193,14 @@ Transitions must be explicit. A route load, job selection, URL visit or PDF down
 - AI tailoring and semantic suitability remain blocked until an AI provider is selected.
 - No CV history UI has been reintroduced.
 - No tests, lint, build, browser checks, database checks or migrations were run. Runtime verification is still required.
+
+## CV Studio entry screen and external job input (2026-11-24)
+
+- CV Studio does not provide a second job-search or Discovery interface. Job Discovery remains the only place to browse Thungatha listings.
+- When a candidate opens CV Studio without a selected job, the left panel explains the two supported entry paths: return to Job Discovery and select **Tailor my CV**, or add an external opportunity. The right panel continues to show the master CV.
+- The external-job form is deliberately limited to three required fields: job title, company name and pasted job description. Location and advert URL are not requested. No URL fetch or advert extraction is performed.
+- The external form submits the same authenticated job-context endpoint and converges on the same job-specific CV workflow as a Discovery handoff.
+- When a job is selected, its description is shown in an independently scrollable panel using a 55vh target height (60vh maximum). The generic AI-not-active warning has been removed from the job assessment panel; exact-match reuse information remains available.
+- The external form enforces the existing 200-character minimum and 30,000-character maximum for the pasted description.
+- The UI uses shared shadcn Button/Input/Textarea components and Tailwind theme tokens. No feature-specific CSS was introduced.
+- Source changes are committed to `dev`; no build, lint, tests, browser checks or live database verification were run.
