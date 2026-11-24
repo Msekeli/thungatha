@@ -65,8 +65,8 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const editableTargets = allEditableTargets.filter(
     (target) => target.path === "professionalSummary",
   );
-  // This pipeline edits only the summary. Sending evidence from every other CV
-  // section adds tokens without improving the factual basis for this proposal.
+  // Only summary evidence may justify a wording proposal. The full Profile
+  // evidence is retained below for accurate requirement coverage and gap analysis.
   const summaryEvidence = profileEvidence.filter(
     (item) => item.id === "cv:professionalSummary",
   );
