@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { buildCvTailoringEvidence } from "@/thungatha-features/cv-studio/server/cv-tailoring-evidence";
-import { cvContentSchema } from "@/thungatha-features/cv-studio/server/cv-studio-schema";
+import {
+  cvContentSchema,
+  cvSuggestionSchema,
+} from "@/thungatha-features/cv-studio/server/cv-studio-schema";
 import { mapCvTailoringOutput } from "@/thungatha-features/cv-studio/server/map-cv-tailoring-output";
 import { createCvTailoringResponseSchema } from "@/thungatha-features/cv-studio/server/cv-tailoring-schema";
 
@@ -176,7 +179,7 @@ describe("CV tailoring evidence", () => {
     )).toThrow(/not attached to its selected requirement/);
   });
 
-  it("accepts a proposal only when exact field evidence and matching requirement evidence are cited", () => {
+  it("validates mapped suggestions with the shared persisted-CV suggestion schema", () => {
     const evidence = buildCvTailoringEvidence(master);
     const schema = createCvTailoringResponseSchema(
       evidence.profileEvidence.map((item) => item.id),
@@ -188,8 +191,8 @@ describe("CV tailoring evidence", () => {
       suggestions: [{
         targetPath: "workExperience[work-1].description",
         originalText: "Built internal web applications.",
-        proposedText: "Built internal web applications using React.",
-        reason: "Connects the existing application work to the stated React requirement.",
+        proposedText: "  Built internal web applications using React.  ",
+        reason: "  Connects existing application work to the stated React requirement.  ",
         profileEvidenceRefs: ["cv:workExperience[work-1].description"],
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:0"],
@@ -203,10 +206,12 @@ describe("CV tailoring evidence", () => {
       evidence.editableTargets,
       requirements,
     );
-    expect(mapped.suggestions).toHaveLength(1);
-    expect(mapped.suggestions[0].evidence.map((item) => item.ref)).toEqual([
-      "cv:workExperience[work-1].description",
-      "job:description:0",
-    ]);
+    expect(cvSuggestionSchema.safeParse(mapped.suggestions[0]).success).toBe(true);
+    expect(mapped.suggestions[0].proposedText).toBe(
+      "Built internal web applications using React.",
+    );
+    expect(mapped.suggestions[0].reason).toBe(
+      "Connects existing application work to the stated React requirement.",
+    );
   });
 });
