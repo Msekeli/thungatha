@@ -352,3 +352,34 @@ The following is the current source-level picture, not a claim of runtime accept
 **Recommended remaining sequence:** (a) resolve the AI-provider decision and complete C06's evidence-backed tailoring contract; (b) finish C07 suggestion review, editing coverage, stale-draft recovery and acceptance UX; (c) finish C08 comparison, exact reuse/version lifecycle, export verification and the M5 snapshot handoff contract; (d) complete C09 with user-run runtime, security, responsive and regression review. Matching availability must not prevent master CV generation or a user-directed manual CV workflow.
 
 **Important:** M4 is not Accepted. Source presence and commits do not establish runtime correctness.
+
+## 2026-11-24 — Shared AI provider integration started
+
+**Status: In progress. This is an initial implementation increment, not checkpoint acceptance.**
+
+### Provider audit
+
+- The shared server-side AI boundary exists at `src/lib/ai/`. Its configured providers are `ollama-local`, `gemini`, and `groq`; `ollama-cloud` is listed in the public type but is not supported by the current router.
+- Provider activation requires both the `AI_ENABLED_PROVIDERS` allow-list and the provider-specific enable flag. `AI_PROVIDER` (or `AI_DEFAULT_PROVIDER`) selects the primary; the order in `AI_ENABLED_PROVIDERS` determines fallback order.
+- The routing plan is global, not task-specific. A retryable provider failure can move to the next enabled provider; configuration, authentication, invalid-response, and non-retryable errors do not automatically fail over.
+- Gemini uses its structured response schema support. Groq converts the shared schema to strict OpenAI JSON Schema. Ollama currently sends JSON mode only; application-side schema and evidence validation remains mandatory.
+- Model IDs are read from `GEMINI_MODEL`, `GROQ_MODEL`, and `OLLAMA_LOCAL_MODEL`. Ollama also reads `OLLAMA_LOCAL_BASE_URL`. The actual environment values and live provider availability were not inspected.
+
+### Initial M4 implementation
+
+- Registered the feature-owned `cv-tailoring` task on the existing provider-neutral completion contract. No new provider SDK or router was introduced.
+- Added a CV Studio tailoring schema that constrains output to supplied evidence IDs and approved editable text paths.
+- Added evidence preparation that treats the current master CV as the candidate-fact authority. Current draft wording is passed separately as an editable target, never as candidate evidence.
+- Added a CV tailoring service that reuses the versioned M3 job-understanding cache for the exact job context, then requests evidence-grounded suggestions and unsupported-requirement gaps through the shared provider router.
+- Added an authenticated tailoring endpoint. It checks user ownership, confirmed/current Profile version, draft status, exact job snapshot, and the linked current master CV before invoking AI.
+- Connected the CV editor to generate, review, accept, or reject individual suggestions. Accepting a suggestion updates only the draft. Stale suggestions are rejected rather than overwriting subsequent manual edits. Suggestions are persisted when the user saves the draft.
+- Added focused unit tests for evidence boundaries, allowed target paths, and safe suggestion application.
+
+### Remaining verification and limitations
+
+- No Vitest, type-check, lint, build, live provider call, Supabase query, migration, or browser workflow was run during this remote implementation.
+- M3's job-understanding cache depends on the M3 Supabase migrations. Those migrations were previously recorded as not applied; the new endpoint cannot be considered operational until the required M3 schema is applied and verified.
+- Provider model IDs, structured-output quality, fallback behaviour, and actual Groq/Gemini/Ollama availability still require runtime tests.
+- CV tailoring gaps are returned for the current review session; only suggestion decisions/content are persisted in the existing draft structure. Durable gap history is not part of this increment.
+- The provider router uses one global primary/fallback plan. Per-task routing is not implemented and should not be added without measured need.
+- M4-C06 and M4-C07 remain In progress. This increment does not accept either checkpoint or M4.
