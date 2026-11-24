@@ -591,23 +591,6 @@ export function CvDraftEditor({
                 }
               />
             </Field>
-            <div id="cv-review-skills" className="scroll-mt-28"><Field label="Skills" hint="One skill per line.">
-              <Textarea
-                disabled={draft.status === "accepted"}
-                rows={4}
-                value={content.technicalSkills.join("\n")}
-                onChange={(e) =>
-                  setContent((v) => ({
-                    ...v,
-                    technicalSkills: e.target.value
-                      .split("\n")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  }))
-                }
-              />
-            </Field></div>
-
             <div id="cv-review-experience" className="scroll-mt-28 space-y-3">
               <h4 className="font-semibold">Professional experience</h4>
               {content.workExperience.map((item, index) => (
@@ -656,6 +639,25 @@ export function CvDraftEditor({
                 </div>
               ))}
             </div>
+
+            </div>
+
+            <div id="cv-review-skills" className="scroll-mt-28"><Field label="Skills" hint="One skill per line.">
+              <Textarea
+                disabled={draft.status === "accepted"}
+                rows={4}
+                value={content.technicalSkills.join("\n")}
+                onChange={(e) =>
+                  setContent((v) => ({
+                    ...v,
+                    technicalSkills: e.target.value
+                      .split("\n")
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  }))
+                }
+              />
+            </Field></div>
 
             <div className="space-y-3">
               <h4 className="font-semibold">Projects</h4>
