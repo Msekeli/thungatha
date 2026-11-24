@@ -43,6 +43,10 @@ function suggestion(targetPath: string) {
     proposedText: "Revised evidence-grounded description.",
     reason: "Makes the existing work clearer.",
     evidenceRefs: ["cv:workExperience[work-1].description", "job:description:0"],
+    evidence: [
+      { ref: "cv:workExperience[work-1].description", source: "profile", excerpt: "Built internal web applications." },
+      { ref: "job:description:0", source: "job", excerpt: "Build internal applications." },
+    ],
     decision: "accepted",
   });
 }
