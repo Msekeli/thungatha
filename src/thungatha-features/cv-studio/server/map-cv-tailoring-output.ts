@@ -1,4 +1,4 @@
-import type { CvSuggestion } from "./cv-studio-schema";
+import { cvSuggestionSchema, type CvSuggestion } from "./cv-studio-schema";
 import type { CvTailoringEvidence } from "./cv-tailoring-evidence";
 import type { CvTailoringModelOutput } from "./cv-tailoring-schema";
 
@@ -45,7 +45,7 @@ export function mapCvTailoringOutput(
     }
 
     const evidenceRefs = [...item.profileEvidenceRefs, ...item.jobEvidenceRefs];
-    return {
+    const suggestion = {
       id: crypto.randomUUID(),
       targetPath: item.targetPath,
       originalText: item.originalText,
@@ -57,8 +57,13 @@ export function mapCvTailoringOutput(
         if (!evidence) throw new Error("AI returned an unknown evidence reference.");
         return { ref, ...evidence };
       }),
-      decision: "pending",
+      decision: "pending" as const,
     };
+
+    // Apply the same CV suggestion contract used by persisted CV versions.
+    // The AI response schema validates provider output; this validates the
+    // actual application-facing object after evidence has been resolved.
+    return cvSuggestionSchema.parse(suggestion);
   });
   const gaps = parsed.gaps.map((gap) => {
     const requirement = requirements.find((item) => item.id === gap.requirementId);
