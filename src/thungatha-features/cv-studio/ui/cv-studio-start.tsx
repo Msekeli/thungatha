@@ -63,7 +63,8 @@ export function CvStudioStart() {
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
   const [workflowBusy, setWorkflowBusy] = useState(false);
-  const [externalJobOpen, setExternalJobOpen] = useState(false);\n  const [tailoringStarted, setTailoringStarted] = useState(false);
+  const [externalJobOpen, setExternalJobOpen] = useState(false);
+  const [tailoringStarted, setTailoringStarted] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
