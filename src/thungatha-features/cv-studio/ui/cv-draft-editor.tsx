@@ -127,7 +127,7 @@ export function CvDraftEditor({
     try {
       const response = await fetch("/api/cv-studio/drafts", {
         method: "POST",
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(15000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ masterVersionId, jobContext }),
       });
@@ -143,7 +143,13 @@ export function CvDraftEditor({
           : "A separate working draft has been created. Your master CV and Profile remain unchanged.",
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Draft could not be created.");
+      setError(
+        e instanceof DOMException && e.name === "TimeoutError"
+          ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
+          : e instanceof Error
+            ? e.message
+            : "Draft could not be created.",
+      );
     } finally {
       setBusy(false);
     }
