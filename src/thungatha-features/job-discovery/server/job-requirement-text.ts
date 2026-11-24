@@ -25,8 +25,13 @@ function normalizeText(value: string) {
     .trim();
 }
 
-function htmlToStructuredText(markup: string) {
-  const root = parseFragment(markup) as unknown as HtmlNode;
+/**
+ * Produces the canonical readable representation of a job description.
+ * parse5 decodes named, decimal and hexadecimal character references while
+ * preserving block boundaries and preventing markup from leaking into text.
+ */
+export function jobDescriptionToText(description: string) {
+  const root = parseFragment(description) as unknown as HtmlNode;
   const output: string[] = [];
 
   function visit(node: HtmlNode) {
@@ -51,12 +56,8 @@ function htmlToStructuredText(markup: string) {
 }
 
 export function sourceSegments(description: string) {
-  // Do not send plain text through an HTML parser: preserve its exact word
-  // boundaries and line structure before splitting it into evidence units.
   const isHtml = HTML_TAG.test(description);
-  const text = isHtml
-    ? htmlToStructuredText(description)
-    : normalizeText(description);
+  const text = jobDescriptionToText(description);
   const blocks = text.split(/\n+/);
   const segments = isHtml
     ? blocks
