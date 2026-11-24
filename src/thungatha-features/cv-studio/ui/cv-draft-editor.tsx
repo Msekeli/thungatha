@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CvPdfPreview } from "./cv-pdf-preview";
+import type { CvPdfContent } from "./cv-pdf-document";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
 import { applyCvSuggestion } from "../server/apply-cv-suggestion";
 import type { CvSuggestion } from "../server/cv-studio-schema";
@@ -104,11 +105,13 @@ export function CvDraftEditor({
   jobContext,
   initialContent,
   startImmediately = false,
+  onContentChange,
 }: {
   masterVersionId: string;
   jobContext: JobContext;
   initialContent: unknown;
   startImmediately?: boolean;
+  onContentChange?: (content: CvPdfContent, accent: string) => void;
 }) {
   const createStarted = useRef(false);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -117,6 +120,10 @@ export function CvDraftEditor({
   const [content, setContent] = useState<CvContent>(
     initialContent as CvContent,
   );
+
+  useEffect(() => {
+    if (draft) onContentChange?.(content as unknown as CvPdfContent, accentHex[draft.accent_colour]);
+  }, [content, draft?.accent_colour, draft, onContentChange]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -449,7 +456,7 @@ export function CvDraftEditor({
       )}
       {draft && (
         <>
-          <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div className="grid min-w-0 gap-4 sm:gap-6">
           <div className="min-w-0 space-y-5">
             <nav aria-label="CV tailoring sections" className="sticky top-0 z-20 rounded-xl border border-line bg-panel p-2 shadow-sm">
               <div className="grid grid-cols-3 gap-1">
@@ -758,21 +765,6 @@ export function CvDraftEditor({
                 </Button>
               </div>
             )}
-          </div>
-          <div className="hidden min-w-0 space-y-3 xl:sticky xl:top-4 xl:self-start">
-            <div className="flex items-center justify-between gap-3">
-              <h4 className="font-semibold">Live A4 preview</h4>
-              <span className="text-xs text-fg-muted">
-                {draft.status === "accepted"
-                  ? "Accepted version"
-                  : "Unsaved edits appear here"}
-              </span>
-            </div>
-            <CvPdfPreview
-              content={content}
-              accent={accentHex[draft.accent_colour]}
-              allowDownload={draft.status === "accepted"}
-            />
           </div>
           </div>
         </>
