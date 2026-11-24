@@ -144,7 +144,11 @@ export function CvDraftEditor({
           ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
           : "Your separate working draft is ready. Your master CV and Profile remain unchanged.",
       );
-      if (createdDraft.status === "draft" && createdDraft.suggestions.length === 0) {
+      if (
+        createdDraft.status === "draft" &&
+        createdDraft.suggestions.length === 0 &&
+        !createdDraft.tailoring_assessment
+      ) {
         await generateSuggestionsForDraft(createdDraft.id);
       }
     } catch (e) {
