@@ -277,7 +277,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-visible pb-6 lg:overflow-y-auto lg:pb-0">
+    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-visible pb-[calc(7rem+env(safe-area-inset-bottom))] lg:overflow-y-auto lg:pb-0">
       {state.status === "loading" && (
         <section
           className="rounded-2xl border border-slate-200 bg-white p-6"
@@ -367,7 +367,7 @@ export function CvStudioStart() {
                       <h3 className="text-sm font-semibold text-fg">
                         Job description
                       </h3>
-                      <div className="mt-2 h-[45dvh] min-h-[12rem] max-h-[28rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:max-h-[50dvh]">
+                      <div className="mt-2 h-[35dvh] min-h-[10rem] max-h-[22rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:min-h-[12rem] lg:max-h-[50dvh]">
                         {formatJobDescription(jobContext.description)}
                       </div>
                     </div>
