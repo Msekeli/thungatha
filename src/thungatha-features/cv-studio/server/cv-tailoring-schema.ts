@@ -43,7 +43,7 @@ function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
   return output;
 }
 
-export const CV_TAILORING_VERSION = "m4-cv-tailoring-v1";
+export const CV_TAILORING_VERSION = "m4-cv-tailoring-v2";
 
 export function createCvTailoringResponseSchema(
   profileEvidenceIds: string[],
@@ -54,7 +54,7 @@ export function createCvTailoringResponseSchema(
   const profileRef = evidenceRef(profileEvidenceIds);
   const jobRef = evidenceRef(jobEvidenceIds);
   const targetPath = evidenceRef(targetPaths);
-  const requirementId = requirementIds.length ? evidenceRef(requirementIds) : z.string().min(1);
+  const requirementId = evidenceRef(requirementIds);
   const validator = z.object({
     suggestions: z.array(
       z.object({
@@ -63,6 +63,7 @@ export function createCvTailoringResponseSchema(
         proposedText: z.string().min(1),
         reason: z.string().min(1),
         profileEvidenceRefs: z.array(profileRef).min(1),
+        requirementIds: z.array(requirementId).min(1),
         jobEvidenceRefs: z.array(jobRef).min(1),
       }).strict(),
     ),
