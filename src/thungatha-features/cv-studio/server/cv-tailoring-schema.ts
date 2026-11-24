@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-const evidenceRef = (values: string[]) => {
-  const unique = [...new Set(values)];
-  if (!unique.length) throw new Error("CV tailoring requires source evidence.");
-  return z.enum(unique as [string, ...string[]]);
-};
+const evidenceRef = () => z.string().min(1);
 
 const GEMINI_TYPES: Record<string, string> = {
   object: "OBJECT",
@@ -50,7 +46,7 @@ function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
   return output;
 }
 
-export const CV_TAILORING_VERSION = "m4-cv-tailoring-v7";
+export const CV_TAILORING_VERSION = "m4-cv-tailoring-v8";
 
 export function createCvTailoringResponseSchema(
   profileEvidenceIds: string[],
@@ -58,10 +54,16 @@ export function createCvTailoringResponseSchema(
   targetPaths: string[],
   requirementIds: string[],
 ) {
-  const profileRef = evidenceRef(profileEvidenceIds);
-  const jobRef = evidenceRef(jobEvidenceIds);
-  const targetPath = evidenceRef(targetPaths);
-  const requirementId = requirementIds.length ? evidenceRef(requirementIds) : z.string().min(1);
+  // Keep the provider-facing JSON schema compact. Membership is enforced by
+  // the validator below instead of repeating large enums throughout the schema.
+  const profileRef = evidenceRef();
+  const jobRef = evidenceRef();
+  const targetPath = evidenceRef();
+  const requirementId = evidenceRef();
+  const allowedProfileRefs = new Set(profileEvidenceIds);
+  const allowedJobRefs = new Set(jobEvidenceIds);
+  const allowedTargetPaths = new Set(targetPaths);
+  const allowedRequirementIds = new Set(requirementIds);
   const validator = z.object({
     suggestions: z.array(
       z.object({
@@ -83,6 +85,47 @@ export function createCvTailoringResponseSchema(
       }).strict(),
     ),
   }).strict().superRefine((output, context) => {
+    const checkRefs = (
+      refs: string[],
+      allowed: Set<string>,
+      path: (string | number)[],
+      label: string,
+    ) => {
+      refs.forEach((ref, index) => {
+        if (!allowed.has(ref)) {
+          context.addIssue({
+            code: "custom",
+            path: [...path, index],
+            message: `Unknown ${label} reference: ${ref}`,
+          });
+        }
+      });
+    };
+
+    output.suggestions.forEach((suggestion, index) => {
+      if (!allowedTargetPaths.has(suggestion.targetPath)) {
+        context.addIssue({
+          code: "custom",
+          path: ["suggestions", index, "targetPath"],
+          message: "Unknown editable target path.",
+        });
+      }
+      checkRefs(suggestion.profileEvidenceRefs, allowedProfileRefs, ["suggestions", index, "profileEvidenceRefs"], "profile evidence");
+      checkRefs(suggestion.jobEvidenceRefs, allowedJobRefs, ["suggestions", index, "jobEvidenceRefs"], "job evidence");
+      checkRefs(suggestion.requirementIds, allowedRequirementIds, ["suggestions", index, "requirementIds"], "requirement");
+    });
+    checkRefs(output.coveredRequirementIds, allowedRequirementIds, ["coveredRequirementIds"], "requirement");
+    output.gaps.forEach((gap, index) => {
+      if (!allowedRequirementIds.has(gap.requirementId)) {
+        context.addIssue({
+          code: "custom",
+          path: ["gaps", index, "requirementId"],
+          message: "Unknown requirement reference.",
+        });
+      }
+      checkRefs(gap.jobEvidenceRefs, allowedJobRefs, ["gaps", index, "jobEvidenceRefs"], "job evidence");
+    });
+
     if (requirementIds.length === 0 && output.suggestions.length > 0) {
       context.addIssue({
         code: "custom",
