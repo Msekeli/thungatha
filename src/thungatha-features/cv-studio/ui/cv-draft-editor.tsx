@@ -330,24 +330,24 @@ export function CvDraftEditor({
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm">
-      <header className="shrink-0 border-b border-line px-5 pb-3 pt-4 sm:px-6">
+      <header className="shrink-0 border-b border-line px-3 pb-2 pt-3 sm:px-6 sm:pb-3 sm:pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-3"><span className="text-2xl font-semibold text-accent-text" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
-            <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
+            <div className="flex items-center gap-2 sm:gap-3"><span className="text-xl font-semibold text-accent-text sm:text-2xl" aria-hidden="true">✧</span><h2 className="text-lg font-bold sm:text-xl">CV Tailoring</h2></div>
+            <p className="mt-1 text-xs text-fg-muted sm:text-sm">Review each section and apply the changes you agree with.</p>
           </div>
-          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg text-accent-text px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
+          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg px-2.5 py-1 text-[10px] font-semibold text-accent-text sm:px-3 sm:text-xs">Step {activeIndex + 1} of 4</span>
         </div>
-        <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-4 gap-2">
+        <nav aria-label="CV tailoring steps" className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2">
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
-              className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 pb-2 pt-2 text-center text-[11px] font-semibold leading-tight sm:flex-row sm:gap-2 sm:text-xs ${activeSection === item.id ? "border-accent-text text-accent-text font-bold" : "border-transparent text-fg-muted hover:text-fg"}`}>
-              <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold ${activeSection === item.id ? "border-btn bg-btn text-btn-fg" : "border-line bg-panel text-fg-muted"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
+              className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-0.5 pb-1.5 pt-1 text-center text-[9px] font-semibold leading-tight sm:min-h-14 sm:flex-row sm:gap-2 sm:px-1 sm:pb-2 sm:pt-2 sm:text-xs ${activeSection === item.id ? "border-accent-text text-accent-text font-bold" : "border-transparent text-fg-muted hover:text-fg"}`}>
+              <span className={`flex size-5 shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold sm:size-6 sm:text-[10px] ${activeSection === item.id ? "border-btn bg-btn text-btn-fg" : "border-line bg-panel text-fg-muted"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
             </button>
           ))}
         </nav>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-6">
+      <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-4">
         {!draft ? (
           <div className="flex h-full flex-col justify-center gap-4" role="status" aria-live="polite">
             <p className="text-sm font-medium">Preparing your tailored CV…</p><Skeleton className="h-5 w-2/5" /><Skeleton className="h-24 w-full" /><Skeleton className="h-16 w-full" />
@@ -379,35 +379,35 @@ export function CvDraftEditor({
           </div>
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
-            <div className="shrink-0"><h3 className="text-lg font-bold">Work Experience</h3><p className="text-sm text-fg-muted">Review the experience included in your tailored CV.</p></div>
+            <div className="shrink-0"><h3 className="text-base font-bold sm:text-lg">Work Experience</h3><p className="text-xs text-fg-muted sm:text-sm">Review the experience included in your tailored CV.</p></div>
             <div className="flex min-h-0 flex-1 flex-col gap-3 text-fg">
               {content.workExperience.length ? (
                 <>
-                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2 text-fg">
+                  <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-line bg-panel-2 px-3 py-2 text-fg sm:gap-3">
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-fg-muted">Work experience {activeExperienceIndex + 1} of {content.workExperience.length}</p>
-                      <p className="truncate text-sm font-semibold">{content.workExperience[activeExperienceIndex]?.employer}</p>
+                      <p className="text-[10px] font-medium text-fg-muted sm:text-xs">Experience {activeExperienceIndex + 1} of {content.workExperience.length}</p>
+                      <p className="truncate text-xs font-semibold sm:text-sm">{content.workExperience[activeExperienceIndex]?.employer}</p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <Button type="button" size="sm" variant="outline" disabled={activeExperienceIndex === 0} onClick={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}>Previous</Button>
-                      <Button type="button" size="sm" variant="outline" disabled={activeExperienceIndex >= content.workExperience.length - 1} onClick={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}>Next</Button>
+                    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex === 0 onClick={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}>Previous</Button>
+                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex >= content.workExperience.length - 1 onClick={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}>Next</Button>
                     </div>
                   </div>
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
                     return (
-                      <div key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4 text-fg">
-                        <h4 className="text-base font-semibold">{item.jobTitle}</h4>
-                        <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
-                        <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
-                        <div className="mt-4 space-y-3">
+                      <div key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4">
+                        <h4 className="text-sm font-semibold sm:text-base">{item.jobTitle}</h4>
+                        <p className="mt-1 text-xs text-fg-muted sm:text-sm">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
+                        <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
+                        <div className="mt-3 space-y-3 sm:mt-4">
                           <section>
                             <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original responsibilities / description</h5>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{item.description || "No description provided."}</p>
+                            <p className="mt-2 whitespace-pre-wrap text-xs leading-5 sm:text-sm sm:leading-6">{item.description || "No description provided."}</p>
                           </section>
                           <section>
                             <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Achievements</h5>
-                            {item.achievements.length ? <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-2 text-sm text-fg-muted">No achievements listed.</p>}
+                            {item.achievements.length ? <ul className="mt-2 list-disc space-y-1.5 pl-5 text-xs leading-5 sm:space-y-2 sm:text-sm sm:leading-6">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-2 text-sm text-fg-muted">No achievements listed.</p>}
                           </section>
                         </div>
                         <div className="mt-5 border-t border-line pt-4">
@@ -456,10 +456,10 @@ export function CvDraftEditor({
           </div>
         )}
       </div>
-      <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-6">
-        <Button type="button" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-4" /> Previous</Button>
-        {draft?.status === "draft" && <Button type="button" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button>}
-        {activeIndex === 3 ? <Button type="button" disabled={busy || draft?.status !== "draft"} onClick={() => void acceptDraft()}>{busy ? "Saving…" : "Accept CV"}</Button> : <Button type="button" onClick={() => setActiveSection(reviewSections[Math.min(3, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>}
+      <footer className="grid shrink-0 grid-cols-3 items-center gap-2 border-t border-line px-3 py-2 sm:flex sm:justify-between sm:gap-3 sm:px-6 sm:py-3">
+        <Button type="button" size="sm" className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-3.5 sm:size-4" /><span className="sm:hidden">Back</span><span className="hidden sm:inline">Previous</span></Button>
+        {draft?.status === "draft" && <Button type="button" size="sm" className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : <><span className="sm:hidden">Save</span><span className="hidden sm:inline">Save draft</span></>}</Button>}
+        {activeIndex === 3 ? <Button type="button" disabled={busy || draft?.status !== "draft"} onClick={() => void acceptDraft()}>{busy ? "Saving…" : "Accept CV"}</Button> : <Button type="button" size="sm" className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm" onClick={() => setActiveSection(reviewSections[Math.min(3, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-3.5 sm:size-4" /></Button>}
       </footer>
     </section>
   );
