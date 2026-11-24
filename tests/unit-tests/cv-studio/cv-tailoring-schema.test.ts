@@ -44,6 +44,19 @@ describe("CV tailoring evidence", () => {
     expect(result.editableTargets.some((item) => item.path === "email")).toBe(false);
   });
 
+  it("uses the current draft text as the suggestion baseline, not as evidence", () => {
+    const currentDraft = { ...master, professionalSummary: "My manually edited draft." };
+    const result = buildCvTailoringEvidence(master, currentDraft);
+    expect(result.profileEvidence).toContainEqual({
+      id: "cv:professionalSummary",
+      content: "Builds web applications with React and TypeScript.",
+    });
+    expect(result.editableTargets).toContainEqual({
+      path: "professionalSummary",
+      currentText: "My manually edited draft.",
+    });
+  });
+
   it("rejects model references outside the supplied evidence and editable paths", () => {
     const evidence = buildCvTailoringEvidence(master);
     const schema = createCvTailoringResponseSchema(
