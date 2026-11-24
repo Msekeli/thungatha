@@ -9,10 +9,10 @@ type Gap = { requirement: string; explanation: string; jobEvidenceRefs: string[]
 
 export function CvAiSuggestions({
   open, onOpenChange, suggestions, gaps, hasCompletedReview, generating,
-  disabled, onAccept, onReject, onRegenerate, onDiscard,
+  generationError, disabled, onAccept, onReject, onRegenerate, onDiscard,
 }: {
   open: boolean; onOpenChange: (open: boolean) => void; suggestions: CvSuggestion[];
-  gaps: Gap[]; hasCompletedReview: boolean; generating: boolean; disabled: boolean;
+  gaps: Gap[]; hasCompletedReview: boolean; generating: boolean; generationError: string | null; disabled: boolean;
   onAccept: (id: string) => void; onReject: (id: string) => void;
   onRegenerate: () => void; onDiscard: () => void;
 }) {
@@ -54,10 +54,11 @@ export function CvAiSuggestions({
             ) : accepted ? <p className="rounded-lg border border-line bg-panel-2 p-4 text-sm">The proposed summary has been accepted and applied to the CV draft.</p>
               : hasCompletedReview ? <p className="rounded-lg border border-line bg-panel-2 p-4 text-sm text-fg-muted">No summary change was recommended. Your current paragraph remains unchanged.</p>
               : <p className="text-sm text-fg-muted">Ready to generate a job-specific professional summary.</p>}
+            {!generating && generationError && <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive" role="alert">{generationError}</p>}
             {!generating && gaps.length > 0 && <section className="space-y-2 border-t border-line pt-4"><h3 className="text-sm font-semibold">Requirements not demonstrated</h3>{gaps.map((gap,index)=><div key={index} className="rounded-lg bg-panel-2 p-3"><p className="text-sm font-medium">{gap.requirement}</p><p className="mt-1 text-sm text-fg-muted">{gap.explanation}</p></div>)}</section>}
           </div>
           <footer className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line p-5">
-            {generating ? <Button type="button" variant="outline" disabled>Generating…</Button> : pending ? <><Button type="button" variant="outline" disabled={disabled} onClick={()=>onReject(pending.id)}>Reject proposal</Button><Button type="button" disabled={disabled} onClick={()=>onAccept(pending.id)}>Accept and apply to CV</Button></> : rejected ? <><Button type="button" variant="outline" onClick={onDiscard}>Discard proposal</Button><Button type="button" disabled={disabled} onClick={onRegenerate}>Generate again</Button></> : <><Button type="button" variant="outline" onClick={onDiscard}>Close</Button><Button type="button" disabled={disabled} onClick={onRegenerate}>Generate summary</Button></>}
+            {generating ? <Button type="button" variant="outline" disabled>Generating…</Button> : pending ? <><Button type="button" variant="outline" disabled={disabled} onClick={()=>onReject(pending.id)}>Reject proposal</Button><Button type="button" disabled={disabled} onClick={()=>onAccept(pending.id)}>Accept and apply to CV</Button></> : rejected ? <><Button type="button" variant="outline" onClick={onDiscard}>Discard proposal</Button><Button type="button" disabled={disabled} onClick={onRegenerate}>Generate again</Button></> : <><Button type="button" variant="outline" onClick={onDiscard}>Close</Button><Button type="button" disabled={disabled} onClick={onRegenerate}>{generationError ? "Try again" : "Generate summary"}</Button></>}
           </footer>
         </Dialog.Popup>
       </Dialog.Portal>
