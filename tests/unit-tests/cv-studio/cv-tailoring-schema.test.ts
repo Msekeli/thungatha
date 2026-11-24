@@ -52,8 +52,11 @@ describe("CV tailoring evidence", () => {
       evidence.editableTargets.map((item) => item.path),
     );
     expect(result.responseSchema.type).toBe("OBJECT");
-    const properties = result.responseSchema.properties as Record<string, any>;
-    const suggestion = properties.suggestions.items.properties;
+    const properties = result.responseSchema.properties as Record<string, unknown>;
+    const suggestions = properties.suggestions as {
+      items: { properties: Record<string, { nullable?: boolean; type?: string }> };
+    };
+    const suggestion = suggestions.items.properties;
     expect(suggestion.originalText.nullable).toBe(true);
     expect(suggestion.targetPath.type).toBe("STRING");
   });
