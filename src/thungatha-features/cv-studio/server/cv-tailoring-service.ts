@@ -70,6 +70,36 @@ function selectSummaryEvidence(
   return selected;
 }
 
+function selectJobEvidence(
+  evidence: Array<{ id: string; content: string }>,
+  requirements: JobUnderstanding["requirements"],
+  maxCharacters = 4_500,
+) {
+  const byId = new Map(evidence.map((item) => [item.id, item]));
+  const selected = new Map<string, { id: string; content: string }>();
+  let usedCharacters = 0;
+
+  // Retain at least one source excerpt for every requirement so the model can
+  // classify gaps without inventing or borrowing another requirement's source.
+  for (const requirement of requirements) {
+    const source = requirement.sourceEvidenceRefs
+      .map((ref) => byId.get(ref))
+      .find((item): item is { id: string; content: string } => Boolean(item));
+    if (!source || selected.has(source.id)) continue;
+    const content = source.content.slice(0, 500).trimEnd();
+    selected.set(source.id, { id: source.id, content });
+    usedCharacters += source.id.length + content.length;
+  }
+
+  const remaining = selectSummaryEvidence(
+    evidence.filter((item) => !selected.has(item.id)),
+    requirements,
+    Math.max(0, maxCharacters - usedCharacters),
+  );
+  for (const item of remaining) selected.set(item.id, item);
+  return [...selected.values()];
+}
+
 export type CvTailoringJob = {
   title: string;
   company: string | null;
@@ -130,7 +160,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const referencedJobIds = new Set(
     understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   );
-  const jobEvidence = selectSummaryEvidence(
+  const jobEvidence = selectJobEvidence(
     allJobEvidence.filter((item) => referencedJobIds.has(item.id)),
     understanding.requirements,
     4_500,
