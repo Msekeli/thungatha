@@ -49,10 +49,12 @@ export function createCvTailoringResponseSchema(
   profileEvidenceIds: string[],
   jobEvidenceIds: string[],
   targetPaths: string[],
+  requirementIds: string[],
 ) {
   const profileRef = evidenceRef(profileEvidenceIds);
   const jobRef = evidenceRef(jobEvidenceIds);
   const targetPath = evidenceRef(targetPaths);
+  const requirementId = evidenceRef(requirementIds);
   const validator = z.object({
     suggestions: z.array(
       z.object({
@@ -66,7 +68,7 @@ export function createCvTailoringResponseSchema(
     ),
     gaps: z.array(
       z.object({
-        requirement: z.string().min(1),
+        requirementId,
         explanation: z.string().min(1),
         jobEvidenceRefs: z.array(jobRef).min(1),
       }).strict(),
