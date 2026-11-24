@@ -123,11 +123,7 @@ export function CvDraftEditor({
   const [tailoringBusy, setTailoringBusy] = useState(false);
   const [workflowStage, setWorkflowStage] = useState<string | null>(null);
   const [tailoringGaps, setTailoringGaps] = useState<Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>>([]);
-  const [previewSuggestionId, setPreviewSuggestionId] = useState<string | null>(null);
-  const previewSuggestion = draft?.suggestions.find((item) => item.id === previewSuggestionId && item.decision === "pending");
-  const previewContent: CvContent = previewSuggestion
-    ? { ...content, professionalSummary: previewSuggestion.proposedText }
-    : content;
+  const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
 
   async function createDraft() {
     setBusy(true);
@@ -176,7 +172,7 @@ export function CvDraftEditor({
 
   async function generateSuggestionsForDraft(draftId: string) {
     setTailoringFailed(false);
-    setPreviewSuggestionId(null);
+    setSummaryDialogOpen(true);
     setTailoringBusy(true);
     setWorkflowStage("Analysing the job description and preparing your professional summary…");
     setError(null);
@@ -242,7 +238,7 @@ export function CvDraftEditor({
         return;
       }
     }
-    setPreviewSuggestionId(null);
+    if (decision === "accepted") setSummaryDialogOpen(false);
     setDraft((current) => current ? {
       ...current,
       suggestions: current.suggestions.map((item) =>
@@ -384,9 +380,6 @@ export function CvDraftEditor({
         )}
         {draft?.status === "draft" && (
           <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-            <Button variant="outline" disabled={busy || tailoringBusy} onClick={() => void generateSuggestions()}>
-              {tailoringBusy ? "Generating summary…" : "Regenerate summary"}
-            </Button>
             <Button
               variant="outline"
               disabled={busy}
@@ -405,38 +398,6 @@ export function CvDraftEditor({
           </span>
         )}
       </div>
-
-      {draft && (
-        <div className="rounded-xl border border-line bg-panel-2 p-4 sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV tailoring workspace</p>
-              <p className="mt-1 text-sm font-semibold text-fg">{jobContext.title}{jobContext.company ? ` · ${jobContext.company}` : ""}</p>
-              <p className="mt-1 text-xs text-fg-muted">Your master CV stays unchanged until you accept this tailored version.</p>
-            </div>
-            <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${tailoringBusy ? "bg-accent-bg text-accent-text" : draft.status === "accepted" ? "bg-accent-bg text-accent-text" : "border border-line bg-panel text-fg-muted"}`}>
-              {tailoringBusy ? "AI review in progress" : draft.status === "accepted" ? "CV accepted" : draft.suggestions.some((item) => item.decision === "pending") ? "Proposal ready to review" : draft.suggestions.some((item) => item.decision === "accepted") ? "Summary updated" : "Draft ready"}
-            </span>
-          </div>
-          <ol className="mt-4 grid gap-2 sm:grid-cols-3">
-            {[
-              { label: "Prepare draft", detail: "Edit confirmed CV details", complete: true },
-              { label: "Review summary", detail: tailoringBusy ? "Generating proposal…" : draft.suggestions.length ? "Compare and decide" : "AI proposal pending", complete: draft.suggestions.length > 0 || draft.tailoring_assessment !== null, active: tailoringBusy },
-              { label: "Preview and accept", detail: draft.status === "accepted" ? "Version locked" : "Save when satisfied", complete: draft.status === "accepted" },
-            ].map((step, index) => (
-              <li key={step.label} className={`flex items-start gap-2 rounded-lg border p-3 ${step.complete || step.active ? "border-accent/40 bg-accent-bg/40" : "border-line bg-panel"}`}>
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step.complete || step.active ? "bg-accent text-white" : "bg-panel-2 text-fg-muted"}`}>
-                  {step.complete ? "✓" : index + 1}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-fg">{step.label}</span>
-                  <span className="mt-0.5 block text-xs text-fg-muted">{step.detail}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
 
       {error && !draft && createFailed && (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
@@ -476,10 +437,9 @@ export function CvDraftEditor({
         <>
           <div className="xl:hidden">
             <CvPdfPreviewDialog
-              content={previewContent}
+              content={content}
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
-              previewingProposal={Boolean(previewSuggestion)}
             />
           </div>
           <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
@@ -567,37 +527,33 @@ export function CvDraftEditor({
                 />
               </Field>
             </div>
-            <div className="space-y-3 rounded-xl border border-accent/30 bg-panel-2 p-4">
+            <section className="space-y-3 rounded-xl border border-line bg-panel-2 p-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Step 1 · Professional summary</p>
-                <h4 className="mt-1 font-semibold">Review your tailored summary</h4>
-                <p className="mt-1 text-sm text-fg-muted">The AI proposes a change using confirmed Profile evidence and this job description. Nothing is applied until you accept it.</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">AI-assisted tailoring</p>
+                <h4 className="mt-1 font-semibold">Professional summary</h4>
+                <p className="mt-1 text-sm text-fg-muted">Generate one job-specific paragraph using confirmed Profile evidence. Review it in the dialog before applying it to this CV draft.</p>
               </div>
-              {tailoringBusy ? (
-                <div className="space-y-3 rounded-xl border border-line p-4" role="status" aria-label="Generating professional summary suggestions">
-                  <Skeleton className="h-4 w-44" />
-                  <Skeleton className="h-3 w-full" />
-                  <Skeleton className="h-3 w-5/6" />
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <Skeleton className="h-28 w-full" />
-                    <Skeleton className="h-28 w-full" />
-                  </div>
-                  <Skeleton className="h-8 w-36" />
-                  <p className="text-xs text-fg-muted">Generating a proposal from your confirmed Profile evidence and the job description…</p>
-                </div>
-              ) : (
-                <CvAiSuggestions
-                  suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
-                  gaps={tailoringGaps}
-                  hasCompletedReview={draft.tailoring_assessment !== null}
-                  disabled={busy || draft.status !== "draft"}
-                  previewingSuggestionId={previewSuggestionId}
-                  onPreview={(id) => setPreviewSuggestionId((current) => current === id ? null : id)}
-                  onAccept={(id) => decideSuggestion(id, "accepted")}
-                  onReject={(id) => decideSuggestion(id, "rejected")}
-                />
-              )}
-            </div>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-fg-muted">{tailoringBusy ? "Generating your professional summary…" : draft.suggestions.some((item) => item.decision === "accepted") ? "A tailored summary has been applied to this draft." : draft.suggestions.some((item) => item.decision === "pending") ? "A proposal is ready for your review." : draft.tailoring_assessment ? "No proposal is currently applied." : "Your current summary is unchanged."}</p>
+                <Button type="button" variant="outline" disabled={busy || draft.status !== "draft"} onClick={() => {
+                  if (draft.suggestions.some((item) => item.decision === "pending" || item.decision === "rejected")) setSummaryDialogOpen(true);
+                  else void generateSuggestions();
+                }}>{draft.suggestions.some((item) => item.decision === "pending" || item.decision === "rejected") ? "Review proposal" : "Generate professional summary"}</Button>
+              </div>
+            </section>
+            <CvAiSuggestions
+              open={summaryDialogOpen}
+              onOpenChange={setSummaryDialogOpen}
+              suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+              gaps={tailoringGaps}
+              hasCompletedReview={draft.tailoring_assessment !== null}
+              generating={tailoringBusy}
+              disabled={busy || draft.status !== "draft"}
+              onAccept={(id) => decideSuggestion(id, "accepted")}
+              onReject={(id) => decideSuggestion(id, "rejected")}
+              onRegenerate={() => void generateSuggestions()}
+              onDiscard={() => setSummaryDialogOpen(false)}
+            />
             <Field label="Professional summary">
               <Textarea
                 disabled={draft.status === "accepted"}
@@ -785,13 +741,11 @@ export function CvDraftEditor({
               <span className="text-xs text-fg-muted">
                 {draft.status === "accepted"
                   ? "Accepted version"
-                  : previewSuggestion
-                    ? "Previewing proposal · Not applied"
-                    : "Unsaved edits appear here"}
+                  : "Unsaved edits appear here"}
               </span>
             </div>
             <CvPdfPreview
-              content={previewContent}
+              content={content}
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
             />
