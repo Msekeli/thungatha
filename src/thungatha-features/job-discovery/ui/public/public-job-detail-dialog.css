@@ -110,6 +110,11 @@
       gap: 0.5rem;
     }
 
+    .th-job-detail-secondary-actions > div > span {
+      display: block;
+      width: 100%;
+    }
+
     .th-job-detail-secondary-actions a,
     .th-job-detail-secondary-actions button {
       width: 100%;
