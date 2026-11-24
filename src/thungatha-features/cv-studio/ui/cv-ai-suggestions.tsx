@@ -15,12 +15,16 @@ export function CvAiSuggestions({
   disabled,
   onAccept,
   onReject,
+  onPreview,
+  previewingSuggestionId,
 }: {
   suggestions: CvSuggestion[];
   gaps: Gap[];
   disabled: boolean;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
+  onPreview: (id: string) => void;
+  previewingSuggestionId: string | null;
 }) {
   return (
     <section className="space-y-3 rounded-xl border border-line p-4">
@@ -56,7 +60,10 @@ export function CvAiSuggestions({
             ))}
           </div>
           {item.decision === "pending" ? (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" disabled={disabled} onClick={() => onPreview(item.id)}>
+                {previewingSuggestionId === item.id ? "Close PDF preview" : "Preview in PDF"}
+              </Button>
               <Button size="sm" disabled={disabled} onClick={() => onAccept(item.id)}>
                 Accept suggestion
               </Button>
