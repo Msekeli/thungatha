@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { sourceSegments } from "@/thungatha-features/job-discovery/server/job-requirement-text";
+import {
+  jobDescriptionToText,
+  sourceSegments,
+} from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-ai-evidence";
 
 describe("job source evidence text", () => {
@@ -14,7 +17,7 @@ describe("job source evidence text", () => {
       "Build and maintain responsive web applications using React and TypeScript.",
       "Integrate REST APIs and collaborate with backend engineers.",
       "Write maintainable components and participate in code reviews.",
-    ].join("\n");
+    ].join("\\n");
     const evidence = buildJobEvidence(description);
     expect(evidence.map((item) => item.content)).toEqual([
       "Build and maintain responsive web applications using React and TypeScript.",
@@ -27,6 +30,16 @@ describe("job source evidence text", () => {
     expect(sourceSegments("<p>Build web applications using <strong>React</strong> and TypeScript.</p>")).toEqual([
       "Build web applications using React and TypeScript.",
     ]);
+  });
+
+  it("decodes hexadecimal and decimal entities consistently", () => {
+    expect(jobDescriptionToText("<p>Candidate&#x27;s role &amp; responsibilities</p><p>It&#39;s full-time.</p>"))
+      .toBe("Candidate's role & responsibilities\\nIt's full-time.");
+  });
+
+  it("does not expose encoded HTML tags as markup", () => {
+    expect(jobDescriptionToText("&lt;p&gt;Build with React&lt;/p&gt;"))
+      .toBe("<p>Build with React</p>");
   });
 
   it("keeps evidence excerpts lossless through the job evidence builder", () => {
