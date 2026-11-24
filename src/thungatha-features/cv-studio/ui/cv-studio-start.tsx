@@ -496,9 +496,6 @@ export function CvStudioStart() {
           ) : (
             <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
-                {state.masterCv && (
-
-                )}
                 {!externalJobOpen ? (
                   <div className="space-y-5">
                     <div>
