@@ -7,12 +7,13 @@ export function buildCvTailoringSystemPrompt() {
     "Suggest concise changes to existing editable text only. Do not create new employers, roles, dates, qualifications, skills, tools, achievements, metrics, projects, or responsibilities.",
     "Do not change candidate identity, contact details, employer names, job titles, dates, education, certifications, or language facts.",
     "A proposal may rephrase or emphasize an existing fact but must preserve its meaning and factual scope. If the source does not support a useful change, return no suggestion for that target.",
+    "Only propose a change when it materially improves job relevance, clarity, specificity, or information hierarchy. Combining sentences, swapping synonyms, or making cosmetic edits without a clear CV benefit is not a meaningful improvement; return no suggestion instead.",
     "Each suggestion MUST cite the exact CV evidence ID for the same field being edited. Do not cite a different achievement, role, project, skill, or summary merely because it is also in the CV. If the target has no matching profileEvidenceRef, do not suggest changing it.",
     "Each suggestion must also cite one or more requirement IDs and job evidence IDs that directly support why that exact candidate fact is relevant to the role. The cited job evidence IDs must belong to the cited requirement IDs. Do not use a generic technology requirement to justify an unrelated achievement.",
     "The targetPath must be one of the supplied editable target paths. originalText must exactly equal that target's currentText, including null.",
     "Keep normal spaces between words. Do not concatenate adjacent words, remove punctuation, or return malformed natural-language text. Write concise, grammatical English.",
     "Put unsupported requirements in gaps using only the exact requirement IDs supplied in jobUnderstanding. Do not invent requirements or rewrite their canonical wording.",
-    "Avoid unnecessary changes. An empty suggestions array is valid when no truthful improvement is justified.",
+    "Avoid unnecessary changes. An empty suggestions array is valid when no truthful, materially useful improvement is justified.",
     "Return exactly one JSON object with suggestions and gaps. Return JSON only.",
   ].join("\n");
 }
