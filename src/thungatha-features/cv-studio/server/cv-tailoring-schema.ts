@@ -6,6 +6,36 @@ const evidenceRef = (values: string[]) => {
   return z.enum(unique as [string, ...string[]]);
 };
 
+const GEMINI_TYPES: Record<string, string> = {
+  object: "OBJECT",
+  array: "ARRAY",
+  string: "STRING",
+  number: "NUMBER",
+  integer: "INTEGER",
+  boolean: "BOOLEAN",
+};
+
+function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const schema = value as Record<string, unknown>;
+  const output: Record<string, unknown> = {};
+  if (typeof schema.type === "string") {
+    output.type = GEMINI_TYPES[schema.type] ?? schema.type.toUpperCase();
+  }
+  for (const key of ["enum", "required", "description", "format", "additionalProperties"]) {
+    if (schema[key] !== undefined) output[key] = schema[key];
+  }
+  if (schema.items) output.items = toGeminiSchemaNode(schema.items);
+  if (schema.properties && typeof schema.properties === "object") {
+    output.properties = Object.fromEntries(
+      Object.entries(schema.properties as Record<string, unknown>).map(
+        ([key, child]) => [key, toGeminiSchemaNode(child)],
+      ),
+    );
+  }
+  return output;
+}
+
 export const CV_TAILORING_VERSION = "m4-cv-tailoring-v1";
 
 export function createCvTailoringResponseSchema(
@@ -36,10 +66,11 @@ export function createCvTailoringResponseSchema(
     ),
   }).strict();
 
-  const responseSchema = z.toJSONSchema(validator, {
+  const jsonSchema = z.toJSONSchema(validator, {
     target: "draft-07",
     unrepresentable: "any",
-  }) as Record<string, unknown>;
+  });
+  const responseSchema = toGeminiSchemaNode(jsonSchema);
 
   return { validator, responseSchema };
 }
