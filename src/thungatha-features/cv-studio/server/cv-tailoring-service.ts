@@ -130,7 +130,11 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const referencedJobIds = new Set(
     understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   );
-  const jobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
+  const jobEvidence = selectSummaryEvidence(
+    allJobEvidence.filter((item) => referencedJobIds.has(item.id)),
+    understanding.requirements,
+    4_500,
+  );
   if (!summaryEvidence.length || !jobEvidence.length || !editableTargets.length) {
     throw new Error("There is not enough confirmed evidence to tailor this CV.");
   }
