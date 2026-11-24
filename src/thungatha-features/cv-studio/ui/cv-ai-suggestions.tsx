@@ -21,10 +21,9 @@ export function CvAiSuggestions({
   const accepted = [...suggestions].reverse().find((item) => item.decision === "accepted");
   const proposal = pending ?? rejected;
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root modal={false} open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-[1800] bg-black/60 backdrop-blur-sm" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1801] flex max-h-[min(88dvh,760px)] w-[min(92vw,720px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-line bg-panel text-fg shadow-xl outline-none">
+        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1800] flex max-h-[min(88dvh,760px)] w-[min(92vw,720px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-line bg-panel text-fg shadow-xl outline-none">
           <header className="flex shrink-0 items-start justify-between gap-4 border-b border-line p-5">
             <div>
               <Dialog.Title className="text-lg font-semibold">Tailor professional summary</Dialog.Title>
