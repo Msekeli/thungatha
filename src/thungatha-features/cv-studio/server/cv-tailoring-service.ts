@@ -17,6 +17,59 @@ import {
   createCvTailoringResponseSchema,
 } from "./cv-tailoring-schema";
 
+const EVIDENCE_STOP_WORDS = new Set([
+  "about", "after", "also", "and", "are", "based", "been", "being", "can",
+  "candidate", "demonstrate", "demonstrated", "experience", "from", "have",
+  "into", "job", "more", "must", "role", "should", "that", "their", "them",
+  "there", "these", "this", "through", "using", "with", "within", "work",
+]);
+
+function evidenceTerms(value: string) {
+  return new Set(
+    value.toLowerCase().match(/[a-z0-9+#.]{2,}/g)?.filter(
+      (term) => !EVIDENCE_STOP_WORDS.has(term),
+    ) ?? [],
+  );
+}
+
+/**
+ * Keep the model input focused on facts relevant to the advert. The mapper
+ * still receives the complete evidence collection and validates every cited
+ * reference against it; this only limits what is sent to the provider.
+ */
+function selectSummaryEvidence(
+  evidence: Array<{ id: string; content: string }>,
+  requirements: JobUnderstanding["requirements"],
+  maxCharacters = 7_500,
+) {
+  const requirementText = requirements.map((item) => item.statement).join(" ");
+  const jobTerms = evidenceTerms(requirementText);
+  const ranked = evidence.map((item, index) => {
+    const terms = evidenceTerms(item.content);
+    let score = 0;
+    for (const term of terms) if (jobTerms.has(term)) score += 1;
+    if (item.id === "cv:professionalSummary") score += 3;
+    if (item.id === "cv:headline") score += 2;
+    if (item.id.startsWith("cv:technicalSkills")) score += 1;
+    return { item, index, score };
+  });
+  ranked.sort((a, b) => b.score - a.score || a.index - b.index);
+
+  const selected: Array<{ id: string; content: string }> = [];
+  let usedCharacters = 0;
+  for (const { item } of ranked) {
+    if (selected.length >= 24 || usedCharacters >= maxCharacters) break;
+    const remaining = maxCharacters - usedCharacters;
+    const content = item.content.length > Math.min(700, remaining)
+      ? item.content.slice(0, Math.min(700, remaining)).trimEnd()
+      : item.content;
+    if (!content) continue;
+    selected.push({ id: item.id, content });
+    usedCharacters += item.id.length + content.length;
+  }
+  return selected;
+}
+
 export type CvTailoringJob = {
   title: string;
   company: string | null;
@@ -67,7 +120,10 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   );
   // A professional summary synthesizes confirmed facts from across the CV.
   // It must not be restricted to citing the old summary paragraph itself.
-  const summaryEvidence = profileEvidence;
+  const summaryEvidence = selectSummaryEvidence(
+    profileEvidence,
+    understanding.requirements,
+  );
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
   // The response classifies requirements, so only requirement-linked advert
   // excerpts are needed here; responsibilities/capabilities are not output.
@@ -109,7 +165,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
       // Keep the full confirmed Profile evidence for accurate requirement coverage.
       // Confirmed Profile facts across the CV may support the new summary proposal.
-      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: summaryEvidence.map((item) => [item.id, item.content]),
       editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
   };
