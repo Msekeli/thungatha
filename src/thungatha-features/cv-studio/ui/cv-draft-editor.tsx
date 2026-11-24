@@ -441,9 +441,9 @@ export function CvDraftEditor({
             <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
               {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.map((gap, index) => (
-                <article key={index} className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                  <div className="flex items-start gap-2"><span className="mt-0.5 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700">Not demonstrated</span><h4 className="text-sm font-semibold">{gap.requirement}</h4></div>
-                  <p className="mt-2 text-sm leading-5 text-fg-muted">{gap.explanation}</p>
+                <article key={index} className="rounded-xl border border-[var(--th-line)] bg-[var(--th-panel-2)] p-4 text-[var(--th-fg)]">
+                  <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-[var(--th-warn)]/30 bg-[var(--th-warn-bg)] px-2 py-0.5 text-xs font-semibold text-[var(--th-warn)]">Not demonstrated</span><h4 className="text-sm font-semibold text-[var(--th-fg)]">{gap.requirement}</h4></div>
+                  <p className="mt-2 text-sm leading-5 text-[var(--th-fg-muted)]">{gap.explanation}</p>
                 </article>
               )) : (
                 <div className="rounded-xl border border-line bg-panel-2 p-4">
