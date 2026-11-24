@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
-import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvDraftEditor } from "./cv-draft-editor";
 
 type CvContent = {
@@ -459,16 +458,7 @@ export function CvStudioStart() {
                       )}
                     </div>
                   </div>
-                  <div className="lg:hidden">
-                      <CvPdfPreviewDialog
-                        content={reusableCv?.content ?? state.masterCv.content}
-                        accent={
-                          reusableCv
-                            ? cvAccentHex[reusableCv.accent_colour]
-                            : undefined
-                        }
-                      />
-                  </div>
+
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
@@ -500,9 +490,7 @@ export function CvStudioStart() {
             <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
               <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
                 {state.masterCv && (
-                  <div className="mb-5 lg:hidden">
-                    <CvPdfPreviewDialog content={state.masterCv.content} />
-                  </div>
+
                 )}
                 {!externalJobOpen ? (
                   <div className="space-y-5">
