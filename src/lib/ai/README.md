@@ -44,3 +44,9 @@ Transient provider errors such as HTTP 429 and 503 receive one bounded inline re
 ## Ollama Local
 
 Use `OLLAMA_LOCAL_BASE_URL` and `OLLAMA_LOCAL_MODEL` for local setup. Keep values server-side; do not prefix secrets with `NEXT_PUBLIC_`.
+
+## CV Studio tailoring task
+
+CV Studio registers `cv-tailoring` as a feature-owned task on the same provider-neutral completion contract. It uses the existing global provider plan; it does not call every provider or introduce a second router. Gemini receives its supported structured schema, Groq receives the converted strict JSON Schema, and Ollama receives JSON mode followed by feature-level Zod and evidence-reference validation.
+
+CV Studio reuses the versioned M3 job-understanding cache for the exact job context before generating tailoring proposals. The CV tailoring prompt, schema, and evidence rules remain owned by the CV Studio feature. The provider plan is still global (primary plus ordered fallbacks), not independently configurable per task. Model IDs remain environment configuration and must be validated against the actual runtime environment.
