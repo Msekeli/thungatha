@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const { data: draft, error: draftError } = await db
       .from("cv_versions")
-      .select("id,status,cv_kind,source_profile_version,parent_version_id,source_job_snapshot,source_job_id")
+      .select("id,status,content,cv_kind,source_profile_version,parent_version_id,source_job_snapshot,source_job_id")
       .eq("id", parsed.data.draftId)
       .eq("user_id", identity.userId)
       .maybeSingle();
@@ -83,7 +83,8 @@ export async function POST(request: Request) {
     }
 
     const masterContent = cvContentSchema.parse(master.content);
-    const result = await generateCvTailoringSuggestions(masterContent, job);
+    const draftContent = cvContentSchema.parse(draft.content);
+    const result = await generateCvTailoringSuggestions(masterContent, draftContent, job);
     return NextResponse.json(result);
   } catch (error) {
     return apiFailure(error);
