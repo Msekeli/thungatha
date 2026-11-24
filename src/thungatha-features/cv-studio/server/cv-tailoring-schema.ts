@@ -50,7 +50,7 @@ function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
   return output;
 }
 
-export const CV_TAILORING_VERSION = "m4-cv-tailoring-v4";
+export const CV_TAILORING_VERSION = "m4-cv-tailoring-v5";
 
 export function createCvTailoringResponseSchema(
   profileEvidenceIds: string[],
@@ -74,6 +74,7 @@ export function createCvTailoringResponseSchema(
         jobEvidenceRefs: z.array(jobRef).min(1),
       }).strict(),
     ),
+    coveredRequirementIds: z.array(requirementId),
     gaps: z.array(
       z.object({
         requirementId,
@@ -81,7 +82,24 @@ export function createCvTailoringResponseSchema(
         jobEvidenceRefs: z.array(jobRef).min(1),
       }).strict(),
     ),
-  }).strict();
+  }).strict().superRefine((output, context) => {
+    const classified = [
+      ...output.coveredRequirementIds,
+      ...output.gaps.map((gap) => gap.requirementId),
+    ];
+    const unique = new Set(classified);
+    if (
+      unique.size !== classified.length ||
+      unique.size !== requirementIds.length ||
+      requirementIds.some((id) => !unique.has(id))
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["coveredRequirementIds"],
+        message: "Every job requirement must be classified exactly once as covered or a gap.",
+      });
+    }
+  });
 
   const jsonSchema = z.toJSONSchema(validator, {
     target: "draft-07",
