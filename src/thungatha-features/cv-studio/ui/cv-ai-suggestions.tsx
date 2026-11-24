@@ -27,15 +27,23 @@ export function CvAiSuggestions({
   previewingSuggestionId: string | null;
 }) {
   return (
-    <section className="space-y-3 rounded-xl border border-line p-4">
-      <h4 className="font-semibold">AI tailoring suggestions</h4>
+    <section className="space-y-3 rounded-xl border border-accent/30 bg-panel p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">AI review result</p>
+          <h4 className="mt-1 font-semibold">Professional summary proposal</h4>
+        </div>
+        <span className="rounded-full border border-line bg-panel-2 px-2.5 py-1 text-xs font-medium text-fg-muted">
+          {suggestions.filter((item) => item.decision === "pending").length} awaiting decision
+        </span>
+      </div>
       {!suggestions.length && !gaps.length && (
         <p className="text-sm text-fg-muted">
           No suggestions have been generated yet.
         </p>
       )}
       {suggestions.map((item) => (
-        <article key={item.id} className="space-y-2 rounded-lg bg-panel-2 p-3">
+        <article key={item.id} className="space-y-3 rounded-xl border border-line bg-panel-2 p-4 shadow-sm">
           <p className="text-sm font-semibold">{item.targetPath === "professionalSummary" ? "Professional summary" : item.targetPath}</p>
           <p className="text-sm text-fg-muted">{item.reason}</p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -44,7 +52,7 @@ export function CvAiSuggestions({
               <p className="mt-1 whitespace-pre-wrap text-sm">{item.originalText ?? "No existing text"}</p>
             </div>
             <div className="rounded-md border border-line p-2">
-              <p className="text-xs font-semibold text-fg-muted">Proposed text</p>
+              <p className="text-xs font-semibold text-accent-text">Proposed summary</p>
               <p className="mt-1 whitespace-pre-wrap text-sm">{item.proposedText}</p>
             </div>
           </div>
