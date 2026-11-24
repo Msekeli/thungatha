@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { buildJobEvidence } from "./job-ai-evidence";
 
-export const JOB_AI_UNDERSTANDING_VERSION = "m3-understanding-v5";
+export const JOB_AI_UNDERSTANDING_VERSION = "m3-understanding-v6";
 export const JOB_AI_ASSESSMENT_VERSION = "m3-ai-v8";
 
 export function createServiceClient() {
