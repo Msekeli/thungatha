@@ -51,7 +51,13 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent, sta
     finally { setBusy(false); }
   }
 
-  useEffect(() => {\n    if (startImmediately && !draft && !busy) void createDraft();\n    // The editor is mounted only after the user chooses Tailor my CV.\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [startImmediately]);\n\n  async function saveDraft() {
+  useEffect(() => {
+    if (startImmediately && !draft && !busy) void createDraft();
+    // The editor is mounted only after the user chooses Tailor my CV.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startImmediately]);
+
+  async function saveDraft() {
     if (!draft || draft.status !== "draft") return;
     setBusy(true); setError(null); setMessage(null);
     try {
