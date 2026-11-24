@@ -109,7 +109,9 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
         ]),
       },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      confirmedCvEvidence: summaryEvidence.map((item) => [item.id, item.content]),
+      // Keep the full confirmed Profile evidence for accurate requirement coverage.
+      // Only the summary evidence IDs are allowed as proposal citations.
+      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
       editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
   };
@@ -120,7 +122,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const parsed = schema.validator.parse(JSON.parse(response.content));
   const mapped = mapCvTailoringOutput(
     parsed,
-    summaryEvidence,
+    profileEvidence,
     jobEvidence,
     editableTargets,
     understanding.requirements,
