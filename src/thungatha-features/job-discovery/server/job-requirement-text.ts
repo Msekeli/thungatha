@@ -38,7 +38,7 @@ export function jobDescriptionToText(description: string) {
     const tag = node.tagName?.toLowerCase();
     if (tag && IGNORED_TAGS.has(tag)) return;
     if (node.nodeName === "#text") {
-      if (node.value) output.push(node.value);
+      if (node.value) output.push(decodeCharacterReferences(node.value));
       return;
     }
     if (tag === "br" || tag === "hr") {
