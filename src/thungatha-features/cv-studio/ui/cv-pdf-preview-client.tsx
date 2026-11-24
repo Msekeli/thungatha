@@ -170,7 +170,7 @@ export function CvPdfPreviewClient({
   return (
     <section className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
           <Button
             type="button"
             variant="outline"
