@@ -219,7 +219,7 @@ export function CvStudioStart() {
                         <h2 className="mt-2 break-words text-xl font-semibold text-fg">{jobContext.title}</h2>
                         <p className="mt-1 text-sm text-fg-muted">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={clearSelectedJob}>Close job</Button>
+                      <Button variant="outline" size="sm" onClick={clearSelectedJob}>Close job description</Button>
                     </div>
                     <div className="mt-5 border-t border-line pt-4">
                       <h3 className="text-sm font-semibold text-fg">Job description</h3>
