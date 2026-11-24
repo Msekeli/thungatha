@@ -133,7 +133,7 @@ export function CvPdfPreviewClient({
           canvas.style.height = `${viewport.height}px`;
           canvas.className = "block h-auto max-w-full bg-white shadow-sm";
           context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
-          await page.render({ canvasContext: context, viewport }).promise;
+          await page.render({ canvas, canvasContext: context, viewport }).promise;
           if (!active) return;
           canvases.push(canvas);
           setRenderedCanvases([...canvases]);
