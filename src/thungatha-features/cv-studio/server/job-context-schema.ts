@@ -7,10 +7,8 @@ export const cvJobContextInputSchema = z.discriminatedUnion("source", [
   z.object({
     source: z.literal("pasted"),
     title: z.string().trim().min(2).max(300),
-    company: z.string().trim().max(300).nullable().optional(),
-    location: z.string().trim().max(300).nullable().optional(),
+    company: z.string().trim().min(2).max(300),
     description: descriptionSchema,
-    sourceUrl: z.string().url().max(2000).refine((value) => ["http:", "https:"].includes(new URL(value).protocol)).nullable().optional(),
   }).strict(),
   z.object({ source: z.literal("url"), url: z.string().url().max(2000) }).strict(),
 ]);
