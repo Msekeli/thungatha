@@ -19,10 +19,11 @@ export type CvTailoringJob = {
 
 export async function generateCvTailoringSuggestions(
   masterContent: CvContent,
+  draftContent: CvContent,
   job: CvTailoringJob,
 ) {
   const { profileEvidence, editableTargets } =
-    buildCvTailoringEvidence(masterContent);
+    buildCvTailoringEvidence(masterContent, draftContent);
   const jobContext: JobMatchingContext = {
     title: job.title,
     employerName: job.company,
@@ -54,7 +55,7 @@ export async function generateCvTailoringSuggestions(
     timeoutMs: 120_000,
     systemPrompt: [
       `You are preparing evidence-grounded CV tailoring proposals. Task version: ${CV_TAILORING_VERSION}.`,
-      "Use only the supplied confirmed CV evidence and job advert evidence.",
+      "Use only confirmedCvEvidence as candidate facts. editableTargets contains the user's current draft wording for comparison only; it is not trusted evidence and must not justify new factual claims.",
       "Suggest concise changes to existing editable text only. Do not create new employers, roles, dates, qualifications, skills, tools, achievements, metrics, projects, or responsibilities.",
       "Do not change candidate identity, contact details, employer names, job titles, dates, education, certifications, or language facts.",
       "A proposal may rephrase or emphasize an existing fact but must preserve its meaning and factual scope.",
@@ -75,7 +76,12 @@ export async function generateCvTailoringSuggestions(
 
   const parsed = schema.validator.parse(JSON.parse(response.content));
   const targetMap = new Map(editableTargets.map((item) => [item.path, item]));
+  const seenTargets = new Set<string>();
   const suggestions: CvSuggestion[] = parsed.suggestions.map((item) => {
+    if (seenTargets.has(item.targetPath)) {
+      throw new Error("AI returned more than one suggestion for the same CV field.");
+    }
+    seenTargets.add(item.targetPath);
     const target = targetMap.get(item.targetPath);
     if (!target || item.originalText !== target.currentText) {
       throw new Error("AI returned a suggestion for changed or unknown CV text.");
