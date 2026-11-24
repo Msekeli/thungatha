@@ -17,7 +17,7 @@ describe("job source evidence text", () => {
       "Build and maintain responsive web applications using React and TypeScript.",
       "Integrate REST APIs and collaborate with backend engineers.",
       "Write maintainable components and participate in code reviews.",
-    ].join("\\n");
+    ].join("\n");
     const evidence = buildJobEvidence(description);
     expect(evidence.map((item) => item.content)).toEqual([
       "Build and maintain responsive web applications using React and TypeScript.",
@@ -34,7 +34,7 @@ describe("job source evidence text", () => {
 
   it("decodes hexadecimal and decimal entities consistently", () => {
     expect(jobDescriptionToText("<p>Candidate&#x27;s role &amp; responsibilities</p><p>It&#39;s full-time.</p>"))
-      .toBe("Candidate's role & responsibilities\\nIt's full-time.");
+      .toBe("Candidate's role & responsibilities\nIt's full-time.");
   });
 
   it("does not expose encoded HTML tags as markup", () => {
