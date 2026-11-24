@@ -362,7 +362,7 @@ export function CvDraftEditor({
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
             </section>
             {!summaryDialogOpen && !tailoringBusy && (
-              <Button type="button" className="w-fit" disabled={busy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); void generateSuggestions(); }}>
+              <Button type="button" className="w-fit" disabled={busy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
                 {pendingSuggestion ? "Review summary suggestion" : "Tailor professional summary"}
               </Button>
             )}
