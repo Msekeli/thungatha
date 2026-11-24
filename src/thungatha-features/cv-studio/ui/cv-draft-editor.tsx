@@ -127,6 +127,7 @@ export function CvDraftEditor({
     try {
       const response = await fetch("/api/cv-studio/drafts", {
         method: "POST",
+        signal: AbortSignal.timeout(30000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ masterVersionId, jobContext }),
       });
