@@ -333,7 +333,7 @@ export function CvDraftEditor({
       <header className="shrink-0 border-b border-line px-5 pb-3 pt-4 sm:px-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-3"><span className="text-2xl text-accent" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
+            <div className="flex items-center gap-3"><span className="text-2xl font-semibold text-accent-text" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
             <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
           </div>
           <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg text-accent-text px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
