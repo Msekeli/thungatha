@@ -240,7 +240,7 @@ export function CvStudioStart() {
                       {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && <Button size="lg" className="w-full rounded-md sm:w-auto" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor a new CV"}</Button>}
+                      {!reusableCv && <Button size="lg" className="mx-auto w-[98%] rounded-md" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor a new CV"}</Button>}
                       {reusableCv && <Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button>}
                     </div>
                   </div>
