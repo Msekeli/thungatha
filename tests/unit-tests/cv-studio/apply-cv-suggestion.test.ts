@@ -60,6 +60,14 @@ describe("applyCvSuggestion", () => {
     expect(content.workExperience[0].description).toBe("Original description.");
   });
 
+  it("does not overwrite text changed after the suggestion was generated", () => {
+    const edited = { ...content, professionalSummary: "User's newer edit." };
+    expect(() => applyCvSuggestion(
+      edited,
+      suggestion("professionalSummary"),
+    )).toThrow(/stale/);
+  });
+
   it("rejects fields outside the editable target contract", () => {
     expect(() => applyCvSuggestion(content, suggestion("email"))).toThrow(
       /unsupported field/,
