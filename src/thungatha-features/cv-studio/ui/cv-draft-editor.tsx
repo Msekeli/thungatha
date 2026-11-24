@@ -222,6 +222,11 @@ export function CvDraftEditor({
         item.id === id ? { ...item, decision } : item,
       ),
     } : current);
+    setMessage(
+      decision === "accepted"
+        ? "Summary accepted and applied to the live PDF preview. Save the draft to keep this change."
+        : "Summary proposal rejected. The original summary remains in your CV.",
+    );
   }
 
   useEffect(() => {
