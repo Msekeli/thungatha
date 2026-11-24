@@ -1,7 +1,7 @@
 import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-ai-evidence";
-import { getOrCreateJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-service";
+import { getOrCreateJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-understanding-cache";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 import type { CvContent, CvSuggestion } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
