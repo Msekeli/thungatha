@@ -275,6 +275,7 @@ export function CvStudioStart() {
     setWorkflowError(null);
     setJobForm(emptyJobForm);
     setExternalJobOpen(false);
+    setTailoringStarted(false);
     router.replace("/cv-studio");
   }
 
@@ -356,15 +357,29 @@ export function CvStudioStart() {
                             .join(" · ") || "Company/location not supplied"}
                         </p>
                       </div>
-                      <Button
-                        className="w-full shrink-0 whitespace-normal sm:w-auto"
-                        variant="outline"
-                        size="sm"
-                        onClick={clearSelectedJob}
-                      >
-                        Close job description
-                      </Button>
+                      <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+                        {tailoringStarted && (
+                          <Button
+                            className="w-full sm:w-auto"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setTailoringStarted(false)}
+                          >
+                            Back to job overview
+                          </Button>
+                        )}
+                        <Button
+                          className="w-full shrink-0 whitespace-normal sm:w-auto"
+                          variant="outline"
+                          size="sm"
+                          onClick={clearSelectedJob}
+                        >
+                          Close job
+                        </Button>
+                      </div>
                     </div>
+                    {!tailoringStarted && (
+                      <>
                     <div className="mt-5 border-t border-line pt-4">
                       <h3 className="text-sm font-semibold text-fg">
                         Job description
@@ -427,6 +442,7 @@ export function CvStudioStart() {
                         </p>
                       )}
                     </div>
+                    </>)}
                     <div className="mt-3 flex flex-wrap gap-2">
                       {!reusableCv && !tailoringStarted && (
                         <Button
