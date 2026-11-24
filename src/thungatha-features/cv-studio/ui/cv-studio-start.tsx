@@ -62,6 +62,7 @@ type JobContext = {
   sourceUrl: string | null;
   description: string;
   descriptionFingerprint: string;
+  retrievedAt: string;
 };
 type MatchingVersion = {
   id: string;
