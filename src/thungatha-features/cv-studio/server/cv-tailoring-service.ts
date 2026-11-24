@@ -108,7 +108,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     profileEvidence,
     jobEvidence,
     understanding.requirements,
-    provider ?? (response.provider as Exclude<AiProvider, "ollama-cloud">),
+    provider,
   );
   const mapped = mapCvTailoringOutput(
     { ...parsed, suggestions: verifiedSuggestions },
