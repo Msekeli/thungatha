@@ -399,7 +399,7 @@ export function CvDraftEditor({
               disabled={busy}
               onClick={() => void saveDraft()}
             >
-              {busy ? "Saving…" : "Save draft"}
+              {busy ? "Saving…" : "Save version"}
             </Button>
             <Button disabled={busy} onClick={() => void acceptDraft()}>
               {busy ? "Processing…" : "Accept CV"}
@@ -638,8 +638,6 @@ export function CvDraftEditor({
                   </Field>
                 </div>
               ))}
-            </div>
-
             </div>
 
             <div id="cv-review-skills" className="scroll-mt-28"><Field label="Skills" hint="One skill per line.">
