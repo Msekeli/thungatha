@@ -2,13 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { pdf } from "@react-pdf/renderer";
-import { Download, Minus, Plus, RotateCcw } from "lucide-react";
+import { Download, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
-
-const MIN_ZOOM = 50;
-const MAX_ZOOM = 200;
-const ZOOM_STEP = 10;
 
 export function CvPdfPreviewClient({
   content,
@@ -19,8 +15,6 @@ export function CvPdfPreviewClient({
   accent?: string;
   allowDownload?: boolean;
 }) {
-  const [zoom, setZoom] = useState(100);
-  const [fitMode, setFitMode] = useState<"width" | "actual">("width");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(true);
   const [pdfError, setPdfError] = useState<string | null>(null);
@@ -112,7 +106,7 @@ export function CvPdfPreviewClient({
         const firstPage = await pdfDocument.getPage(1);
         const baseWidth = firstPage.getViewport({ scale: 1 }).width;
         const fitScale = Math.max(0.25, containerWidth / baseWidth);
-        const scale = fitMode === "width" ? fitScale : zoom / 100;
+        const scale = fitScale;
         const canvases: HTMLCanvasElement[] = [];
 
         for (
@@ -155,12 +149,7 @@ export function CvPdfPreviewClient({
       active = false;
       if (loadedDocument) void loadedDocument.destroy();
     };
-  }, [pdfUrl, containerWidth, fitMode, zoom]);
-
-  function changeZoom(next: number) {
-    setFitMode("actual");
-    setZoom(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next)));
-  }
+  }, [pdfUrl, containerWidth]);
 
   function downloadPdf() {
     if (!pdfUrl) return;
@@ -173,57 +162,7 @@ export function CvPdfPreviewClient({
   return (
     <section className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
-        <div className="hidden min-w-0 flex-wrap items-center gap-2 min-[701px]:flex">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Zoom out"
-            disabled={!pdfUrl || (fitMode === "actual" && zoom <= MIN_ZOOM)}
-            onClick={() =>
-              changeZoom((fitMode === "width" ? 100 : zoom) - ZOOM_STEP)
-            }
-          >
-            <Minus />
-          </Button>
-          <span className="min-w-14 text-center text-sm font-medium tabular-nums text-fg">
-            {fitMode === "width" ? "Fit width" : `${zoom}%`}
-          </span>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Zoom in"
-            disabled={!pdfUrl || (fitMode === "actual" && zoom >= MAX_ZOOM)}
-            onClick={() =>
-              changeZoom((fitMode === "width" ? 100 : zoom) + ZOOM_STEP)
-            }
-          >
-            <Plus />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Fit document to width"
-            disabled={!pdfUrl}
-            onClick={() => setFitMode("width")}
-          >
-            <RotateCcw />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={!pdfUrl}
-            onClick={() => {
-              setZoom(100);
-              setFitMode("actual");
-            }}
-          >
-            100%
-          </Button>
-        </div>
+        <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-fg-muted"><Maximize2 className="size-4" /><span>Fit width</span></div>
         <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end">
           {pageCount > 0 && (
             <span className="text-xs text-fg-muted">
