@@ -2,7 +2,11 @@ import type { CvContent } from "./cv-studio-schema";
 
 export type CvTailoringEvidence = {
   profileEvidence: Array<{ id: string; content: string }>;
-  editableTargets: Array<{ path: string; currentText: string | null }>;
+  editableTargets: Array<{
+    path: string;
+    currentText: string | null;
+    profileEvidenceRef: string | null;
+  }>;
 };
 
 export function buildCvTailoringEvidence(
@@ -11,13 +15,21 @@ export function buildCvTailoringEvidence(
 ): CvTailoringEvidence {
   const profileEvidence: CvTailoringEvidence["profileEvidence"] = [];
   const editableTargets: CvTailoringEvidence["editableTargets"] = [];
+  const evidenceIds = new Set<string>();
   const addEvidence = (path: string, value: string | null | undefined) => {
     if (value?.trim()) {
-      profileEvidence.push({ id: `cv:${path}`, content: value.trim() });
+      const id = `cv:${path}`;
+      profileEvidence.push({ id, content: value.trim() });
+      evidenceIds.add(id);
     }
   };
-  const addTarget = (path: string, value: string | null) => {
-    editableTargets.push({ path, currentText: value });
+  const addTarget = (path: string, value: string | null, evidencePath = path) => {
+    const profileEvidenceRef = `cv:${evidencePath}`;
+    editableTargets.push({
+      path,
+      currentText: value,
+      profileEvidenceRef: evidenceIds.has(profileEvidenceRef) ? profileEvidenceRef : null,
+    });
   };
 
   addEvidence("headline", sourceContent.headline);
@@ -33,18 +45,23 @@ export function buildCvTailoringEvidence(
     addEvidence(`${base}.jobTitle`, item.jobTitle);
     addEvidence(`${base}.employer`, item.employer);
     addEvidence(`${base}.description`, item.description);
+    item.achievements.forEach((achievement, index) =>
+      addEvidence(`${base}.achievements[${index}]`, achievement),
+    );
+
     const current = currentContent.workExperience.find(
       (entry) => entry.sourceId === item.sourceId,
     );
     if (current) {
       addTarget(`${base}.description`, current.description);
       current.achievements.forEach((achievement, index) =>
-        addTarget(`${base}.achievements[${index}]`, achievement),
+        addTarget(
+          `${base}.achievements[${index}]`,
+          achievement,
+          `${base}.achievements[${index}]`,
+        ),
       );
     }
-    item.achievements.forEach((achievement, index) =>
-      addEvidence(`${base}.achievements[${index}]`, achievement),
-    );
   });
   sourceContent.projects.forEach((item) => {
     const base = `projects[${item.sourceId}]`;
