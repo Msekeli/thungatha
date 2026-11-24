@@ -224,7 +224,7 @@ export function CvStudioStart() {
                     </div>
                     <div className="mt-5 border-t border-line pt-4">
                       <h3 className="text-sm font-semibold text-fg">Job description</h3>
-                      <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
+                      <div className="mt-2 h-[45dvh] max-h-[45dvh] min-h-[200px] lg:h-[50dvh] lg:max-h-[50dvh] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</div>
                     </div>
                     <div className="mt-4 rounded-xl border border-line bg-panel-2 p-3" aria-live="polite">
                       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -240,7 +240,7 @@ export function CvStudioStart() {
                       {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && <Button className="w-full sm:w-auto" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor a new CV"}</Button>}
+                      {!reusableCv && <Button size="lg" className="w-full rounded-md sm:w-auto" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor a new CV"}</Button>}
                       {reusableCv && <Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button>}
                     </div>
                   </div>
