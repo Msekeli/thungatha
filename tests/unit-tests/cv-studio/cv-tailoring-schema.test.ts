@@ -44,6 +44,20 @@ describe("CV tailoring evidence", () => {
     expect(result.editableTargets.some((item) => item.path === "email")).toBe(false);
   });
 
+  it("converts the response contract to Gemini-compatible structured schema", () => {
+    const evidence = buildCvTailoringEvidence(master);
+    const result = createCvTailoringResponseSchema(
+      evidence.profileEvidence.map((item) => item.id),
+      ["job:description:0"],
+      evidence.editableTargets.map((item) => item.path),
+    );
+    expect(result.responseSchema.type).toBe("OBJECT");
+    const properties = result.responseSchema.properties as Record<string, any>;
+    const suggestion = properties.suggestions.items.properties;
+    expect(suggestion.originalText.nullable).toBe(true);
+    expect(suggestion.targetPath.type).toBe("STRING");
+  });
+
   it("uses the current draft text as the suggestion baseline, not as evidence", () => {
     const currentDraft = { ...master, professionalSummary: "My manually edited draft." };
     const result = buildCvTailoringEvidence(master, currentDraft);
