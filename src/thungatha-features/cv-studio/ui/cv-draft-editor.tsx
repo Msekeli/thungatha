@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CvPdfPreview } from "./cv-pdf-preview";
+import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 
 type CvContent = {
   fullName: string;
@@ -300,7 +301,15 @@ export function CvDraftEditor({
       )}
 
       {draft && (
-        <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        <>
+          <div className="xl:hidden">
+            <CvPdfPreviewDialog
+              content={content}
+              accent={accentHex[draft.accent_colour]}
+              allowDownload={draft.status === "accepted"}
+            />
+          </div>
+          <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <div className="min-w-0 space-y-5">
             <div className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted">
               {draft.status === "accepted"
@@ -571,7 +580,7 @@ export function CvDraftEditor({
               </div>
             )}
           </div>
-          <div className="min-w-0 space-y-3 xl:sticky xl:top-4 xl:self-start">
+          <div className="hidden min-w-0 space-y-3 xl:sticky xl:top-4 xl:self-start">
             <div className="flex items-center justify-between gap-3">
               <h4 className="font-semibold">Live A4 preview</h4>
               <span className="text-xs text-fg-muted">
@@ -586,7 +595,8 @@ export function CvDraftEditor({
               allowDownload={draft.status === "accepted"}
             />
           </div>
-        </div>
+          </div>
+        </>
       )}
     </section>
   );
