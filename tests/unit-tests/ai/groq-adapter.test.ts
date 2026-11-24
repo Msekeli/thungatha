@@ -44,6 +44,33 @@ describe("Groq adapter", () => {
     });
   });
 
+  it("preserves nullable fields when converting strict JSON Schema", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
+      choices: [{ message: { content: '{"originalText":null}' }, finish_reason: "stop" }],
+    }), { status: 200 }));
+
+    await createGroqAdapter({ apiKey: "test-key", model: "openai/gpt-oss-120b", fetcher }).complete({
+      task: "cv-tailoring",
+      systemPrompt: "Return JSON.",
+      userPrompt: "Tailor.",
+      responseFormat: "json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          originalText: {
+            anyOf: [{ type: "STRING" }, { type: "NULL" }],
+          },
+        },
+      },
+    });
+
+    const [, init] = fetcher.mock.calls[0] ?? [];
+    const body = JSON.parse(String(init?.body));
+    expect(body.response_format.json_schema.schema.properties.originalText).toEqual({
+      anyOf: [{ type: "string" }, { type: "null" }],
+    });
+  });
+
   it("treats Groq TPM admission failures as retryable capacity limits", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
       error: { message: "Request too large on tokens per minute (TPM): Limit 8000, Requested 10253." },

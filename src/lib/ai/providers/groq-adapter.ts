@@ -22,7 +22,17 @@ function toOpenAiJsonSchema(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const schema = value as Record<string, unknown>;
   const output: Record<string, unknown> = {};
-  if (typeof schema.type === "string") {
+  // Zod emits nullable fields as anyOf(string, null). Dropping anyOf leaves
+  // an unconstrained property, which can make Groq strict structured output
+  // reject or mis-handle otherwise valid responses.
+  if (Array.isArray(schema.anyOf)) {
+    output.anyOf = schema.anyOf.map(toOpenAiJsonSchema);
+  }
+  if (Array.isArray(schema.type)) {
+    output.anyOf = schema.type.map((type) =>
+      toOpenAiJsonSchema({ type }),
+    );
+  } else if (typeof schema.type === "string") {
     output.type = JSON_SCHEMA_TYPES[schema.type] ?? schema.type.toLowerCase();
   }
   if (Array.isArray(schema.enum)) output.enum = schema.enum;
@@ -83,10 +93,10 @@ export function createGroqAdapter(
       const availableCompletionTokens = Math.floor(
         tpmLimit - estimatedInputTokens - safetyReserve,
       );
-      if (request.maxOutputTokens && availableCompletionTokens < 512) {
+      if (availableCompletionTokens < 512) {
         throw new AiProviderError(
-          `Groq request exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens.`,
-          { code: "rate-limited", provider: "groq", retryable: true },
+          `Groq request for task "${request.task}" exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens (system: ${request.systemPrompt.length} chars, user: ${request.userPrompt.length} chars, schema: ${schemaCharacters} chars; requested output: ${request.maxOutputTokens ?? "provider default"} tokens).`,
+          { code: "configuration", provider: "groq", retryable: false },
         );
       }
       const completionTokenBudget = request.maxOutputTokens
@@ -160,9 +170,9 @@ export function createGroqAdapter(
         throw new AiProviderError(
           "Groq truncated the structured response at its completion-token limit.",
           {
-            code: "rate-limited",
+            code: "invalid-response",
             provider: "groq",
-            retryable: true,
+            retryable: false,
           },
         );
       }

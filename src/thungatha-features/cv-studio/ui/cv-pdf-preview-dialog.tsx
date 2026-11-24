@@ -10,10 +10,12 @@ export function CvPdfPreviewDialog({
   content,
   accent,
   allowDownload = true,
+  previewingProposal = false,
 }: {
   content: CvPdfContent;
   accent?: string;
   allowDownload?: boolean;
+  previewingProposal?: boolean;
 }) {
   return (
     <Dialog.Root>
@@ -29,7 +31,10 @@ export function CvPdfPreviewDialog({
         <Dialog.Backdrop className="fixed inset-0 z-[1700] bg-black/60 backdrop-blur-sm" />
         <Dialog.Popup className="fixed inset-2 z-[1701] flex max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-xl border border-line bg-panel p-3 text-fg shadow-xl outline-none sm:inset-4 sm:p-4">
           <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line pb-3">
-            <Dialog.Title className="font-semibold">CV PDF preview</Dialog.Title>
+            <div className="min-w-0">
+              <Dialog.Title className="font-semibold">CV PDF preview</Dialog.Title>
+              {previewingProposal && <p className="mt-0.5 text-xs text-fg-muted">Proposed summary · Not applied to your CV</p>}
+            </div>
             <Dialog.Close
               render={
                 <Button type="button" variant="outline" size="sm">

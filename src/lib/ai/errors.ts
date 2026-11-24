@@ -64,9 +64,9 @@ export function createProviderHttpError(
           typeof (payload as { message?: unknown }).message === "string"
         ? (payload as { message: string }).message
         : undefined;
-  const safeDetail = detail?.replace(/\s+/g, " ").slice(0, 240);
+  const safeDetail = detail?.replace(/\\s+/g, " ").slice(0, 240);
   const isTokenCapacityLimit =
-    status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
+    status === 413 && /tokens per minute|TPM|requested \\d+/i.test(detail ?? "");
   const code: AiErrorCode = isTokenCapacityLimit
     ? "rate-limited"
     : status === 401 || status === 403

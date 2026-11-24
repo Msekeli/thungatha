@@ -96,24 +96,23 @@ export async function POST(request: Request) {
       jobId: job.jobId,
       descriptionFingerprint: job.descriptionFingerprint,
     };
-    const { data: existingDrafts, error: existingDraftsError } = await db
+    const matchFilter = job.jobId
+      ? `source_job_id.eq.${job.jobId},source_job_snapshot->>jobId.eq.${job.jobId}`
+      : `source_job_snapshot->>descriptionFingerprint.eq.${job.descriptionFingerprint}`;
+    const { data: reusableDraft, error: reusableDraftError } = await db
       .from("cv_versions")
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
       )
       .eq("user_id", auth.identity.userId)
       .eq("cv_kind", "tailored")
       .eq("status", "draft")
       .eq("source_profile_version", auth.profile.profileVersion)
-      .order("updated_at", { ascending: false });
-    if (existingDraftsError) throw existingDraftsError;
-    const reusableDraft = (existingDrafts ?? []).find((item) =>
-      job.jobId
-        ? item.source_job_snapshot?.jobId === job.jobId ||
-          item.source_job_id === job.jobId
-        : item.source_job_snapshot?.descriptionFingerprint ===
-          job.descriptionFingerprint,
-    );
+      .or(matchFilter)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (reusableDraftError) throw reusableDraftError;
     if (reusableDraft)
       return NextResponse.json({ draft: reusableDraft, reusedDraft: true });
 
@@ -129,13 +128,32 @@ export async function POST(request: Request) {
         source_job_snapshot: snapshot,
         content: master.content,
         suggestions: [],
+        tailoring_assessment: null,
         template_version: master.template_version,
         accent_colour: master.accent_colour,
       })
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
       )
       .single();
+    if (error?.code === "23505") {
+      const { data: racedDraft, error: racedDraftError } = await db
+        .from("cv_versions")
+        .select(
+          "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
+        )
+        .eq("user_id", auth.identity.userId)
+        .eq("cv_kind", "tailored")
+        .eq("status", "draft")
+        .eq("source_profile_version", auth.profile.profileVersion)
+        .or(matchFilter)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (racedDraftError) throw racedDraftError;
+      if (racedDraft)
+        return NextResponse.json({ draft: racedDraft, reusedDraft: true });
+    }
     if (error) throw error;
     return NextResponse.json({ draft: data }, { status: 201 });
   } catch (error) {
@@ -186,7 +204,7 @@ export async function PUT(request: Request) {
       .eq("user_id", auth.identity.userId)
       .eq("status", "draft")
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,updated_at",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,updated_at",
       )
       .single();
     if (error) throw error;

@@ -1,3 +1,4 @@
+import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import "./job-description-content.css";
 
 type Props = {
@@ -19,8 +20,9 @@ export function JobDescriptionContent({
 
   return (
     <div
-      className={`th-job-description-html ${largeText ? "th-job-description-html-large" : ""}`}
-      dangerouslySetInnerHTML={{ __html: description }}
-    />
+      className={`th-job-description-html whitespace-pre-line ${largeText ? "th-job-description-html-large" : ""}`}
+    >
+      {jobDescriptionToText(description)}
+    </div>
   );
 }

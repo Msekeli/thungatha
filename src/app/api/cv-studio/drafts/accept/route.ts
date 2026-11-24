@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const { data: existing, error: readError } = await db
       .from("cv_versions")
       .select(
-        "id,cv_kind,status,source_profile_version,content,suggestions,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version",
+        "id,cv_kind,status,source_profile_version,content,suggestions,tailoring_assessment,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version",
       )
       .eq("id", body.id)
       .eq("user_id", identity.userId)
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       .eq("status", "draft")
       .eq("source_profile_version", profile.profileVersion)
       .select(
-        "id,cv_kind,status,source_profile_version,content,suggestions,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version,accepted_at,updated_at",
+        "id,cv_kind,status,source_profile_version,content,suggestions,tailoring_assessment,accent_colour,version_number,source_job_snapshot,source_job_id,parent_version_id,template_version,accepted_at,updated_at",
       )
       .single();
     if (error) throw error;

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvDraftEditor } from "./cv-draft-editor";
@@ -274,6 +275,7 @@ export function CvStudioStart() {
     setWorkflowError(null);
     setJobForm(emptyJobForm);
     setExternalJobOpen(false);
+    setTailoringStarted(false);
     router.replace("/cv-studio");
   }
 
@@ -355,21 +357,23 @@ export function CvStudioStart() {
                             .join(" · ") || "Company/location not supplied"}
                         </p>
                       </div>
-                      <Button
-                        className="w-full shrink-0 whitespace-normal sm:w-auto"
-                        variant="outline"
-                        size="sm"
-                        onClick={clearSelectedJob}
-                      >
-                        Close job description
-                      </Button>
+                      <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+                        <Button
+                          className="w-full shrink-0 whitespace-normal sm:w-auto"
+                          variant="outline"
+                          size="sm"
+                          onClick={clearSelectedJob}
+                        >
+                          Close job
+                        </Button>
+                      </div>
                     </div>
                     <div className="mt-5 border-t border-line pt-4">
                       <h3 className="text-sm font-semibold text-fg">
                         Job description
                       </h3>
                       <div className="mt-2 h-[35dvh] min-h-[10rem] max-h-[22rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:min-h-[12rem] lg:max-h-[50dvh]">
-                        {formatJobDescription(jobContext.description)}
+                        {jobDescriptionToText(jobContext.description)}
                       </div>
                     </div>
                     <div
@@ -427,21 +431,22 @@ export function CvStudioStart() {
                       )}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && (
+                      {!reusableCv && !tailoringStarted && (
                         <Button
                           size="lg"
                           className="mx-auto w-[98%] rounded-md"
-                          disabled={workflowBusy || tailoringStarted}
+                          disabled={workflowBusy}
                           onClick={() => setTailoringStarted(true)}
                         >
-                          {tailoringStarted ? (
-                            "Preparing your tailored CV…"
-                          ) : (
-                            <span className="font-bold">
-                              Create a new CV tailored to this job
-                            </span>
-                          )}
+                          <span className="font-bold">
+                            Create a new CV tailored to this job
+                          </span>
                         </Button>
+                      )}
+                      {tailoringStarted && (
+                        <p className="w-full rounded-lg border border-accent/30 bg-accent-bg/40 px-3 py-2 text-center text-sm font-medium text-accent-text">
+                          CV tailoring workspace is open below.
+                        </p>
                       )}
                       {reusableCv && (
                         <Button
@@ -454,8 +459,7 @@ export function CvStudioStart() {
                       )}
                     </div>
                   </div>
-                  {!tailoringStarted && (
-                    <div className="lg:hidden">
+                  <div className="lg:hidden">
                       <CvPdfPreviewDialog
                         content={reusableCv?.content ?? state.masterCv.content}
                         accent={
@@ -464,8 +468,7 @@ export function CvStudioStart() {
                             : undefined
                         }
                       />
-                    </div>
-                  )}
+                  </div>
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
@@ -685,21 +688,6 @@ export function CvStudioStart() {
       )}
     </main>
   );
-}
-
-function formatJobDescription(value: string) {
-  return value
-    .replace(/<\/(p|div|li|h[1-6]|br)\s*>/gi, "\n")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
 }
 
 function Field({

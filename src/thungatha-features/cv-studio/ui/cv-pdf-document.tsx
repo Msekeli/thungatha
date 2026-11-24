@@ -197,7 +197,7 @@ export function CvPdfDocument({
           )}
         </Section>
 
-        <Section title="Personal projects" accent={accent}>
+        <Section title="Projects" accent={accent}>
           {content.projects.length ? (
             content.projects.map((item) => (
               <View key={item.sourceId} style={styles.entry}>
@@ -216,7 +216,7 @@ export function CvPdfDocument({
           )}
         </Section>
 
-        <Section title="Technical skills" accent={accent}>
+        <Section title="Skills" accent={accent}>
           <Text style={styles.body}>
             {content.technicalSkills.join(" · ") ||
               "No skills recorded in Profile."}

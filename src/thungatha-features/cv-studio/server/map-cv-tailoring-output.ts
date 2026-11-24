@@ -24,7 +24,14 @@ export function mapCvTailoringOutput(
     if (!target || item.originalText !== target.currentText) {
       throw new Error("AI returned a suggestion for changed or unknown CV text.");
     }
-    if (
+    if (item.targetPath === "professionalSummary") {
+      if (
+        item.profileEvidenceRefs.length === 0 ||
+        item.profileEvidenceRefs.some((ref) => !profileEvidence.some((evidence) => evidence.id === ref))
+      ) {
+        throw new Error("AI summary suggestion must cite confirmed Profile evidence.");
+      }
+    } else if (
       !target.profileEvidenceRef ||
       item.profileEvidenceRefs.length !== 1 ||
       item.profileEvidenceRefs[0] !== target.profileEvidenceRef
@@ -78,5 +85,5 @@ export function mapCvTailoringOutput(
       jobEvidenceRefs: gap.jobEvidenceRefs,
     };
   });
-  return { suggestions, gaps };
+  return { suggestions, gaps, coveredRequirementIds: parsed.coveredRequirementIds };
 }
