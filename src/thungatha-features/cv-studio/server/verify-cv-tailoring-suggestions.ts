@@ -13,7 +13,29 @@ type Suggestion = {
   jobEvidenceRefs: string[];
 };
 
-function toGeminiSchema(value: unknown): Record<string, unknown> {\n  if (!value || typeof value !== "object" || Array.isArray(value)) return {};\n  const schema = value as Record<string, unknown>;\n  const types: Record<string, string> = { object: "OBJECT", array: "ARRAY", string: "STRING", number: "NUMBER", integer: "INTEGER", boolean: "BOOLEAN" };\n  const output: Record<string, unknown> = {};\n  if (typeof schema.type === "string") output.type = types[schema.type] ?? schema.type.toUpperCase();\n  for (const key of ["enum", "required", "description"]) if (schema[key] !== undefined) output[key] = schema[key];\n  if (schema.items) output.items = toGeminiSchema(schema.items);\n  if (schema.properties && typeof schema.properties === "object") output.properties = Object.fromEntries(Object.entries(schema.properties as Record<string, unknown>).map(([key, child]) => [key, toGeminiSchema(child)]));\n  return output;\n}\n\nconst reviewSchema = z.object({
+function toGeminiSchema(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const schema = value as Record<string, unknown>;
+  const types: Record<string, string> = {
+    object: "OBJECT", array: "ARRAY", string: "STRING",
+    number: "NUMBER", integer: "INTEGER", boolean: "BOOLEAN",
+  };
+  const output: Record<string, unknown> = {};
+  if (typeof schema.type === "string") output.type = types[schema.type] ?? schema.type.toUpperCase();
+  for (const key of ["enum", "required", "description"]) {
+    if (schema[key] !== undefined) output[key] = schema[key];
+  }
+  if (schema.items) output.items = toGeminiSchema(schema.items);
+  if (schema.properties && typeof schema.properties === "object") {
+    output.properties = Object.fromEntries(
+      Object.entries(schema.properties as Record<string, unknown>)
+        .map(([key, child]) => [key, toGeminiSchema(child)]),
+    );
+  }
+  return output;
+}
+
+const reviewSchema = z.object({
   reviews: z.array(z.object({
     index: z.number().int().nonnegative(),
     decision: z.enum(["approve", "reject"]),
