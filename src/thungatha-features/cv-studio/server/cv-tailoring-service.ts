@@ -1,8 +1,13 @@
 import "server-only";
-import { completeAiTask } from "@/lib/ai/provider-router";
+import {
+  completeAiTask,
+  completeAiTaskWithProvider,
+} from "@/lib/ai/provider-router";
+import type { AiProvider } from "@/lib/ai/contracts";
 import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-ai-evidence";
 import { getOrCreateJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-understanding-cache";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
+import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
@@ -24,8 +29,6 @@ export async function generateCvTailoringSuggestions(
   draftContent: CvContent,
   job: CvTailoringJob,
 ) {
-  const { profileEvidence, editableTargets } =
-    buildCvTailoringEvidence(masterContent, draftContent);
   const jobContext: JobMatchingContext = {
     title: job.title,
     employerName: job.company,
@@ -33,11 +36,35 @@ export async function generateCvTailoringSuggestions(
     description: job.description,
   };
   const understanding = await getOrCreateJobUnderstanding(jobContext);
+  return generateCvTailoringSuggestionsFromUnderstanding(
+    masterContent,
+    draftContent,
+    job,
+    understanding.analysis,
+  );
+}
+
+/** Shared tailoring pipeline; accepts an existing canonical understanding for isolated provider tests. */
+export async function generateCvTailoringSuggestionsFromUnderstanding(
+  masterContent: CvContent,
+  draftContent: CvContent,
+  job: CvTailoringJob,
+  understanding: JobUnderstanding,
+  provider?: Exclude<AiProvider, "ollama-cloud">,
+) {
+  const jobContext: JobMatchingContext = {
+    title: job.title,
+    employerName: job.company,
+    locationText: job.location,
+    description: job.description,
+  };
+  const { profileEvidence, editableTargets } =
+    buildCvTailoringEvidence(masterContent, draftContent);
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
   const referencedJobIds = new Set([
-    ...understanding.analysis.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...understanding.analysis.capabilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...understanding.analysis.requirements.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ]);
   const jobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
   if (!profileEvidence.length || !jobEvidence.length || !editableTargets.length) {
@@ -48,23 +75,26 @@ export async function generateCvTailoringSuggestions(
     profileEvidence.map((item) => item.id),
     jobEvidence.map((item) => item.id),
     editableTargets.map((item) => item.path),
-    understanding.analysis.requirements.map((item) => item.id),
+    understanding.requirements.map((item) => item.id),
   );
-  const response = await completeAiTask({
-    task: "cv-tailoring",
-    responseFormat: "json",
+  const request = {
+    task: "cv-tailoring" as const,
+    responseFormat: "json" as const,
     responseSchema: schema.responseSchema,
     temperature: 0.2,
     timeoutMs: 120_000,
     systemPrompt: buildCvTailoringSystemPrompt(),
     userPrompt: JSON.stringify({
       job: { title: job.title, company: job.company },
-      jobUnderstanding: understanding.analysis,
+      jobUnderstanding: understanding,
       jobEvidence,
       confirmedCvEvidence: profileEvidence,
       editableTargets,
     }),
-  });
+  };
+  const response = provider
+    ? await completeAiTaskWithProvider(provider, request)
+    : await completeAiTask(request);
 
   const parsed = schema.validator.parse(JSON.parse(response.content));
   const mapped = mapCvTailoringOutput(
@@ -72,7 +102,7 @@ export async function generateCvTailoringSuggestions(
     profileEvidence,
     jobEvidence,
     editableTargets,
-    understanding.analysis.requirements,
+    understanding.requirements,
   );
   return {
     ...mapped,
