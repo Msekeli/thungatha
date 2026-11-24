@@ -9,6 +9,20 @@ describe("job source evidence text", () => {
     ]);
   });
 
+  it("preserves the exact baseline excerpt and spaces", () => {
+    const description = [
+      "Build and maintain responsive web applications using React and TypeScript.",
+      "Integrate REST APIs and collaborate with backend engineers.",
+      "Write maintainable components and participate in code reviews.",
+    ].join("\n");
+    const evidence = buildJobEvidence(description);
+    expect(evidence.map((item) => item.content)).toEqual([
+      "Build and maintain responsive web applications using React and TypeScript.",
+      "Integrate REST APIs and collaborate with backend engineers.",
+      "Write maintainable components and participate in code reviews.",
+    ]);
+  });
+
   it("preserves word boundaries across inline HTML elements", () => {
     expect(sourceSegments("<p>Build web applications using <strong>React</strong> and TypeScript.</p>")).toEqual([
       "Build web applications using React and TypeScript.",
