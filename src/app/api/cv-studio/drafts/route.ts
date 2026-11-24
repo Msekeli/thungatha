@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     const { data: existingDrafts, error: existingDraftsError } = await db
       .from("cv_versions")
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
       )
       .eq("user_id", auth.identity.userId)
       .eq("cv_kind", "tailored")
@@ -129,11 +129,12 @@ export async function POST(request: Request) {
         source_job_snapshot: snapshot,
         content: master.content,
         suggestions: [],
+        tailoring_assessment: null,
         template_version: master.template_version,
         accent_colour: master.accent_colour,
       })
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
       )
       .single();
     if (error?.code === "23505") {
@@ -208,7 +209,7 @@ export async function PUT(request: Request) {
       .eq("user_id", auth.identity.userId)
       .eq("status", "draft")
       .select(
-        "id,version_number,status,content,suggestions,accent_colour,updated_at",
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,updated_at",
       )
       .single();
     if (error) throw error;
