@@ -16,6 +16,30 @@ const BLOCK_TAGS = new Set([
 const IGNORED_TAGS = new Set(["script", "style", "template", "noscript"]);
 const HTML_TAG = /<\/?[a-z][^>]*>/i;
 
+const DOUBLE_ENCODED_ENTITIES: Record<string, string> = {
+  amp: "&",
+  apos: "'",
+  gt: ">",
+  lt: "<",
+  nbsp: " ",
+  quot: '"',
+};
+
+/** Decode one additional entity layer left behind by imported job feeds. */
+function decodeCharacterReferences(value: string) {
+  return value.replace(/&(#(?:x[\\da-f]+|\\d+)|[a-z][a-z\\d]+);/gi, (match, reference: string) => {
+    if (reference[0] === "#") {
+      const hexadecimal = reference[1]?.toLowerCase() === "x";
+      const codePoint = Number.parseInt(reference.slice(hexadecimal ? 2 : 1), hexadecimal ? 16 : 10);
+      if (!Number.isFinite(codePoint) || codePoint <= 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+        return "\\uFFFD";
+      }
+      return String.fromCodePoint(codePoint);
+    }
+    return DOUBLE_ENCODED_ENTITIES[reference.toLowerCase()] ?? match;
+  });
+}
+
 function normalizeText(value: string) {
   return value
     .replace(/\u00a0/g, " ")
