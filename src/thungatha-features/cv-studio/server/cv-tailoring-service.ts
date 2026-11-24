@@ -153,6 +153,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const summaryEvidence = selectSummaryEvidence(
     profileEvidence,
     understanding.requirements,
+    3_500,
   );
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
   // The response classifies requirements, so only requirement-linked advert
@@ -163,7 +164,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const jobEvidence = selectJobEvidence(
     allJobEvidence.filter((item) => referencedJobIds.has(item.id)),
     understanding.requirements,
-    4_500,
+    2_000,
   );
   if (!summaryEvidence.length || !jobEvidence.length || !editableTargets.length) {
     throw new Error("There is not enough confirmed evidence to tailor this CV.");
@@ -187,18 +188,17 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     userPrompt: JSON.stringify({
       job: [job.title, job.company],
       understanding: {
-        coverage: understanding.coverage,
         requirements: understanding.requirements.map((item) => [
           item.id,
-          item.statement,
+          item.statement.slice(0, 220),
           item.category,
           item.importance,
           item.sourceEvidenceRefs,
         ]),
       },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      // Keep the full confirmed Profile evidence for accurate requirement coverage.
-      // Confirmed Profile facts across the CV may support the new summary proposal.
+      // Send only ranked, bounded confirmed facts. The mapper still validates
+      // model citations against the complete Profile evidence collection.
       confirmedCvEvidence: summaryEvidence.map((item) => [item.id, item.content]),
       editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
