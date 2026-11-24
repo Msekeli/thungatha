@@ -93,9 +93,9 @@ export function createGroqAdapter(
       const availableCompletionTokens = Math.floor(
         tpmLimit - estimatedInputTokens - safetyReserve,
       );
-      if (request.maxOutputTokens && availableCompletionTokens < 512) {
+      if (availableCompletionTokens < 512) {
         throw new AiProviderError(
-          `Groq request exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens (system: ${request.systemPrompt.length} chars, user: ${request.userPrompt.length} chars, schema: ${schemaCharacters} chars).`,
+          `Groq request for task "${request.task}" exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens (system: ${request.systemPrompt.length} chars, user: ${request.userPrompt.length} chars, schema: ${schemaCharacters} chars; requested output: ${request.maxOutputTokens ?? "provider default"} tokens).`,
           { code: "configuration", provider: "groq", retryable: false },
         );
       }
