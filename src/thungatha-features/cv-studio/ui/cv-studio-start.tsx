@@ -277,7 +277,7 @@ export function CvStudioStart() {
   }
 
   return (
-    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-visible pb-[calc(7rem+env(safe-area-inset-bottom))] lg:overflow-y-auto lg:pb-0">
+    <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-visible lg:overflow-y-auto">
       {state.status === "loading" && (
         <section
           className="rounded-2xl border border-slate-200 bg-white p-6"
