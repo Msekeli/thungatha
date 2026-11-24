@@ -7,6 +7,7 @@ import type { CvContent, CvSuggestion } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
 import {
+  CV_TAILORING_VERSION,
   createCvTailoringResponseSchema,
 } from "./cv-tailoring-schema";
 
