@@ -136,14 +136,14 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
         </div>
         <div className="flex items-center gap-3">
           {pageCount > 0 && <span className="text-xs text-fg-muted">{pageCount} {pageCount === 1 ? "page" : "pages"}</span>}
-          {allowDownload && <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}><Download />{isPreparing ? "Preparing PDF…" : "Download PDF"}</Button>}
+          {allowDownload && <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}><Download /><span className="hidden sm:inline">{isPreparing ? "Preparing PDF…" : "Download PDF"}</span><span className="sm:hidden">PDF</span></Button>}
         </div>
       </div>
 
       {pdfError ? (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive" role="alert">{pdfError}</div>
       ) : (
-        <div ref={viewerRef} className="flex h-[min(78vh,1100px)] min-h-[620px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-4" aria-label="CV document pages">
+        <div ref={viewerRef} className="flex h-[min(72dvh,900px)] min-h-[360px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-4" aria-label="CV document pages">
           {isPreparing ? <div className="flex h-full items-center justify-center text-sm text-fg-muted">Preparing A4 document…</div> : null}
           {renderedCanvases.map((canvas, index) => (
             <div key={index} className="flex w-full justify-center py-2">
