@@ -34,10 +34,27 @@ export function CvAiSuggestions({
         <article key={item.id} className="space-y-2 rounded-lg bg-panel-2 p-3">
           <p className="text-sm font-medium">{item.targetPath}</p>
           <p className="text-sm text-fg-muted">{item.reason}</p>
-          <p className="text-sm">{item.proposedText}</p>
-          <p className="text-xs text-fg-muted">
-            {item.evidenceRefs.length} supporting evidence references
-          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-md border border-line p-2">
+              <p className="text-xs font-semibold text-fg-muted">Current text</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm">{item.originalText ?? "No existing text"}</p>
+            </div>
+            <div className="rounded-md border border-line p-2">
+              <p className="text-xs font-semibold text-fg-muted">Proposed text</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm">{item.proposedText}</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-fg-muted">Supporting evidence</p>
+            {item.evidence.map((evidence) => (
+              <div key={evidence.ref} className="rounded-md bg-panel p-2">
+                <p className="text-xs font-medium text-fg-muted">
+                  {evidence.source === "profile" ? "Confirmed Profile" : "Job description"}
+                </p>
+                <p className="mt-1 whitespace-pre-wrap text-sm">{evidence.excerpt}</p>
+              </div>
+            ))}
+          </div>
           {item.decision === "pending" ? (
             <div className="flex gap-2">
               <Button size="sm" disabled={disabled} onClick={() => onAccept(item.id)}>
