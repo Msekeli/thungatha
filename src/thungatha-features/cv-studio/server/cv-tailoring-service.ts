@@ -1,0 +1,93 @@
+import "server-only";
+import { completeAiTask } from "@/lib/ai/provider-router";
+import type { CvContent, CvSuggestion } from "./cv-studio-schema";
+import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
+import {
+  CV_TAILORING_VERSION,
+  createCvTailoringResponseSchema,
+} from "./cv-tailoring-schema";
+
+export type CvTailoringJob = {
+  title: string;
+  company: string | null;
+  description: string;
+};
+
+function buildJobEvidence(description: string) {
+  return description
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((content) => content.trim())
+    .filter(Boolean)
+    .map((content, index) => ({
+      id: `job:description:${index}`,
+      content,
+    }));
+}
+
+export async function generateCvTailoringSuggestions(
+  masterContent: CvContent,
+  job: CvTailoringJob,
+) {
+  const { profileEvidence, editableTargets } =
+    buildCvTailoringEvidence(masterContent);
+  const jobEvidence = buildJobEvidence(job.description);
+  if (!profileEvidence.length || !jobEvidence.length || !editableTargets.length) {
+    throw new Error("There is not enough confirmed evidence to tailor this CV.");
+  }
+
+  const schema = createCvTailoringResponseSchema(
+    profileEvidence.map((item) => item.id),
+    jobEvidence.map((item) => item.id),
+    editableTargets.map((item) => item.path),
+  );
+  const response = await completeAiTask({
+    task: "cv-tailoring",
+    responseFormat: "json",
+    responseSchema: schema.responseSchema,
+    temperature: 0.2,
+    timeoutMs: 120_000,
+    systemPrompt: [
+      `You are preparing evidence-grounded CV tailoring proposals. Task version: ${CV_TAILORING_VERSION}.`,
+      "Use only the supplied confirmed CV evidence and job advert evidence.",
+      "Suggest concise changes to existing editable text only. Do not create new employers, roles, dates, qualifications, skills, tools, achievements, metrics, projects, or responsibilities.",
+      "Do not change candidate identity, contact details, employer names, job titles, dates, education, certifications, or language facts.",
+      "A proposal may rephrase or emphasize an existing fact but must preserve its meaning and factual scope.",
+      "Every suggestion must cite at least one CV evidence ID and one job evidence ID.",
+      "The targetPath must be one of the supplied editable target paths. originalText must exactly equal that target's currentText, including null.",
+      "Put requirements unsupported by the confirmed CV evidence in gaps. Do not invent wording to fill those gaps.",
+      "Avoid unnecessary changes. An empty suggestions array is valid when no truthful improvement is justified.",
+      "Return exactly one JSON object with suggestions and gaps. Return JSON only.",
+    ].join("\n"),
+    userPrompt: JSON.stringify({
+      job: { title: job.title, company: job.company },
+      jobEvidence,
+      confirmedCvEvidence: profileEvidence,
+      editableTargets,
+    }),
+  });
+
+  const parsed = schema.validator.parse(JSON.parse(response.content));
+  const targetMap = new Map(editableTargets.map((item) => [item.path, item]));
+  const suggestions: CvSuggestion[] = parsed.suggestions.map((item) => {
+    const target = targetMap.get(item.targetPath);
+    if (!target || item.originalText !== target.currentText) {
+      throw new Error("AI returned a suggestion for changed or unknown CV text.");
+    }
+    return {
+      id: crypto.randomUUID(),
+      targetPath: item.targetPath,
+      originalText: item.originalText,
+      proposedText: item.proposedText,
+      reason: item.reason,
+      evidenceRefs: [...item.profileEvidenceRefs, ...item.jobEvidenceRefs],
+      decision: "pending",
+    };
+  });
+  return {
+    suggestions,
+    gaps: parsed.gaps,
+    provider: response.provider,
+    model: response.model,
+    taskVersion: CV_TAILORING_VERSION,
+  };
+}
