@@ -1,5 +1,8 @@
 import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
+import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-ai-evidence";
+import { getOrCreateJobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-service";
+import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 import type { CvContent, CvSuggestion } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import {
@@ -10,19 +13,9 @@ import {
 export type CvTailoringJob = {
   title: string;
   company: string | null;
+  location: string | null;
   description: string;
 };
-
-function buildJobEvidence(description: string) {
-  return description
-    .split(/(?<=[.!?])\s+|\n+/)
-    .map((content) => content.trim())
-    .filter(Boolean)
-    .map((content, index) => ({
-      id: `job:description:${index}`,
-      content,
-    }));
-}
 
 export async function generateCvTailoringSuggestions(
   masterContent: CvContent,
@@ -30,7 +23,20 @@ export async function generateCvTailoringSuggestions(
 ) {
   const { profileEvidence, editableTargets } =
     buildCvTailoringEvidence(masterContent);
-  const jobEvidence = buildJobEvidence(job.description);
+  const jobContext: JobMatchingContext = {
+    title: job.title,
+    employerName: job.company,
+    locationText: job.location,
+    description: job.description,
+  };
+  const understanding = await getOrCreateJobUnderstanding(jobContext);
+  const allJobEvidence = buildJobEvidence(job.description, jobContext);
+  const referencedJobIds = new Set([
+    ...understanding.analysis.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.analysis.capabilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.analysis.requirements.flatMap((item) => item.sourceEvidenceRefs),
+  ]);
+  const jobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
   if (!profileEvidence.length || !jobEvidence.length || !editableTargets.length) {
     throw new Error("There is not enough confirmed evidence to tailor this CV.");
   }
@@ -60,6 +66,7 @@ export async function generateCvTailoringSuggestions(
     ].join("\n"),
     userPrompt: JSON.stringify({
       job: { title: job.title, company: job.company },
+      jobUnderstanding: understanding.analysis,
       jobEvidence,
       confirmedCvEvidence: profileEvidence,
       editableTargets,
