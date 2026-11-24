@@ -266,6 +266,38 @@ export function CvDraftEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startImmediately]);
 
+  async function acceptDraft() {
+    if (!draft || draft.status !== "draft") return;
+    setBusy(true);
+    setError(null);
+    try {
+      const saveResponse = await fetch("/api/cv-studio/drafts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: draft.id,
+          content,
+          suggestions: draft.suggestions,
+          accentColour: draft.accent_colour,
+        }),
+      });
+      const savedBody = await saveResponse.json();
+      if (!saveResponse.ok) throw new Error(savedBody.error ?? "Save your latest edits before accepting the CV.");
+      const response = await fetch("/api/cv-studio/drafts/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: draft.id }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "The CV could not be accepted.");
+      setDraft({ ...draft, ...(body.version as Partial<Draft>), status: "accepted" });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "The CV could not be accepted.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const activeIndex = reviewSections.findIndex((item) => item.id === activeSection);
   const pendingSuggestion = draft?.suggestions.some((item) => item.targetPath === "professionalSummary" && item.decision === "pending") ?? false;
 
@@ -353,7 +385,7 @@ export function CvDraftEditor({
       <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-6">
         <Button type="button" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-4" /> Previous</Button>
         {draft?.status === "draft" && <Button type="button" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button>}
-        <Button type="button" disabled={activeIndex === 2} onClick={() => setActiveSection(reviewSections[Math.min(2, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>
+        {activeIndex === 2 ? <Button type="button" disabled={busy || draft?.status !== "draft"} onClick={() => void acceptDraft()}>{busy ? "Saving…" : "Accept CV"}</Button> : <Button type="button" onClick={() => setActiveSection(reviewSections[Math.min(2, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>}
       </footer>
     </section>
   );
