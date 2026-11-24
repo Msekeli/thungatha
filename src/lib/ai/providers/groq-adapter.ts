@@ -96,7 +96,7 @@ export function createGroqAdapter(
       if (request.maxOutputTokens && availableCompletionTokens < 512) {
         throw new AiProviderError(
           `Groq request exceeds the configured ${tpmLimit} TPM budget before completion; estimated prompt usage is ${estimatedInputTokens} tokens.`,
-          { code: "rate-limited", provider: "groq", retryable: true },
+          { code: "configuration", provider: "groq", retryable: false },
         );
       }
       const completionTokenBudget = request.maxOutputTokens
@@ -170,9 +170,9 @@ export function createGroqAdapter(
         throw new AiProviderError(
           "Groq truncated the structured response at its completion-token limit.",
           {
-            code: "rate-limited",
+            code: "invalid-response",
             provider: "groq",
-            retryable: true,
+            retryable: false,
           },
         );
       }
