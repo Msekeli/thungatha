@@ -73,31 +73,47 @@ function selectSummaryEvidence(
 function selectJobEvidence(
   evidence: Array<{ id: string; content: string }>,
   requirements: JobUnderstanding["requirements"],
-  maxCharacters = 4_500,
+  maxCharacters = 2_000,
 ) {
   const byId = new Map(evidence.map((item) => [item.id, item]));
-  const selected = new Map<string, { id: string; content: string }>();
+  const requiredRefs = [...new Set(
+    requirements.flatMap((requirement) => requirement.sourceEvidenceRefs),
+  )].filter((ref) => byId.has(ref));
+  if (!requiredRefs.length || maxCharacters <= 0) return [];
+
+  // Hard-bound the total evidence text. The previous implementation added
+  // 500 characters per requirement before applying the budget, so it could
+  // exceed the configured limit by a large margin.
+  const perExcerptBudget = Math.max(
+    24,
+    Math.min(240, Math.floor(maxCharacters / requiredRefs.length)),
+  );
+  const selected: Array<{ id: string; content: string }> = [];
   let usedCharacters = 0;
 
-  // Retain at least one source excerpt for every requirement so the model can
-  // classify gaps without inventing or borrowing another requirement's source.
-  for (const requirement of requirements) {
-    const source = requirement.sourceEvidenceRefs
-      .map((ref) => byId.get(ref))
-      .find((item): item is { id: string; content: string } => Boolean(item));
-    if (!source || selected.has(source.id)) continue;
-    const content = source.content.slice(0, 500).trimEnd();
-    selected.set(source.id, { id: source.id, content });
-    usedCharacters += source.id.length + content.length;
+  for (const ref of requiredRefs) {
+    const remaining = maxCharacters - usedCharacters;
+    if (remaining <= 0) break;
+    const contentBudget = Math.min(perExcerptBudget, remaining - ref.length - 1);
+    if (contentBudget <= 0) break;
+    const item = byId.get(ref);
+    if (!item) continue;
+    const content = item.content.slice(0, contentBudget).trimEnd();
+    if (!content) continue;
+    selected.push({ id: item.id, content });
+    usedCharacters += item.id.length + content.length;
   }
+  return selected;
+}
 
-  const remaining = selectSummaryEvidence(
-    evidence.filter((item) => !selected.has(item.id)),
-    requirements,
-    Math.max(0, maxCharacters - usedCharacters),
-  );
-  for (const item of remaining) selected.set(item.id, item);
-  return [...selected.values()];
+function compactRequirements(requirements: JobUnderstanding["requirements"]) {
+  return requirements.map((item) => [
+    item.id,
+    item.statement.slice(0, 120),
+    item.category,
+    item.importance,
+    item.sourceEvidenceRefs.slice(0, 1),
+  ]);
 }
 
 export type CvTailoringJob = {
@@ -188,13 +204,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     userPrompt: JSON.stringify({
       job: [job.title, job.company],
       understanding: {
-        requirements: understanding.requirements.map((item) => [
-          item.id,
-          item.statement.slice(0, 220),
-          item.category,
-          item.importance,
-          item.sourceEvidenceRefs,
-        ]),
+        requirements: compactRequirements(understanding.requirements),
       },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
       // Send only ranked, bounded confirmed facts. The mapper still validates
