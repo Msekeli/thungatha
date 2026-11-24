@@ -93,7 +93,7 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
   }
 
   return (
-    <section className="space-y-6 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
+    <section className="space-y-5 rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:space-y-6 sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Job-specific CV · M4-C07</p>
@@ -110,7 +110,7 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
       {!draft && <p className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted">A draft is created only when you choose to create one. Existing drafts for this exact job are reused instead of duplicated. AI suggestions remain inactive until an AI provider is selected.</p>}
 
       {draft && (
-        <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <div className="min-w-0 space-y-5">
             <div className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted">
               {draft.status === "accepted" ? "Accepted versions are locked. This exact version is retained for reuse and application tracking." : `Working draft v${draft.version_number} · Not accepted`}
