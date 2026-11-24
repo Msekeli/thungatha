@@ -447,6 +447,7 @@ export function CvDraftEditor({
               content={previewContent}
               accent={accentHex[draft.accent_colour]}
               allowDownload={draft.status === "accepted"}
+              previewingProposal={Boolean(previewSuggestion)}
             />
           </div>
           <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
