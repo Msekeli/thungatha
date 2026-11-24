@@ -92,7 +92,29 @@ export async function POST(request: Request) {
     const masterContent = cvContentSchema.parse(master.content);
     const draftContent = cvContentSchema.parse(draft.content);
     const result = await generateCvTailoringSuggestions(masterContent, draftContent, job);
-    return NextResponse.json(result);
+    const assessment = {
+      coveredRequirementIds: result.coveredRequirementIds,
+      gaps: result.gaps,
+      provider: result.provider,
+      model: result.model,
+      taskVersion: result.taskVersion,
+      generatedAt: new Date().toISOString(),
+    };
+    const { data: saved, error: saveError } = await db
+      .from("cv_versions")
+      .update({
+        suggestions: result.suggestions,
+        tailoring_assessment: assessment,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", draft.id)
+      .eq("user_id", identity.userId)
+      .eq("status", "draft")
+      .select("id,suggestions,tailoring_assessment")
+      .single();
+    if (saveError) throw saveError;
+    if (!saved) return apiError("The tailored draft is no longer editable.", 409);
+    return NextResponse.json({ ...result, assessment: saved.tailoring_assessment });
   } catch (error) {
     return apiFailure(error);
   }
