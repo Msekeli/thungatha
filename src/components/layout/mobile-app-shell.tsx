@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "./mobile-app-shell.module.css";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import { MobileWorkspaceMenu } from "@/components/layout/mobile-workspace-menu";
-import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 
 const workspaceRoutes = [
   "/jobs",
@@ -30,8 +29,6 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
   const isWorkspaceRoute = workspaceRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
-
-  const active = (href: string) => pathname === href;
 
   // WorkspaceShell owns navigation for authenticated workspace routes.
   // Rendering the global app shell here duplicates its header and mobile nav.
@@ -76,11 +73,6 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
           onClose={() => setOpen(false)}
         />
       )}
-      <MobileWorkspaceBottomNav
-        configured={configured}
-        publicMode
-        isActive={active}
-      />
     </>
   );
 }
