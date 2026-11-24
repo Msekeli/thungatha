@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,7 +31,7 @@ const accentHex: Record<Accent, string> = {
   forest: "#166534",
 };
 
-export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: { masterVersionId: string; jobContext: JobContext; initialContent: unknown }) {
+export function CvDraftEditor({ masterVersionId, jobContext, initialContent, startImmediately = false }: { masterVersionId: string; jobContext: JobContext; initialContent: unknown; startImmediately?: boolean }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [content, setContent] = useState<CvContent>(initialContent as CvContent);
   const [busy, setBusy] = useState(false);
@@ -51,7 +51,7 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
     finally { setBusy(false); }
   }
 
-  async function saveDraft() {
+  useEffect(() => {\n    if (startImmediately && !draft && !busy) void createDraft();\n    // The editor is mounted only after the user chooses Tailor my CV.\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [startImmediately]);\n\n  async function saveDraft() {
     if (!draft || draft.status !== "draft") return;
     setBusy(true); setError(null); setMessage(null);
     try {
@@ -100,14 +100,14 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
           <h3 className="mt-1 text-xl font-semibold">Review your CV for {jobContext.title}</h3>
           <p className="mt-1 text-sm text-fg-muted">Edit the presentation of confirmed Profile facts. These changes never update your Profile or master CV.</p>
         </div>
-        {!draft && <Button disabled={busy} onClick={() => void createDraft()}>{busy ? "Preparing…" : "Tailor my CV"}</Button>}
+        {!draft && <span className="text-sm text-fg-muted">{busy ? "Preparing your CV editor…" : "Preparing your CV editor…"}</span>}
         {draft?.status === "draft" && <div className="flex gap-2"><Button variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button><Button disabled={busy} onClick={() => void acceptDraft()}>{busy ? "Processing…" : "Accept CV"}</Button></div>}
         {draft?.status === "accepted" && <span className="rounded-full bg-accent-bg px-3 py-1.5 text-sm font-medium text-accent-text">Accepted · Version {draft.version_number}</span>}
       </div>
 
       {error && <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive" role="alert">{error}</p>}
       {message && <p className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted" aria-live="polite">{message}</p>}
-      {!draft && <p className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted">A draft is created only when you choose to create one. Existing drafts for this exact job are reused instead of duplicated. AI suggestions remain inactive until an AI provider is selected.</p>}
+
 
       {draft && (
         <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
