@@ -235,12 +235,12 @@ export function CvStudioStart() {
                       </div>
                       {suitability?.matchingVersions.map((version) => <div key={version.id} className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <div><p className="text-sm font-medium text-fg">Accepted CV · Version {version.versionNumber}</p><p className="text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
-                        <Button size="sm" variant="outline" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use existing CV</Button>
+                        <Button size="sm" variant="outline" disabled={workflowBusy} onClick={() => void useAcceptedCv(version.id)}>Use saved CV for this job</Button>
                       </div>)}
                       {workflowError && <p className="mt-2 text-sm text-rose-700" role="alert">{workflowError}</p>}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && <Button size="lg" className="mx-auto w-[98%] rounded-md" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing CV editor…" : "Tailor a new CV"}</Button>}
+                      {!reusableCv && <Button size="lg" variant="outline" className="mx-auto w-[98%] rounded-md" disabled={workflowBusy || tailoringStarted} onClick={() => setTailoringStarted(true)}>{tailoringStarted ? "Preparing your tailored CV…" : "Create a new CV tailored to this job"}</Button>}
                       {reusableCv && <Button variant="outline" size="sm" onClick={() => setReusableCv(null)}>Return to master CV</Button>}
                     </div>
                   </div>
