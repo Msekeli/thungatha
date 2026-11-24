@@ -246,16 +246,7 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
   ].join("\n");
 
-  console.info("[job-understanding] prompt breakdown", {
-    descriptionCharacters: context.description.length,
-    evidenceCount: evidence.length,
-    evidenceCharacters: JSON.stringify(
-      evidence.map((item) => [item.id, item.content]),
-    ).length,
-    systemPromptCharacters: systemPrompt.length,
-    userPromptCharacters: userPrompt.length,
-    responseSchemaCharacters: JSON.stringify(responseSchema).length,
-  });
+
 
   const response = await completeAiTask({
     task: "job-requirement-extraction",
