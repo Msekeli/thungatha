@@ -9,7 +9,7 @@ export function buildCvTailoringSystemPrompt() {
     "A proposal may rephrase or emphasize an existing fact but must preserve its meaning and factual scope.",
     "Every suggestion must cite at least one CV evidence ID and one job evidence ID.",
     "The targetPath must be one of the supplied editable target paths. originalText must exactly equal that target's currentText, including null.",
-    "Put requirements unsupported by the confirmed CV evidence in gaps. Do not invent wording to fill those gaps.",
+    "Put unsupported requirements in gaps using only the exact requirement IDs supplied in jobUnderstanding. Do not invent requirements or rewrite their canonical wording.",
     "Avoid unnecessary changes. An empty suggestions array is valid when no truthful improvement is justified.",
     "Return exactly one JSON object with suggestions and gaps. Return JSON only.",
   ].join("\n");
