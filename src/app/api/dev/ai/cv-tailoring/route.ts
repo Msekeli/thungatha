@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AiProviderError } from "@/lib/ai/errors";
 import { cvContentSchema } from "@/thungatha-features/cv-studio/server/cv-studio-schema";
 import {
   generateCvTailoringSuggestionsFromUnderstanding,
@@ -146,6 +147,14 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "CV tailoring test failed.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json(
+      {
+        error: message,
+        ...(error instanceof AiProviderError && error.diagnostic
+          ? { diagnostic: error.diagnostic }
+          : {}),
+      },
+      { status: 502 },
+    );
   }
 }
