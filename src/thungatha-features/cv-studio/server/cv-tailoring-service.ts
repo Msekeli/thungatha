@@ -65,19 +65,24 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const editableTargets = allEditableTargets.filter(
     (target) => target.path === "professionalSummary",
   );
+  // This pipeline edits only the summary. Sending evidence from every other CV
+  // section adds tokens without improving the factual basis for this proposal.
+  const summaryEvidence = profileEvidence.filter(
+    (item) => item.id === "cv:professionalSummary",
+  );
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
-  const referencedJobIds = new Set([
-    ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
-    ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
-  ]);
+  // The response classifies requirements, so only requirement-linked advert
+  // excerpts are needed here; responsibilities/capabilities are not output.
+  const referencedJobIds = new Set(
+    understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
+  );
   const jobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
-  if (!profileEvidence.length || !jobEvidence.length || !editableTargets.length) {
+  if (!summaryEvidence.length || !jobEvidence.length || !editableTargets.length) {
     throw new Error("There is not enough confirmed evidence to tailor this CV.");
   }
 
   const schema = createCvTailoringResponseSchema(
-    profileEvidence.map((item) => item.id),
+    summaryEvidence.map((item) => item.id),
     jobEvidence.map((item) => item.id),
     editableTargets.map((item) => item.path),
     understanding.requirements.map((item) => item.id),
@@ -94,14 +99,17 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     userPrompt: JSON.stringify({
       job: [job.title, job.company],
       understanding: {
-        summary: understanding.summary,
         coverage: understanding.coverage,
-        responsibilities: understanding.responsibilities.map((item) => [item.id, item.statement, item.sourceEvidenceRefs]),
-        capabilities: understanding.capabilities.map((item) => [item.id, item.name, item.context, item.sourceEvidenceRefs]),
-        requirements: understanding.requirements.map((item) => [item.id, item.statement, item.category, item.importance, item.sourceEvidenceRefs]),
+        requirements: understanding.requirements.map((item) => [
+          item.id,
+          item.statement,
+          item.category,
+          item.importance,
+          item.sourceEvidenceRefs,
+        ]),
       },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: summaryEvidence.map((item) => [item.id, item.content]),
       editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
   };
@@ -112,7 +120,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const parsed = schema.validator.parse(JSON.parse(response.content));
   const mapped = mapCvTailoringOutput(
     parsed,
-    profileEvidence,
+    summaryEvidence,
     jobEvidence,
     editableTargets,
     understanding.requirements,
