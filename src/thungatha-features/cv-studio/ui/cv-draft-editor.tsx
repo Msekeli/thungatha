@@ -84,6 +84,7 @@ type Draft = {
   suggestions: CvSuggestion[];
   tailoring_assessment: {
     gaps: Array<{ requirement: string; explanation: string; jobEvidenceRefs: string[] }>;
+    coveredRequirementIds?: string[];
   } | null;
   accent_colour: Accent;
   version_number: number;
@@ -126,12 +127,13 @@ export function CvDraftEditor({
   const [error, setError] = useState<string | null>(null);
   const [tailoringBusy, setTailoringBusy] = useState(false);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills">("summary");
+  const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills" | "requirements">("summary");
 
   const reviewSections = [
     { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
     { id: "experience" as const, label: "Work Experience", target: "cv-review-experience" },
     { id: "skills" as const, label: "Skills", target: "cv-review-skills" },
+    { id: "requirements" as const, label: "Job Requirements", target: "cv-review-requirements" },
   ];
 
 
@@ -338,9 +340,9 @@ export function CvDraftEditor({
             <div className="flex items-center gap-3"><span className="text-2xl text-sky-600" aria-hidden="true">✧</span><h2 className="text-xl font-bold">CV Tailoring</h2></div>
             <p className="mt-1 text-sm text-fg-muted">Review AI suggestions and apply the changes you agree with.</p>
           </div>
-          <span className="shrink-0 rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 3</span>
+          <span className="shrink-0 rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold">Step {activeIndex + 1} of 4</span>
         </div>
-        <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-3 gap-2">
+        <nav aria-label="CV tailoring steps" className="mt-4 grid grid-cols-4 gap-2">
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
               className={`flex min-w-0 items-center justify-center gap-2 border-b-2 px-1 pb-3 pt-2 text-xs font-semibold sm:text-sm ${activeSection === item.id ? "border-sky-500 text-fg" : "border-transparent text-fg-muted hover:text-fg"}`}>
@@ -378,14 +380,32 @@ export function CvDraftEditor({
               {content.workExperience.length ? content.workExperience.map((item) => <article key={item.sourceId} className="rounded-xl border border-line bg-panel-2 p-3"><h4 className="text-sm font-semibold">{item.jobTitle}</h4><p className="text-xs text-fg-muted">{item.employer} · {item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>{item.description && <p className="mt-2 text-sm leading-5">{item.description}</p>}{item.achievements.length > 0 && <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul>}</article>) : <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>}
             </div>
           </div>
-        ) : (
+        ) : activeSection === "skills" ? (
           <div className="flex h-full min-h-0 flex-col gap-3"><div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review the skills included in your tailored CV.</p></div><div className="flex flex-wrap content-start gap-2">{content.technicalSkills.map((skill) => <span key={skill} className="rounded-full border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-sm">{skill}</span>)}{!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}</div></div>
+        ) : (
+          <div className="flex h-full min-h-0 flex-col gap-3">
+            <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+              {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.map((gap, index) => (
+                <article key={index} className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+                  <div className="flex items-start gap-2"><span className="mt-0.5 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700">Not demonstrated</span><h4 className="text-sm font-semibold">{gap.requirement}</h4></div>
+                  <p className="mt-2 text-sm leading-5 text-fg-muted">{gap.explanation}</p>
+                </article>
+              )) : (
+                <div className="rounded-xl border border-line bg-panel-2 p-4">
+                  <p className="text-sm font-medium">{draft.tailoring_assessment ? "No outstanding requirements were identified." : "The job requirements assessment is not available yet."}</p>
+                  <p className="mt-1 text-sm text-fg-muted">{draft.tailoring_assessment ? "The current assessment did not identify any requirements missing from the confirmed Profile evidence." : "This section will display requirements that the current CV does not demonstrate once assessment data is available."}</p>
+                </div>
+              )}
+              <p className="text-xs text-fg-muted">“Not demonstrated” means the information was not found in the confirmed Profile evidence. It does not prove that you do not have the qualification or experience.</p>
+            </div>
+          </div>
         )}
       </div>
       <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-6">
         <Button type="button" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-4" /> Previous</Button>
         {draft?.status === "draft" && <Button type="button" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button>}
-        {activeIndex === 2 ? <Button type="button" disabled={busy || draft?.status !== "draft"} onClick={() => void acceptDraft()}>{busy ? "Saving…" : "Accept CV"}</Button> : <Button type="button" onClick={() => setActiveSection(reviewSections[Math.min(2, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>}
+        {activeIndex === 3 ? <Button type="button" disabled={busy || draft?.status !== "draft"} onClick={() => void acceptDraft()}>{busy ? "Saving…" : "Accept CV"}</Button> : <Button type="button" onClick={() => setActiveSection(reviewSections[Math.min(3, activeIndex + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>}
       </footer>
     </section>
   );
