@@ -120,6 +120,9 @@ export function CvStudioStart() {
   const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
   const [tailoredPreview, setTailoredPreview] = useState<{ content: CvPdfContent; accent: string } | null>(null);
+  const handleTailoredContentChange = useCallback((content: CvPdfContent, accent: string) => {
+    setTailoredPreview({ content, accent });
+  }, []);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -465,7 +468,7 @@ export function CvStudioStart() {
                   {tailoringStarted && !reusableCv && (
                     <CvDraftEditor
                       masterVersionId={state.masterCv.id}
-                      onContentChange={(content, accent) => setTailoredPreview({ content, accent })}
+                      onContentChange={handleTailoredContentChange}
                       jobContext={jobContext}
                       initialContent={state.masterCv.content}
                       startImmediately
