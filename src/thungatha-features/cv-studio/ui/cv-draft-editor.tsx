@@ -342,7 +342,7 @@ export function CvDraftEditor({
           {reviewSections.map((item, index) => (
             <button key={item.id} type="button" onClick={() => setActiveSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined}
               className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 pb-2 pt-2 text-center text-[11px] font-semibold leading-tight sm:flex-row sm:gap-2 sm:text-xs ${activeSection === item.id ? "border-accent-text text-accent-text font-bold" : "border-transparent text-fg-muted hover:text-fg"}`}>
-              <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] ${activeSection === item.id ? "border-accent bg-accent text-btn-fg" : "border-line bg-panel"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
+              <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold ${activeSection === item.id ? "border-btn bg-btn text-btn-fg" : "border-line bg-panel text-fg-muted"}`}>{index + 1}</span><span className="whitespace-normal break-words">{item.label}</span>
             </button>
           ))}
         </nav>
