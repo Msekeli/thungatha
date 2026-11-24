@@ -141,7 +141,7 @@ export async function POST(request: Request) {
       const { data: racedDrafts, error: racedDraftsError } = await db
         .from("cv_versions")
         .select(
-          "id,version_number,status,content,suggestions,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
+          "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_job_id,source_profile_version,parent_version_id",
         )
         .eq("user_id", auth.identity.userId)
         .eq("cv_kind", "tailored")
