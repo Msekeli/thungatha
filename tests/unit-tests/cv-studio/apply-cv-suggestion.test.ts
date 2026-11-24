@@ -64,6 +64,28 @@ describe("applyCvSuggestion", () => {
     expect(content.workExperience[0].description).toBe("Original description.");
   });
 
+
+  it("applies a professional-summary proposal without mutating the source content", () => {
+    const summarySuggestion = cvSuggestionSchema.parse({
+      id: "3b89e55e-40cc-4d0f-9c1a-2f735e917db7",
+      targetPath: "professionalSummary",
+      originalText: "Original summary.",
+      proposedText: "A revised, evidence-grounded summary.",
+      reason: "Connects confirmed experience to the role.",
+      evidenceRefs: ["cv:professionalSummary", "job:description:0"],
+      evidence: [
+        { ref: "cv:professionalSummary", source: "profile", excerpt: "Original summary." },
+        { ref: "job:description:0", source: "job", excerpt: "Build internal applications." },
+      ],
+      decision: "pending",
+    });
+    const result = applyCvSuggestion(content, summarySuggestion);
+
+    expect(result.professionalSummary).toBe(summarySuggestion.proposedText);
+    expect(content.professionalSummary).toBe("Original summary.");
+    expect(result.technicalSkills).toEqual(content.technicalSkills);
+  });
+
   it("does not overwrite text changed after the suggestion was generated", () => {
     const edited = { ...content, professionalSummary: "User's newer edit." };
     expect(() => applyCvSuggestion(
