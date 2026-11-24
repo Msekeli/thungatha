@@ -449,15 +449,24 @@ export function CvDraftEditor({
       )}
       {draft && (
         <>
-          <div className="xl:hidden">
-            <CvPdfPreviewDialog
-              content={content}
-              accent={accentHex[draft.accent_colour]}
-              allowDownload={draft.status === "accepted"}
-            />
-          </div>
           <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <div className="min-w-0 space-y-5">
+            <nav aria-label="CV tailoring sections" className="sticky top-0 z-20 rounded-xl border border-line bg-panel p-2 shadow-sm">
+              <div className="grid grid-cols-3 gap-1">
+                {reviewSections.map((item) => (
+                  <button key={item.id} type="button" onClick={() => navigateReviewSection(item.id)} aria-current={activeSection === item.id ? "step" : undefined} className={`min-h-11 rounded-lg px-2 py-2 text-xs font-semibold transition-colors sm:text-sm ${activeSection === item.id ? "bg-accent text-white" : "text-fg-muted hover:bg-panel-2 hover:text-fg"}`}>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 flex items-center justify-between border-t border-line px-1 pt-2">
+                <span className="text-xs text-fg-muted">Step {reviewSections.findIndex((item) => item.id === activeSection) + 1} of 3</span>
+                <div className="flex gap-2">
+                  <Button type="button" size="sm" variant="outline" disabled={activeSection === "summary"} onClick={() => navigateReviewSection(reviewSections[Math.max(0, reviewSections.findIndex((item) => item.id === activeSection) - 1)].id)}><ArrowLeft className="mr-1 size-4" /> Previous</Button>
+                  <Button type="button" size="sm" disabled={activeSection === "skills"} onClick={() => navigateReviewSection(reviewSections[Math.min(2, reviewSections.findIndex((item) => item.id === activeSection) + 1)].id)}>Next <ArrowRight className="ml-1 size-4" /></Button>
+                </div>
+              </div>
+            </nav>
             <div className="rounded-lg border border-line bg-panel-2 p-3 text-sm text-fg-muted">
               {draft.status === "accepted"
                 ? "Accepted versions are locked. This exact version is retained for reuse and application tracking."
@@ -545,7 +554,7 @@ export function CvDraftEditor({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">AI-assisted tailoring</p>
                 <h4 className="mt-1 font-semibold">Professional summary</h4>
-                <p className="mt-1 text-sm text-fg-muted">Generate one job-specific paragraph using confirmed Profile evidence. Review it in the dialog before applying it to this CV draft.</p>
+                <p className="mt-1 text-sm text-fg-muted">Generate one job-specific paragraph using confirmed Profile evidence. Review it here before applying it to this CV draft.</p>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-fg-muted">{tailoringBusy ? "Generating your professional summary…" : draft.suggestions.some((item) => item.decision === "accepted") ? "A tailored summary has been applied to this draft." : draft.suggestions.some((item) => item.decision === "pending") ? "A proposal is ready for your review." : draft.tailoring_assessment ? "No proposal is currently applied." : "Your current summary is unchanged."}</p>
@@ -597,9 +606,9 @@ export function CvDraftEditor({
                   }))
                 }
               />
-            </Field>
+            </Field></div>
 
-            <div className="space-y-3">
+            <div id="cv-review-experience" className="scroll-mt-28 space-y-3">
               <h4 className="font-semibold">Professional experience</h4>
               {content.workExperience.map((item, index) => (
                 <div
