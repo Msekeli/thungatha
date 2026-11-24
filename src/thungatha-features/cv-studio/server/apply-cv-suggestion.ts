@@ -19,13 +19,13 @@ export function applyCvSuggestion(
     /^workExperience\[(.+)\]\.description$/,
   );
   if (experience) {
+    const item = content.workExperience.find((entry) => entry.sourceId === experience[1]);
+    if (!item || item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
     return {
       ...content,
-      workExperience: content.workExperience.map((item) => {
-        if (item.sourceId !== experience[1]) return item;
-        if (item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
-        return { ...item, description: proposedText };
-      }),
+      workExperience: content.workExperience.map((entry) =>
+        entry.sourceId === experience[1] ? { ...entry, description: proposedText } : entry,
+      ),
     };
   }
 
@@ -33,31 +33,28 @@ export function applyCvSuggestion(
     /^workExperience\[(.+)\]\.achievements\[(\d+)\]$/,
   );
   if (achievement) {
+    const item = content.workExperience.find((entry) => entry.sourceId === achievement[1]);
+    const index = Number(achievement[2]);
+    if (!item || item.achievements[index] !== suggestion.originalText) throw new Error("This suggestion is stale.");
     return {
       ...content,
-      workExperience: content.workExperience.map((item) => {
-        if (item.sourceId !== achievement[1]) return item;
-        const index = Number(achievement[2]);
-        if (item.achievements[index] !== suggestion.originalText) throw new Error("This suggestion is stale.");
-        return {
-          ...item,
-          achievements: item.achievements.map((value, currentIndex) =>
-            currentIndex === index ? proposedText : value,
-          ),
-        };
-      }),
+      workExperience: content.workExperience.map((entry) =>
+        entry.sourceId === achievement[1]
+          ? { ...entry, achievements: entry.achievements.map((value, i) => i === index ? proposedText : value) }
+          : entry,
+      ),
     };
   }
 
   const project = targetPath.match(/^projects\[(.+)\]\.description$/);
   if (project) {
+    const item = content.projects.find((entry) => entry.sourceId === project[1]);
+    if (!item || item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
     return {
       ...content,
-      projects: content.projects.map((item) => {
-        if (item.sourceId !== project[1]) return item;
-        if (item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
-        return { ...item, description: proposedText };
-      }),
+      projects: content.projects.map((entry) =>
+        entry.sourceId === project[1] ? { ...entry, description: proposedText } : entry,
+      ),
     };
   }
   throw new Error("The CV suggestion targets an unsupported field.");
