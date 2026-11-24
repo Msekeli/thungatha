@@ -12,8 +12,11 @@ export function buildCvTailoringSystemPrompt() {
     "Each suggestion must also cite one or more requirement IDs and job evidence IDs that directly support why that exact candidate fact is relevant to the role. The cited job evidence IDs must belong to the cited requirement IDs. Do not use a generic technology requirement to justify an unrelated achievement.",
     "The targetPath must be one of the supplied editable target paths. originalText must exactly equal that target's currentText, including null.",
     "Keep normal spaces between words. Do not concatenate adjacent words, remove punctuation, or return malformed natural-language text. Write concise, grammatical English.",
+    "Classify EVERY requirement ID in jobUnderstanding exactly once: put it in coveredRequirementIds only when confirmedCvEvidence substantively demonstrates it; otherwise add exactly one gap using that requirement ID. Do not omit requirements just because no CV edit is needed.",
+    "A requirement is covered by existing evidence even when no meaningful wording change is warranted. Do not confuse absence of a useful edit with absence of candidate experience.",
+    "For each gap, explain specifically that the confirmed CV evidence does not demonstrate the requirement. Do not claim the candidate lacks the skill; describe only what the CV does not evidence. Cite the requirement's own job evidence refs.",
     "Put unsupported requirements in gaps using only the exact requirement IDs supplied in jobUnderstanding. Do not invent requirements or rewrite their canonical wording.",
     "Avoid unnecessary changes. An empty suggestions array is valid when no truthful, materially useful improvement is justified.",
-    "Return exactly one JSON object with suggestions and gaps. Return JSON only.",
+    "Return exactly one JSON object with suggestions, coveredRequirementIds, and gaps. Return JSON only.",
   ].join("\n");
 }
