@@ -6,8 +6,12 @@ export function applyCvSuggestion(
   suggestion: CvSuggestion,
 ): CvContent {
   const { targetPath, proposedText } = suggestion;
-  if (targetPath === "headline") return { ...content, headline: proposedText };
+  if (targetPath === "headline") {
+    if (content.headline !== suggestion.originalText) throw new Error("This suggestion is stale.");
+    return { ...content, headline: proposedText };
+  }
   if (targetPath === "professionalSummary") {
+    if (content.professionalSummary !== suggestion.originalText) throw new Error("This suggestion is stale.");
     return { ...content, professionalSummary: proposedText };
   }
 
@@ -17,11 +21,11 @@ export function applyCvSuggestion(
   if (experience) {
     return {
       ...content,
-      workExperience: content.workExperience.map((item) =>
-        item.sourceId === experience[1]
-          ? { ...item, description: proposedText }
-          : item,
-      ),
+      workExperience: content.workExperience.map((item) => {
+        if (item.sourceId !== experience[1]) return item;
+        if (item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
+        return { ...item, description: proposedText };
+      }),
     };
   }
 
@@ -31,16 +35,17 @@ export function applyCvSuggestion(
   if (achievement) {
     return {
       ...content,
-      workExperience: content.workExperience.map((item) =>
-        item.sourceId === achievement[1]
-          ? {
-              ...item,
-              achievements: item.achievements.map((value, index) =>
-                index === Number(achievement[2]) ? proposedText : value,
-              ),
-            }
-          : item,
-      ),
+      workExperience: content.workExperience.map((item) => {
+        if (item.sourceId !== achievement[1]) return item;
+        const index = Number(achievement[2]);
+        if (item.achievements[index] !== suggestion.originalText) throw new Error("This suggestion is stale.");
+        return {
+          ...item,
+          achievements: item.achievements.map((value, currentIndex) =>
+            currentIndex === index ? proposedText : value,
+          ),
+        };
+      }),
     };
   }
 
@@ -48,11 +53,11 @@ export function applyCvSuggestion(
   if (project) {
     return {
       ...content,
-      projects: content.projects.map((item) =>
-        item.sourceId === project[1]
-          ? { ...item, description: proposedText }
-          : item,
-      ),
+      projects: content.projects.map((item) => {
+        if (item.sourceId !== project[1]) return item;
+        if (item.description !== suggestion.originalText) throw new Error("This suggestion is stale.");
+        return { ...item, description: proposedText };
+      }),
     };
   }
   throw new Error("The CV suggestion targets an unsupported field.");
