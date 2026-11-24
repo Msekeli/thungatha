@@ -1,18 +1,5 @@
 /* Extracted from the shared component stylesheet; keep rules in the components layer. */
 @layer components {
-  /* Shared mobile navigation: keep the four destinations in one fixed bottom bar. */
-  .th-mobile-bottom-nav {
-    position: fixed;
-    z-index: 120;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-    border-top: 1px solid var(--th-line);
-    background: var(--th-nav);
-  }
   .th-mobile-bottom-nav > a,
   .th-mobile-bottom-nav > button,
   .th-mobile-bottom-nav > * > a {
