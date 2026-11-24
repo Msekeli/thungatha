@@ -160,7 +160,7 @@ export function CvPdfPreviewClient({
   }
 
   return (
-    <section className="min-w-0 space-y-3">
+    <section className="flex h-full min-h-0 min-w-0 flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
         <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-fg-muted"><Maximize2 className="size-4" /><span>Fit width</span></div>
         <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end">
@@ -191,7 +191,7 @@ export function CvPdfPreviewClient({
       ) : (
         <div
           ref={viewerRef}
-          className="flex h-[min(72dvh,900px)] min-h-[280px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-2 sm:min-h-[360px] sm:p-4"
+          className="flex min-h-0 flex-1 flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-2 sm:p-4"
           aria-label="CV document pages"
         >
           {isPreparing ? (
