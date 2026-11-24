@@ -10,7 +10,7 @@ export function mapCvTailoringOutput(
   requirements: Array<{ id: string; statement: string }>,
 ) {
   const targetMap = new Map(editableTargets.map((item) => [item.path, item]));
-  const evidenceMap = new Map([
+  const evidenceMap = new Map<string, { source: "profile" | "job"; excerpt: string }>([
     ...profileEvidence.map((item) => [item.id, { source: "profile" as const, excerpt: item.content }] as const),
     ...jobEvidence.map((item) => [item.id, { source: "job" as const, excerpt: item.content }] as const),
   ]);
