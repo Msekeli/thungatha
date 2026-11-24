@@ -56,8 +56,8 @@ export async function resolveCvJobContext(
       jobId: null,
       title: input.title,
       company: input.company ?? null,
-      location: input.location ?? null,
-      sourceUrl: input.sourceUrl ?? null,
+      location: null,
+      sourceUrl: null,
       description: input.description,
     };
   }
