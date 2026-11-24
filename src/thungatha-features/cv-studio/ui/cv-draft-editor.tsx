@@ -100,7 +100,7 @@ export function CvDraftEditor({ masterVersionId, jobContext, initialContent }: {
           <h3 className="mt-1 text-xl font-semibold">Review your CV for {jobContext.title}</h3>
           <p className="mt-1 text-sm text-fg-muted">Edit the presentation of confirmed Profile facts. These changes never update your Profile or master CV.</p>
         </div>
-        {!draft && <Button disabled={busy} onClick={() => void createDraft()}>{busy ? "Preparing…" : "Create editable draft"}</Button>}
+        {!draft && <Button disabled={busy} onClick={() => void createDraft()}>{busy ? "Preparing…" : "Tailor my CV"}</Button>}
         {draft?.status === "draft" && <div className="flex gap-2"><Button variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : "Save draft"}</Button><Button disabled={busy} onClick={() => void acceptDraft()}>{busy ? "Processing…" : "Accept CV"}</Button></div>}
         {draft?.status === "accepted" && <span className="rounded-full bg-accent-bg px-3 py-1.5 text-sm font-medium text-accent-text">Accepted · Version {draft.version_number}</span>}
       </div>
