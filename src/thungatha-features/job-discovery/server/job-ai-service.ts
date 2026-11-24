@@ -218,6 +218,9 @@ export async function understandJobWithAi(context: JobMatchingContext) {
   }
 
   const responseSchema = createJobUnderstandingResponseSchema();
+  // The description is already represented by sourceEvidence. Sending the
+  // original context.description as well duplicated the full advert in the
+  // prompt and pushed long listings over Groq's TPM budget.
   const userPrompt = json({
     jobContext: {
       title: context.title,
@@ -226,37 +229,23 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     },
     sourceEvidence: evidence.map((item) => [item.id, item.content]),
   });
-  console.info("[job-understanding] prompt breakdown", {
-    descriptionCharacters: context.description.length,
-    evidenceCount: evidence.length,
-    evidenceCharacters: JSON.stringify(
-      evidence.map((item) => [item.id, item.content]),
-    ).length,
-    systemPromptCharacters: 0,
-    userPromptCharacters: userPrompt.length,
-    responseSchemaCharacters: JSON.stringify(responseSchema).length,
-  });
-
   const systemPrompt = [
-    temperature: 0.1,
-    maxOutputTokens: 4_096,
-    timeoutMs: 120_000,
-    reasoning: false,
     "Understand the complete job advert in context, not just its title or familiar keywords.",
-      "Identify only material responsibilities, capabilities, and requirements that affect the actual work or candidate suitability.",
-      "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
-      "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
-      "Include every material responsibility, capability, and requirement supported by the advert. Do not impose arbitrary item-count limits or silently omit material information.",
-      "Every item must cite the exact supplied job evidence IDs that support it. Do not invent evidence references or omit material supporting evidence.",
-      "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
-      "Keep each statement concise. Return a short role-purpose summary.",
-      "Return one JSON object at the root. Do not wrap it in a result, data, job, analysis, or response property. Do not return an array or prose.",
-      "Required root object fields: summary (string), responsibilities (array of objects with id, statement, sourceEvidenceRefs), capabilities (array of objects with id, name, context, sourceEvidenceRefs), requirements (array of objects with id, statement, category, importance, sourceEvidenceRefs), and coverage (complete, partial, or unavailable).",
-      "Every object and every listed property is required, including when an array is empty. Use empty arrays when no items exist. Do not replace arrays of objects with strings.",
-      "Use only the allowed category and importance values stated below. IDs must be short unique strings within this response. Evidence references must be exact IDs from sourceEvidence.",
-      "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
+    "Identify only material responsibilities, capabilities, and requirements that affect the actual work or candidate suitability.",
+    "Preserve semantic meaning, equivalent terminology, transferable work context, and explicit versus uncertain wording.",
+    "Combine duplicate or closely related items. Do not produce exhaustive paraphrases, generic soft skills, benefits, or boilerplate.",
+    "Include every material responsibility, capability, and requirement supported by the advert. Do not impose arbitrary item-count limits or silently omit material information.",
+    "Every item must cite the exact supplied job evidence IDs that support it. Do not invent evidence references or omit material supporting evidence.",
+    "Classify requirement importance as mandatory, preferred, or uncertain using the context of the full advert, not isolated keyword triggers.",
+    "Keep each statement concise. Return a short role-purpose summary.",
+    "Return one JSON object at the root. Do not wrap it in a result, data, job, analysis, or response property. Do not return an array or prose.",
+    "Required root object fields: summary (string), responsibilities (array of objects with id, statement, sourceEvidenceRefs), capabilities (array of objects with id, name, context, sourceEvidenceRefs), requirements (array of objects with id, statement, category, importance, sourceEvidenceRefs), and coverage (complete, partial, or unavailable).",
+    "Every object and every listed property is required, including when an array is empty. Use empty arrays when no items exist. Do not replace arrays of objects with strings.",
+    "Use only the allowed category and importance values stated below. IDs must be short unique strings within this response. Evidence references must be exact IDs from sourceEvidence.",
+    "Requirement categories: experience, skill, technology, qualification, certification, licence, language, location, work_mode, other.",
     "Return only valid JSON. No scores, percentages, role-family labels, or hiring predictions.",
   ].join("\n");
+
   console.info("[job-understanding] prompt breakdown", {
     descriptionCharacters: context.description.length,
     evidenceCount: evidence.length,
@@ -267,10 +256,18 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     userPromptCharacters: userPrompt.length,
     responseSchemaCharacters: JSON.stringify(responseSchema).length,
   });
+
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
     responseSchema,
+    temperature: 0.1,
+    maxOutputTokens: 4_096,
+    timeoutMs: 120_000,
+    reasoning: false,
+    systemPrompt,
+    userPrompt,
+  });
 
   assertCompleteResponse("Job understanding", response);
   const result = parseJobUnderstanding(context, response.content);
