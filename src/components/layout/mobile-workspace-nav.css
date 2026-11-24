@@ -1,5 +1,5 @@
 /* Mobile navigation must never participate in the desktop workspace layout. */
- .th-mobile-workspace-header,
+.th-mobile-workspace-header,
 .th-mobile-workspace-menu {
   display: none !important;
 }
