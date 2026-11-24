@@ -589,6 +589,7 @@ export function CvDraftEditor({
                 <CvAiSuggestions
                   suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
                   gaps={tailoringGaps}
+                  hasCompletedReview={draft.tailoring_assessment !== null}
                   disabled={busy || draft.status !== "draft"}
                   previewingSuggestionId={previewSuggestionId}
                   onPreview={(id) => setPreviewSuggestionId((current) => current === id ? null : id)}
