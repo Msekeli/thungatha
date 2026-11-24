@@ -12,6 +12,7 @@ import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
 import { mapCvTailoringOutput } from "./map-cv-tailoring-output";
+import { verifyCvTailoringSuggestions } from "./verify-cv-tailoring-suggestions";
 import {
   CV_TAILORING_VERSION,
   createCvTailoringResponseSchema,
@@ -97,8 +98,15 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     : await completeAiTask(request);
 
   const parsed = schema.validator.parse(JSON.parse(response.content));
+  const verifiedSuggestions = await verifyCvTailoringSuggestions(
+    parsed.suggestions,
+    profileEvidence,
+    jobEvidence,
+    understanding.requirements,
+    provider,
+  );
   const mapped = mapCvTailoringOutput(
-    parsed,
+    { ...parsed, suggestions: verifiedSuggestions },
     profileEvidence,
     jobEvidence,
     editableTargets,
