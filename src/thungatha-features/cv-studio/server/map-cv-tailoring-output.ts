@@ -7,7 +7,7 @@ export function mapCvTailoringOutput(
   profileEvidence: CvTailoringEvidence["profileEvidence"],
   jobEvidence: Array<{ id: string; content: string }>,
   editableTargets: CvTailoringEvidence["editableTargets"],
-  requirements: Array<{ id: string; statement: string }>,
+  requirements: Array<{ id: string; statement: string; sourceEvidenceRefs?: string[] }>,
 ) {
   const targetMap = new Map(editableTargets.map((item) => [item.path, item]));
   const evidenceMap = new Map<string, { source: "profile" | "job"; excerpt: string }>([
@@ -24,6 +24,22 @@ export function mapCvTailoringOutput(
     if (!target || item.originalText !== target.currentText) {
       throw new Error("AI returned a suggestion for changed or unknown CV text.");
     }
+    if (!target.profileEvidenceRef || !item.profileEvidenceRefs.includes(target.profileEvidenceRef)) {
+      throw new Error("AI suggestion is not supported by the exact source evidence for its CV field.");
+    }
+
+    const citedRequirements = item.requirementIds.map((id) => {
+      const requirement = requirements.find((candidate) => candidate.id === id);
+      if (!requirement) throw new Error("AI returned an unknown job requirement.");
+      return requirement;
+    });
+    const allowedJobRefs = new Set(citedRequirements.flatMap(
+      (requirement) => requirement.sourceEvidenceRefs ?? [],
+    ));
+    if (item.jobEvidenceRefs.some((ref) => !allowedJobRefs.has(ref))) {
+      throw new Error("AI cited job evidence that is not attached to its selected requirement.");
+    }
+
     const evidenceRefs = [...item.profileEvidenceRefs, ...item.jobEvidenceRefs];
     return {
       id: crypto.randomUUID(),
@@ -43,6 +59,10 @@ export function mapCvTailoringOutput(
   const gaps = parsed.gaps.map((gap) => {
     const requirement = requirements.find((item) => item.id === gap.requirementId);
     if (!requirement) throw new Error("AI returned an unknown job requirement.");
+    const allowedJobRefs = new Set(requirement.sourceEvidenceRefs ?? []);
+    if (gap.jobEvidenceRefs.some((ref) => !allowedJobRefs.has(ref))) {
+      throw new Error("AI cited job evidence that is not attached to the unsupported requirement.");
+    }
     return {
       requirement: requirement.statement,
       explanation: gap.explanation,
