@@ -65,11 +65,9 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   const editableTargets = allEditableTargets.filter(
     (target) => target.path === "professionalSummary",
   );
-  // Only summary evidence may justify a wording proposal. The full Profile
-  // evidence is retained below for accurate requirement coverage and gap analysis.
-  const summaryEvidence = profileEvidence.filter(
-    (item) => item.id === "cv:professionalSummary",
-  );
+  // A professional summary synthesizes confirmed facts from across the CV.
+  // It must not be restricted to citing the old summary paragraph itself.
+  const summaryEvidence = profileEvidence;
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
   // The response classifies requirements, so only requirement-linked advert
   // excerpts are needed here; responsibilities/capabilities are not output.
@@ -110,7 +108,7 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
       },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
       // Keep the full confirmed Profile evidence for accurate requirement coverage.
-      // Only the summary evidence IDs are allowed as proposal citations.
+      // Confirmed Profile facts across the CV may support the new summary proposal.
       confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
       editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
     }),
