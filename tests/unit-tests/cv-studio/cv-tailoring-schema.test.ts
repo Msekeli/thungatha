@@ -117,6 +117,7 @@ describe("CV tailoring evidence", () => {
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:0"],
       }],
+      coveredRequirementIds: [],
       gaps: [],
     })).toThrow();
   });
@@ -139,6 +140,7 @@ describe("CV tailoring evidence", () => {
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:0"],
       }],
+      coveredRequirementIds: [],
       gaps: [],
     });
     expect(() => mapCvTailoringOutput(
@@ -177,6 +179,36 @@ describe("CV tailoring evidence", () => {
       evidence.editableTargets,
       requirements,
     )).toThrow(/not attached to its selected requirement/);
+  });
+
+  it("accepts an empty requirement set only when no suggestions or gaps are returned", () => {
+    const evidence = buildCvTailoringEvidence(master);
+    const schema = createCvTailoringResponseSchema(
+      evidence.profileEvidence.map((item) => item.id),
+      jobEvidence.map((item) => item.id),
+      evidence.editableTargets.map((item) => item.path),
+      [],
+    );
+
+    expect(schema.validator.parse({
+      suggestions: [],
+      coveredRequirementIds: [],
+      gaps: [],
+    })).toMatchObject({ suggestions: [], coveredRequirementIds: [], gaps: [] });
+
+    expect(() => schema.validator.parse({
+      suggestions: [{
+        targetPath: "professionalSummary",
+        originalText: master.professionalSummary,
+        proposedText: "A different summary.",
+        reason: "A reason.",
+        profileEvidenceRefs: ["cv:professionalSummary"],
+        requirementIds: [],
+        jobEvidenceRefs: ["job:description:0"],
+      }],
+      coveredRequirementIds: [],
+      gaps: [],
+    })).toThrow(/without an extracted job requirement/);
   });
 
   it("validates mapped suggestions with the shared persisted-CV suggestion schema", () => {
