@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Circle } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CvPdfPreview } from "./cv-pdf-preview";
-import { CvPdfPreviewDialog } from "./cv-pdf-preview-dialog";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
 import { applyCvSuggestion } from "../server/apply-cv-suggestion";
 import type { CvSuggestion } from "../server/cv-studio-schema";
