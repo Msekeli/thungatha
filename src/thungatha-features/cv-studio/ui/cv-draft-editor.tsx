@@ -112,6 +112,7 @@ export function CvDraftEditor({
   const createStarted = useRef(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [createFailed, setCreateFailed] = useState(false);
+  const [tailoringFailed, setTailoringFailed] = useState(false);
   const [content, setContent] = useState<CvContent>(
     initialContent as CvContent,
   );
@@ -168,6 +169,7 @@ export function CvDraftEditor({
   }
 
   async function generateSuggestionsForDraft(draftId: string) {
+    setTailoringFailed(false);
     setTailoringBusy(true);
     setWorkflowStage("Analysing the job description and preparing your professional summary…");
     setError(null);
@@ -199,11 +201,13 @@ export function CvDraftEditor({
       } : current);
       setTailoringGaps(body.assessment?.gaps ?? body.gaps ?? []);
       setWorkflowStage(null);
+      setTailoringFailed(false);
       setMessage(body.suggestions.length
         ? "Your professional summary proposal is ready. Review it, then accept or reject it."
         : "No summary change was recommended. Your existing summary remains unchanged.");
     } catch (e) {
       setWorkflowStage(null);
+      setTailoringFailed(true);
       setError(
         e instanceof DOMException && e.name === "TimeoutError"
           ? "AI tailoring exceeded three minutes. Your draft is still available; retry the summary generation."
@@ -423,7 +427,7 @@ export function CvDraftEditor({
         </p>
       )}
 
-      {draft && error && !tailoringBusy && draft.status === "draft" && (
+      {draft && tailoringFailed && !tailoringBusy && draft.status === "draft" && (
         <div className="flex flex-wrap items-center gap-3">
           <Button size="sm" variant="outline" onClick={() => void generateSuggestions()} disabled={busy || tailoringBusy}>Retry summary generation</Button>
         </div>
