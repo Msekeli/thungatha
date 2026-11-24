@@ -128,6 +128,7 @@ export function CvDraftEditor({
   const [tailoringBusy, setTailoringBusy] = useState(false);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills" | "requirements">("summary");
+  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
 
   const reviewSections = [
     { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
@@ -376,8 +377,41 @@ export function CvDraftEditor({
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3">
             <div className="shrink-0"><h3 className="text-lg font-bold">Work Experience</h3><p className="text-sm text-fg-muted">Review the experience included in your tailored CV.</p></div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-              {content.workExperience.length ? content.workExperience.map((item) => <article key={item.sourceId} className="rounded-xl border border-line bg-panel-2 p-3"><h4 className="text-sm font-semibold">{item.jobTitle}</h4><p className="text-xs text-fg-muted">{item.employer} · {item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>{item.description && <p className="mt-2 text-sm leading-5">{item.description}</p>}{item.achievements.length > 0 && <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul>}</article>) : <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>}
+            <div className="flex min-h-0 flex-1 flex-col gap-3">
+              {content.workExperience.length ? (
+                <>
+                  <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2">
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-fg-muted">Work experience {activeExperienceIndex + 1} of {content.workExperience.length}</p>
+                      <p className="truncate text-sm font-semibold">{content.workExperience[activeExperienceIndex]?.employer}</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Button type="button" size="sm" variant="outline" disabled={activeExperienceIndex === 0} onClick={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}>Previous</Button>
+                      <Button type="button" size="sm" variant="outline" disabled={activeExperienceIndex >= content.workExperience.length - 1} onClick={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}>Next</Button>
+                    </div>
+                  </div>
+                  {content.workExperience[activeExperienceIndex] && (() => {
+                    const item = content.workExperience[activeExperienceIndex];
+                    return (
+                      <article key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4">
+                        <h4 className="text-base font-semibold">{item.jobTitle}</h4>
+                        <p className="mt-1 text-sm text-fg-muted">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
+                        <p className="mt-1 text-xs text-fg-muted">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
+                        <div className="mt-4 space-y-3">
+                          <section>
+                            <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original responsibilities / description</h5>
+                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{item.description || "No description provided."}</p>
+                          </section>
+                          <section>
+                            <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Achievements</h5>
+                            {item.achievements.length ? <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-2 text-sm text-fg-muted">No achievements listed.</p>}
+                          </section>
+                        </div>
+                      </article>
+                    );
+                  })()}
+                </>
+              ) : <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>}
             </div>
           </div>
         ) : activeSection === "skills" ? (
