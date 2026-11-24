@@ -57,13 +57,20 @@ export async function POST(request: Request) {
     }
 
     const job = await resolveCvJobContext(identity.getToken, parsed.data.job);
-    const snapshot = draft.source_job_snapshot as { descriptionFingerprint?: string; jobId?: string | null } | null;
+    const snapshot = draft.source_job_snapshot as { title?: string; company?: string | null; location?: string | null; descriptionFingerprint?: string; jobId?: string | null } | null;
     if (
       snapshot?.descriptionFingerprint !== job.descriptionFingerprint ||
+      snapshot.title !== job.title ||
+      snapshot.company !== job.company ||
+      snapshot.location !== job.location ||
       (job.jobId && draft.source_job_id !== job.jobId) ||
       (snapshot?.jobId && snapshot.jobId !== job.jobId)
     ) {
       return apiError("The job context does not match this CV draft.", 409);
+    }
+
+    if (!draft.parent_version_id) {
+      return apiError("The master CV linked to this draft could not be found.", 409);
     }
 
     const { data: master, error: masterError } = await db
