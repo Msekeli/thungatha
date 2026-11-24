@@ -17,17 +17,23 @@ export async function POST() {
   try {
     const result = await enqueueAllJobAssessments(identity.userId);
     if (result.eligible === 0) {
-      return NextResponse.json({
-        status: "profile_unconfirmed_or_no_eligible_jobs",
-        ...result,
-      }, { status: 409 });
+      return NextResponse.json(
+        {
+          status: "profile_unconfirmed_or_no_eligible_jobs",
+          ...result,
+        },
+        { status: 409 },
+      );
     }
 
-    return NextResponse.json({
-      status: "queued",
-      message: "Eligible job assessments have been added to the AI queue.",
-      ...result,
-    }, { status: 202 });
+    return NextResponse.json(
+      {
+        status: "queued",
+        message: "Eligible job assessments have been added to the AI queue.",
+        ...result,
+      },
+      { status: 202 },
+    );
   } catch (error) {
     return apiFailure(error);
   }

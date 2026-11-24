@@ -21,7 +21,11 @@ const workspaceLinks = [
   { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
   { href: "/applications", label: "Job Tracking", icon: ClipboardCheck },
   { href: "/jobs?status=saved", label: "Saved Jobs", icon: Bookmark },
-  { href: "/jobs?status=dismissed", label: "Dismissed", icon: BriefcaseBusiness },
+  {
+    href: "/jobs?status=dismissed",
+    label: "Dismissed",
+    icon: BriefcaseBusiness,
+  },
   { href: "/profile", label: "Profile", icon: UserRound },
   { href: "/account", label: "Settings", icon: Settings },
 ];
@@ -46,7 +50,10 @@ export function MobileWorkspaceMenu({
 
   return (
     <div className="th-mobile-workspace-menu" id="th-mobile-workspace-menu">
-      <nav className="th-mobile-workspace-menu-nav" aria-label="Mobile navigation">
+      <nav
+        className="th-mobile-workspace-menu-nav"
+        aria-label="Mobile navigation"
+      >
         <Link
           href="/jobs"
           className="th-mobile-workspace-menu-link"

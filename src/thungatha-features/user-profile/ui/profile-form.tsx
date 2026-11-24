@@ -79,11 +79,7 @@ export function ProfileForm({
     >
       {error && <Toast message={error} tone="error" onDismiss={dismissError} />}
       {message && (
-        <Toast
-          message={message}
-          tone="success"
-          onDismiss={dismissMessage}
-        />
+        <Toast message={message} tone="success" onDismiss={dismissMessage} />
       )}
       {currentMode === "empty" && (
         <ProfileEmptyState

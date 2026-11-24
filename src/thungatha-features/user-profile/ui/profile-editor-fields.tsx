@@ -40,7 +40,9 @@ export function ProfileEditorFields({
       >
         <ProfilePersonalDetailsForm
           details={details}
-          onChange={(personalDetails) => onChange({ ...profile, personalDetails })}
+          onChange={(personalDetails) =>
+            onChange({ ...profile, personalDetails })
+          }
           languages={profile.languages}
           onLanguagesChange={(languages) => onChange({ ...profile, languages })}
         />
@@ -123,11 +125,7 @@ export function ProfileEditorFields({
         description="Optional — what you enjoy doing outside work"
         onSave={onSave}
         saving={saving}
-        status={
-          profile.personalAttributes.length
-            ? "Added"
-            : "Optional"
-        }
+        status={profile.personalAttributes.length ? "Added" : "Optional"}
       >
         <ProfileLanguageAttributesEditor
           attributes={profile.personalAttributes}

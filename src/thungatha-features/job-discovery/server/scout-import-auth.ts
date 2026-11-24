@@ -9,6 +9,8 @@ export function isScoutImportAuthorised(request: Request) {
     : "";
   const expectedBytes = Buffer.from(expectedSecret);
   const suppliedBytes = Buffer.from(supplied);
-  return suppliedBytes.length === expectedBytes.length &&
-    timingSafeEqual(suppliedBytes, expectedBytes);
+  return (
+    suppliedBytes.length === expectedBytes.length &&
+    timingSafeEqual(suppliedBytes, expectedBytes)
+  );
 }

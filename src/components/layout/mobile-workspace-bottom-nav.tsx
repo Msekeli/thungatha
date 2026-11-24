@@ -56,7 +56,10 @@ function MobileWorkspaceBottomNavContent({
               sideOffset={10}
               triggerClassName="th-mobile-auth-trigger"
             >
-              <button type="button" aria-label={`Sign in to access ${item.label}`}>
+              <button
+                type="button"
+                aria-label={`Sign in to access ${item.label}`}
+              >
                 <item.icon size={19} strokeWidth={1.8} />
                 <span>{item.label}</span>
               </button>

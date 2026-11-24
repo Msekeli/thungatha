@@ -37,7 +37,9 @@
     line-height: 20px;
     text-align: left;
     text-decoration: none;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
   }
   .th-mobile-workspace-menu nav a > svg,
   .th-mobile-workspace-menu .th-mobile-workspace-menu-link > svg {

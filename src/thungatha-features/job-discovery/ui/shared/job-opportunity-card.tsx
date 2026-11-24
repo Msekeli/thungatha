@@ -87,10 +87,14 @@ export function JobOpportunityCard({
               </span>
             )}
             {job.matchClassification === "match" && (
-              <span className="th-tag" data-tone="success">Match</span>
+              <span className="th-tag" data-tone="success">
+                Match
+              </span>
             )}
             {job.matchClassification === "relevant" && (
-              <span className="th-tag" data-tone="info">Relevant</span>
+              <span className="th-tag" data-tone="info">
+                Relevant
+              </span>
             )}
           </div>
         )}

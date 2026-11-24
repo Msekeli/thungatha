@@ -34,7 +34,9 @@ export function JobResultsList({
         jobs={jobs}
         variant="authenticated"
         selectedId={selectedId}
-        postedLabel={(job) => formatDate((job as Job).published_at) ?? undefined}
+        postedLabel={(job) =>
+          formatDate((job as Job).published_at) ?? undefined
+        }
         onSelect={(job) => onSelect(job as Job)}
         saveAction={(job) => {
           const fullJob = jobs.find((item) => item.id === job.id)!;

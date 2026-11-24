@@ -81,22 +81,40 @@ export function PublicAuthPrompt({
           {configured ? (
             <>
               <SignInButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                <Button size="sm" variant="outline" onClick={handlePromptAction}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handlePromptAction}
+                >
                   Sign in
                 </Button>
               </SignInButton>
               <SignUpButton mode="modal" fallbackRedirectUrl="/?welcome=1">
-                <Button size="sm" variant="primary" onClick={handlePromptAction}>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={handlePromptAction}
+                >
                   Create free account
                 </Button>
               </SignUpButton>
             </>
           ) : (
             <>
-              <ButtonLink href="/sign-in" size="sm" variant="outline" onClick={handlePromptAction}>
+              <ButtonLink
+                href="/sign-in"
+                size="sm"
+                variant="outline"
+                onClick={handlePromptAction}
+              >
                 Sign in
               </ButtonLink>
-              <ButtonLink href="/sign-up" size="sm" variant="primary" onClick={handlePromptAction}>
+              <ButtonLink
+                href="/sign-up"
+                size="sm"
+                variant="primary"
+                onClick={handlePromptAction}
+              >
                 Create free account
               </ButtonLink>
             </>

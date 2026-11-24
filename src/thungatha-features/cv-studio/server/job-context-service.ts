@@ -2,7 +2,10 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { cvJobContextSchema, type CvJobContextInput } from "./job-context-schema";
+import {
+  cvJobContextSchema,
+  type CvJobContextInput,
+} from "./job-context-schema";
 
 const MIN_DESCRIPTION_LENGTH = 200;
 
@@ -28,8 +31,11 @@ export async function resolveCvJobContext(
 
   if (input.source === "discovery") {
     const db = await createAuthenticatedSupabaseClient(getToken);
-    const { data, error } = await db.from("jobs")
-      .select("id,title,employer_name,description,location_text,application_url")
+    const { data, error } = await db
+      .from("jobs")
+      .select(
+        "id,title,employer_name,description,location_text,application_url",
+      )
       .eq("id", input.jobId)
       .not("scout_vacancy_id", "is", null)
       .maybeSingle();
@@ -57,7 +63,8 @@ export async function resolveCvJobContext(
   }
 
   const description = context.description.trim();
-  if (description.length < MIN_DESCRIPTION_LENGTH) throw new Error("JOB_DESCRIPTION_INSUFFICIENT");
+  if (description.length < MIN_DESCRIPTION_LENGTH)
+    throw new Error("JOB_DESCRIPTION_INSUFFICIENT");
   const fingerprint = createHash("sha256").update(description).digest("hex");
   return cvJobContextSchema.parse({
     ...context,

@@ -21,24 +21,38 @@ export function validateAndClassifyAssessment(
   allowedJobRefs: Set<string>,
   allowedProfileRefs: Set<string>,
 ): MatchAssessment {
-  const extracted = new Map(understanding.requirements.map((item) => [item.id, item]));
+  const extracted = new Map(
+    understanding.requirements.map((item) => [item.id, item]),
+  );
   if (extracted.size !== understanding.requirements.length) {
-    throw new Error("Extracted job requirements contain duplicate identifiers.");
+    throw new Error(
+      "Extracted job requirements contain duplicate identifiers.",
+    );
   }
 
   const assessedIds = new Set<string>();
   for (const item of assessment.requirements) {
     const source = extracted.get(item.id);
-    if (!source || assessedIds.has(item.id) || source.importance !== item.importance) {
-      throw new Error("AI assessment requirements do not match the extracted job requirements.");
+    if (
+      !source ||
+      assessedIds.has(item.id) ||
+      source.importance !== item.importance
+    ) {
+      throw new Error(
+        "AI assessment requirements do not match the extracted job requirements.",
+      );
     }
     if (item.requirement !== source.statement) {
-      throw new Error(`AI assessment changed the extracted wording for requirement "${item.id}".`);
+      throw new Error(
+        `AI assessment changed the extracted wording for requirement "${item.id}".`,
+      );
     }
     assessedIds.add(item.id);
   }
   if (assessedIds.size !== extracted.size) {
-    throw new Error("AI assessment omitted one or more extracted job requirements.");
+    throw new Error(
+      "AI assessment omitted one or more extracted job requirements.",
+    );
   }
 
   const jobReferences = [
@@ -51,38 +65,55 @@ export function validateAndClassifyAssessment(
     ...assessment.requirements.flatMap((item) => item.profileEvidenceRefs),
     ...assessment.gaps.flatMap((item) => item.profileEvidenceRefs),
   ];
-  const invalidJobReferences = [...new Set(jobReferences.filter((ref) => !allowedJobRefs.has(ref)))];
-  const invalidProfileReferences = [...new Set(profileReferences.filter((ref) => !allowedProfileRefs.has(ref)))];
+  const invalidJobReferences = [
+    ...new Set(jobReferences.filter((ref) => !allowedJobRefs.has(ref))),
+  ];
+  const invalidProfileReferences = [
+    ...new Set(profileReferences.filter((ref) => !allowedProfileRefs.has(ref))),
+  ];
   if (invalidJobReferences.length || invalidProfileReferences.length) {
     const details = [
-      invalidJobReferences.length ? `unknown job evidence IDs: ${invalidJobReferences.join(", ")}` : null,
-      invalidProfileReferences.length ? `unknown Profile evidence IDs: ${invalidProfileReferences.join(", ")}` : null,
-    ].filter(Boolean).join("; ");
-    throw new Error(`AI assessment referenced evidence outside the supplied sources (${details}).`);
+      invalidJobReferences.length
+        ? `unknown job evidence IDs: ${invalidJobReferences.join(", ")}`
+        : null,
+      invalidProfileReferences.length
+        ? `unknown Profile evidence IDs: ${invalidProfileReferences.join(", ")}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("; ");
+    throw new Error(
+      `AI assessment referenced evidence outside the supplied sources (${details}).`,
+    );
   }
 
   if (
-    understanding.coverage === "unavailable"
-    || (understanding.responsibilities.length === 0 && understanding.capabilities.length === 0 && understanding.requirements.length === 0)
-    || assessment.semanticAlignment.level === "insufficient"
-    || assessment.semanticAlignment.profileEvidenceRefs.length === 0
+    understanding.coverage === "unavailable" ||
+    (understanding.responsibilities.length === 0 &&
+      understanding.capabilities.length === 0 &&
+      understanding.requirements.length === 0) ||
+    assessment.semanticAlignment.level === "insufficient" ||
+    assessment.semanticAlignment.profileEvidenceRefs.length === 0
   ) {
     throw new AssessmentUnavailableError(
       "There is insufficient confirmed Profile evidence to classify this job.",
     );
   }
 
-  const contradictoryEvidence = assessment.requirements.some((item) => item.assessment === "contradictory");
+  const contradictoryEvidence = assessment.requirements.some(
+    (item) => item.assessment === "contradictory",
+  );
   const unsupportedMandatory = assessment.requirements.some(
-    (item) => item.importance === "mandatory" && item.assessment !== "supported",
+    (item) =>
+      item.importance === "mandatory" && item.assessment !== "supported",
   );
 
   const classification: MatchClassification =
-    assessment.semanticAlignment.level === "strong"
-    && !assessment.semanticAlignment.materialGaps
-    && !contradictoryEvidence
-    && !unsupportedMandatory
-    && understanding.coverage === "complete"
+    assessment.semanticAlignment.level === "strong" &&
+    !assessment.semanticAlignment.materialGaps &&
+    !contradictoryEvidence &&
+    !unsupportedMandatory &&
+    understanding.coverage === "complete"
       ? "match"
       : "relevant";
 

@@ -16,7 +16,10 @@ import {
   type JobUnderstanding,
   type MatchAssessmentModelOutput,
 } from "./job-ai-schemas";
-import { AssessmentUnavailableError, validateAndClassifyAssessment } from "./job-ai-classification";
+import {
+  AssessmentUnavailableError,
+  validateAndClassifyAssessment,
+} from "./job-ai-classification";
 
 const json = (value: unknown) => JSON.stringify(value);
 
@@ -31,9 +34,10 @@ function describeJsonShape(value: unknown): string {
     .map((key) => {
       const items = record[key] as unknown[];
       const first = items[0];
-      const itemKeys = first && typeof first === "object" && !Array.isArray(first)
-        ? Object.keys(first as Record<string, unknown>).slice(0, 12)
-        : [];
+      const itemKeys =
+        first && typeof first === "object" && !Array.isArray(first)
+          ? Object.keys(first as Record<string, unknown>).slice(0, 12)
+          : [];
       return `${key}=${items.length} items; firstItemKeys=[${itemKeys.join(",")}]`;
     });
   return `topLevelKeys=[${keys.join(",")}]; ${arrays.join("; ")}`;
@@ -48,7 +52,8 @@ function parse<T>(
   try {
     value = JSON.parse(content);
   } catch (cause) {
-    const detail = cause instanceof Error ? cause.message : "unknown JSON parsing error";
+    const detail =
+      cause instanceof Error ? cause.message : "unknown JSON parsing error";
     throw new Error(`${stage}: AI returned invalid JSON (${detail}).`);
   }
 
@@ -60,7 +65,9 @@ function parse<T>(
         const path = issue.path.length ? issue.path.join(".") : "(root)";
         return `${path}: ${issue.message}`;
       });
-      throw new Error(`${stage}: AI output failed schema validation: ${issues.join("; ")}. Returned shape: ${describeJsonShape(value)}`);
+      throw new Error(
+        `${stage}: AI output failed schema validation: ${issues.join("; ")}. Returned shape: ${describeJsonShape(value)}`,
+      );
     }
     throw new Error(`${stage}: AI output could not be validated.`);
   }
@@ -70,24 +77,34 @@ export function attachCanonicalRequirements(
   modelOutput: MatchAssessmentModelOutput,
   understanding: JobUnderstanding,
 ) {
-  const extracted = new Map(understanding.requirements.map((item) => [item.id, item]));
+  const extracted = new Map(
+    understanding.requirements.map((item) => [item.id, item]),
+  );
   if (extracted.size !== understanding.requirements.length) {
-    throw new Error("Extracted job requirements contain duplicate identifiers.");
+    throw new Error(
+      "Extracted job requirements contain duplicate identifiers.",
+    );
   }
 
   const seen = new Set<string>();
   for (const item of modelOutput.requirements) {
     if (!extracted.has(item.id)) {
-      throw new Error(`AI assessment returned unknown requirement ID "${item.id}".`);
+      throw new Error(
+        `AI assessment returned unknown requirement ID "${item.id}".`,
+      );
     }
     if (seen.has(item.id)) {
-      throw new Error(`AI assessment returned duplicate requirement ID "${item.id}".`);
+      throw new Error(
+        `AI assessment returned duplicate requirement ID "${item.id}".`,
+      );
     }
     seen.add(item.id);
   }
   const missing = [...extracted.keys()].filter((id) => !seen.has(id));
   if (missing.length) {
-    throw new Error(`AI assessment omitted extracted requirement IDs: ${missing.join(", ")}.`);
+    throw new Error(
+      `AI assessment omitted extracted requirement IDs: ${missing.join(", ")}.`,
+    );
   }
 
   return matchAssessmentInputSchema.parse({
@@ -110,7 +127,11 @@ async function parseAssessmentWithJsonRepair(
   try {
     return parse("Candidate assessment", content, modelSchema.validator);
   } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes("AI returned invalid JSON")) throw error;
+    if (
+      !(error instanceof Error) ||
+      !error.message.includes("AI returned invalid JSON")
+    )
+      throw error;
 
     const repair = await completeAiTask({
       task: "job-fit-assessment",
@@ -135,38 +156,55 @@ async function parseAssessmentWithJsonRepair(
   }
 }
 
-function assertCompleteResponse(stage: string, response: { provider: string; finishReason?: string }) {
+function assertCompleteResponse(
+  stage: string,
+  response: { provider: string; finishReason?: string },
+) {
   const finishReason = response.finishReason?.toUpperCase();
   if (finishReason === "MAX_TOKENS" || finishReason === "LENGTH") {
-    throw new Error(`${stage}: ${response.provider} stopped at the output-token limit; the JSON response may be incomplete.`);
+    throw new Error(
+      `${stage}: ${response.provider} stopped at the output-token limit; the JSON response may be incomplete.`,
+    );
   }
 }
 
-export function parseJobUnderstanding(context: JobMatchingContext, value: unknown): JobUnderstanding {
-  const result = typeof value === "string"
-    ? parse("Job understanding", value, jobUnderstandingSchema)
-    : (() => {
-        try {
-          return jobUnderstandingSchema.parse(value);
-        } catch (cause) {
-          if (cause instanceof ZodError) {
-            const issues = cause.issues.slice(0, 12).map((issue) => {
-              const path = issue.path.length ? issue.path.join(".") : "(root)";
-              return `${path}: ${issue.message}`;
-            });
-            throw new Error(`Cached job understanding failed schema validation: ${issues.join("; ")}`);
+export function parseJobUnderstanding(
+  context: JobMatchingContext,
+  value: unknown,
+): JobUnderstanding {
+  const result =
+    typeof value === "string"
+      ? parse("Job understanding", value, jobUnderstandingSchema)
+      : (() => {
+          try {
+            return jobUnderstandingSchema.parse(value);
+          } catch (cause) {
+            if (cause instanceof ZodError) {
+              const issues = cause.issues.slice(0, 12).map((issue) => {
+                const path = issue.path.length
+                  ? issue.path.join(".")
+                  : "(root)";
+                return `${path}: ${issue.message}`;
+              });
+              throw new Error(
+                `Cached job understanding failed schema validation: ${issues.join("; ")}`,
+              );
+            }
+            throw new Error("Cached job understanding could not be validated.");
           }
-          throw new Error("Cached job understanding could not be validated.");
-        }
-      })();
-  const allowed = new Set(buildJobEvidence(context.description, context).map((item) => item.id));
+        })();
+  const allowed = new Set(
+    buildJobEvidence(context.description, context).map((item) => item.id),
+  );
   const refs = [
     ...result.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.capabilities.flatMap((item) => item.sourceEvidenceRefs),
     ...result.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ];
   if (!assertEvidenceReferences(refs, allowed)) {
-    throw new Error("Job understanding referenced evidence outside the current job description.");
+    throw new Error(
+      "Job understanding referenced evidence outside the current job description.",
+    );
   }
   return result;
 }
@@ -174,13 +212,17 @@ export function parseJobUnderstanding(context: JobMatchingContext, value: unknow
 export async function understandJobWithAi(context: JobMatchingContext) {
   const evidence = buildJobEvidence(context.description, context);
   if (evidence.length === 0) {
-    throw new Error("The job description does not contain enough readable text.");
+    throw new Error(
+      "The job description does not contain enough readable text.",
+    );
   }
 
   const response = await completeAiTask({
     task: "job-requirement-extraction",
     responseFormat: "json",
-    responseSchema: createJobUnderstandingResponseSchema(evidence.map((item) => item.id)),
+    responseSchema: createJobUnderstandingResponseSchema(
+      evidence.map((item) => item.id),
+    ),
     temperature: 0.1,
     maxOutputTokens: 4_096,
     timeoutMs: 120_000,
@@ -206,7 +248,11 @@ export async function understandJobWithAi(context: JobMatchingContext) {
 
   assertCompleteResponse("Job understanding", response);
   const result = parseJobUnderstanding(context, response.content);
-  return { analysis: result, provider: response.provider, model: response.model };
+  return {
+    analysis: result,
+    provider: response.provider,
+    model: response.model,
+  };
 }
 
 export async function assessJobWithAi(
@@ -216,12 +262,18 @@ export async function assessJobWithAi(
 ) {
   const allJobEvidence = buildJobEvidence(context.description, context);
   const referencedJobIds = new Set([
-    ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.responsibilities.flatMap(
+      (item) => item.sourceEvidenceRefs,
+    ),
     ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
     ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ]);
-  const referencedJobEvidence = allJobEvidence.filter((item) => referencedJobIds.has(item.id));
-  const metadataEvidence = allJobEvidence.filter((item) => item.sourcePath !== "description");
+  const referencedJobEvidence = allJobEvidence.filter((item) =>
+    referencedJobIds.has(item.id),
+  );
+  const metadataEvidence = allJobEvidence.filter(
+    (item) => item.sourcePath !== "description",
+  );
   const jobEvidence = referencedJobEvidence.length
     ? [...metadataEvidence, ...referencedJobEvidence]
     : allJobEvidence;
@@ -231,7 +283,9 @@ export async function assessJobWithAi(
     throw new Error("The job advert does not contain usable source evidence.");
   }
   if (!profileEvidence.length) {
-    throw new AssessmentUnavailableError("The confirmed Profile does not contain enough evidence to assess this role.");
+    throw new AssessmentUnavailableError(
+      "The confirmed Profile does not contain enough evidence to assess this role.",
+    );
   }
 
   const modelSchema = createMatchAssessmentResponseSchema(
@@ -246,24 +300,36 @@ export async function assessJobWithAi(
   const compactUnderstanding = {
     coverage: understanding.coverage,
     responsibilities: understanding.responsibilities.map((item) => [
-      item.id, item.statement, item.sourceEvidenceRefs,
+      item.id,
+      item.statement,
+      item.sourceEvidenceRefs,
     ]),
     capabilities: understanding.capabilities.map((item) => [
-      item.id, item.name, item.context, item.sourceEvidenceRefs,
+      item.id,
+      item.name,
+      item.context,
+      item.sourceEvidenceRefs,
     ]),
     requirements: understanding.requirements.map((item) => [
-      item.id, item.statement, item.category, item.importance, item.sourceEvidenceRefs,
+      item.id,
+      item.statement,
+      item.category,
+      item.importance,
+      item.sourceEvidenceRefs,
     ]),
   };
   const compactJobEvidence = jobEvidence.map((item) => [item.id, item.content]);
-  const compactProfileEvidence = profileEvidence.map((item) => [item.id, item.content]);
+  const compactProfileEvidence = profileEvidence.map((item) => [
+    item.id,
+    item.content,
+  ]);
   // Reserve enough completion capacity for the full structured assessment.
   // Each requirement produces an explanation and two evidence-reference arrays;
   // GPT-OSS may also consume completion tokens for internal reasoning.
   const maxOutputTokens =
-    2_048
-    + understanding.requirements.length * 384
-    + (jobEvidence.length + profileEvidence.length) * 32;
+    2_048 +
+    understanding.requirements.length * 384 +
+    (jobEvidence.length + profileEvidence.length) * 32;
   const response = await completeAiTask({
     task: "job-fit-assessment",
     responseFormat: "json",
@@ -299,8 +365,14 @@ export async function assessJobWithAi(
   });
 
   assertCompleteResponse("Candidate assessment", response);
-  const modelOutput = await parseAssessmentWithJsonRepair(response.content, modelSchema);
-  const assessmentInput = attachCanonicalRequirements(modelOutput, understanding);
+  const modelOutput = await parseAssessmentWithJsonRepair(
+    response.content,
+    modelSchema,
+  );
+  const assessmentInput = attachCanonicalRequirements(
+    modelOutput,
+    understanding,
+  );
   const assessment = validateAndClassifyAssessment(
     assessmentInput,
     understanding,

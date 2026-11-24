@@ -91,7 +91,10 @@ export function ProfilePersonalDetailsForm({
           </div>
         ))}
       </div>
-      <ProfileLanguagesEditor languages={languages} onChange={onLanguagesChange} />
+      <ProfileLanguagesEditor
+        languages={languages}
+        onChange={onLanguagesChange}
+      />
     </section>
   );
 }

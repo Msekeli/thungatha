@@ -1,6 +1,15 @@
 import { Button } from "@/components/ui/button";
 
-type MatchStatus = "no_assessment" | "processing" | "failed" | "stale" | "no_confirmed_profile" | "error" | "unavailable" | "match" | "relevant";
+type MatchStatus =
+  | "no_assessment"
+  | "processing"
+  | "failed"
+  | "stale"
+  | "no_confirmed_profile"
+  | "error"
+  | "unavailable"
+  | "match"
+  | "relevant";
 
 export function JobDetailMatchSummary({
   classification,
@@ -11,17 +20,18 @@ export function JobDetailMatchSummary({
   status?: MatchStatus;
   onViewMatch: (anchor: HTMLElement) => void;
 }) {
-  const label = classification === "match"
-    ? "Match"
-    : classification === "relevant"
-      ? "Relevant"
-      : status === "processing"
-        ? "Assessment pending"
-        : status === "unavailable"
-          ? "Assessment unavailable"
-          : status === "failed"
-            ? "Assessment needs retry"
-            : null;
+  const label =
+    classification === "match"
+      ? "Match"
+      : classification === "relevant"
+        ? "Relevant"
+        : status === "processing"
+          ? "Assessment pending"
+          : status === "unavailable"
+            ? "Assessment unavailable"
+            : status === "failed"
+              ? "Assessment needs retry"
+              : null;
 
   if (!label) return null;
 

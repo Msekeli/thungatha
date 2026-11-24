@@ -1,6 +1,9 @@
 import { connection, NextResponse } from "next/server";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
+import {
+  getAuthenticatedIdentity,
+  hasClerkConfiguration,
+} from "@/thungatha-features/authentication/server/identity";
 import { enqueueAllJobAssessments } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 
 export const maxDuration = 120;

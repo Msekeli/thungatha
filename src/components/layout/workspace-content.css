@@ -235,7 +235,6 @@
   }
 }
 
-
 /* The confirmed Profile summary scrolls as one page, independently of the workspace frame. */
 .th-profile-form-scroll:has(.th-profile-form-state--view) {
   overflow-x: hidden;
@@ -265,7 +264,6 @@
     padding-bottom: calc(88px + env(safe-area-inset-bottom));
   }
 }
-
 
 /* The CV-style review is the scrollable content region inside the fixed workspace. */
 .th-profile-form-state--review {

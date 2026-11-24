@@ -8,10 +8,40 @@ type HtmlNode = {
 };
 
 const BLOCK_TAGS = new Set([
-  "address", "article", "blockquote", "dd", "div", "dl", "dt", "fieldset",
-  "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5",
-  "h6", "header", "hr", "li", "main", "ol", "p", "pre", "section",
-  "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
+  "address",
+  "article",
+  "blockquote",
+  "dd",
+  "div",
+  "dl",
+  "dt",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "footer",
+  "form",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "header",
+  "hr",
+  "li",
+  "main",
+  "ol",
+  "p",
+  "pre",
+  "section",
+  "table",
+  "tbody",
+  "td",
+  "tfoot",
+  "th",
+  "thead",
+  "tr",
+  "ul",
 ]);
 const IGNORED_TAGS = new Set(["script", "style", "template", "noscript"]);
 
@@ -41,7 +71,8 @@ function htmlToStructuredText(markup: string) {
   }
 
   visit(root);
-  return output.join("")
+  return output
+    .join("")
     .replace(/\u00a0/g, " ")
     .replace(/[\t\f\v ]+/g, " ")
     .replace(/ *\n+ */g, "\n")
@@ -57,6 +88,11 @@ export function sourceSegments(description: string) {
     : blocks.flatMap((block) => block.split(/(?<=[.!?;])\s+/));
 
   return segments
-    .map((part) => part.replace(/^[•▪◦*-]\s*/, "").replace(/\s+/g, " ").trim())
+    .map((part) =>
+      part
+        .replace(/^[•▪◦*-]\s*/, "")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
     .filter((part) => part.length > 0);
 }

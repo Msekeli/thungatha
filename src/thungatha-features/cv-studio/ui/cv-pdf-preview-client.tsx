@@ -10,18 +10,36 @@ const MIN_ZOOM = 50;
 const MAX_ZOOM = 200;
 const ZOOM_STEP = 10;
 
-export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { content: CvPdfContent; accent?: string; allowDownload?: boolean }) {
+export function CvPdfPreviewClient({
+  content,
+  accent,
+  allowDownload = true,
+}: {
+  content: CvPdfContent;
+  accent?: string;
+  allowDownload?: boolean;
+}) {
   const [zoom, setZoom] = useState(100);
   const [fitMode, setFitMode] = useState<"width" | "actual">("width");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(true);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pageCount, setPageCount] = useState(0);
-  const [renderedCanvases, setRenderedCanvases] = useState<HTMLCanvasElement[]>([]);
+  const [renderedCanvases, setRenderedCanvases] = useState<HTMLCanvasElement[]>(
+    [],
+  );
   const [containerWidth, setContainerWidth] = useState(0);
   const viewerRef = useRef<HTMLDivElement>(null);
-  const document = useMemo(() => <CvPdfDocument content={content} accent={accent} />, [content, accent]);
-  const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
+  const document = useMemo(
+    () => <CvPdfDocument content={content} accent={accent} />,
+    [content, accent],
+  );
+  const fileName = `${
+    content.fullName
+      .trim()
+      .replace(/[^a-z0-9]+/gi, "-")
+      .replace(/^-|-$/g, "") || "candidate"
+  }-cv.pdf`;
 
   useEffect(() => {
     let active = true;
@@ -29,16 +47,23 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
     setIsPreparing(true);
     setPdfError(null);
 
-    void pdf(document).toBlob().then((blob) => {
-      if (!active) return;
-      objectUrl = URL.createObjectURL(blob);
-      setPdfUrl(objectUrl);
-      setIsPreparing(false);
-    }).catch((error: unknown) => {
-      if (!active) return;
-      setPdfError(error instanceof Error ? error.message : "The CV PDF could not be generated.");
-      setIsPreparing(false);
-    });
+    void pdf(document)
+      .toBlob()
+      .then((blob) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setPdfUrl(objectUrl);
+        setIsPreparing(false);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        setPdfError(
+          error instanceof Error
+            ? error.message
+            : "The CV PDF could not be generated.",
+        );
+        setIsPreparing(false);
+      });
 
     return () => {
       active = false;
@@ -60,7 +85,10 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
   useEffect(() => {
     if (!pdfUrl || !containerWidth) return;
     let active = true;
-    let loadedDocument: { destroy: () => Promise<void>; numPages: number } | null = null;
+    let loadedDocument: {
+      destroy: () => Promise<void>;
+      numPages: number;
+    } | null = null;
     setPdfError(null);
     setPageCount(0);
     setRenderedCanvases([]);
@@ -68,7 +96,10 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
     void (async () => {
       try {
         const pdfjs = await import("pdfjs-dist");
-        pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+          "pdfjs-dist/build/pdf.worker.min.mjs",
+          import.meta.url,
+        ).toString();
         const loadingTask = pdfjs.getDocument(pdfUrl);
         const pdfDocument = await loadingTask.promise;
         loadedDocument = pdfDocument;
@@ -81,13 +112,20 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
         const scale = fitMode === "width" ? fitScale : zoom / 100;
         const canvases: HTMLCanvasElement[] = [];
 
-        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+        for (
+          let pageNumber = 1;
+          pageNumber <= pdfDocument.numPages;
+          pageNumber += 1
+        ) {
           const page = await pdfDocument.getPage(pageNumber);
           if (!active) return;
           const viewport = page.getViewport({ scale });
           const canvas = window.document.createElement("canvas");
           const context = canvas.getContext("2d");
-          if (!context) throw new Error("Your browser could not create the PDF preview canvas.");
+          if (!context)
+            throw new Error(
+              "Your browser could not create the PDF preview canvas.",
+            );
           const outputScale = window.devicePixelRatio || 1;
           canvas.width = Math.floor(viewport.width * outputScale);
           canvas.height = Math.floor(viewport.height * outputScale);
@@ -101,7 +139,12 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
           setRenderedCanvases([...canvases]);
         }
       } catch (error) {
-        if (active) setPdfError(error instanceof Error ? error.message : "The PDF preview could not be rendered.");
+        if (active)
+          setPdfError(
+            error instanceof Error
+              ? error.message
+              : "The PDF preview could not be rendered.",
+          );
       }
     })();
 
@@ -128,23 +171,92 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
     <section className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
         <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" size="icon" aria-label="Zoom out" disabled={!pdfUrl || (fitMode === "actual" && zoom <= MIN_ZOOM)} onClick={() => changeZoom((fitMode === "width" ? 100 : zoom) - ZOOM_STEP)}><Minus /></Button>
-          <span className="min-w-14 text-center text-sm font-medium tabular-nums text-fg">{fitMode === "width" ? "Fit width" : `${zoom}%`}</span>
-          <Button type="button" variant="outline" size="icon" aria-label="Zoom in" disabled={!pdfUrl || (fitMode === "actual" && zoom >= MAX_ZOOM)} onClick={() => changeZoom((fitMode === "width" ? 100 : zoom) + ZOOM_STEP)}><Plus /></Button>
-          <Button type="button" variant="ghost" size="icon" aria-label="Fit document to width" disabled={!pdfUrl} onClick={() => setFitMode("width")}><RotateCcw /></Button>
-          <Button type="button" variant="outline" size="sm" disabled={!pdfUrl} onClick={() => { setZoom(100); setFitMode("actual"); }}>100%</Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Zoom out"
+            disabled={!pdfUrl || (fitMode === "actual" && zoom <= MIN_ZOOM)}
+            onClick={() =>
+              changeZoom((fitMode === "width" ? 100 : zoom) - ZOOM_STEP)
+            }
+          >
+            <Minus />
+          </Button>
+          <span className="min-w-14 text-center text-sm font-medium tabular-nums text-fg">
+            {fitMode === "width" ? "Fit width" : `${zoom}%`}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Zoom in"
+            disabled={!pdfUrl || (fitMode === "actual" && zoom >= MAX_ZOOM)}
+            onClick={() =>
+              changeZoom((fitMode === "width" ? 100 : zoom) + ZOOM_STEP)
+            }
+          >
+            <Plus />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Fit document to width"
+            disabled={!pdfUrl}
+            onClick={() => setFitMode("width")}
+          >
+            <RotateCcw />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={!pdfUrl}
+            onClick={() => {
+              setZoom(100);
+              setFitMode("actual");
+            }}
+          >
+            100%
+          </Button>
         </div>
         <div className="flex items-center gap-3">
-          {pageCount > 0 && <span className="text-xs text-fg-muted">{pageCount} {pageCount === 1 ? "page" : "pages"}</span>}
-          {allowDownload && <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}><Download /><span className="hidden sm:inline">{isPreparing ? "Preparing PDF…" : "Download PDF"}</span><span className="sm:hidden">PDF</span></Button>}
+          {pageCount > 0 && (
+            <span className="text-xs text-fg-muted">
+              {pageCount} {pageCount === 1 ? "page" : "pages"}
+            </span>
+          )}
+          {allowDownload && (
+            <Button type="button" onClick={downloadPdf} disabled={!pdfUrl}>
+              <Download />
+              <span className="hidden sm:inline">
+                {isPreparing ? "Preparing PDF…" : "Download PDF"}
+              </span>
+              <span className="sm:hidden">PDF</span>
+            </Button>
+          )}
         </div>
       </div>
 
       {pdfError ? (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive" role="alert">{pdfError}</div>
+        <div
+          className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+          role="alert"
+        >
+          {pdfError}
+        </div>
       ) : (
-        <div ref={viewerRef} className="flex h-[min(72dvh,900px)] min-h-[360px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-4" aria-label="CV document pages">
-          {isPreparing ? <div className="flex h-full items-center justify-center text-sm text-fg-muted">Preparing A4 document…</div> : null}
+        <div
+          ref={viewerRef}
+          className="flex h-[min(72dvh,900px)] min-h-[360px] flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-4"
+          aria-label="CV document pages"
+        >
+          {isPreparing ? (
+            <div className="flex h-full items-center justify-center text-sm text-fg-muted">
+              Preparing A4 document…
+            </div>
+          ) : null}
           {renderedCanvases.map((canvas, index) => (
             <div key={index} className="flex w-full justify-center py-2">
               <CanvasPage canvas={canvas} />
@@ -155,7 +267,6 @@ export function CvPdfPreviewClient({ content, accent, allowDownload = true }: { 
     </section>
   );
 }
-
 
 function CanvasPage({ canvas }: { canvas: HTMLCanvasElement }) {
   const hostRef = useRef<HTMLDivElement>(null);

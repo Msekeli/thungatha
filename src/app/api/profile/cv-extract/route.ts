@@ -41,9 +41,7 @@ export async function POST(request: Request) {
       );
     if (data.size === 0 || data.size > MAX_FILE_SIZE)
       return apiError("The CV file is empty or exceeds 5 MB", 413);
-    const result = await extractCv(
-      new Uint8Array(await data.arrayBuffer()),
-    );
+    const result = await extractCv(new Uint8Array(await data.arrayBuffer()));
     return NextResponse.json({ extraction: result });
   } catch (error) {
     if (error instanceof SupabaseConfigurationError)

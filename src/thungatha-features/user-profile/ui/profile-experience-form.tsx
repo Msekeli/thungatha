@@ -63,7 +63,12 @@ export function ProfileExperienceForm({
         </label>
         <label className="space-y-2 text-sm font-medium">
           Start date <Required />
-          <MonthYearPicker label="Start month and year" value={value.startDate} onChange={(date) => set("startDate", date)} max={!value.current ? value.endDate || undefined : undefined} />
+          <MonthYearPicker
+            label="Start month and year"
+            value={value.startDate}
+            onChange={(date) => set("startDate", date)}
+            max={!value.current ? value.endDate || undefined : undefined}
+          />
         </label>
         <label className="space-y-2 text-sm font-medium">
           End date{" "}
@@ -74,7 +79,13 @@ export function ProfileExperienceForm({
           ) : (
             <Required />
           )}
-          <MonthYearPicker label="End month and year" value={value.endDate} min={value.startDate || undefined} disabled={value.current} onChange={(date) => set("endDate", date)} />
+          <MonthYearPicker
+            label="End month and year"
+            value={value.endDate}
+            min={value.startDate || undefined}
+            disabled={value.current}
+            onChange={(date) => set("endDate", date)}
+          />
         </label>
         <label className="space-y-2 text-sm font-medium sm:col-span-2">
           Location{" "}
@@ -113,7 +124,8 @@ export function ProfileExperienceForm({
             !value.title.trim() ||
             !value.employer.trim() ||
             !value.startDate ||
-            (!value.current && !value.endDate) || (!value.current && value.endDate < value.startDate)
+            (!value.current && !value.endDate) ||
+            (!value.current && value.endDate < value.startDate)
           }
         >
           {editing ? "Save changes" : "Save role"}

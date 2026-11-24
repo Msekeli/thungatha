@@ -121,15 +121,19 @@ function parseExperience(lines: string[]): ExtractedExperience[] {
     if (!line) continue;
     if (!/^[-•·▪]/.test(line) && rangePattern.test(line)) {
       const range = line.match(rangePattern);
-      const beforeDate = range?.index === undefined ? line : line.slice(0, range.index).trim();
+      const beforeDate =
+        range?.index === undefined ? line : line.slice(0, range.index).trim();
       const previous = section[index - 1]?.trim();
       const previousTwo = section[index - 2]?.trim();
       const heading = beforeDate
-        ? (previous && !rangePattern.test(previous) ? `${previous} | ${line}` : line)
-        : (previousTwo && previous ? `${previousTwo} | ${previous} | ${line}` : line);
+        ? previous && !rangePattern.test(previous)
+          ? `${previous} | ${line}`
+          : line
+        : previousTwo && previous
+          ? `${previousTwo} | ${previous} | ${line}`
+          : line;
       records.push({ heading, details: [] });
-    }
-    else if (records.length)
+    } else if (records.length)
       records[records.length - 1].details.push(
         line.replace(/^[-•·▪]\s*/, "").trim(),
       );
@@ -182,18 +186,24 @@ function parseEducation(lines: string[]): ExtractedEducation[] {
     const dates = line.match(/(?:19|20)\d{2}/g) || [];
     if (!dates.length) continue;
     const qualification = line
-      .replace(/(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)?\s*(?:19|20)\d{2}/gi, "")
+      .replace(
+        /(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)?\s*(?:19|20)\d{2}/gi,
+        "",
+      )
       .replace(/[-–—]/g, " ")
       .trim();
     const previous = section[index - 1]?.trim();
     const previousTwo = section[index - 2]?.trim();
     const next = section[index + 1]?.trim();
     const institution = qualification
-      ? (next && !/^id\s*:/i.test(next) ? next : "")
+      ? next && !/^id\s*:/i.test(next)
+        ? next
+        : ""
       : previousTwo || "";
     const resolvedQualification = qualification || previous || "";
     if (!resolvedQualification || !institution) continue;
-    if (resolvedQualification.length > 150 || institution.length > 150) continue;
+    if (resolvedQualification.length > 150 || institution.length > 150)
+      continue;
     records.push({
       id: `cv-edu-${records.length + 1}`,
       qualification: resolvedQualification,
@@ -260,11 +270,12 @@ export async function extractCv(bytes: Uint8Array): Promise<CvExtraction> {
   let text = "";
   try {
     const parser = new PDFParse({ data: Buffer.from(bytes) });
-      try {
-        text = (await parser.getText({ cellSeparator: " | ", cellThreshold: 16 })).text;
-      } finally {
-        await parser.destroy();
-      }
+    try {
+      text = (await parser.getText({ cellSeparator: " | ", cellThreshold: 16 }))
+        .text;
+    } finally {
+      await parser.destroy();
+    }
   } catch (error) {
     console.error(
       "CV text extraction failed:",

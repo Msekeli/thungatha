@@ -23,7 +23,11 @@ export function ProfileEditorView({
   onCancel: () => void;
 }) {
   const complete = profileCompletionSchema.safeParse(profile).success;
-  const reviewLabel = saving ? "Saving…" : complete ? "Review profile" : "Review draft";
+  const reviewLabel = saving
+    ? "Saving…"
+    : complete
+      ? "Review profile"
+      : "Review draft";
   return (
     <div className="th-profile-editor-layout ml-0 mr-auto w-full max-w-none">
       <header className="th-profile-editor-heading border-b border-border pb-3">
@@ -36,7 +40,12 @@ export function ProfileEditorView({
       </header>
       <div className="th-profile-editor-grid">
         <div className="th-profile-editor-main">
-          <ProfileEditorFields profile={profile} onChange={onChange} onSave={onSaveDraft} saving={saving} />
+          <ProfileEditorFields
+            profile={profile}
+            onChange={onChange}
+            onSave={onSaveDraft}
+            saving={saving}
+          />
           <div className="th-profile-mobile-actions pt-3">
             <Button className="w-full" disabled={saving} onClick={onReview}>
               {reviewLabel}

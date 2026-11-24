@@ -1,4 +1,9 @@
-export const AI_PROVIDERS = ["ollama-local", "ollama-cloud", "gemini", "groq"] as const;
+export const AI_PROVIDERS = [
+  "ollama-local",
+  "ollama-cloud",
+  "gemini",
+  "groq",
+] as const;
 export type AiProvider = (typeof AI_PROVIDERS)[number];
 
 export const AI_TASKS = [

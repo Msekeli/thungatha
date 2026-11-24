@@ -18,8 +18,11 @@ export async function findMatchingAcceptedVersions(
   profileVersion: number,
   job: CvJobContext,
 ) {
-  const { data, error } = await db.from("cv_versions")
-    .select("id,version_number,updated_at,accent_colour,source_job_id,source_job_snapshot")
+  const { data, error } = await db
+    .from("cv_versions")
+    .select(
+      "id,version_number,updated_at,accent_colour,source_job_id,source_job_snapshot",
+    )
     .eq("user_id", userId)
     .eq("cv_kind", "tailored")
     .eq("status", "accepted")
@@ -28,13 +31,17 @@ export async function findMatchingAcceptedVersions(
   if (error) throw error;
 
   const rows = (data ?? []) as AcceptedVersionRow[];
-  return rows.filter((row) => job.jobId
-    ? row.source_job_id === job.jobId
-    : row.source_job_snapshot?.descriptionFingerprint === job.descriptionFingerprint
-  ).map((row) => ({
-    id: row.id,
-    versionNumber: Number(row.version_number),
-    updatedAt: row.updated_at,
-    accentColour: row.accent_colour,
-  }));
+  return rows
+    .filter((row) =>
+      job.jobId
+        ? row.source_job_id === job.jobId
+        : row.source_job_snapshot?.descriptionFingerprint ===
+          job.descriptionFingerprint,
+    )
+    .map((row) => ({
+      id: row.id,
+      versionNumber: Number(row.version_number),
+      updatedAt: row.updated_at,
+      accentColour: row.accent_colour,
+    }));
 }

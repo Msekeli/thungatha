@@ -1,16 +1,26 @@
 import { NextResponse } from "next/server";
 import { apiError, apiFailure } from "@/lib/http/api-response";
-import { createAuthenticatedSupabaseClient, SupabaseConfigurationError } from "@/lib/supabase/server";
+import {
+  createAuthenticatedSupabaseClient,
+  SupabaseConfigurationError,
+} from "@/lib/supabase/server";
 import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server/profile-route-auth";
 import { readProfile } from "@/thungatha-features/user-profile/server/repository";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
-import { getProfileCompletion, buildMasterCvContent } from "@/thungatha-features/cv-studio/server/master-cv";
+import {
+  getProfileCompletion,
+  buildMasterCvContent,
+} from "@/thungatha-features/cv-studio/server/master-cv";
 
 const TEMPLATE_VERSION = "ats-single-column-v1";
 const DEFAULT_ACCENT = "teal";
-const MASTER_CV_COLUMNS = "id, version_number, source_profile_version, content, template_version, accent_colour, updated_at";
+const MASTER_CV_COLUMNS =
+  "id, version_number, source_profile_version, content, template_version, accent_colour, updated_at";
 
-async function loadProfile(userId: string, getToken: () => Promise<string | null>) {
+async function loadProfile(
+  userId: string,
+  getToken: () => Promise<string | null>,
+) {
   const { data, error } = await readProfile(userId, getToken);
   if (error) throw error;
   const profile = mapRowToProfileDto(data);
@@ -36,40 +46,55 @@ async function getOrCreateMasterCv(
   profileVersion: number,
   content: ReturnType<typeof buildMasterCvContent>,
 ) {
-  const { data: existing, error: readError } = await supabase.from("cv_versions")
+  const { data: existing, error: readError } = await supabase
+    .from("cv_versions")
     .select(MASTER_CV_COLUMNS)
-    .eq("user_id", userId).eq("cv_kind", "master").eq("status", "current")
+    .eq("user_id", userId)
+    .eq("cv_kind", "master")
+    .eq("status", "current")
     .maybeSingle();
   if (readError) throw readError;
 
   if (existing?.source_profile_version === profileVersion) return existing;
 
   if (existing) {
-    const { error } = await supabase.from("cv_versions")
+    const { error } = await supabase
+      .from("cv_versions")
       .update({ status: "superseded", updated_at: new Date().toISOString() })
-      .eq("id", existing.id).eq("user_id", userId).eq("status", "current");
+      .eq("id", existing.id)
+      .eq("user_id", userId)
+      .eq("status", "current");
     if (error) throw error;
   }
 
-  const { data, error } = await supabase.from("cv_versions").insert({
-    user_id: userId,
-    cv_kind: "master",
-    status: "current",
-    source_profile_version: profileVersion,
-    content,
-    suggestions: [],
-    template_version: TEMPLATE_VERSION,
-    accent_colour: existing?.accent_colour ?? DEFAULT_ACCENT,
-  }).select(MASTER_CV_COLUMNS).single();
+  const { data, error } = await supabase
+    .from("cv_versions")
+    .insert({
+      user_id: userId,
+      cv_kind: "master",
+      status: "current",
+      source_profile_version: profileVersion,
+      content,
+      suggestions: [],
+      template_version: TEMPLATE_VERSION,
+      accent_colour: existing?.accent_colour ?? DEFAULT_ACCENT,
+    })
+    .select(MASTER_CV_COLUMNS)
+    .single();
 
   if (!error) return data;
 
   // A concurrent request may have created the same current master after our first read.
   if (error.code === "23505") {
-    const retry = await supabase.from("cv_versions").select(MASTER_CV_COLUMNS)
-      .eq("user_id", userId).eq("cv_kind", "master").eq("status", "current")
+    const retry = await supabase
+      .from("cv_versions")
+      .select(MASTER_CV_COLUMNS)
+      .eq("user_id", userId)
+      .eq("cv_kind", "master")
+      .eq("status", "current")
       .maybeSingle();
-    if (!retry.error && retry.data?.source_profile_version === profileVersion) return retry.data;
+    if (!retry.error && retry.data?.source_profile_version === profileVersion)
+      return retry.data;
   }
   throw error;
 }
@@ -79,7 +104,10 @@ async function handleRequest() {
   if (response || !identity) return response;
 
   try {
-    const { profile, completion } = await loadProfile(identity.userId, identity.getToken);
+    const { profile, completion } = await loadProfile(
+      identity.userId,
+      identity.getToken,
+    );
     if (!completion.complete || !profile.confirmedAt) {
       return NextResponse.json({
         status: "profile_required",

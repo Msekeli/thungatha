@@ -48,19 +48,25 @@ export function createProviderHttpError(
   retryAfterHeader: string | null,
   payload: unknown,
 ): AiProviderError {
-  const errorObject = payload && typeof payload === "object"
-    ? (payload as { error?: unknown; message?: unknown }).error
-    : undefined;
-  const detailObject = errorObject && typeof errorObject === "object"
-    ? errorObject as { message?: unknown; status?: unknown }
-    : undefined;
-  const detail = typeof detailObject?.message === "string"
-    ? detailObject.message
-    : payload && typeof payload === "object" && typeof (payload as { message?: unknown }).message === "string"
-      ? (payload as { message: string }).message
+  const errorObject =
+    payload && typeof payload === "object"
+      ? (payload as { error?: unknown; message?: unknown }).error
       : undefined;
+  const detailObject =
+    errorObject && typeof errorObject === "object"
+      ? (errorObject as { message?: unknown; status?: unknown })
+      : undefined;
+  const detail =
+    typeof detailObject?.message === "string"
+      ? detailObject.message
+      : payload &&
+          typeof payload === "object" &&
+          typeof (payload as { message?: unknown }).message === "string"
+        ? (payload as { message: string }).message
+        : undefined;
   const safeDetail = detail?.replace(/\s+/g, " ").slice(0, 240);
-  const isTokenCapacityLimit = status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
+  const isTokenCapacityLimit =
+    status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
   const code: AiErrorCode = isTokenCapacityLimit
     ? "rate-limited"
     : status === 401 || status === 403
@@ -72,7 +78,8 @@ export function createProviderHttpError(
           : status >= 500
             ? "unavailable"
             : "unknown";
-  const retryable = isTokenCapacityLimit || status === 408 || status === 429 || status >= 500;
+  const retryable =
+    isTokenCapacityLimit || status === 408 || status === 429 || status >= 500;
   return new AiProviderError(
     `${provider === "ollama-local" ? "Ollama" : provider === "gemini" ? "Gemini" : "Groq"} returned HTTP ${status}.${safeDetail ? ` ${safeDetail}` : ""}`,
     {

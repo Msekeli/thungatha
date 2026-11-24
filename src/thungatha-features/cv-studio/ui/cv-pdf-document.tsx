@@ -22,10 +22,35 @@ export type CvPdfContent = {
     description: string | null;
     achievements: string[];
   }>;
-  projects: Array<{ sourceId: string; name: string; role: string | null; description: string | null; url?: string | null }>;
+  projects: Array<{
+    sourceId: string;
+    name: string;
+    role: string | null;
+    description: string | null;
+    url?: string | null;
+  }>;
   technicalSkills: string[];
-  education: Array<{ sourceId: string; educationLevel?: string | null; qualification: string; institution: string; fieldOfStudy: string | null; startDate?: string | null; endDate?: string | null; isCurrent?: boolean }>;
-  certifications: Array<{ sourceId: string; type?: string | null; name: string; issuer: string | null; issueDate?: string | null; expiryDate?: string | null; issuingCountry?: string | null; licenceCategories?: string[]; endorsements?: string | null }>;
+  education: Array<{
+    sourceId: string;
+    educationLevel?: string | null;
+    qualification: string;
+    institution: string;
+    fieldOfStudy: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    isCurrent?: boolean;
+  }>;
+  certifications: Array<{
+    sourceId: string;
+    type?: string | null;
+    name: string;
+    issuer: string | null;
+    issueDate?: string | null;
+    expiryDate?: string | null;
+    issuingCountry?: string | null;
+    licenceCategories?: string[];
+    endorsements?: string | null;
+  }>;
   languages: string[];
 };
 
@@ -45,7 +70,12 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     marginBottom: 5,
   },
-  name: { fontSize: 25, lineHeight: 1.12, fontFamily: "Helvetica-Bold", color: "#111827" },
+  name: {
+    fontSize: 25,
+    lineHeight: 1.12,
+    fontFamily: "Helvetica-Bold",
+    color: "#111827",
+  },
   headline: { marginTop: 5, fontSize: 12, color: "#475569" },
   contact: { marginTop: 9, fontSize: 8.5, lineHeight: 1.4, color: "#475569" },
   section: { marginTop: 16 },
@@ -78,7 +108,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function Section({ title, accent, children }: { title: string; accent: string; children: React.ReactNode }) {
+function Section({
+  title,
+  accent,
+  children,
+}: {
+  title: string;
+  accent: string;
+  children: React.ReactNode;
+}) {
   return (
     <View style={styles.section} minPresenceAhead={24}>
       <Text style={[styles.sectionTitle, { color: accent }]}>{title}</Text>
@@ -87,15 +125,35 @@ function Section({ title, accent, children }: { title: string; accent: string; c
   );
 }
 
-export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfContent; accent?: string }) {
-  const contact = [content.email, content.phone, content.location, content.linkedinUrl, content.portfolioUrl].filter(Boolean).join(" · ");
+export function CvPdfDocument({
+  content,
+  accent = "#0F766E",
+}: {
+  content: CvPdfContent;
+  accent?: string;
+}) {
+  const contact = [
+    content.email,
+    content.phone,
+    content.location,
+    content.linkedinUrl,
+    content.portfolioUrl,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
-    <Document title={`${content.fullName} - CV`} author={content.fullName} subject="Curriculum Vitae">
+    <Document
+      title={`${content.fullName} - CV`}
+      author={content.fullName}
+      subject="Curriculum Vitae"
+    >
       <Page size="A4" style={styles.page} wrap>
         <View style={[styles.header, { borderBottomColor: accent }]}>
           <Text style={styles.name}>{content.fullName}</Text>
-          {content.headline ? <Text style={styles.headline}>{content.headline}</Text> : null}
+          {content.headline ? (
+            <Text style={styles.headline}>{content.headline}</Text>
+          ) : null}
           <Text style={styles.contact}>{contact}</Text>
         </View>
 
@@ -106,61 +164,147 @@ export function CvPdfDocument({ content, accent = "#0F766E" }: { content: CvPdfC
         ) : null}
 
         <Section title="Professional experience" accent={accent}>
-          {content.workExperience.length ? content.workExperience.map((item) => (
-            <View key={item.sourceId} style={styles.entry}>
-              <Text style={styles.entryTitle}>{item.jobTitle} · {item.employer}</Text>
-              <Text style={styles.meta}>{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}{item.location ? ` · ${item.location}` : ""}</Text>
-              {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
-              {item.achievements.map((achievement, index) => (
-                <Text key={`${item.sourceId}-achievement-${index}`} style={styles.bullet}>• {achievement}</Text>
-              ))}
-            </View>
-          )) : <Text style={styles.body}>No work experience recorded in Profile.</Text>}
+          {content.workExperience.length ? (
+            content.workExperience.map((item) => (
+              <View key={item.sourceId} style={styles.entry}>
+                <Text style={styles.entryTitle}>
+                  {item.jobTitle} · {item.employer}
+                </Text>
+                <Text style={styles.meta}>
+                  {item.startDate} –{" "}
+                  {item.isCurrent
+                    ? "Present"
+                    : (item.endDate ?? "End date not supplied")}
+                  {item.location ? ` · ${item.location}` : ""}
+                </Text>
+                {item.description ? (
+                  <Text style={styles.entryBody}>{item.description}</Text>
+                ) : null}
+                {item.achievements.map((achievement, index) => (
+                  <Text
+                    key={`${item.sourceId}-achievement-${index}`}
+                    style={styles.bullet}
+                  >
+                    • {achievement}
+                  </Text>
+                ))}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.body}>
+              No work experience recorded in Profile.
+            </Text>
+          )}
         </Section>
 
         <Section title="Personal projects" accent={accent}>
-          {content.projects.length ? content.projects.map((item) => (
-            <View key={item.sourceId} style={styles.entry}>
-              <Text style={styles.entryTitle}>{item.name}</Text>
-              {item.role ? <Text style={styles.meta}>{item.role}</Text> : null}
-              {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
-              {item.url ? <Text style={styles.meta}>{item.url}</Text> : null}
-            </View>
-          )) : <Text style={styles.body}>No projects recorded in Profile.</Text>}
+          {content.projects.length ? (
+            content.projects.map((item) => (
+              <View key={item.sourceId} style={styles.entry}>
+                <Text style={styles.entryTitle}>{item.name}</Text>
+                {item.role ? (
+                  <Text style={styles.meta}>{item.role}</Text>
+                ) : null}
+                {item.description ? (
+                  <Text style={styles.entryBody}>{item.description}</Text>
+                ) : null}
+                {item.url ? <Text style={styles.meta}>{item.url}</Text> : null}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.body}>No projects recorded in Profile.</Text>
+          )}
         </Section>
 
         <Section title="Technical skills" accent={accent}>
-          <Text style={styles.body}>{content.technicalSkills.join(" · ") || "No skills recorded in Profile."}</Text>
+          <Text style={styles.body}>
+            {content.technicalSkills.join(" · ") ||
+              "No skills recorded in Profile."}
+          </Text>
         </Section>
 
         <Section title="Education" accent={accent}>
-          {content.education.length ? content.education.map((item) => (
-            <View key={item.sourceId} style={styles.entry}>
-              <Text style={styles.entryTitle}>{item.qualification}</Text>
-              <Text style={styles.entryBody}>{item.institution}{item.fieldOfStudy ? ` · ${item.fieldOfStudy}` : ""}</Text>
-              {item.educationLevel || item.startDate || item.endDate ? <Text style={styles.meta}>{[item.educationLevel, item.startDate ? `${item.startDate} – ${item.isCurrent ? "Present" : item.endDate ?? "End date not supplied"}` : null].filter(Boolean).join(" · ")}</Text> : null}
-            </View>
-          )) : <Text style={styles.body}>No education recorded in Profile.</Text>}
+          {content.education.length ? (
+            content.education.map((item) => (
+              <View key={item.sourceId} style={styles.entry}>
+                <Text style={styles.entryTitle}>{item.qualification}</Text>
+                <Text style={styles.entryBody}>
+                  {item.institution}
+                  {item.fieldOfStudy ? ` · ${item.fieldOfStudy}` : ""}
+                </Text>
+                {item.educationLevel || item.startDate || item.endDate ? (
+                  <Text style={styles.meta}>
+                    {[
+                      item.educationLevel,
+                      item.startDate
+                        ? `${item.startDate} – ${item.isCurrent ? "Present" : (item.endDate ?? "End date not supplied")}`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
+                ) : null}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.body}>No education recorded in Profile.</Text>
+          )}
         </Section>
 
         <Section title="Certifications" accent={accent}>
-          {content.certifications.length ? content.certifications.map((item) => (
-            <View key={item.sourceId} style={styles.entry}>
-              <Text style={styles.body}>{item.name}{item.issuer ? ` · ${item.issuer}` : ""}</Text>
-              {(item.issueDate || item.expiryDate || item.issuingCountry || item.type) ? <Text style={styles.meta}>{[item.type?.replaceAll("-", " "), item.issueDate, item.expiryDate ? `Expires ${item.expiryDate}` : null, item.issuingCountry].filter(Boolean).join(" · ")}</Text> : null}
-              {item.licenceCategories?.length ? <Text style={styles.meta}>Categories: {item.licenceCategories.join(", ")}</Text> : null}
-              {item.endorsements ? <Text style={styles.entryBody}>{item.endorsements}</Text> : null}
-            </View>
-          )) : <Text style={styles.body}>No certifications recorded in Profile.</Text>}
+          {content.certifications.length ? (
+            content.certifications.map((item) => (
+              <View key={item.sourceId} style={styles.entry}>
+                <Text style={styles.body}>
+                  {item.name}
+                  {item.issuer ? ` · ${item.issuer}` : ""}
+                </Text>
+                {item.issueDate ||
+                item.expiryDate ||
+                item.issuingCountry ||
+                item.type ? (
+                  <Text style={styles.meta}>
+                    {[
+                      item.type?.replaceAll("-", " "),
+                      item.issueDate,
+                      item.expiryDate ? `Expires ${item.expiryDate}` : null,
+                      item.issuingCountry,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
+                ) : null}
+                {item.licenceCategories?.length ? (
+                  <Text style={styles.meta}>
+                    Categories: {item.licenceCategories.join(", ")}
+                  </Text>
+                ) : null}
+                {item.endorsements ? (
+                  <Text style={styles.entryBody}>{item.endorsements}</Text>
+                ) : null}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.body}>
+              No certifications recorded in Profile.
+            </Text>
+          )}
         </Section>
 
         <Section title="Languages" accent={accent}>
-          <Text style={styles.body}>{content.languages.join(" · ") || "No languages recorded in Profile."}</Text>
+          <Text style={styles.body}>
+            {content.languages.join(" · ") ||
+              "No languages recorded in Profile."}
+          </Text>
         </Section>
 
         <View fixed style={styles.footer}>
           <Text>{content.fullName} · Curriculum Vitae</Text>
-          <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+          <Text
+            render={({ pageNumber, totalPages }) =>
+              `Page ${pageNumber} of ${totalPages}`
+            }
+          />
         </View>
       </Page>
     </Document>
