@@ -1,11 +1,11 @@
 "use client";
 
-import { CheckCircle2, Circle, CircleDashed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   isEducationComplete,
   isPersonalDetailsComplete,
 } from "./profile-completion-status";
+import { ProfileCompletionChecklist } from "./profile-completion-checklist";
 import {
   profileCompletionSchema,
   type UserProfileDto,
@@ -20,43 +20,14 @@ export function ProfileEditorSidebar({
   saving: boolean;
   onSave: () => void;
 }) {
-  const d = profile.personalDetails;
   const complete = profileCompletionSchema.safeParse(profile).success;
-  const detailsDone = isPersonalDetailsComplete(d);
-  const educationDone = isEducationComplete(profile.education);
-  const items = [
-    { label: "Personal details", done: detailsDone, required: true },
-    {
-      label: "Professional summary",
-      done: Boolean(profile.summary?.trim()),
-      required: true,
-    },
-    {
-      label: "Work experience",
-      done: profile.workExperience.length > 0,
-      required: false,
-    },
-    { label: "Education", done: educationDone, required: true },
-    { label: "Skills", done: profile.skills.length > 0, required: false },
-    {
-      label: "Certifications and licences",
-      done: profile.certifications.length > 0,
-      required: false,
-    },
-    { label: "Projects", done: profile.projects.length > 0, required: false },
-    {
-      label: "Preferred next role",
-      done: Boolean(profile.nextRole?.trim()),
-      required: false,
-    },
-    {
-      label: "Interests and hobbies",
-      done: profile.personalAttributes.length > 0,
-      required: false,
-    },
+  const required = [
+    isPersonalDetailsComplete(profile.personalDetails),
+    Boolean(profile.summary?.trim()),
+    isEducationComplete(profile.education),
   ];
-  const required = items.filter((item) => item.required);
-  const completed = required.filter((item) => item.done).length;
+  const completed = required.filter(Boolean).length;
+
   return (
     <section className="sticky top-4 max-h-[calc(100vh-32px)] overflow-y-auto rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
       <div className="flex items-center justify-between gap-2">
@@ -71,36 +42,7 @@ export function ProfileEditorSidebar({
           style={{ width: `${(completed / required.length) * 100}%` }}
         />
       </div>
-      <ul className="mt-4 grid gap-2.5">
-        {items.map(({ label, done, required: isRequired }) => (
-          <li key={label} className="flex items-start gap-2 text-sm">
-            {done ? (
-              <CheckCircle2
-                aria-label="Complete"
-                className="mt-0.5 size-4 shrink-0 text-primary"
-              />
-            ) : isRequired ? (
-              <Circle
-                aria-label="Required and incomplete"
-                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-              />
-            ) : (
-              <CircleDashed
-                aria-label="Optional and not added"
-                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-              />
-            )}
-            <span
-              className={done ? "text-foreground" : "text-muted-foreground"}
-            >
-              {label}
-              <span className="ml-2 inline text-[10px] leading-tight text-muted-foreground max-[1400px]:ml-0 max-[1400px]:mt-px max-[1400px]:block">
-                {done ? "Added" : isRequired ? "Required" : "Optional"}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <ProfileCompletionChecklist profile={profile} />
       <p className="mt-3 border-t border-border pt-2 text-xs leading-4 text-muted-foreground">
         Optional sections do not block completion. Incomplete required sections
         stay unchecked.
