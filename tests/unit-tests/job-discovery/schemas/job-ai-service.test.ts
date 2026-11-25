@@ -68,7 +68,7 @@ describe("job understanding service", () => {
         },
       },
     });
-    expect(responseSchema.properties.responsibilities.items.properties.sourceEvidenceRefs.items).not.toHaveProperty("enum");
+    expect(JSON.stringify(responseSchema)).not.toContain("job:segment:1");
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
