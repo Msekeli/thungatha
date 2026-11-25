@@ -43,10 +43,7 @@ describe("job understanding service", () => {
           items: {
             properties: {
               sourceEvidenceRefs: {
-                items: { enum: [
-                  "job:context:title", "job:context:employer", "job:context:location",
-                  "job:segment:1", "job:segment:2", "job:segment:3", "job:segment:4", "job:segment:5",
-                ] },
+                items: { type: "STRING" },
               },
             },
           },
