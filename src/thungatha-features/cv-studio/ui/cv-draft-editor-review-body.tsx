@@ -1,0 +1,91 @@
+"use client";
+
+import { CvDraftSummarySection } from "./cv-draft-summary-section";
+import { CvDraftExperienceReview } from "./cv-draft-experience-review";
+import { CvDraftSkillsSection } from "./cv-draft-skills-section";
+import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
+import type { CvDraft } from "./cv-draft-types";
+import type { useCvDraftEditorState } from "./cv-draft-editor-state";
+
+type ReviewBodyProps = {
+  state: ReturnType<typeof useCvDraftEditorState> & { draft: CvDraft };
+};
+
+export function CvDraftEditorReviewBody({ state }: ReviewBodyProps) {
+  const { draft, content, busy, error, activeSection } = state;
+
+  if (activeSection === "summary") {
+    return (
+      <CvDraftSummarySection
+        summary={content.professionalSummary}
+        suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+        hasCompletedReview={draft.tailoring_assessment !== null}
+        reviewOpen={state.summaryGeneration.reviewOpen}
+        generating={state.summaryGeneration.busy}
+        generationError={state.summaryGeneration.failed ? error : null}
+        disabled={busy || draft.status !== "draft"}
+        canUndo={state.suggestionDecisions.lastApplied?.targetPath === "professionalSummary"}
+        error={state.summaryGeneration.failed ? null : error}
+        onReviewOpenChange={state.summaryGeneration.setReviewOpen}
+        onDecision={state.suggestionDecisions.decide}
+        onRegenerate={() => void state.summaryGeneration.generate()}
+        onUndo={state.suggestionDecisions.undo}
+        onTailor={() => {
+          const pending = draft.suggestions.some(
+            (item) => item.targetPath === "professionalSummary" && item.decision === "pending",
+          );
+          if (pending) state.summaryGeneration.setReviewOpen(true);
+          else void state.summaryGeneration.generate();
+        }}
+      />
+    );
+  }
+
+  if (activeSection === "experience") {
+    return (
+      <CvDraftExperienceReview
+        experiences={content.workExperience}
+        activeIndex={state.activeExperienceIndex}
+        onIndexChange={state.setActiveExperienceIndex}
+        draft={draft}
+        busy={busy}
+        generation={state.experienceGeneration}
+        decisions={state.suggestionDecisions}
+      />
+    );
+  }
+
+  if (activeSection === "skills") {
+    return (
+      <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
+        <div className="shrink-0">
+          <h3 className="text-lg font-bold">Skills</h3>
+          <p className="text-sm text-fg-muted">
+            Review existing skills or add another skill to this CV.
+          </p>
+        </div>
+        <CvDraftSkillsSection
+          skills={content.technicalSkills}
+          disabled={busy || draft.status !== "draft"}
+          onAddSkill={(skill) => state.setContent((current) => ({
+            ...current,
+            technicalSkills: [...current.technicalSkills, skill],
+          }))}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <div className="shrink-0">
+        <h3 className="text-lg font-bold">Job Requirements</h3>
+        <p className="text-sm text-fg-muted">
+          Requirements from the job that your confirmed Profile does not currently demonstrate.
+          This assessment is informational and does not change your CV.
+        </p>
+      </div>
+      <CvDraftRequirementsSection assessment={draft.tailoring_assessment} />
+    </div>
+  );
+}
