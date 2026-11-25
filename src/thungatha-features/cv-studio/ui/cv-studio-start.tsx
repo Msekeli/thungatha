@@ -506,7 +506,8 @@ export function CvStudioStart() {
                       <p className="text-sm font-medium text-fg">
                         Reusing accepted CV · Version{" "}
                         {reusableCv.version_number}
-                      </p>                      <CvPdfPreview
+                      </p>
+                      <CvPdfPreview
                         content={reusableCv.content}
                         accent={cvAccentHex[reusableCv.accent_colour]}
                       />
