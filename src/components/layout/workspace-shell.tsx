@@ -10,7 +10,7 @@ import "./workspace-responsive.css";
 import "./workspace-mobile-shell.css";
 import "./profile-editor.css";
 import { BrandMark } from "@/components/brand-mark";
-import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-control";
+import { SignOutControl } from "@/thungatha-features/authentication";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
@@ -79,7 +79,9 @@ export function WorkspaceShell({
           </div>
           <ThemeToggle className="th-workspace-theme-toggle shrink-0" />
         </header>
-        <main className="th-workspace-page-content min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5 has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col has-[.th-profile-page]:p-0 has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col has-[.th-jobs-page]:p-0 has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col has-[.th-cv-studio-page]:p-0">
+        <main
+          className="th-workspace-page-content min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5 has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col has-[.th-profile-page]:p-0 has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col has-[.th-jobs-page]:p-0 has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col has-[.th-cv-studio-page]:p-0"
+        >
           {children}
         </main>
       </div>

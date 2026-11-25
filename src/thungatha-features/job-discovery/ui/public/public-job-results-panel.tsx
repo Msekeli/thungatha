@@ -3,7 +3,6 @@
 import { JobResultsState } from "../authenticated/job-results-state";
 import { JobList } from "../shared/job-list";
 import { JobFeedPagination } from "../shared/job-feed-pagination";
-import type { RefObject } from "react";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
 import { PublicJobCardActions } from "./public-job-card-actions";
@@ -24,11 +23,9 @@ function postedAge(data: ResultsData, id: string) {
 
 export function PublicJobResultsPanel({
   data,
-  loadMoreRef,
   onSelect,
 }: {
   data: ResultsData;
-  loadMoreRef: RefObject<HTMLDivElement | null>;
   onSelect: (job: Job) => void;
 }) {
   return (
