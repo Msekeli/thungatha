@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
+import { CvDraftSkillsSection } from "./cv-draft-skills-section";
+import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
 import {
   applyCvSuggestion,
   undoCvSuggestion,
@@ -145,7 +147,6 @@ export function CvDraftEditor({
     "summary" | "experience" | "skills" | "requirements"
   >("summary");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
-  const [newSkill, setNewSkill] = useState("");
   const [experienceDialogOpenFor, setExperienceDialogOpenFor] = useState<
     string | null
   >(null);
@@ -517,8 +518,7 @@ export function CvDraftEditor({
       });
       const body = await response.json();
       if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be saved.");
-      setDraft(body.draft as Draft);
+        throw new Error(body.error ?? "Draft could not be saved.");      setDraft(body.draft as Draft);
       setMessage("Draft saved. Review the preview before accepting it.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Draft could not be saved.");
@@ -905,66 +905,16 @@ export function CvDraftEditor({
                 Review existing skills or add another skill to this CV.
               </p>
             </div>
-            <div className="flex min-h-0 flex-1 flex-col gap-3">
-              <form
-                className="flex max-w-xl shrink-0 gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  const value = newSkill.trim();
-                  if (
-                    !value ||
-                    content.technicalSkills.some(
-                      (skill) => skill.toLowerCase() === value.toLowerCase(),
-                    )
-                  )
-                    return;
-                  setContent((current) => ({
-                    ...current,
-                    technicalSkills: [...current.technicalSkills, value],
-                  }));
-                  setNewSkill("");
-                }}
-              >
-                <input
-                  value={newSkill}
-                  onChange={(event) => setNewSkill(event.target.value)}
-                  maxLength={50}
-                  placeholder="Add a skill"
-                  aria-label="New skill"
-                  className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-panel px-3 text-sm text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                />
-                <Button
-                  type="submit"
-                  variant="outline"
-                  disabled={
-                    !newSkill.trim() || busy || draft.status !== "draft"
-                  }
-                >
-                  <Plus className="mr-1 size-4" /> Add skill
-                </Button>
-              </form>
-              <p className="shrink-0 text-xs text-fg-muted">
-                Only add skills you genuinely have. Added skills update this
-                draft and its PDF preview when saved.
-              </p>
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                <div className="flex flex-wrap content-start gap-2">
-                  {content.technicalSkills.map((skill, index) => (
-                    <span
-                      key={`${skill}-${index}`}
-                      className="rounded-full border border-accent/30 bg-accent-bg px-3 py-1.5 text-sm text-fg"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                  {!content.technicalSkills.length && (
-                    <p className="text-sm text-fg-muted">
-                      No skills are currently listed.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <CvDraftSkillsSection
+              skills={content.technicalSkills}
+              disabled={busy || draft.status !== "draft"}
+              onAddSkill={(skill) =>
+                setContent((current) => ({
+                  ...current,
+                  technicalSkills: [...current.technicalSkills, skill],
+                }))
+              }
+            />
           </div>
         ) : (
           <div className="flex h-full min-h-0 flex-col gap-3">
@@ -976,48 +926,7 @@ export function CvDraftEditor({
                 not change your CV.
               </p>
             </div>
-            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-              {draft.tailoring_assessment?.gaps.length ? (
-                draft.tailoring_assessment.gaps
-                  .slice(0, 3)
-                  .map((gap, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-line bg-panel-2 p-3 text-fg"
-                    >
-                      <div className="flex items-start gap-2">
-                        <span className="mt-0.5 shrink-0 rounded-full border border-warn bg-warn-bg px-2 py-0.5 text-xs font-semibold text-warn">
-                          Not demonstrated
-                        </span>
-                        <h4 className="text-sm font-semibold text-fg">
-                          {gap.requirement}
-                        </h4>
-                      </div>
-                      <p className="mt-1 line-clamp-2 text-xs leading-4 text-fg-muted">
-                        {gap.explanation}
-                      </p>
-                    </div>
-                  ))
-              ) : (
-                <div className="rounded-xl border border-line bg-panel-2 p-4">
-                  <p className="text-sm font-medium">
-                    {draft.tailoring_assessment
-                      ? "No outstanding requirements were identified."
-                      : "The job requirements assessment is not available yet."}
-                  </p>
-                  <p className="mt-1 text-sm text-fg-muted">
-                    {draft.tailoring_assessment
-                      ? "The current assessment did not identify any requirements missing from the confirmed Profile evidence."
-                      : "This section will display requirements that the current CV does not demonstrate once assessment data is available."}
-                  </p>
-                </div>
-              )}
-              <p className="text-xs text-fg-muted">
-                “Not demonstrated” means the information was not found in the
-                confirmed Profile evidence. It does not prove that you do not
-                have the qualification or experience.
-              </p>
-            </div>
+            <CvDraftRequirementsSection assessment={draft.tailoring_assessment} />
           </div>
         )}
       </div>
