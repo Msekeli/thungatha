@@ -2,9 +2,6 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
-import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { cvAccentHex } from "./cv-studio-content-types";
 import { emptyJobForm } from "./cv-studio-types";
@@ -15,6 +12,7 @@ import { CvStudioStatusPanels } from "./cv-studio-status-panels";
 import { CvStudioTailoringWorkspace } from "./cv-studio-tailoring-workspace";
 import { CvStudioJobPreview } from "./cv-studio-job-preview";
 import { CvStudioMasterPreview } from "./cv-studio-master-preview";
+import { CvStudioJobDetailsPanel } from "./cv-studio-job-details-panel";
 
 
 export function CvStudioStart() {
@@ -217,137 +215,17 @@ export function CvStudioStart() {
           ) : jobContext && state.masterCv ? (
             <>
               <div className="grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
-                <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
-                  <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
-                          {jobContext.source === "discovery"
-                            ? "Job from Thungatha Discovery"
-                            : "External job opportunity"}
-                        </p>
-                        <h2 className="mt-2 break-words text-xl font-semibold text-fg">
-                          {jobContext.title}
-                        </h2>
-                        <p className="mt-1 text-sm text-fg-muted">
-                          {[jobContext.company, jobContext.location]
-                            .filter(Boolean)
-                            .join(" · ") || "Company/location not supplied"}
-                        </p>
-                      </div>
-                      <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-                        <Button
-                          className="w-full shrink-0 whitespace-normal sm:w-auto"
-                          variant="outline"
-                          size="sm"
-                          onClick={clearSelectedJob}
-                        >
-                          Close job
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-5 border-t border-line pt-4">
-                      <h3 className="text-sm font-semibold text-fg">
-                        Job description
-                      </h3>
-                      <div className="mt-2 h-[35dvh] min-h-[10rem] max-h-[22rem] overflow-y-auto overscroll-contain whitespace-pre-line rounded-lg border border-line bg-panel-2 p-4 pr-3 text-sm leading-6 text-fg-muted lg:h-[50dvh] lg:min-h-[12rem] lg:max-h-[50dvh]">
-                        {jobDescriptionToText(jobContext.description)}
-                      </div>
-                    </div>
-                    <div
-                      className="mt-4 rounded-xl border border-line bg-panel-2 p-3"
-                      aria-live="polite"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
-                          CV for this job
-                        </p>
-                        {workflowBusy && (
-                          <span className="text-xs text-fg-muted">
-                            Checking saved CVs…
-                          </span>
-                        )}
-                        {suitability?.matchingVersions.length ? (
-                          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600">
-                            Existing CV available
-                          </span>
-                        ) : null}
-                        {suitability && !suitability.matchingVersions.length ? (
-                          <span className="rounded-full border border-line px-2.5 py-1 text-xs font-medium text-fg-muted">
-                            No existing CV for this exact job
-                          </span>
-                        ) : null}
-                      </div>
-                      {suitability?.matchingVersions.map((version) => (
-                        <div
-                          key={version.id}
-                          className="mt-2 flex flex-wrap items-center justify-between gap-2"
-                        >
-                          <div>
-                            <p className="text-sm font-medium text-fg">
-                              Accepted CV · Version {version.versionNumber}
-                            </p>
-                            <p className="text-xs text-fg-muted">
-                              Updated{" "}
-                              {new Date(version.updatedAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={workflowBusy}
-                            onClick={() => void useAcceptedCv(version.id)}
-                          >
-                            Use saved CV for this job
-                          </Button>
-                        </div>
-                      ))}
-                      {workflowError && (
-                        <p className="mt-2 text-sm text-rose-700" role="alert">
-                          {workflowError}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {!reusableCv && !tailoringStarted && (
-                        <Button
-                          size="lg"
-                          className="mx-auto w-[98%] rounded-md"
-                          disabled={workflowBusy}
-                          onClick={() => setTailoringStarted(true)}
-                        >
-                          <span className="font-bold">
-                            Create a new CV tailored to this job
-                          </span>
-                        </Button>
-                      )}
-                      {tailoringStarted && (
-                        <p className="w-full rounded-lg border border-accent/30 bg-accent-bg/40 px-3 py-2 text-center text-sm font-medium text-accent-text">
-                          CV tailoring workspace is open below.
-                        </p>
-                      )}
-                      {reusableCv && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setReusableCv(null)}
-                        >
-                          Return to master CV
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {tailoringStarted && !reusableCv && (
-                    <CvDraftEditor
-                      masterVersionId={state.masterCv.id}
-                      onContentChange={handleTailoredContentChange}
-                      jobContext={jobContext}
-                      initialContent={state.masterCv.content}
-                      startImmediately
-                    />
-                  )}
-                </section>
+                <CvStudioJobDetailsPanel
+                  jobContext={jobContext}
+                  suitability={suitability}
+                  reusableCv={reusableCv}
+                  busy={workflowBusy}
+                  error={workflowError}
+                  onClose={clearSelectedJob}
+                  onUseVersion={(versionId) => void useAcceptedCv(versionId)}
+                  onStartTailoring={() => setTailoringStarted(true)}
+                  onReturnToMaster={() => setReusableCv(null)}
+                />
                 <CvStudioJobPreview
                   masterContent={state.masterCv.content}
                   reusableCv={reusableCv}
