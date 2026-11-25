@@ -478,7 +478,8 @@ export function CvDraftEditor({
         throw new Error(body.error ?? "The CV could not be accepted.");
       setDraft({
         ...draft,
-        ...(body.version as Partial<Draft>),        status: "accepted",
+        ...(body.version as Partial<Draft>),
+        status: "accepted",
       });
       setMessage(
         "Your tailored CV has been accepted and saved as a new CV version. The master CV and Profile remain unchanged.",
@@ -512,13 +513,16 @@ export function CvDraftEditor({
         }),
       });
       const body = await response.json();
-      if (!response.ok)        throw new Error(body.error ?? "Draft could not be saved.");      setDraft(body.draft as Draft);
+      if (!response.ok)
+        throw new Error(body.error ?? "Draft could not be saved.");
+      setDraft(body.draft as Draft);
       setMessage("Draft saved. Review the preview before accepting it.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Draft could not be saved.");
     } finally {
       setBusy(false);
-    }  }
+    }
+  }
 
   if (draft?.status === "accepted") {
     return (
