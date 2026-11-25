@@ -45,7 +45,9 @@ export function ProfileEditorSidebar({
         />
       </div>
       <ProfileCompletionChecklist profile={profile} />
-      <p className="mt-3 border-t border-border pt-2 text-xs leading-4 text-muted-foreground">
+      <p
+        className="mt-3 border-t border-border pt-2 text-xs leading-4 text-muted-foreground"
+      >
         Optional sections do not block completion. Incomplete required sections
         stay unchecked.
       </p>
