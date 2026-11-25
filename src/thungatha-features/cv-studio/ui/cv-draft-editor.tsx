@@ -425,7 +425,7 @@ export function CvDraftEditor({
               ) : (
                 <>
                   <h4 className="shrink-0 text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
-                  <p className="mt-2 line-clamp-[9] whitespace-pre-wrap text-sm leading-5 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
+                  <p className="mt-2 line-clamp-6 whitespace-pre-wrap text-sm leading-5 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
                 </>
               )}
             </section>
