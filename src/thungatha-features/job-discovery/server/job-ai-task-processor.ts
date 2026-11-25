@@ -10,6 +10,7 @@ import {
 import { completeJobAiTask, markJobAiAssessmentUnavailable } from "./job-ai-task-state";
 import { loadCurrentJobAiTaskContext } from "./job-ai-task-context";
 import { getOrCreateJobUnderstanding } from "./job-ai-understanding-cache";
+import { persistJobAiAssessment } from "./job-ai-assessment-persistence";
 
 export type QueueTask = {
   id: string;
@@ -70,25 +71,7 @@ export async function processJobAiTask(
     provider: generated.provider,
     model: generated.model,
   });
-  const { data: persisted, error: persistError } = await db.rpc(
-    "persist_job_match_assessment",
-    {
-      p_task_id: task.id,
-      p_user_id: task.user_id,
-      p_job_id: task.job_id,
-      p_profile_version: task.profile_version,
-      p_profile_confirmed_at: facts.confirmedAt,
-      p_job_description: context.description,
-      p_job_context_hash: task.job_context_hash,
-      p_job_context: context,
-      p_assessment_version: task.assessment_version,
-      p_classification: generated.assessment.classification,
-      p_assessment: generated.assessment,
-      p_provider: generated.provider,
-      p_model: generated.model,
-    },
-  );
-  if (persistError) throw persistError;
+  const persisted = await persistJobAiAssessment(db, task, context, facts, generated);
   if (!persisted) {
     console.info(
       "[AI job matching] Assessment became stale before persistence",
