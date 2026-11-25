@@ -28,26 +28,17 @@ export function JobCardDetails({
         <div className={jobCardMetadataClassName}>
           {job.location_text?.trim() && (
             <span className={jobCardLocationClassName}>
-              <MapPin
-                aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0"
-              />
+              <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <span>{job.location_text}</span>
             </span>
           )}
           {job.matchClassification === "match" && (
-            <span
-              className="th-tag"
-              data-tone="success"
-            >
+            <span className="th-tag" data-tone="success">
               Match
             </span>
           )}
           {job.matchClassification === "relevant" && (
-            <span
-              className="th-tag"
-              data-tone="info"
-            >
+            <span className="th-tag" data-tone="info">
               Relevant
             </span>
           )}
@@ -59,10 +50,7 @@ export function JobCardDetails({
             className={jobCardPostedClassName}
             data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}
           >
-            <Clock3
-              size={14}
-              aria-hidden="true"
-            />
+            <Clock3 size={14} aria-hidden="true" />
             {postedLabel}
           </span>
         ) : (
