@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
@@ -9,6 +8,8 @@ import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
 import { CvDraftExperienceCard } from "./cv-draft-experience-card";
+import { CvDraftEditorHeader } from "./cv-draft-editor-header";
+import { CvDraftEditorFooter } from "./cv-draft-editor-footer";
 import { CvDraftSkillsSection } from "./cv-draft-skills-section";
 import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
 import {
@@ -477,8 +478,7 @@ export function CvDraftEditor({
         throw new Error(body.error ?? "The CV could not be accepted.");
       setDraft({
         ...draft,
-        ...(body.version as Partial<Draft>),
-        status: "accepted",
+        ...(body.version as Partial<Draft>),        status: "accepted",
       });
       setMessage(
         "Your tailored CV has been accepted and saved as a new CV version. The master CV and Profile remain unchanged.",
@@ -549,50 +549,12 @@ export function CvDraftEditor({
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm">
-      <header className="shrink-0 border-b border-line px-3 pb-2 pt-3 sm:px-6 sm:pb-3 sm:pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span
-                className="text-xl font-semibold text-accent-text sm:text-2xl"
-                aria-hidden="true"
-              >
-                ✧
-              </span>
-              <h2 className="text-lg font-bold sm:text-xl">CV Tailoring</h2>
-            </div>
-            <p className="mt-1 text-xs text-fg-muted sm:text-sm">
-              Review each section and apply the changes you agree with.
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full border border-accent/30 bg-accent-bg px-2.5 py-1 text-[10px] font-semibold text-accent-text sm:px-3 sm:text-xs">
-            Step {activeIndex + 1} of 4
-          </span>
-        </div>
-        <nav
-          aria-label="CV tailoring steps"
-          className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2"
-        >
-          {reviewSections.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setActiveSection(item.id)}
-              aria-current={activeSection === item.id ? "step" : undefined}
-              className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-0.5 pb-1.5 pt-1 text-center text-[9px] font-semibold leading-tight sm:min-h-14 sm:flex-row sm:gap-2 sm:px-1 sm:pb-2 sm:pt-2 sm:text-xs ${activeSection === item.id ? "border-accent-text text-accent-text font-bold" : "border-transparent text-fg-muted hover:text-fg"}`}
-            >
-              <span
-                className={`flex size-5 shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold sm:size-6 sm:text-[10px] ${activeSection === item.id ? "border-btn bg-btn text-btn-fg" : "border-line bg-panel text-fg-muted"}`}
-              >
-                {index + 1}
-              </span>
-              <span className="whitespace-normal break-words">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-      </header>
+      <CvDraftEditorHeader
+        activeIndex={activeIndex}
+        activeSection={activeSection}
+        sections={reviewSections}
+        onSectionChange={setActiveSection}
+      />
       <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-4">
         {!draft ? (
           <div
@@ -748,61 +710,15 @@ export function CvDraftEditor({
           )}
         </div>
       )}
-      <footer className="grid shrink-0 grid-cols-3 items-center gap-2 border-t border-line px-3 py-2 sm:flex sm:justify-between sm:gap-3 sm:px-6 sm:py-3">
-        <Button
-          type="button"
-          size="sm"
-          className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm"
-          variant="outline"
-          disabled={activeIndex === 0}
-          onClick={() =>
-            setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)
-          }
-        >
-          <ArrowLeft className="mr-1 size-3.5 sm:size-4" />
-          <span className="sm:hidden">Back</span>
-          <span className="hidden sm:inline">Previous</span>
-        </Button>
-        {draft?.status === "draft" && (
-          <Button
-            type="button"
-            size="sm"
-            className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm"
-            variant="outline"
-            disabled={busy}
-            onClick={() => void saveDraft()}
-          >
-            {busy ? (
-              "Saving…"
-            ) : (
-              <>
-                <span className="sm:hidden">Save</span>
-                <span className="hidden sm:inline">Save draft</span>
-              </>
-            )}
-          </Button>
-        )}
-        {activeIndex === 3 ? (
-          <Button
-            type="button"
-            disabled={busy || draft?.status !== "draft"}
-            onClick={() => void acceptDraft()}
-          >
-            {busy ? "Saving…" : "Accept CV"}
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            size="sm"
-            className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm"
-            onClick={() =>
-              setActiveSection(reviewSections[Math.min(3, activeIndex + 1)].id)
-            }
-          >
-            Next <ArrowRight className="ml-1 size-3.5 sm:size-4" />
-          </Button>
-        )}
-      </footer>
+      <CvDraftEditorFooter
+        activeIndex={activeIndex}
+        busy={busy}
+        draftStatus={draft?.status ?? null}
+        onPrevious={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}
+        onSave={() => void saveDraft()}
+        onAccept={() => void acceptDraft()}
+        onNext={() => setActiveSection(reviewSections[Math.min(3, activeIndex + 1)].id)}
+      />
     </section>
   );
 }
