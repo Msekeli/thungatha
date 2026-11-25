@@ -2,17 +2,19 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { cvAccentHex } from "./cv-studio-content-types";
 import { emptyJobForm } from "./cv-studio-types";
 import type { JobContext, ReusableCv, State, Suitability, JobForm } from "./cv-studio-types";
-import { CvDraftEditor } from "./cv-draft-editor";
-import { CvStudioPreviewPanel } from "./cv-studio-preview-panel";
 import { CvStudioWelcomePanel } from "./cv-studio-welcome-panel";
 import { CvStudioExternalJobForm } from "./cv-studio-external-job-form";
 import { CvStudioStatusPanels } from "./cv-studio-status-panels";
+import { CvStudioTailoringWorkspace } from "./cv-studio-tailoring-workspace";
+import { CvStudioJobPreview } from "./cv-studio-job-preview";
+import { CvStudioMasterPreview } from "./cv-studio-master-preview";
 
 
 export function CvStudioStart() {
@@ -205,23 +207,13 @@ export function CvStudioStart() {
       {state.status === "master_cv_ready" && (
         <div className="flex min-h-0 flex-1 flex-col">
           {tailoringStarted && jobContext && state.masterCv ? (
-            <div className="grid h-full min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-3">
-              <div className="min-h-0 min-w-0">
-                <CvDraftEditor
-                  masterVersionId={state.masterCv.id}
-                  onContentChange={handleTailoredContentChange}
-                  jobContext={jobContext}
-                  initialContent={state.masterCv.content}
-                  startImmediately
-                />
-              </div>
-              <section className="hidden min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm lg:flex">
-                <CvStudioPreviewPanel
-                  masterContent={state.masterCv.content}
-                  tailoredPreview={tailoredPreview}
-                />
-              </section>
-            </div>
+            <CvStudioTailoringWorkspace
+              masterVersionId={state.masterCv.id}
+              masterContent={state.masterCv.content}
+              jobContext={jobContext}
+              tailoredPreview={tailoredPreview}
+              onContentChange={handleTailoredContentChange}
+            />
           ) : jobContext && state.masterCv ? (
             <>
               <div className="grid min-h-0 min-w-0 items-start gap-6 lg:h-full lg:flex-1 lg:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
@@ -356,27 +348,11 @@ export function CvStudioStart() {
                     />
                   )}
                 </section>
-                <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block lg:h-full lg:overflow-y-auto">
-                  {reusableCv ? (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-fg">
-                        Reusing accepted CV · Version{" "}
-                        {reusableCv.version_number}
-                      </p>
-                      <CvPdfPreview
-                        content={reusableCv.content}
-                        accent={cvAccentHex[reusableCv.accent_colour]}
-                      />
-                    </div>
-                  ) : (
-                    <CvPdfPreview
-                      content={
-                        tailoredPreview?.content ?? state.masterCv.content
-                      }
-                      accent={tailoredPreview?.accent}
-                    />
-                  )}
-                </section>
+                <CvStudioJobPreview
+                  masterContent={state.masterCv.content}
+                  reusableCv={reusableCv}
+                  tailoredPreview={tailoredPreview}
+                />
               </div>
             </>
           ) : (
@@ -404,15 +380,7 @@ export function CvStudioStart() {
                   />
                 )}
               </section>
-              <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block">
-                {state.masterCv ? (
-                  <CvPdfPreview content={state.masterCv.content} />
-                ) : (
-                  <p className="text-sm text-fg-muted">
-                    Your master CV is being prepared.
-                  </p>
-                )}
-              </section>
+              <CvStudioMasterPreview content={state.masterCv} />
             </div>
           )}
         </div>
