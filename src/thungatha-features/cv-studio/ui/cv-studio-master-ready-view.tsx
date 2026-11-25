@@ -23,7 +23,7 @@ export function CvStudioMasterReadyView({
   const {
     jobForm, setJobForm, reusableCv, setReusableCv, externalJobOpen,
     setExternalJobOpen, tailoringStarted, setTailoringStarted, tailoredPreview,
-    handleTailoredContentChange, useAcceptedCv, submitPastedJob, clearSelectedJob,
+    handleTailoredContentChange, reuseAcceptedCv, submitPastedJob, clearSelectedJob,
     closeExternalJob, resetExternalJob,
   } = workflow;
 
@@ -46,7 +46,7 @@ export function CvStudioMasterReadyView({
             busy={workflowBusy}
             error={workflowError}
             onClose={clearSelectedJob}
-            onUseVersion={(versionId) => void useAcceptedCv(versionId)}
+            onUseVersion={(versionId) => void reuseAcceptedCv(versionId)}
             onStartTailoring={() => setTailoringStarted(true)}
             onReturnToMaster={() => setReusableCv(null)}
           />
