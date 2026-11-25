@@ -1,7 +1,6 @@
-export const workspacePages: Record<
-  string,
-  { title: string; subtitle: string }
-> = {
+type WorkspacePage = { title: string; subtitle: string };
+
+const workspacePages: Record<string, WorkspacePage> = {
   "/jobs": {
     title: "Job Discovery",
     subtitle: "Explore real opportunities. Choose your next step.",
@@ -23,3 +22,26 @@ export const workspacePages: Record<
     subtitle: "Manage your preferences and account settings.",
   },
 };
+
+export function resolveWorkspacePage(active: string, status: string | null) {
+  const jobsStatus =
+    active === "/jobs" && (status === "saved" || status === "dismissed")
+      ? status
+      : null;
+  const page =
+    jobsStatus === "saved"
+      ? {
+          title: "Saved Jobs",
+          subtitle: "Opportunities you have saved for later.",
+        }
+      : jobsStatus === "dismissed"
+        ? {
+            title: "Dismissed Jobs",
+            subtitle: "Opportunities you have chosen to hide.",
+          }
+        : (workspacePages[active] ?? workspacePages["/jobs"]);
+  return {
+    page,
+    activeDestination: jobsStatus ? `/jobs?status=${jobsStatus}` : active,
+  };
+}

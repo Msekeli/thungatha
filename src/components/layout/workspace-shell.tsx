@@ -14,7 +14,7 @@ import { SignOutControl } from "@/thungatha-features/authentication";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
-import { workspacePages } from "./workspace-page-config";
+import { resolveWorkspacePage } from "./workspace-page-config";
 
 export function WorkspaceShell({
   active,
@@ -26,26 +26,10 @@ export function WorkspaceShell({
   children: ReactNode;
 }) {
   const searchParams = useSearchParams();
-  const status = searchParams.get("status");
-  const jobsStatus =
-    active === "/jobs" && (status === "saved" || status === "dismissed")
-      ? status
-      : null;
-  const page =
-    jobsStatus === "saved"
-      ? {
-          title: "Saved Jobs",
-          subtitle: "Opportunities you have saved for later.",
-        }
-      : jobsStatus === "dismissed"
-        ? {
-            title: "Dismissed Jobs",
-            subtitle: "Opportunities you have chosen to hide.",
-          }
-        : (workspacePages[active] ?? workspacePages["/jobs"]);
-  const activeDestination = jobsStatus
-    ? `/jobs?status=${jobsStatus}`
-    : active;
+  const { page, activeDestination } = resolveWorkspacePage(
+    active,
+    searchParams.get("status"),
+  );
   const contentClassName = [
     "th-workspace-content",
     "flex h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
