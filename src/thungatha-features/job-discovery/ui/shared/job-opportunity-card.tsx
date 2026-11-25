@@ -1,17 +1,15 @@
 "use client";
 
-import { ArrowUpRight, Clock3, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
+import type { JobCardData } from "./job-card-config";
+import {
+  jobCardClassName,
+  jobCardSelectClassName,
+} from "./job-card-config";
+import { JobCardDetails } from "./job-card-details";
+import { JobCardHeader } from "./job-card-header";
 
-export type JobCardData = {
-  id: string;
-  title: string;
-  employer_name: string;
-  company_logo_url: string | null;
-  location_text: string | null;
-  published_at?: string | null;
-  matchClassification?: "match" | "relevant" | "unclassified" | null;
-};
+export type { JobCardData } from "./job-card-config";
 
 function postedAgeDays(value: string | null | undefined) {
   if (!value) return null;
@@ -44,75 +42,23 @@ export function JobOpportunityCard({
     .map((part) => part[0])
     .join("")
     .toUpperCase();
-  const ageDays = postedAgeDays(job.published_at);
 
   return (
-    <article className="th-job-card" data-selected={selected}>
+    <article className={jobCardClassName} data-selected={selected}>
       <button
         type="button"
         onClick={onSelect}
         aria-pressed={selected}
         aria-label={`View ${job.title} at ${employer}`}
-        className="th-job-card__select"
+        className={jobCardSelectClassName}
       />
-      <div className="th-job-card__header">
-        {job.company_logo_url ? (
-          <img
-            src={job.company_logo_url}
-            alt=""
-            className="th-job-card__logo"
-          />
-        ) : (
-          <span className="th-job-card__logo">{initials || "?"}</span>
-        )}
-        <span className="th-job-card__heading">
-          <span className="th-job-card__title">{job.title}</span>
-          <span className="th-job-card__employer">{employer}</span>
-        </span>
-        <ArrowUpRight
-          size={22}
-          aria-hidden="true"
-          className="th-job-card__external"
-        />
-      </div>
-      <div className="th-job-card__body">
-        {(job.location_text?.trim() ||
-          job.matchClassification === "match" ||
-          job.matchClassification === "relevant") && (
-          <div className="th-job-card__metadata">
-            {job.location_text?.trim() && (
-              <span className="th-job-card__location">
-                <MapPin aria-hidden="true" />
-                <span>{job.location_text}</span>
-              </span>
-            )}
-            {job.matchClassification === "match" && (
-              <span className="th-tag" data-tone="success">
-                Match
-              </span>
-            )}
-            {job.matchClassification === "relevant" && (
-              <span className="th-tag" data-tone="info">
-                Relevant
-              </span>
-            )}
-          </div>
-        )}
-        <div className="th-job-card__footer">
-          {postedLabel ? (
-            <span
-              className="th-job-card__posted"
-              data-age={ageDays !== null && ageDays <= 3 ? "new" : "older"}
-            >
-              <Clock3 size={14} aria-hidden="true" />
-              {postedLabel}
-            </span>
-          ) : (
-            <span />
-          )}
-          {saveAction}
-        </div>
-      </div>
+      <JobCardHeader job={job} employer={employer} initials={initials} />
+      <JobCardDetails
+        job={job}
+        ageDays={postedAgeDays(job.published_at)}
+        postedLabel={postedLabel}
+        actions={saveAction}
+      />
     </article>
   );
 }
