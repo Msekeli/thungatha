@@ -2,8 +2,8 @@
 
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceReview } from "./cv-draft-experience-review";
-import { CvDraftSkillsSection } from "./cv-draft-skills-section";
-import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
+import { CvDraftSkillsReview } from "./cv-draft-skills-review";
+import { CvDraftRequirementsReview } from "./cv-draft-requirements-review";
 import type { CvDraft } from "./cv-draft-types";
 import type { useCvDraftEditorState } from "./cv-draft-editor-state";
 
@@ -57,35 +57,17 @@ export function CvDraftEditorReviewBody({ state }: ReviewBodyProps) {
 
   if (activeSection === "skills") {
     return (
-      <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
-        <div className="shrink-0">
-          <h3 className="text-lg font-bold">Skills</h3>
-          <p className="text-sm text-fg-muted">
-            Review existing skills or add another skill to this CV.
-          </p>
-        </div>
-        <CvDraftSkillsSection
-          skills={content.technicalSkills}
-          disabled={busy || draft.status !== "draft"}
-          onAddSkill={(skill) => state.setContent((current) => ({
-            ...current,
-            technicalSkills: [...current.technicalSkills, skill],
-          }))}
-        />
-      </div>
+      <CvDraftSkillsReview
+        skills={content.technicalSkills}
+        disabled={busy || draft.status !== "draft"}
+        onAddSkill={(skill) => state.setContent((current) => ({
+          ...current,
+          technicalSkills: [...current.technicalSkills, skill],
+        }))}
+      />
     );
   }
 
-  return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
-      <div className="shrink-0">
-        <h3 className="text-lg font-bold">Job Requirements</h3>
-        <p className="text-sm text-fg-muted">
-          Requirements from the job that your confirmed Profile does not currently demonstrate.
-          This assessment is informational and does not change your CV.
-        </p>
-      </div>
-      <CvDraftRequirementsSection assessment={draft.tailoring_assessment} />
-    </div>
-  );
+  return <CvDraftRequirementsReview assessment={draft.tailoring_assessment} />;
+
 }
