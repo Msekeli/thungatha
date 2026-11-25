@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
-import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
 import { CvDraftExperienceCard } from "./cv-draft-experience-card";
@@ -12,6 +10,9 @@ import { CvDraftEditorHeader } from "./cv-draft-editor-header";
 import { CvDraftEditorFooter } from "./cv-draft-editor-footer";
 import { CvDraftSkillsSection } from "./cv-draft-skills-section";
 import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
+import { CvDraftAcceptedView } from "./cv-draft-accepted-view";
+import { CvDraftLoadingState } from "./cv-draft-loading-state";
+import { CvDraftFeedback } from "./cv-draft-feedback";
 import {
   applyCvSuggestion,
   undoCvSuggestion,
@@ -526,28 +527,10 @@ export function CvDraftEditor({
 
   if (draft?.status === "accepted") {
     return (
-      <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-6">
-        <header className="shrink-0 border-b border-line pb-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
-            CV Studio
-          </p>
-          <h2 className="mt-1 text-xl font-bold sm:text-2xl">Your CV is ready</h2>
-          <p className="mt-2 text-sm text-fg-muted">
-            Your tailored CV has been accepted and saved. Preview it below or download the PDF.
-          </p>
-          <p className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700">
-            <span aria-hidden="true">✓</span>
-            Accepted and saved
-          </p>
-        </header>
-        <div className="min-h-0 flex-1 pt-4">
-          <CvPdfPreview
-            content={content as unknown as CvPdfContent}
-            accent={accentHex[draft.accent_colour]}
-            allowDownload
-          />
-        </div>
-      </section>
+      <CvDraftAcceptedView
+        content={content as unknown as CvPdfContent}
+        accent={accentHex[draft.accent_colour]}
+      />
     );
   }
 
@@ -561,27 +544,13 @@ export function CvDraftEditor({
       />
       <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-4">
         {!draft ? (
-          <div
-            className="flex h-full flex-col justify-center gap-4"
-            role="status"
-            aria-live="polite"
-          >
-            <p className="text-sm font-medium">Preparing your tailored CV…</p>
-            <Skeleton className="h-5 w-2/5" />
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-16 w-full" />
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            {createFailed && (
-              <Button
-                className="w-fit"
-                size="sm"
-                onClick={() => void createDraft()}
-                disabled={busy}
-              >
-                Retry
-              </Button>
-            )}
-          </div>
+          <CvDraftLoadingState
+            error={error}
+            createFailed={createFailed}
+            busy={busy}
+            onRetry={() => void createDraft()}
+          />
+
         ) : activeSection === "summary" ? (
           <CvDraftSummarySection
             summary={content.professionalSummary}
@@ -694,26 +663,7 @@ export function CvDraftEditor({
           </div>
         )}
       </div>
-      {(message || error || draft?.status === "accepted") && (
-        <div
-          className="shrink-0 border-t border-line px-3 py-2 sm:px-6"
-          aria-live="polite"
-        >
-          {draft?.status === "accepted" ? (
-            <p className="text-xs font-medium text-accent-text">
-              CV accepted and saved. This version is now available in your saved
-              CVs.
-            </p>
-          ) : message ? (
-            <p className="text-xs text-fg-muted">{message}</p>
-          ) : null}
-          {error && (
-            <p className="mt-1 text-xs text-destructive" role="alert">
-              {error}
-            </p>
-          )}
-        </div>
-      )}
+      <CvDraftFeedback message={message} error={error} />
       <CvDraftEditorFooter
         activeIndex={activeIndex}
         busy={busy}
