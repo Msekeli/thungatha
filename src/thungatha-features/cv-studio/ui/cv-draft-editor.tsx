@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { CvPdfContent } from "./cv-pdf-document";
+import type { CvDraftContent, CvDraftJobContext } from "./cv-draft-content";
+import { CV_DRAFT_ACCENT_HEX } from "./cv-draft-types";
+import type { CvDraft } from "./cv-draft-types";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
 import { CvDraftExperienceCard } from "./cv-draft-experience-card";
@@ -19,98 +22,6 @@ import {
 } from "../server/apply-cv-suggestion";
 import type { CvSuggestion } from "../server/cv-studio-schema";
 
-type CvContent = {
-  fullName: string;
-  headline: string | null;
-  email: string;
-  phone: string | null;
-  location: string | null;
-  linkedinUrl: string | null;
-  portfolioUrl: string | null;
-  professionalSummary: string;
-  workExperience: Array<{
-    sourceId: string;
-    jobTitle: string;
-    employer: string;
-    location: string | null;
-    startDate: string;
-    endDate: string | null;
-    isCurrent: boolean;
-    description: string | null;
-    achievements: string[];
-  }>;
-  projects: Array<{
-    sourceId: string;
-    name: string;
-    role: string | null;
-    description: string | null;
-    url: string | null;
-  }>;
-  technicalSkills: string[];
-  education: Array<{
-    sourceId: string;
-    educationLevel: string | null;
-    qualification: string;
-    institution: string;
-    fieldOfStudy: string | null;
-    startDate: string | null;
-    endDate: string | null;
-    isCurrent: boolean;
-  }>;
-  certifications: Array<{
-    sourceId: string;
-    type:
-      | "professional-certification"
-      | "occupational-certificate"
-      | "professional-licence"
-      | "drivers-licence"
-      | "other"
-      | null;
-    name: string;
-    issuer: string | null;
-    issueDate: string | null;
-    expiryDate: string | null;
-    issuingCountry: string | null;
-    licenceCategories: string[];
-    endorsements: string | null;
-  }>;
-  languages: string[];
-};
-type JobContext = {
-  source: "discovery" | "pasted";
-  jobId: string | null;
-  title: string;
-  company: string | null;
-  location: string | null;
-  sourceUrl: string | null;
-  description: string;
-  descriptionFingerprint: string;
-  retrievedAt: string;
-};
-type Accent = "teal" | "navy" | "burgundy" | "forest";
-type Draft = {
-  id: string;
-  content: CvContent;
-  suggestions: CvSuggestion[];
-  tailoring_assessment: {
-    gaps: Array<{
-      requirement: string;
-      explanation: string;
-      jobEvidenceRefs: string[];
-    }>;
-    coveredRequirementIds?: string[];
-  } | null;
-  accent_colour: Accent;
-  version_number: number;
-  status: "draft" | "accepted";
-};
-
-const accentHex: Record<Accent, string> = {
-  teal: "#0F766E",
-  navy: "#1D4ED8",
-  burgundy: "#9F1239",
-  forest: "#166534",
-};
 
 export function CvDraftEditor({
   masterVersionId,
@@ -120,24 +31,24 @@ export function CvDraftEditor({
   onContentChange,
 }: {
   masterVersionId: string;
-  jobContext: JobContext;
+  jobContext: CvDraftJobContext;
   initialContent: unknown;
   startImmediately?: boolean;
   onContentChange?: (content: CvPdfContent, accent: string) => void;
 }) {
   const createStarted = useRef(false);
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<CvDraft | null>(null);
   const [createFailed, setCreateFailed] = useState(false);
   const [tailoringFailed, setTailoringFailed] = useState(false);
-  const [content, setContent] = useState<CvContent>(
-    initialContent as CvContent,
+  const [content, setContent] = useState<CvDraftContent>(
+    initialContent as CvDraftContent,
   );
 
   useEffect(() => {
     if (draft?.id)
       onContentChange?.(
         content as unknown as CvPdfContent,
-        accentHex[draft.accent_colour],
+        CV_DRAFT_ACCENT_HEX[draft.accent_colour],
       );
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
   const [busy, setBusy] = useState(false);
@@ -194,11 +105,11 @@ export function CvDraftEditor({
       });
       const body = await response.json();
       if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be created.");
-      const createdDraft = body.draft as Draft;
+        throw new Error(body.error ?? "CvDraft could not be created.");
+      const createdDraft = body.draft as CvDraft;
       setDraft(createdDraft);
       setSummaryDialogOpen(false);
-      setContent(createdDraft.content as CvContent);
+      setContent(createdDraft.content as CvDraftContent);
       setMessage(
         body.reusedDraft
           ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
@@ -208,10 +119,10 @@ export function CvDraftEditor({
       setCreateFailed(true);
       setError(
         e instanceof DOMException && e.name === "TimeoutError"
-          ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
+          ? "CvDraft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
           : e instanceof Error
             ? e.message
-            : "Draft could not be created.",
+            : "CvDraft could not be created.",
       );
     } finally {
       setBusy(false);
@@ -479,7 +390,7 @@ export function CvDraftEditor({
         throw new Error(body.error ?? "The CV could not be accepted.");
       setDraft({
         ...draft,
-        ...(body.version as Partial<Draft>),
+        ...(body.version as Partial<CvDraft>),
         status: "accepted",
       });
       setMessage(
@@ -515,11 +426,11 @@ export function CvDraftEditor({
       });
       const body = await response.json();
       if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be saved.");
-      setDraft(body.draft as Draft);
-      setMessage("Draft saved. Review the preview before accepting it.");
+        throw new Error(body.error ?? "CvDraft could not be saved.");
+      setDraft(body.draft as CvDraft);
+      setMessage("CvDraft saved. Review the preview before accepting it.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Draft could not be saved.");
+      setError(e instanceof Error ? e.message : "CvDraft could not be saved.");
     } finally {
       setBusy(false);
     }
@@ -529,7 +440,7 @@ export function CvDraftEditor({
     return (
       <CvDraftAcceptedView
         content={content as unknown as CvPdfContent}
-        accent={accentHex[draft.accent_colour]}
+        accent={CV_DRAFT_ACCENT_HEX[draft.accent_colour]}
       />
     );
   }
