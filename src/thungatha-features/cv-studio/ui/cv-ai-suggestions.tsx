@@ -21,75 +21,59 @@ export function CvAiSuggestions({
   if (!open && !generating) return null;
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col gap-4" aria-live="polite">
-      <div className="flex items-center gap-2 rounded-xl border border-accent/30 bg-accent-bg px-4 py-3 text-sm font-semibold text-accent-text">
-        <span aria-hidden="true" className="text-lg">✓</span>
-        {generating ? "Preparing your suggested update" : proposal ? "1 change suggested" : "No change suggested"}
+    <section className="flex min-h-0 flex-col gap-2" aria-live="polite">
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <h4 className="text-sm font-semibold text-fg">AI suggested update</h4>
+        <span className="text-xs font-medium text-fg-muted">
+          {generating ? "Updating…" : proposal ? "Ready to review" : "No change suggested"}
+        </span>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-3">
-        <h4 className="text-base font-semibold text-fg">Suggested update</h4>
+      <div className="min-h-0 rounded-xl border border-line bg-panel-2 p-3">
         {generating ? (
-          <div className="space-y-2 rounded-xl border border-line bg-panel-2 p-4" role="status" aria-label="Generating suggested CV update">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-11/12" />
-            <Skeleton className="h-4 w-4/5" />
-            <Skeleton className="h-4 w-2/3" />
+          <div className="space-y-2" role="status" aria-label="Updating this CV section">
+            <Skeleton className="h-3.5 w-full" />
+            <Skeleton className="h-3.5 w-full" />
+            <Skeleton className="h-3.5 w-11/12" />
+            <Skeleton className="h-3.5 w-4/5" />
           </div>
         ) : proposal ? (
-          <p className="rounded-xl border border-accent/30 bg-panel-2 p-4 text-sm leading-6 text-fg">
-            {proposal.proposedText}
-          </p>
+          <>
+            <p className="line-clamp-6 whitespace-pre-wrap text-sm leading-5 text-fg">{proposal.proposedText}</p>
+            {proposal.reason && <p className="mt-2 line-clamp-2 border-t border-line pt-2 text-xs leading-4 text-fg-muted">{proposal.reason}</p>}
+          </>
         ) : (
-          <p className="rounded-xl border border-line bg-panel-2 p-4 text-sm text-fg-muted">
-            {hasCompletedReview ? "No change was recommended for this section. Your original content remains unchanged." : "Your suggested update will appear here."}
+          <p className="text-sm text-fg-muted">
+            {hasCompletedReview ? "No change was recommended. The original CV content is unchanged." : "Your proposed update will appear here."}
           </p>
         )}
-
-        <div className="rounded-xl border border-line bg-panel-2 p-4">
-          <h5 className="text-sm font-semibold text-fg">ⓘ Why this is recommended</h5>
-          {generating ? (
-            <div className="mt-2 space-y-2">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-4/5" />
-            </div>
-          ) : (
-            <p className="mt-1 text-sm leading-6 text-fg-muted">
-              {proposal?.reason ?? (generationError ? "The suggestion could not be generated." : "The AI explanation will appear here with the suggested update.")}
-            </p>
-          )}
-        </div>
       </div>
 
       {generationError && (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive" role="alert">
-          {generationError}
-        </p>
+        <p className="text-xs text-destructive" role="alert">{generationError}</p>
       )}
 
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
-        <Button type="button" variant="outline" disabled={disabled || generating} onClick={() => { onDiscard(); onOpenChange(false); }}>
-          Skip (No change)
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+        <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={() => { onDiscard(); onOpenChange(false); }}>
+          Close
         </Button>
         <div className="flex flex-wrap justify-end gap-2">
           {pending && (
             <>
-              <Button type="button" variant="outline" disabled={disabled} onClick={() => { onReject(pending.id); onOpenChange(false); }}>Reject</Button>
-              <Button type="button" disabled={disabled} onClick={() => { onAccept(pending.id); onOpenChange(false); }}>✓ Accept and apply</Button>
+              <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={() => { onReject(pending.id); onOpenChange(false); }}>Reject</Button>
+              <Button type="button" size="sm" disabled={disabled || generating} onClick={() => { onAccept(pending.id); onOpenChange(false); }}>Accept and apply</Button>
             </>
           )}
           {rejected && !pending && (
-            <Button type="button" variant="outline" disabled={disabled} onClick={onRegenerate}>Generate again</Button>
+            <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={onRegenerate}>Generate again</Button>
           )}
           {!pending && !rejected && generationError && (
-            <Button type="button" disabled={disabled || generating} onClick={onRegenerate}>Try again</Button>
+            <Button type="button" size="sm" disabled={disabled || generating} onClick={onRegenerate}>Try again</Button>
           )}
           {!pending && !rejected && hasCompletedReview && !generationError && (
-            <Button type="button" variant="outline" disabled={disabled || generating} onClick={onRegenerate}>Generate another proposal</Button>
+            <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={onRegenerate}>Generate another</Button>
           )}
         </div>
-      </footer>
+      </div>
     </section>
-  );
-}
+  );}
