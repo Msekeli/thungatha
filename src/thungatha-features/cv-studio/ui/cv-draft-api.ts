@@ -1,3 +1,4 @@
+import type { CvSuggestion } from "../server/cv-studio-schema";
 import type { CvDraftJobContext } from "./cv-draft-content";
 import type { CvDraft } from "./cv-draft-types";
 import { requestCvDraftJson } from "./cv-draft-request";
