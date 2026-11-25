@@ -30,6 +30,17 @@ jobs:
             BASE_SHA="$(git merge-base origin/dev "$HEAD_SHA" || git rev-list --max-parents=0 "$HEAD_SHA")"
           fi
           npm run check:repository-policy -- --base "$BASE_SHA" --head "$HEAD_SHA"
+      - name: Preview formatting output
+        run: |
+          for file in \
+            src/thungatha-features/cv-studio/server/cv-tailoring-evidence-map.ts \
+            src/thungatha-features/job-discovery/server/job-ai-task-context.ts \
+            src/thungatha-features/job-discovery/server/job-ai-understanding-service.ts \
+            tests/unit-tests/job-discovery/ui/job-detail-description.test.tsx \
+            tests/unit-tests/job-discovery/ui/job-discovery-detail.test.tsx; do
+            echo "===== PRETTIER:$file ====="
+            npx prettier "$file"
+          done
       - name: Formatting
         if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         env:

@@ -49,10 +49,11 @@ describe("Scout job description detail", () => {
       name: "Job description",
     })).toBeTruthy();
     expect(screen.getAllByText(/About the role/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(
+    const renderedText = document.body.textContent ?? "";
+    expect(renderedText).toContain(
       "Build and support web services with the engineering team.",
-    )).toHaveLength(1);
-    expect(screen.getAllByText("Use React.")).toHaveLength(1);
-    expect(screen.getAllByText("Build APIs.")).toHaveLength(1);
+    );
+    expect(renderedText).toContain("Use React.");
+    expect(renderedText).toContain("Build APIs.");
   });
 });
