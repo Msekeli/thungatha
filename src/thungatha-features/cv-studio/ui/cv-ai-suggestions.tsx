@@ -21,7 +21,7 @@ export function CvAiSuggestions({
   if (!open && !generating) return null;
 
   return (
-    <section className="flex min-h-0 flex-col gap-2" aria-live="polite">
+    <section className="flex min-h-0 flex-1 flex-col gap-2" aria-live="polite">
       <div className="flex shrink-0 items-center justify-between gap-2">
         <h4 className="text-sm font-semibold text-fg">AI suggested update</h4>
         <span className="text-xs font-medium text-fg-muted">
@@ -29,7 +29,7 @@ export function CvAiSuggestions({
         </span>
       </div>
 
-      <div className="min-h-0 rounded-xl border border-line bg-panel-2 p-3">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-line bg-panel-2 p-3">
         {generating ? (
           <div className="space-y-2" role="status" aria-label="Updating this CV section">
             <Skeleton className="h-3.5 w-full" />
@@ -76,4 +76,5 @@ export function CvAiSuggestions({
         </div>
       </div>
     </section>
-  );}
+  );
+}
