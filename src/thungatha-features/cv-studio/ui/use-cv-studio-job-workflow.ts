@@ -66,6 +66,17 @@ export function useCvStudioJobWorkflow({
     }
   }
 
+  function closeExternalJob() {
+    setExternalJobOpen(false);
+    data.setWorkflowError(null);
+  }
+
+  function resetExternalJob() {
+    setExternalJobOpen(false);
+    setJobForm(emptyJobForm);
+    data.setWorkflowError(null);
+  }
+
   function clearSelectedJob() {
     data.setJobId(null);
     data.setJobContext(null);
@@ -83,6 +94,6 @@ export function useCvStudioJobWorkflow({
     jobForm, setJobForm, reusableCv, setReusableCv,
     externalJobOpen, setExternalJobOpen, tailoringStarted, setTailoringStarted,
     tailoredPreview, handleTailoredContentChange, useAcceptedCv,
-    submitPastedJob, clearSelectedJob,
+    submitPastedJob, clearSelectedJob, closeExternalJob, resetExternalJob,
   };
 }
