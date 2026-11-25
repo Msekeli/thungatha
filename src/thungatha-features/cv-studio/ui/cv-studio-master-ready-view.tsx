@@ -58,7 +58,7 @@ export function CvStudioMasterReadyView({
         </div>
       ) : (
         <CvStudioJobEntryView
-          masterContent={state.masterCv}
+          masterContent={state.masterCv?.content ?? null}
           jobForm={jobForm}
           busy={workflowBusy}
           error={workflowError}
