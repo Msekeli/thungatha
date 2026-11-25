@@ -8,105 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/job-requirement-text";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
+import { cvAccentHex } from "./cv-studio-content-types";
+import { emptyJobForm } from "./cv-studio-types";
+import type { JobContext, ReusableCv, State, Suitability, JobForm } from "./cv-studio-types";
 import { CvDraftEditor } from "./cv-draft-editor";
 import { CvStudioPreviewPanel } from "./cv-studio-preview-panel";
 
-type CvContent = {
-  fullName: string;
-  headline: string | null;
-  email: string;
-  phone: string | null;
-  location: string | null;
-  professionalSummary: string;
-  workExperience: Array<{
-    sourceId: string;
-    jobTitle: string;
-    employer: string;
-    startDate: string;
-    endDate: string | null;
-    isCurrent: boolean;
-    description: string | null;
-    achievements: string[];
-  }>;
-  projects: Array<{
-    sourceId: string;
-    name: string;
-    role: string | null;
-    description: string | null;
-  }>;
-  technicalSkills: string[];
-  education: Array<{
-    sourceId: string;
-    qualification: string;
-    institution: string;
-    fieldOfStudy: string | null;
-  }>;
-  certifications: Array<{
-    sourceId: string;
-    name: string;
-    issuer: string | null;
-  }>;
-  languages: string[];
-};
-
-type MasterCv = {
-  id: string;
-  content: CvContent;
-  source_profile_version?: number;
-  version_number?: number;
-};
-type JobContext = {
-  source: "discovery" | "pasted";
-  jobId: string | null;
-  title: string;
-  company: string | null;
-  location: string | null;
-  sourceUrl: string | null;
-  description: string;
-  descriptionFingerprint: string;
-  retrievedAt: string;
-};
-type MatchingVersion = {
-  id: string;
-  versionNumber: number;
-  updatedAt: string;
-  accentColour: string;
-};
-type ReusableCv = {
-  id: string;
-  version_number: number;
-  content: CvContent;
-  accent_colour: "teal" | "navy" | "burgundy" | "forest";
-};
-const cvAccentHex = {
-  teal: "#0F766E",
-  navy: "#1D4ED8",
-  burgundy: "#9F1239",
-  forest: "#166534",
-} as const;
-type Suitability = {
-  status:
-    | "existing_version_found"
-    | "new_version_recommended"
-    | "assessment_unavailable";
-  matchingVersions: MatchingVersion[];
-  recommendation: "reuse_existing" | "prepare_new_draft" | "review_manually";
-  explanation: string;
-  semanticAssessment: "unavailable";
-};
-type State =
-  | { status: "loading" }
-  | { status: "error"; message: string }
-  | { status: "profile_required"; confirmed: boolean; missing: string[] }
-  | {
-      status: "master_cv_ready";
-      profileVersion: number;
-      masterCv: MasterCv | null;
-      isStale?: boolean;
-    };
-
-type JobForm = { title: string; company: string; description: string };
-const emptyJobForm: JobForm = { title: "", company: "", description: "" };
 
 export function CvStudioStart() {
   const router = useRouter();
