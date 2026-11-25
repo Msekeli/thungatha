@@ -17,7 +17,8 @@ export function useCvStudioJobWorkflow({
 }: CvStudioJobWorkflowProps) {
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
   const [tailoringStarted, setTailoringStarted] = useState(false);
-  const { jobForm, setJobForm, externalJobOpen, setExternalJobOpen, closeExternalJob, resetExternalJob } = useCvStudioJobForm(data.setWorkflowError);
+  const jobFormState = useCvStudioJobForm(data.setWorkflowError);
+  const { jobForm, setExternalJobOpen, resetExternalJob } = jobFormState;
   const [tailoredPreview, setTailoredPreview] = useState<{
     content: CvPdfContent;
     accent: string;
@@ -70,15 +71,14 @@ export function useCvStudioJobWorkflow({
     data.setSuitability(null);
     setReusableCv(null);
     data.setWorkflowError(null);
-    setJobForm(emptyJobForm);
-    setExternalJobOpen(false);
+    resetExternalJob();
     setTailoringStarted(false);
     setTailoredPreview(null);
     onNavigateToStudio();
   }
 
   return {
-    ...useCvStudioJobForm(data.setWorkflowError),
+    ...jobFormState,
     reusableCv, setReusableCv, tailoringStarted, setTailoringStarted,
     tailoredPreview, handleTailoredContentChange, useAcceptedCv,
     submitPastedJob, clearSelectedJob,
