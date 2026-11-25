@@ -1,6 +1,6 @@
-import type { CvSuggestion } from "../server/cv-studio-schema";
 import type { CvDraftJobContext } from "./cv-draft-content";
 import type { CvDraft } from "./cv-draft-types";
+import { requestCvDraftJson } from "./cv-draft-request";
 
 type TailorSection = "professionalSummary" | "workExperience";
 type JobPayload =
@@ -19,23 +19,6 @@ function toJobPayload(context: CvDraftJobContext): JobPayload {
   };
 }
 
-export async function requestCvDraftJson<T>(
-  url: string,
-  options: RequestInit,
-  fallback: string,
-  includeRequestId = false,
-): Promise<T> {
-  const response = await fetch(url, options);
-  const body = await response.json();
-  if (!response.ok) {
-    const requestId =
-      includeRequestId && typeof body.requestId === "string"
-        ? ` (Request ID: ${body.requestId})`
-        : "";
-    throw new Error(`${body.error ?? fallback}${requestId}`);
-  }
-  return body as T;
-}
 
 export function createCvDraft(
   masterVersionId: string,
