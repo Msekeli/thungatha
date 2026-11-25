@@ -1,4 +1,4 @@
-import type { MasterCv, ReusableCv } from "./cv-studio-content-types";
+import type { MasterCv } from "./cv-studio-content-types";
 
 export type JobContext = {
   source: "discovery" | "pasted";
