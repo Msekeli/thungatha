@@ -28,9 +28,10 @@ export function ProfileEditorView({
     : complete
       ? "Review profile"
       : "Review draft";
+
   return (
-    <div className="th-profile-editor-layout ml-0 mr-auto w-full max-w-none">
-      <header className="th-profile-editor-heading border-b border-border pb-3">
+    <div className="th-profile-editor-layout ml-0 mr-auto flex min-h-0 min-w-0 w-full max-w-none flex-1 flex-col gap-[18px] max-[700px]:gap-3">
+      <header className="th-profile-editor-heading flex-none border-b border-border pb-3">
         <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Build your professional profile
         </h1>
@@ -38,7 +39,7 @@ export function ProfileEditorView({
           Your profile
         </p>
       </header>
-      <div className="th-profile-editor-grid">
+      <div className="th-profile-editor-grid min-h-0 min-w-0 flex-1 max-[700px]:grid-rows-[minmax(0,1fr)_auto] max-[700px]:gap-2">
         <div className="th-profile-editor-main">
           <ProfileEditorFields
             profile={profile}

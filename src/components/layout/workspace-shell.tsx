@@ -14,29 +14,7 @@ import { SignOutControl } from "@/thungatha-features/authentication/ui/sign-out-
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { MobileWorkspaceNav } from "@/components/layout/mobile-workspace-nav";
 import { WorkspaceSidebarNav } from "@/components/layout/workspace-sidebar-nav";
-
-const pages: Record<string, { title: string; subtitle: string }> = {
-  "/jobs": {
-    title: "Job Discovery",
-    subtitle: "Explore real opportunities. Choose your next step.",
-  },
-  "/cv-studio": {
-    title: "CV Studio",
-    subtitle: "Build and tailor your CV with confidence.",
-  },
-  "/applications": {
-    title: "Job Tracking",
-    subtitle: "Keep your applications organised and moving forward.",
-  },
-  "/profile": {
-    title: "Profile",
-    subtitle: "Manage the professional information used across Thungatha.",
-  },
-  "/account": {
-    title: "Account settings",
-    subtitle: "Manage your preferences and account settings.",
-  },
-};
+import { workspacePages } from "./workspace-page-config";
 
 export function WorkspaceShell({
   active,
@@ -48,11 +26,10 @@ export function WorkspaceShell({
   children: ReactNode;
 }) {
   const searchParams = useSearchParams();
+  const status = searchParams.get("status");
   const jobsStatus =
-    active === "/jobs" &&
-    (searchParams.get("status") === "saved" ||
-      searchParams.get("status") === "dismissed")
-      ? searchParams.get("status")
+    active === "/jobs" && (status === "saved" || status === "dismissed")
+      ? status
       : null;
   const page =
     jobsStatus === "saved"
@@ -65,8 +42,11 @@ export function WorkspaceShell({
             title: "Dismissed Jobs",
             subtitle: "Opportunities you have chosen to hide.",
           }
-        : (pages[active] ?? pages["/jobs"]);
-  const activeDestination = jobsStatus ? `/jobs?status=${jobsStatus}` : active;
+        : (workspacePages[active] ?? workspacePages["/jobs"]);
+  const activeDestination = jobsStatus
+    ? `/jobs?status=${jobsStatus}`
+    : active;
+
   return (
     <div className="th-workspace-shell">
       <MobileWorkspaceNav configured={configured} />
@@ -85,17 +65,23 @@ export function WorkspaceShell({
           )}
         </div>
       </aside>
-      <div className="th-workspace-content">
+      <div className="th-workspace-content flex h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <header
-          className={`th-workspace-header ${active === "/jobs" ? "th-workspace-header--jobs" : ""}`}
+          className={`th-workspace-header flex min-h-[92px] items-center justify-between gap-5 border-b border-[var(--th-workspace-header-border)] bg-[var(--th-workspace-header)] px-6 py-3.5 ${active === "/jobs" ? "th-workspace-header--jobs" : ""}`}
         >
-          <div className="th-workspace-heading">
-            <h1>{page.title}</h1>
-            <p>{page.subtitle}</p>
+          <div className="th-workspace-heading min-w-0">
+            <h1 className="m-0 text-[22px] font-semibold leading-[1.3] text-[var(--th-workspace-header-text)]">
+              {page.title}
+            </h1>
+            <p className="mb-0 mt-[3px] text-[13px] leading-[1.5] text-[var(--th-workspace-header-muted)]">
+              {page.subtitle}
+            </p>
           </div>
-          <ThemeToggle className="th-workspace-theme-toggle" />
+          <ThemeToggle className="th-workspace-theme-toggle shrink-0" />
         </header>
-        <main className="th-workspace-page-content">{children}</main>
+        <main className="th-workspace-page-content min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5 has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col has-[.th-profile-page]:p-0 has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col has-[.th-jobs-page]:p-0 has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col has-[.th-cv-studio-page]:p-0">
+          {children}
+        </main>
       </div>
     </div>
   );

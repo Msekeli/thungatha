@@ -33,7 +33,7 @@ export function PublicJobResultsPanel({
 }) {
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
-      <div className="th-job-results-scroll min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
+      <div className="th-job-results-scroll min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 pb-4 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch] max-[700px]:pb-[calc(76px+env(safe-area-inset-bottom))]">
         <header className="flex min-h-10 items-center justify-between gap-2 pb-2 text-detail text-public-muted">
           <span
             aria-live="polite"
