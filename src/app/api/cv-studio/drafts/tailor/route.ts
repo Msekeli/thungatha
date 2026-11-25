@@ -165,7 +165,6 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ...generationMetadata,
       generatedSuggestions,
-      suggestions: saved.suggestions,
       assessment: saved.tailoring_assessment,
     });
   } catch (error) {
