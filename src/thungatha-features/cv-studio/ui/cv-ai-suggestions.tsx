@@ -22,11 +22,19 @@ export function CvAiSuggestions({
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2" aria-live="polite">
-      <div className="flex shrink-0 items-center justify-between gap-2">
-        <h4 className="text-sm font-semibold text-fg">AI suggested update</h4>
-        <span className="text-xs font-medium text-fg-muted">
-          {generating ? "Updating…" : proposal ? "Ready to review" : "No change suggested"}
-        </span>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h4 className="text-sm font-semibold text-fg">AI suggested update</h4>
+          <span className="text-xs font-medium text-fg-muted">
+            {generating ? "Updating…" : proposal ? "Ready to review" : "No change suggested"}
+          </span>
+        </div>
+        {pending && (
+          <div className="flex shrink-0 gap-2">
+            <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={() => { onReject(pending.id); onOpenChange(false); }}>Reject</Button>
+            <Button type="button" size="sm" disabled={disabled || generating} onClick={() => { onAccept(pending.id); onOpenChange(false); }}>Accept and apply</Button>
+          </div>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-3">
@@ -58,12 +66,6 @@ export function CvAiSuggestions({
           Close
         </Button>
         <div className="flex flex-wrap justify-end gap-2">
-          {pending && (
-            <>
-              <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={() => { onReject(pending.id); onOpenChange(false); }}>Reject</Button>
-              <Button type="button" size="sm" disabled={disabled || generating} onClick={() => { onAccept(pending.id); onOpenChange(false); }}>Accept and apply</Button>
-            </>
-          )}
           {rejected && !pending && (
             <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={onRegenerate}>Generate again</Button>
           )}
