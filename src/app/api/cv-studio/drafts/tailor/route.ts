@@ -129,10 +129,13 @@ export async function POST(request: Request) {
     }
 
     const existingSuggestions = z.array(cvSuggestionSchema).max(200).parse(draft.suggestions ?? []);
+    const experienceTargetPrefix = parsed.data.section === "workExperience"
+      ? "workExperience[" + parsed.data.experienceSourceId + "]."
+      : null;
     const isTargetedSuggestion = (targetPath: string) =>
       section === "professionalSummary"
         ? targetPath === "professionalSummary"
-        : targetPath.startsWith("workExperience[" + parsed.data.experienceSourceId + "].");
+        : Boolean(experienceTargetPrefix && targetPath.startsWith(experienceTargetPrefix));
     // Replace only pending proposals for the requested section. Preserve decisions in other sections.
     const mergedSuggestions = [
       ...existingSuggestions.filter(
