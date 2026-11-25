@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
-import { applyCvSuggestion } from "../server/apply-cv-suggestion";
+import { applyCvSuggestion, undoCvSuggestion } from "../server/apply-cv-suggestion";
 import type { CvSuggestion } from "../server/cv-studio-schema";
 
 type CvContent = {
@@ -123,7 +123,8 @@ export function CvDraftEditor({
     if (draft?.id) onContentChange?.(content as unknown as CvPdfContent, accentHex[draft.accent_colour]);
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
   const [busy, setBusy] = useState(false);
-  const [, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [lastAppliedSuggestion, setLastAppliedSuggestion] = useState<CvSuggestion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tailoringBusy, setTailoringBusy] = useState(false);
   const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
@@ -287,6 +288,7 @@ export function CvDraftEditor({
       try {
         const updatedContent = applyCvSuggestion(content, suggestion);
         setContent(updatedContent);
+        setLastAppliedSuggestion(suggestion);
       } catch (e) {
         setError(e instanceof Error ? e.message : "This suggestion can no longer be applied.");
         return;
@@ -308,6 +310,24 @@ export function CvDraftEditor({
         ? sectionLabel + " proposal accepted and applied to the live PDF preview. Save the draft to keep this change."
         : sectionLabel + " proposal rejected. The original content remains in your CV.",
     );
+  }
+
+
+  function undoLastAcceptedSuggestion() {
+    if (!lastAppliedSuggestion || lastAppliedSuggestion.decision !== "pending") return;
+    try {
+      setContent((current) => undoCvSuggestion(current, lastAppliedSuggestion));
+      setDraft((current) => current ? {
+        ...current,
+        suggestions: current.suggestions.map((item) =>
+          item.id === lastAppliedSuggestion.id ? { ...item, decision: "rejected" } : item,
+        ),
+      } : current);
+      setMessage("The last accepted change was undone. The original wording is restored in the draft and PDF preview.");
+      setLastAppliedSuggestion(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "The last change could not be undone.");
+    }
   }
 
   useEffect(() => {
@@ -343,6 +363,7 @@ export function CvDraftEditor({
       const body = await response.json();
       if (!response.ok) throw new Error(body.error ?? "The CV could not be accepted.");
       setDraft({ ...draft, ...(body.version as Partial<Draft>), status: "accepted" });
+      setMessage("Your tailored CV has been accepted and saved as a new CV version. The master CV and Profile remain unchanged.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "The CV could not be accepted.");
     } finally {
