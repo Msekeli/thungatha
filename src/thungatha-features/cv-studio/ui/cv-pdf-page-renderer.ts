@@ -20,15 +20,15 @@ export async function renderCvPdfPages({
     await pdfDocument.destroy();
     return null;
   }
+
   try {
     onPageCount(pdfDocument.numPages);
-  
     const firstPage = await pdfDocument.getPage(1);
     const baseWidth = firstPage.getViewport({ scale: 1 }).width;
     const fitScale = Math.max(0.25, containerWidth / baseWidth);
     const scale = fitScale * (zoom / 100);
     const rendered: HTMLCanvasElement[] = [];
-  
+
     for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
       const page = await pdfDocument.getPage(pageNumber);
       if (!isActive()) {
@@ -54,9 +54,10 @@ export async function renderCvPdfPages({
       rendered.push(canvas);
       onPageRendered([...rendered]);
     }
-    } catch (cause) {
+  } catch (cause) {
     await pdfDocument.destroy();
     throw cause;
   }
+
   return pdfDocument;
 }
