@@ -70,9 +70,13 @@ export function ProfileCompletionChecklist({
               className="mt-0.5 size-4 shrink-0 text-muted-foreground"
             />
           )}
-          <span className={done ? "text-foreground" : "text-muted-foreground"}>
+          <span
+            className={done ? "text-foreground" : "text-muted-foreground"}
+          >
             {label}
-            <span className="ml-2 inline text-[10px] leading-tight text-muted-foreground max-[1400px]:ml-0 max-[1400px]:mt-px max-[1400px]:block">
+            <span
+              className="ml-2 inline text-[10px] leading-tight text-muted-foreground max-[1400px]:ml-0 max-[1400px]:mt-px max-[1400px]:block"
+            >
               {done ? "Added" : required ? "Required" : "Optional"}
             </span>
           </span>

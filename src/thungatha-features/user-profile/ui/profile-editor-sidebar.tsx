@@ -29,7 +29,9 @@ export function ProfileEditorSidebar({
   const completed = required.filter(Boolean).length;
 
   return (
-    <section className="sticky top-4 max-h-[calc(100vh-32px)] overflow-y-auto rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+    <section
+      className="sticky top-4 max-h-[calc(100vh-32px)] overflow-y-auto rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm"
+    >
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">Profile completion</h2>
         <span className="text-xs text-muted-foreground">
