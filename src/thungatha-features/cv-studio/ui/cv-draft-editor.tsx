@@ -105,7 +105,7 @@ export function CvDraftEditor({
       });
       const body = await response.json();
       if (!response.ok)
-        throw new Error(body.error ?? "CvDraft could not be created.");
+        throw new Error(body.error ?? "Draft could not be created.");
       const createdDraft = body.draft as CvDraft;
       setDraft(createdDraft);
       setSummaryDialogOpen(false);
@@ -119,10 +119,10 @@ export function CvDraftEditor({
       setCreateFailed(true);
       setError(
         e instanceof DOMException && e.name === "TimeoutError"
-          ? "CvDraft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
+          ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
           : e instanceof Error
             ? e.message
-            : "CvDraft could not be created.",
+            : "Draft could not be created.",
       );
     } finally {
       setBusy(false);
@@ -426,11 +426,11 @@ export function CvDraftEditor({
       });
       const body = await response.json();
       if (!response.ok)
-        throw new Error(body.error ?? "CvDraft could not be saved.");
+        throw new Error(body.error ?? "Draft could not be saved.");
       setDraft(body.draft as CvDraft);
-      setMessage("CvDraft saved. Review the preview before accepting it.");
+      setMessage("Draft saved. Review the preview before accepting it.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "CvDraft could not be saved.");
+      setError(e instanceof Error ? e.message : "Draft could not be saved.");
     } finally {
       setBusy(false);
     }
