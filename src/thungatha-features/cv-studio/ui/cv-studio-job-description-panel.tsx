@@ -11,7 +11,8 @@ export function CvStudioJobDescriptionPanel({
   onClose: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
+    <>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
@@ -32,6 +33,6 @@ export function CvStudioJobDescriptionPanel({
           {jobDescriptionToText(jobContext.description)}
         </div>
       </div>
-    </div>
+    </>
   );
 }
