@@ -15,6 +15,14 @@
       "sharedComponentAlternative": "Existing shadcn form controls and shared workspace components provide the controls and common UI; only state-dependent scroll behaviour and CV Studio theme surfaces remain.",
       "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
       "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/styles/components/job-cards.css",
+      "reason": "Delete the bespoke job-card stylesheet after migrating its presentation and responsive states to Tailwind utilities.",
+      "tailwindAlternative": "The shared job card style tokens and responsive utilities are defined in job-card-config.ts and applied by the public and authenticated card components.",
+      "sharedComponentAlternative": "Shared JobCardHeader and JobCardDetails components replace duplicated card markup; shadcn Button handles card actions.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
     }
   ]
 }
