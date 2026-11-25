@@ -42,7 +42,7 @@ export function CvStudioExternalJobForm({
             placeholder="e.g. Example Technologies"
           />
         </CvStudioFormField>
-        <Field
+        <CvStudioFormField
           label="Job description"
           required
           hint="Paste the job advert text. A minimum of 200 characters is required."
