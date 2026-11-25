@@ -208,7 +208,10 @@ export function CvDraftEditor({
       }
       setDraft((current) => current ? {
         ...current,
-        suggestions: body.suggestions,
+        suggestions: [
+          ...current.suggestions.filter((item) => item.targetPath !== "professionalSummary" || item.decision !== "pending"),
+          ...body.generatedSuggestions,
+        ],
         tailoring_assessment: body.assessment,
       } : current);
       setTailoringFailed(false);
@@ -258,7 +261,13 @@ export function CvDraftEditor({
         const requestId = typeof body.requestId === "string" ? " (Request ID: " + body.requestId + ")" : "";
         throw new Error((body.error ?? "Work experience tailoring failed.") + requestId);
       }
-      setDraft((current) => current ? { ...current, suggestions: body.suggestions } : current);
+      setDraft((current) => current ? {
+        ...current,
+        suggestions: [
+          ...current.suggestions.filter((item) => !item.targetPath.startsWith(targetPrefix) || item.decision !== "pending"),
+          ...body.generatedSuggestions,
+        ],
+      } : current);
       setMessage(body.generatedSuggestions?.length
         ? "A proposal for this work experience is ready to review."
         : "No change was recommended for this work experience.");
