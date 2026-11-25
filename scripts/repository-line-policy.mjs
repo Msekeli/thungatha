@@ -6,6 +6,11 @@ export function countPhysicalLines(content) {
   return lines.at(-1) === "" ? lines.length - 1 : lines.length;
 }
 
+/**
+ * @param {string} filePath
+ * @param {string} current
+ * @param {string | null} previous
+ */
 export function validateLineCount(filePath, current, previous = null) {
   const generated =
     filePath === "src/styles/tokens.css" ||

@@ -38,11 +38,11 @@ jobs:
           fi
           git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" "$HEAD_SHA" |
             xargs -0 -r npx prettier --check
-      - name: Type-check
-        run: npx tsc --noEmit
       - name: Lint
         run: npm run lint
       - name: Unit tests
         run: npm test
+      - name: Type-check
+        run: npx tsc --noEmit
       - name: Production build
         run: npm run build
