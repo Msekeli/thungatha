@@ -19,7 +19,6 @@ export function CvPdfPageViewer({
       onWidthChange(entries[0]?.contentRect.width ?? element.clientWidth);
     });
     observer.observe(element);
-    onWidthChange(element.clientWidth);
     return () => observer.disconnect();
   }, [onWidthChange]);
 
