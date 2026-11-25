@@ -21,6 +21,19 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Preview policy formatting
+        run: |
+          for file in \
+            scripts/check-repository-policy.mjs \
+            scripts/repository-css-policy.mjs \
+            scripts/repository-naming-policy.mjs \
+            scripts/repository-policy.mjs \
+            scripts/repository-source-policy.mjs \
+            tests/unit-tests/repository-policy/boundaries-and-css.test.ts \
+            tests/unit-tests/repository-policy/naming-and-lines.test.ts; do
+            echo "===== FORMAT:$file ====="
+            npx prettier "$file"
+          done
       - name: Repository policy
         env:
           BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
