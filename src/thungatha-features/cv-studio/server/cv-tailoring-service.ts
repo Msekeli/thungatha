@@ -113,7 +113,7 @@ function compactRequirements(requirements: JobUnderstanding["requirements"]) {
     item.statement.slice(0, 120),
     item.category,
     item.importance,
-    item.sourceEvidenceRefs.slice(0, 1),
+    item.sourceEvidenceRefs.slice(0, 2),
   ]);
 }
 
@@ -160,8 +160,8 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   };
   const { profileEvidence, editableTargets: allEditableTargets } =
     buildCvTailoringEvidence(masterContent, draftContent);
-  // M4 currently reviews only the professional summary. Keep other CV sections
-  // unchanged until their own section-by-section review experience is ready.
+  // The summary request edits only the summary target. Other sections use their own
+  // scoped generation functions so each employer can be reviewed independently.
   const editableTargets = allEditableTargets.filter(
     (target) => target.path === "professionalSummary",
   );
