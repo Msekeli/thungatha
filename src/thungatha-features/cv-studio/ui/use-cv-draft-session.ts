@@ -27,12 +27,17 @@ export function useCvDraftSession({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (draft?.id) {
-      onContentChange?.(
-        content as unknown as CvPdfContent,
-        CV_DRAFT_ACCENT_HEX[draft.accent_colour],
-      );
-    }
+    if (!draft?.id) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (active) {
+        onContentChange?.(
+          content as unknown as CvPdfContent,
+          CV_DRAFT_ACCENT_HEX[draft.accent_colour],
+        );
+      }
+    });
+    return () => { active = false; };
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
 
   async function createDraft() {
@@ -62,7 +67,7 @@ export function useCvDraftSession({
   useEffect(() => {
     if (!startImmediately || createStarted.current) return;
     createStarted.current = true;
-    void createDraft();
+    void Promise.resolve().then(createDraft);
     // The editor is mounted only after the user chooses Tailor my CV.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startImmediately]);
