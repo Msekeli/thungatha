@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
+import { CvDraftSummaryActions } from "./cv-draft-summary-actions";
 import type { CvSuggestion } from "../server/cv-studio-schema";
 
 type CvDraftSummarySectionProps = {
@@ -57,16 +57,15 @@ export function CvDraftSummarySection({
               <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 Current summary
               </h4>
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
-                {canUndo && (
-                  <Button type="button" size="sm" variant="outline" disabled={disabled} onClick={onUndo}>
-                    Undo
-                  </Button>
-                )}
-                <Button type="button" size="sm" disabled={disabled || generating} onClick={onTailor}>
-                  {pending ? "Review suggestion" : suggestions.length ? "Generate another version" : "Tailor summary"}
-                </Button>
-              </div>
+              <CvDraftSummaryActions
+                disabled={disabled}
+                generating={generating}
+                pending={pending}
+                hasSuggestions={suggestions.length > 0}
+                canUndo={canUndo}
+                onUndo={onUndo}
+                onTailor={onTailor}
+              />
             </div>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-5 text-fg">
               {summary || "No professional summary is available in the master CV."}
