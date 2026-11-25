@@ -18,11 +18,9 @@ import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
 import { CvDraftAcceptedView } from "./cv-draft-accepted-view";
 import { CvDraftLoadingState } from "./cv-draft-loading-state";
 import { CvDraftFeedback } from "./cv-draft-feedback";
-import {
-  applyCvSuggestion,
-  undoCvSuggestion,
-} from "../server/apply-cv-suggestion";
-import type { CvSuggestion } from "../server/cv-studio-schema";
+import { useCvDraftSummaryGeneration } from "./use-cv-draft-summary-generation";
+import { useCvDraftExperienceGeneration } from "./use-cv-draft-experience-generation";
+import { useCvDraftSuggestionDecisions } from "./use-cv-draft-suggestion-decisions";
 
 
 export function CvDraftEditor({
@@ -41,7 +39,6 @@ export function CvDraftEditor({
   const createStarted = useRef(false);
   const [draft, setDraft] = useState<CvDraft | null>(null);
   const [createFailed, setCreateFailed] = useState(false);
-  const [tailoringFailed, setTailoringFailed] = useState(false);
   const [content, setContent] = useState<CvDraftContent>(
     initialContent as CvDraftContent,
   );
@@ -55,24 +52,23 @@ export function CvDraftEditor({
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [lastAppliedSuggestion, setLastAppliedSuggestion] =
-    useState<CvSuggestion | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tailoringBusy, setTailoringBusy] = useState(false);
-  const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
+  const summaryGeneration = useCvDraftSummaryGeneration({
+    draft, jobContext, setDraft, setError, setMessage,
+  });
+  const experienceGeneration = useCvDraftExperienceGeneration({
+    draft, jobContext, setDraft, setMessage,
+  });
+  const suggestionDecisions = useCvDraftSuggestionDecisions({
+    draft, content, setDraft, setContent,
+    setSummaryReviewOpen: summaryGeneration.setReviewOpen,
+    setExperienceReviewing: experienceGeneration.setReviewing,
+    setError, setMessage,
+  });
   const [activeSection, setActiveSection] = useState<
     "summary" | "experience" | "skills" | "requirements"
   >("summary");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
-  const [experienceDialogOpenFor, setExperienceDialogOpenFor] = useState<
-    string | null
-  >(null);
-  const [experienceTailoringBusyFor, setExperienceTailoringBusyFor] = useState<
-    string | null
-  >(null);
-  const [experienceTailoringError, setExperienceTailoringError] = useState<
-    string | null
-  >(null);
 
   const reviewSections = [
     {
@@ -101,7 +97,7 @@ export function CvDraftEditor({
     try {
       const body = await createCvDraft(masterVersionId, jobContext);
       setDraft(body.draft);
-      setSummaryDialogOpen(false);
+      summaryGeneration.setReviewOpen(false);
       setContent(body.draft.content);
       setMessage(
         body.reusedDraft
@@ -119,187 +115,6 @@ export function CvDraftEditor({
       );
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function generateSuggestionsForDraft(draftId: string) {
-    setTailoringFailed(false);
-    setSummaryDialogOpen(true);
-    setTailoringBusy(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const body = await generateCvDraftSuggestions(
-        draftId,
-        jobContext,
-        "professionalSummary",
-      );
-      setDraft((current) =>
-        current
-          ? {
-              ...current,
-              suggestions: [
-                ...current.suggestions.filter(
-                  (item) =>
-                    item.targetPath !== "professionalSummary" ||
-                    item.decision !== "pending",
-                ),
-                ...body.generatedSuggestions,
-              ],
-              tailoring_assessment: body.assessment ?? null,
-            }
-          : current,
-      );
-      setTailoringFailed(false);
-      setMessage(
-        body.generatedSuggestions.length
-          ? "Your professional summary proposal is ready. Review it, then accept or reject it."
-          : "No summary change was recommended. Your existing summary remains unchanged.",
-      );
-    } catch (e) {
-      setTailoringFailed(true);
-      setError(
-        e instanceof DOMException && e.name === "TimeoutError"
-          ? "AI tailoring exceeded three minutes. Your draft is still available; retry the summary generation."
-          : e instanceof Error
-            ? e.message
-            : "AI summary generation failed.",
-      );
-    } finally {
-      setTailoringBusy(false);
-    }
-  }
-
-  async function generateSuggestions() {
-    if (!draft || draft.status !== "draft") return;
-    await generateSuggestionsForDraft(draft.id);
-  }
-
-  async function generateExperienceSuggestions(sourceId: string) {
-    if (!draft || draft.status !== "draft" || experienceTailoringBusyFor)
-      return;
-    const targetPrefix = "workExperience[" + sourceId + "].";
-    const existing = draft.suggestions.filter((item) =>
-      item.targetPath.startsWith(targetPrefix),
-    );
-    if (existing.some((item) => item.decision === "pending")) {
-      setExperienceDialogOpenFor(sourceId);
-      return;
-    }
-    setExperienceDialogOpenFor(sourceId);
-    setExperienceTailoringBusyFor(sourceId);
-    setExperienceTailoringError(null);
-    try {
-      const body = await generateCvDraftSuggestions(
-        draft.id,
-        jobContext,
-        "workExperience",
-        sourceId,
-      );
-      setDraft((current) =>
-        current
-          ? {
-              ...current,
-              suggestions: [
-                ...current.suggestions.filter(
-                  (item) =>
-                    !item.targetPath.startsWith(targetPrefix) ||
-                    item.decision !== "pending",
-                ),
-                ...body.generatedSuggestions,
-              ],
-            }
-          : current,
-      );
-      setMessage(
-        body.generatedSuggestions.length
-          ? "A proposal for this work experience is ready to review."
-          : "No change was recommended for this work experience.",
-      );
-    } catch (e) {
-      setExperienceTailoringError(
-        e instanceof DOMException && e.name === "TimeoutError"
-          ? "Work experience tailoring exceeded three minutes. Your draft is still available; you can retry."
-          : e instanceof Error
-            ? e.message
-            : "Work experience tailoring failed.",
-      );
-    } finally {
-      setExperienceTailoringBusyFor(null);
-    }
-  }
-
-  function decideSuggestion(id: string, decision: "accepted" | "rejected") {
-    const suggestion = draft?.suggestions.find((item) => item.id === id);
-    if (!suggestion || suggestion.decision !== "pending") return;
-    if (decision === "accepted") {
-      try {
-        const updatedContent = applyCvSuggestion(content, suggestion);
-        setContent(updatedContent);
-        setLastAppliedSuggestion(suggestion);
-      } catch (e) {
-        setError(
-          e instanceof Error
-            ? e.message
-            : "This suggestion can no longer be applied.",
-        );
-        return;
-      }
-    }
-    if (suggestion.targetPath === "professionalSummary")
-      setSummaryDialogOpen(false);
-    if (suggestion.targetPath.startsWith("workExperience["))
-      setExperienceDialogOpenFor(null);
-    setDraft((current) =>
-      current
-        ? {
-            ...current,
-            suggestions: current.suggestions.map((item) =>
-              item.id === id ? { ...item, decision } : item,
-            ),
-          }
-        : current,
-    );
-    const sectionLabel =
-      suggestion.targetPath === "professionalSummary"
-        ? "Professional summary"
-        : suggestion.targetPath.startsWith("workExperience[")
-          ? "Work experience"
-          : "CV section";
-    setMessage(
-      decision === "accepted"
-        ? sectionLabel +
-            " proposal accepted and applied to the live PDF preview. Save the draft to keep this change."
-        : sectionLabel +
-            " proposal rejected. The original content remains in your CV.",
-    );
-  }
-
-  function undoLastAcceptedSuggestion() {
-    if (!lastAppliedSuggestion || lastAppliedSuggestion.decision !== "pending")
-      return;
-    try {
-      setContent((current) => undoCvSuggestion(current, lastAppliedSuggestion));
-      setDraft((current) =>
-        current
-          ? {
-              ...current,
-              suggestions: current.suggestions.map((item) =>
-                item.id === lastAppliedSuggestion.id
-                  ? { ...item, decision: "rejected" }
-                  : item,
-              ),
-            }
-          : current,
-      );
-      setMessage(
-        "The last accepted change was undone. The original wording is restored in the draft and PDF preview.",
-      );
-      setLastAppliedSuggestion(null);
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "The last change could not be undone.",
-      );
     }
   }
 
@@ -398,16 +213,16 @@ export function CvDraftEditor({
               (item) => item.targetPath === "professionalSummary",
             )}
             hasCompletedReview={draft.tailoring_assessment !== null}
-            reviewOpen={summaryDialogOpen}
-            generating={tailoringBusy}
-            generationError={tailoringFailed ? error : null}
+            reviewOpen={summaryGeneration.reviewOpen}
+            generating={summaryGeneration.busy}
+            generationError={summaryGeneration.failed ? error : null}
             disabled={busy || draft.status !== "draft"}
-            canUndo={lastAppliedSuggestion?.targetPath === "professionalSummary"}
-            error={tailoringFailed ? null : error}
-            onReviewOpenChange={setSummaryDialogOpen}
-            onDecision={decideSuggestion}
-            onRegenerate={() => void generateSuggestions()}
-            onUndo={undoLastAcceptedSuggestion}
+            canUndo={suggestionDecisions.lastApplied?.targetPath === "professionalSummary"}
+            error={summaryGeneration.failed ? null : error}
+            onReviewOpenChange={summaryGeneration.setReviewOpen}
+            onDecision={suggestionDecisions.decide}
+            onRegenerate={() => void summaryGeneration.generate()}
+            onUndo={suggestionDecisions.undo}
             onTailor={() => {
               if (
                 draft.suggestions.some(
@@ -415,8 +230,8 @@ export function CvDraftEditor({
                     item.targetPath === "professionalSummary" &&
                     item.decision === "pending",
                 )
-              ) setSummaryDialogOpen(true);
-              else void generateSuggestions();
+              ) summaryGeneration.setReviewOpen(true);
+              else void summaryGeneration.generate();
             }}
           />
 
@@ -443,23 +258,23 @@ export function CvDraftEditor({
                     const suggestions = draft.suggestions.filter((suggestion) =>
                       suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."),
                     );
-                    const isTailoring = experienceTailoringBusyFor === item.sourceId;
-                    const isReviewing = experienceDialogOpenFor === item.sourceId;
+                    const isTailoring = experienceGeneration.busyFor === item.sourceId;
+                    const isReviewing = experienceGeneration.reviewing === item.sourceId;
                     return (
                       <CvDraftExperienceCard
                         item={item}
                         suggestions={suggestions}
                         isTailoring={isTailoring}
                         isReviewing={isReviewing}
-                        hasCompletedReview={suggestions.length > 0 || (!isTailoring && !experienceTailoringError)}
-                        tailoringError={experienceTailoringError}
+                        hasCompletedReview={suggestions.length > 0 || (!isTailoring && !experienceGeneration.error)}
+                        tailoringError={experienceGeneration.error}
                         disabled={busy || draft.status !== "draft"}
-                        canUndo={lastAppliedSuggestion?.targetPath === "workExperience[" + item.sourceId + "].description"}
-                        onUndo={undoLastAcceptedSuggestion}
-                        onTailor={() => void generateExperienceSuggestions(item.sourceId)}
-                        onReviewOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
-                        onDecision={decideSuggestion}
-                        onRegenerate={() => void generateExperienceSuggestions(item.sourceId)}
+                        canUndo={suggestionDecisions.lastApplied?.targetPath === "workExperience[" + item.sourceId + "].description"}
+                        onUndo={suggestionDecisions.undo}
+                        onTailor={() => void experienceGeneration.generate(item.sourceId)}
+                        onReviewOpenChange={(open) => experienceGeneration.setReviewing(open ? item.sourceId : null)}
+                        onDecision={suggestionDecisions.decide}
+                        onRegenerate={() => void experienceGeneration.generate(item.sourceId)}
                       />
                     );
                   })()}
