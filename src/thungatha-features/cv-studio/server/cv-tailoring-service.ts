@@ -10,10 +10,11 @@ import type { JobMatchingContext } from "@/thungatha-features/job-discovery/serv
 import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
-import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
-import { mapCvTailoringOutput } from "./map-cv-tailoring-output";
+import { buildCvTailoringSystemPrompt, buildCvWorkExperienceTailoringSystemPrompt } from "./cv-tailoring-prompt";
+import { mapCvSectionTailoringOutput, mapCvTailoringOutput } from "./map-cv-tailoring-output";
 import {
   CV_TAILORING_VERSION,
+  createCvSectionTailoringResponseSchema,
   createCvTailoringResponseSchema,
 } from "./cv-tailoring-schema";
 
@@ -227,6 +228,115 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     jobEvidence,
     editableTargets,
     understanding.requirements,
+  );
+  return {
+    ...mapped,
+    provider: response.provider,
+    model: response.model,
+    taskVersion: CV_TAILORING_VERSION,
+  };
+}
+
+
+/**
+ * Tailor one selected work-experience record. Only that record's description
+ * and achievements are editable targets; no other CV section is sent as an
+ * editable target and no whole-CV assessment is regenerated.
+ */
+export async function generateCvWorkExperienceSuggestions(
+  masterContent: CvContent,
+  draftContent: CvContent,
+  job: CvTailoringJob,
+  experienceSourceId: string,
+) {
+  const sourceExperience = masterContent.workExperience.find(
+    (item) => item.sourceId === experienceSourceId,
+  );
+  const draftExperience = draftContent.workExperience.find(
+    (item) => item.sourceId === experienceSourceId,
+  );
+  if (!sourceExperience || !draftExperience) {
+    throw new Error("The selected work experience could not be found in this CV.");
+  }
+
+  const jobContext: JobMatchingContext = {
+    title: job.title,
+    employerName: job.company,
+    locationText: job.location,
+    description: job.description,
+  };
+  const understanding = await getOrCreateJobUnderstanding(jobContext);
+  if (!understanding.analysis.requirements.length) {
+    throw new Error("No structured job requirements are available to justify an experience update.");
+  }
+
+  const { profileEvidence: allProfileEvidence, editableTargets: allEditableTargets } =
+    buildCvTailoringEvidence(masterContent, draftContent);
+  const experiencePrefix = `cv:workExperience[${experienceSourceId}]`;
+  const profileEvidence = allProfileEvidence.filter(
+    (item) => item.id.startsWith(`${experiencePrefix}.`),
+  );
+  const targetPrefix = `workExperience[${experienceSourceId}]`;
+  const editableTargets = allEditableTargets.filter(
+    (item) =>
+      item.path.startsWith(`${targetPrefix}.`) &&
+      (item.path.endsWith(".description") || /\\.achievements\\[\\d+\\]$/.test(item.path)) &&
+      item.profileEvidenceRef !== null,
+  );
+  if (!profileEvidence.length || !editableTargets.length) {
+    throw new Error("This work experience has no confirmed description or achievements available to tailor.");
+  }
+
+  const allJobEvidence = buildJobEvidence(job.description, jobContext);
+  const jobEvidence = selectJobEvidence(
+    allJobEvidence,
+    understanding.analysis.requirements,
+    2_000,
+  );
+  if (!jobEvidence.length) {
+    throw new Error("There is not enough job-description evidence to tailor this experience.");
+  }
+
+  const schema = createCvSectionTailoringResponseSchema(
+    profileEvidence.map((item) => item.id),
+    jobEvidence.map((item) => item.id),
+    editableTargets.map((item) => item.path),
+    understanding.analysis.requirements.map((item) => item.id),
+  );
+  const request = {
+    task: "cv-tailoring" as const,
+    responseFormat: "json" as const,
+    responseSchema: schema.responseSchema,
+    temperature: 0.2,
+    timeoutMs: 120_000,
+    maxOutputTokens: 3_000,
+    systemPrompt: buildCvWorkExperienceTailoringSystemPrompt(),
+    userPrompt: JSON.stringify({
+      job: [job.title, job.company],
+      selectedExperience: {
+        sourceId: experienceSourceId,
+        jobTitle: sourceExperience.jobTitle,
+        employer: sourceExperience.employer,
+      },
+      jobRequirements: compactRequirements(understanding.analysis.requirements),
+      jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      editableTargets: editableTargets.map((item) => [
+        item.path,
+        item.currentText,
+        item.profileEvidenceRef,
+      ]),
+    }),
+  };
+
+  const response = await completeAiTask(request);
+  const parsed = schema.validator.parse(JSON.parse(response.content));
+  const mapped = mapCvSectionTailoringOutput(
+    parsed,
+    profileEvidence,
+    jobEvidence,
+    editableTargets,
+    understanding.analysis.requirements,
   );
   return {
     ...mapped,
