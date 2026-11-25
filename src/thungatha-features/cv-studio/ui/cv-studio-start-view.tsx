@@ -12,15 +12,7 @@ export function CvStudioStartView({
   data: ReturnType<typeof useCvStudioData>;
   workflow: ReturnType<typeof useCvStudioJobWorkflow>;
 }) {
-  const {
-    state, jobContext, suitability, workflowError, workflowBusy, load,
-  } = data;
-  const {
-    jobForm, setJobForm, reusableCv, setReusableCv, externalJobOpen,
-    setExternalJobOpen, tailoringStarted, setTailoringStarted, tailoredPreview,
-    handleTailoredContentChange, useAcceptedCv, submitPastedJob, clearSelectedJob,
-    closeExternalJob, resetExternalJob,
-  } = workflow;
+  const { state, load } = data;
 
   return (
     <main className="th-cv-studio-page mx-auto h-full min-h-0 w-full max-w-[1600px] overflow-hidden">
