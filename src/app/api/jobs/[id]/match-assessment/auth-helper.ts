@@ -4,19 +4,25 @@ import {
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
 
+export type AuthIdentity = NonNullable<
+  Awaited<ReturnType<typeof getAuthenticatedIdentity>>
+>;
+
 export async function requireAuthIdentity() {
-  if (!hasClerkConfiguration())
+  if (!hasClerkConfiguration()) {
     return {
       errorResponse: apiError("Authentication required", 401),
       identity: null,
     };
+  }
   try {
     const identity = await getAuthenticatedIdentity();
-    if (!identity)
+    if (!identity) {
       return {
         errorResponse: apiError("Authentication required", 401),
         identity: null,
       };
+    }
     return { errorResponse: null, identity };
   } catch {
     return {
