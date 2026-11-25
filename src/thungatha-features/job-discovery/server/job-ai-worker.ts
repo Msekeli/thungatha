@@ -6,17 +6,12 @@ import {
 } from "./job-ai-task-processor";
 import {
   deferQueueAfterRateLimit,
-  getTaskRetryDetails,
-  saveTaskRetryState,
 } from "./job-ai-worker-errors";
-
-export type TaskDiagnostic = {
-  taskId: string;
-  jobId: string;
-  outcome: "processed" | "stale" | "unavailable" | "failed";
-  attempts: number;
-  error?: string;
-};
+import {
+  recordJobAiTaskFailure,
+  recordJobAiTaskOutcome,
+  type TaskDiagnostic,
+} from "./job-ai-worker-records";
 
 export type WorkerDiagnostics = {
   claimed: number;
@@ -27,54 +22,6 @@ export type WorkerDiagnostics = {
   durationMs: number;
   tasks: TaskDiagnostic[];
 };
-
-function recordOutcome(
-  tasks: TaskDiagnostic[],
-  task: QueueTask,
-  outcome: "processed" | "stale" | "unavailable",
-) {
-  tasks.push({
-    taskId: task.id,
-    jobId: task.job_id,
-    outcome,
-    attempts: task.attempts,
-  });
-}
-
-async function recordFailure(
-  db: ReturnType<typeof createJobAiClient>,
-  task: QueueTask,
-  error: unknown,
-  tasks: TaskDiagnostic[],
-) {
-  const details = getTaskRetryDetails(error);
-  console.error("[AI job matching] Task failed", {
-    taskId: task.id,
-    jobId: task.job_id,
-    attempt: task.attempts,
-    terminal: details.terminal,
-    error: details.message,
-    provider: typeof details.record?.provider === "string"
-      ? details.record.provider
-      : undefined,
-    code: typeof details.record?.code === "string"
-      ? details.record.code
-      : undefined,
-    retryable: typeof details.record?.retryable === "boolean"
-      ? details.record.retryable
-      : undefined,
-    retryAfterMs: details.retryAfterMs || undefined,
-  });
-  await saveTaskRetryState(db, task, details);
-  tasks.push({
-    taskId: task.id,
-    jobId: task.job_id,
-    outcome: "failed",
-    attempts: task.attempts,
-    error: details.message,
-  });
-  return details;
-}
 
 export async function processJobAiQueue(
   options: { jobIds?: string[] } = {},
@@ -101,9 +48,9 @@ export async function processJobAiQueue(
       if (outcome === "stale") stale += 1;
       else if (outcome === "unavailable") unavailable += 1;
       else processed += 1;
-      recordOutcome(tasks, task, outcome);
+      recordJobAiTaskOutcome(tasks, task, outcome);
     } catch (error) {
-      const details = await recordFailure(db, task, error, tasks);
+      const details = await recordJobAiTaskFailure(db, task, error, tasks);
       failed += 1;
       if (details.record?.code === "rate-limited") {
         await deferQueueAfterRateLimit(db, details.retryAfterMs);
