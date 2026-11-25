@@ -456,8 +456,22 @@ export function CvDraftEditor({
                           </section>
                         </div>
                         <div className="mt-5 border-t border-line pt-4">
-                          <Button type="button" disabled={busy || draft.status !== "draft"} onClick={() => setExperienceTailorNoticeFor(item.sourceId)}>Tailor this experience</Button>
-                          {experienceTailorNoticeFor === item.sourceId && <p className="mt-2 text-xs text-fg-muted" role="status">Work-experience AI tailoring is not connected yet. This button is ready for that workflow; your profile experience remains unchanged.</p>}
+                          <Button type="button" disabled={busy || draft.status !== "draft" || experienceTailoringBusyFor !== null} onClick={() => void generateExperienceSuggestions(item.sourceId)}>
+                            {experienceTailoringBusyFor === item.sourceId ? "Tailoring…" : draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "].") && suggestion.decision === "pending") ? "Review suggestion" : "Tailor this experience"}
+                          </Button>
+                          <CvAiSuggestions
+                            open={experienceDialogOpenFor === item.sourceId}
+                            onOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
+                            suggestions={draft.suggestions.filter((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."))}
+                            hasCompletedReview={draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."))}
+                            generating={experienceTailoringBusyFor === item.sourceId}
+                            generationError={experienceDialogOpenFor === item.sourceId ? experienceTailoringError : null}
+                            disabled={busy || draft.status !== "draft"}
+                            onAccept={(id) => decideSuggestion(id, "accepted")}
+                            onReject={(id) => decideSuggestion(id, "rejected")}
+                            onRegenerate={() => void generateExperienceSuggestions(item.sourceId)}
+                            onDiscard={() => setExperienceDialogOpenFor(null)}
+                          />
                         </div>
                       </div>
                     );
