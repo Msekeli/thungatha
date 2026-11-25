@@ -22,7 +22,7 @@ export function CvAiSuggestions({
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4" aria-live="polite">
-      <div className="flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700">
+      <div className="flex items-center gap-2 rounded-xl border border-accent/30 bg-accent-bg px-4 py-3 text-sm font-semibold text-accent-text">
         <span aria-hidden="true" className="text-lg">✓</span>
         {generating ? "Preparing your suggested update" : proposal ? "1 change suggested" : "No change suggested"}
       </div>
@@ -30,7 +30,7 @@ export function CvAiSuggestions({
       <div className="min-h-0 flex-1 space-y-3">
         <h4 className="text-base font-semibold text-fg">Suggested update</h4>
         {generating ? (
-          <div className="space-y-2 rounded-xl border border-line bg-panel-2 p-4" role="status" aria-label="Generating suggested professional summary">
+          <div className="space-y-2 rounded-xl border border-line bg-panel-2 p-4" role="status" aria-label="Generating suggested CV update">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-11/12" />
@@ -43,11 +43,11 @@ export function CvAiSuggestions({
           </p>
         ) : (
           <p className="rounded-xl border border-line bg-panel-2 p-4 text-sm text-fg-muted">
-            {hasCompletedReview ? "No summary change was recommended. Your existing summary remains unchanged." : "Your suggested update will appear here."}
+            {hasCompletedReview ? "No change was recommended for this section. Your original content remains unchanged." : "Your suggested update will appear here."}
           </p>
         )}
 
-        <div className="rounded-xl border border-sky-500/15 bg-sky-500/10 p-4">
+        <div className="rounded-xl border border-line bg-panel-2 p-4">
           <h5 className="text-sm font-semibold text-fg">ⓘ Why this is recommended</h5>
           {generating ? (
             <div className="mt-2 space-y-2">
@@ -83,7 +83,10 @@ export function CvAiSuggestions({
             <Button type="button" variant="outline" disabled={disabled} onClick={onRegenerate}>Generate again</Button>
           )}
           {!pending && !rejected && generationError && (
-            <Button type="button" disabled={disabled} onClick={onRegenerate}>Try again</Button>
+            <Button type="button" disabled={disabled || generating} onClick={onRegenerate}>Try again</Button>
+          )}
+          {!pending && !rejected && hasCompletedReview && !generationError && (
+            <Button type="button" variant="outline" disabled={disabled || generating} onClick={onRegenerate}>Generate another proposal</Button>
           )}
         </div>
       </footer>
