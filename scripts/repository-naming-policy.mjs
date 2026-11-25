@@ -9,7 +9,7 @@ const technicalFiles = new Set(["index", "schema", "types", "theme"]);
 const configFiles = new Set([
   "package.json", "package-lock.json", "tsconfig.json", "next.config.ts",
   "eslint.config.mjs", "vitest.config.mts", "playwright.config.ts",
-  "components.json", ".prettierrc.json", ".gitignore", ".prettierignore",
+  "components.json", ".css-approvals.json", ".prettierrc.json", ".gitignore", ".prettierignore",
   ".env.example", "README.md", "AGENTS.md",
 ]);
 const technicalFolders = new Set([
