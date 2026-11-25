@@ -1,11 +1,6 @@
-import {
-  createJobMatchingContext,
-  hashJobContext,
-} from "./job-ai-queue-eligibility";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
-import type { FeedJob } from "./job-feed-sorting";
 import { readEmployerDismissals } from "./job-feed-dismissals";
 import { enqueueVisibleJobAssessments } from "./job-ai-queue";
 import { readJobFeedRows } from "./job-feed-page-data";
@@ -76,7 +71,7 @@ export async function readJobFeed(
 
   const safeJobs = await buildJobFeedResponseRows({
     db, userId, profileVersion, data, states, hasProfileError,
-    hasAssessmentError, rankWhole, from, pageSize: input.pageSize,
+    rankWhole, from, pageSize: input.pageSize,
   });
   return {
     jobs: safeJobs,

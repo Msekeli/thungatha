@@ -12,14 +12,13 @@ export async function buildJobFeedResponseRows(input: {
   data: FeedJob[];
   states: Array<{ job_id: string; state: string }>;
   hasProfileError: boolean;
-  hasAssessmentError: boolean;
   rankWhole: boolean;
   from: number;
   pageSize: number;
 }) {
   const {
     db, userId, profileVersion, data, states, hasProfileError,
-    hasAssessmentError, rankWhole, from, pageSize,
+    rankWhole, from, pageSize,
   } = input;
   const currentHashes = new Map(
     data.map((job) => [job.id, hashJobContext(createJobMatchingContext(job))]),
