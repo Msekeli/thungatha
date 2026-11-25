@@ -176,7 +176,8 @@ export function CvStudioStart() {
   const resolveDiscoveryJob = useCallback(
     async (selectedJobId: string, masterVersionId: string) => {
       setWorkflowBusy(true);
-      setWorkflowError(null);      setSuitability(null);
+      setWorkflowError(null);
+      setSuitability(null);
       try {
         const response = await fetch("/api/cv-studio/job-context", {
           method: "POST",
