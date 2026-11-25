@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import type { CvPdfContent } from "./cv-pdf-document";
 import type { CvDraftContent, CvDraftJobContext } from "./cv-draft-content";
 import { CV_DRAFT_ACCENT_HEX } from "./cv-draft-types";
+import { createCvDraft, generateCvDraftSuggestions } from "./cv-draft-api";
+import { acceptCvDraft, saveCvDraft } from "./cv-draft-persistence";
 import type { CvDraft } from "./cv-draft-types";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
@@ -97,19 +99,10 @@ export function CvDraftEditor({
     setError(null);
     setMessage(null);
     try {
-      const response = await fetch("/api/cv-studio/drafts", {
-        method: "POST",
-        signal: AbortSignal.timeout(15000),
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ masterVersionId, jobContext }),
-      });
-      const body = await response.json();
-      if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be created.");
-      const createdDraft = body.draft as CvDraft;
-      setDraft(createdDraft);
+      const body = await createCvDraft(masterVersionId, jobContext);
+      setDraft(body.draft);
       setSummaryDialogOpen(false);
-      setContent(createdDraft.content as CvDraftContent);
+      setContent(body.draft.content);
       setMessage(
         body.reusedDraft
           ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
@@ -136,29 +129,11 @@ export function CvDraftEditor({
     setError(null);
     setMessage(null);
     try {
-      const job =
-        jobContext.source === "discovery"
-          ? { source: "discovery" as const, jobId: jobContext.jobId }
-          : {
-              source: "pasted" as const,
-              title: jobContext.title,
-              company: jobContext.company ?? "",
-              description: jobContext.description,
-            };
-      const response = await fetch("/api/cv-studio/drafts/tailor", {
-        method: "POST",
-        signal: AbortSignal.timeout(180_000),
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ draftId, job, section: "professionalSummary" }),
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        const requestId =
-          typeof body.requestId === "string"
-            ? ` (Request ID: ${body.requestId})`
-            : "";
-        throw new Error(`${body.error ?? "AI tailoring failed."}${requestId}`);
-      }
+      const body = await generateCvDraftSuggestions(
+        draftId,
+        jobContext,
+        "professionalSummary",
+      );
       setDraft((current) =>
         current
           ? {
@@ -171,13 +146,13 @@ export function CvDraftEditor({
                 ),
                 ...body.generatedSuggestions,
               ],
-              tailoring_assessment: body.assessment,
+              tailoring_assessment: body.assessment ?? null,
             }
           : current,
       );
       setTailoringFailed(false);
       setMessage(
-        body.generatedSuggestions?.length
+        body.generatedSuggestions.length
           ? "Your professional summary proposal is ready. Review it, then accept or reject it."
           : "No summary change was recommended. Your existing summary remains unchanged.",
       );
@@ -215,36 +190,12 @@ export function CvDraftEditor({
     setExperienceTailoringBusyFor(sourceId);
     setExperienceTailoringError(null);
     try {
-      const job =
-        jobContext.source === "discovery"
-          ? { source: "discovery" as const, jobId: jobContext.jobId }
-          : {
-              source: "pasted" as const,
-              title: jobContext.title,
-              company: jobContext.company ?? "",
-              description: jobContext.description,
-            };
-      const response = await fetch("/api/cv-studio/drafts/tailor", {
-        method: "POST",
-        signal: AbortSignal.timeout(180_000),
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          draftId: draft.id,
-          job,
-          section: "workExperience",
-          experienceSourceId: sourceId,
-        }),
-      });
-      const body = await response.json();
-      if (!response.ok) {
-        const requestId =
-          typeof body.requestId === "string"
-            ? " (Request ID: " + body.requestId + ")"
-            : "";
-        throw new Error(
-          (body.error ?? "Work experience tailoring failed.") + requestId,
-        );
-      }
+      const body = await generateCvDraftSuggestions(
+        draft.id,
+        jobContext,
+        "workExperience",
+        sourceId,
+      );
       setDraft((current) =>
         current
           ? {
@@ -261,7 +212,7 @@ export function CvDraftEditor({
           : current,
       );
       setMessage(
-        body.generatedSuggestions?.length
+        body.generatedSuggestions.length
           ? "A proposal for this work experience is ready to review."
           : "No change was recommended for this work experience.",
       );
@@ -365,32 +316,17 @@ export function CvDraftEditor({
     setBusy(true);
     setError(null);
     try {
-      const saveResponse = await fetch("/api/cv-studio/drafts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: draft.id,
-          content,
-          suggestions: draft.suggestions,
-          accentColour: draft.accent_colour,
-        }),
-      });
-      const savedBody = await saveResponse.json();
-      if (!saveResponse.ok)
-        throw new Error(
-          savedBody.error ?? "Save your latest edits before accepting the CV.",
-        );
-      const response = await fetch("/api/cv-studio/drafts/accept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: draft.id }),
-      });
-      const body = await response.json();
-      if (!response.ok)
-        throw new Error(body.error ?? "The CV could not be accepted.");
+      await saveCvDraft(
+        draft.id,
+        content,
+        draft.suggestions,
+        draft.accent_colour,
+        "Save your latest edits before accepting the CV.",
+      );
+      const body = await acceptCvDraft(draft.id);
       setDraft({
         ...draft,
-        ...(body.version as Partial<CvDraft>),
+        ...body.version,
         status: "accepted",
       });
       setMessage(
@@ -414,20 +350,13 @@ export function CvDraftEditor({
     setError(null);
     setMessage(null);
     try {
-      const response = await fetch("/api/cv-studio/drafts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: draft.id,
-          content,
-          suggestions: draft.suggestions,
-          accentColour: draft.accent_colour,
-        }),
-      });
-      const body = await response.json();
-      if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be saved.");
-      setDraft(body.draft as CvDraft);
+      const body = await saveCvDraft(
+        draft.id,
+        content,
+        draft.suggestions,
+        draft.accent_colour,
+      );
+      setDraft(body.draft);
       setMessage("Draft saved. Review the preview before accepting it.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Draft could not be saved.");
