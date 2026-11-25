@@ -25,16 +25,16 @@ export function CvStudioJobDetailsPanel({
       <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
         <CvStudioJobDescriptionPanel jobContext={jobContext} onClose={onClose} />
         <CvStudioSuitabilityPanel
-        suitability={suitability}
-        busy={busy}
-        error={error}
-        onUseVersion={onUseVersion}
-      />
+          suitability={suitability}
+          busy={busy}
+          error={error}
+          onUseVersion={onUseVersion}
+        />
         <CvStudioJobActions
-        reusableCv={reusableCv}
-        busy={busy}
-        onStartTailoring={onStartTailoring}
-        onReturnToMaster={onReturnToMaster}
+          reusableCv={reusableCv}
+          busy={busy}
+          onStartTailoring={onStartTailoring}
+          onReturnToMaster={onReturnToMaster}
         />
       </div>
     </section>
