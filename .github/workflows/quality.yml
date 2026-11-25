@@ -18,8 +18,10 @@ jobs:
           node-version: 22
           cache: npm
       - name: Install dependencies
+        id: install-dependencies
         run: npm ci
       - name: Repository policy
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         env:
           BASE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.sha }}
@@ -29,6 +31,7 @@ jobs:
           fi
           npm run check:repository-policy -- --base "$BASE_SHA" --head "$HEAD_SHA"
       - name: Formatting
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         env:
           BASE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.sha }}
@@ -39,10 +42,14 @@ jobs:
           git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" "$HEAD_SHA" |
             xargs -0 -r npx prettier --check
       - name: Lint
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         run: npm run lint
       - name: Unit tests
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         run: npm test
       - name: Type-check
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         run: npx tsc --noEmit
       - name: Production build
+        if: ${{ !cancelled() && steps.install-dependencies.outcome == 'success' }}
         run: npm run build

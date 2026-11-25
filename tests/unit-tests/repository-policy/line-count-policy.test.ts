@@ -16,7 +16,9 @@ describe("source file size policy", () => {
     expect(validateLineCount("src/example.ts", eighty)[0].level).toBe(
       "warning",
     );
-    expect(validateLineCount("src/example.ts", hundred)).toEqual([]);
+    expect(validateLineCount("src/example.ts", hundred)[0].level).toBe(
+      "warning",
+    );
     expect(validateLineCount("src/example.ts", hundredOne)[0].level).toBe(
       "error",
     );
