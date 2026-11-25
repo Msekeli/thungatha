@@ -37,5 +37,5 @@ export function buildCvWorkExperienceTailoringSystemPrompt() {
     "Do not change job title, employer, location, dates or candidate identity. Only description and achievement text targets are editable.",
     "Keep normal spaces and punctuation. Return concise, grammatical English.",
     "Return exactly one JSON object with a suggestions array. Each suggestion must contain targetPath, originalText, proposedText, reason, profileEvidenceRefs, requirementIds and jobEvidenceRefs. An empty suggestions array is valid. Return JSON only.",
-  ].join("\\n");
+  ].join("\n");
 }
