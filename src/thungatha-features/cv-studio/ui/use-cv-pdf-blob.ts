@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { pdf } from "@react-pdf/renderer";
-import type { ReactElement } from "react";
+
+type PdfDocumentElement = NonNullable<Parameters<typeof pdf>[0]>;
 
 type PdfBlobState = {
-  document: ReactElement;
+  document: PdfDocumentElement;
   url: string | null;
   error: string | null;
 };
 
-export function useCvPdfBlob(document: ReactElement) {
+export function useCvPdfBlob(document: PdfDocumentElement) {
   const [state, setState] = useState<PdfBlobState | null>(null);
   const current = state?.document === document ? state : null;
   const pdfUrl = current?.url ?? null;
