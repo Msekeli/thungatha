@@ -2,6 +2,7 @@
 
 import { Document, Page } from "@react-pdf/renderer";
 import type { CvPdfContent } from "./cv-pdf-types";
+export type { CvPdfContent } from "./cv-pdf-types";
 import { styles } from "./cv-pdf-styles";
 import { CvPdfHeader } from "./cv-pdf-header";
 import { CvPdfSummary } from "./cv-pdf-summary";
