@@ -389,8 +389,8 @@ export function CvDraftEditor({
                       <p className="truncate text-xs font-semibold sm:text-sm">{content.workExperience[activeExperienceIndex]?.employer}</p>
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex === 0 onClick={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}>Previous</Button>
-                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex >= content.workExperience.length - 1 onClick={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}>Next</Button>
+                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex === 0} onClick={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}>Previous</Button>
+                      <Button type="button" size="sm" className="px-2 text-xs" variant="outline" disabled={activeExperienceIndex >= content.workExperience.length - 1} onClick={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}>Next</Button>
                     </div>
                   </div>
                   {content.workExperience[activeExperienceIndex] && (() => {
