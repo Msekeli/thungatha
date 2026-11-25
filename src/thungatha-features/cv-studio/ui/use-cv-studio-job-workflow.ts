@@ -2,11 +2,10 @@
 
 import { useCallback, useState, type FormEvent } from "react";
 import { createCvStudioPastedJob, reuseCvStudioVersion } from "./cv-studio-api";
-import { emptyJobForm } from "./cv-studio-types";
-import type { JobForm } from "./cv-studio-types";
 import type { ReusableCv } from "./cv-studio-content-types";
 import type { CvPdfContent } from "./cv-pdf-document";
 import type { useCvStudioData } from "./use-cv-studio-data";
+import { useCvStudioJobForm } from "./use-cv-studio-job-form";
 
 type CvStudioJobWorkflowProps = {
   data: ReturnType<typeof useCvStudioData>;
@@ -16,10 +15,9 @@ type CvStudioJobWorkflowProps = {
 export function useCvStudioJobWorkflow({
   data, onNavigateToStudio,
 }: CvStudioJobWorkflowProps) {
-  const [jobForm, setJobForm] = useState<JobForm>(emptyJobForm);
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
-  const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
+  const { jobForm, setJobForm, externalJobOpen, setExternalJobOpen, closeExternalJob, resetExternalJob } = useCvStudioJobForm(data.setWorkflowError);
   const [tailoredPreview, setTailoredPreview] = useState<{
     content: CvPdfContent;
     accent: string;
@@ -66,17 +64,6 @@ export function useCvStudioJobWorkflow({
     }
   }
 
-  function closeExternalJob() {
-    setExternalJobOpen(false);
-    data.setWorkflowError(null);
-  }
-
-  function resetExternalJob() {
-    setExternalJobOpen(false);
-    setJobForm(emptyJobForm);
-    data.setWorkflowError(null);
-  }
-
   function clearSelectedJob() {
     data.setJobId(null);
     data.setJobContext(null);
@@ -91,9 +78,9 @@ export function useCvStudioJobWorkflow({
   }
 
   return {
-    jobForm, setJobForm, reusableCv, setReusableCv,
-    externalJobOpen, setExternalJobOpen, tailoringStarted, setTailoringStarted,
+    ...useCvStudioJobForm(data.setWorkflowError),
+    reusableCv, setReusableCv, tailoringStarted, setTailoringStarted,
     tailoredPreview, handleTailoredContentChange, useAcceptedCv,
-    submitPastedJob, clearSelectedJob, closeExternalJob, resetExternalJob,
+    submitPastedJob, clearSelectedJob,
   };
 }
