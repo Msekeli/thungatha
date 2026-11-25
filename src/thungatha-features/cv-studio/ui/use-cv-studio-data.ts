@@ -6,7 +6,11 @@ import type { JobContext, State, Suitability } from "./cv-studio-types";
 
 export function useCvStudioData() {
   const [state, setState] = useState<State>({ status: "loading" });
-  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(() =>
+    typeof window === "undefined"
+      ? null
+      : new URLSearchParams(window.location.search).get("jobId"),
+  );
   const [jobContext, setJobContext] = useState<JobContext | null>(null);
   const [suitability, setSuitability] = useState<Suitability | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
@@ -25,9 +29,7 @@ export function useCvStudioData() {
   }, []);
 
   useEffect(() => {
-    const selectedJobId = new URLSearchParams(window.location.search).get("jobId");
-    setJobId(selectedJobId);
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const assessContext = useCallback(async (
@@ -59,7 +61,7 @@ export function useCvStudioData() {
 
   useEffect(() => {
     if (state.status !== "master_cv_ready" || !state.masterCv || !jobId || jobContext) return;
-    void resolveDiscoveryJob(jobId, state.masterCv.id);
+    void Promise.resolve().then(() => resolveDiscoveryJob(jobId, state.masterCv!.id));
   }, [state, jobId, jobContext, resolveDiscoveryJob]);
 
   return {
