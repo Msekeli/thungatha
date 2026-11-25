@@ -6,7 +6,7 @@ import type { ReactElement } from "react";
 
 type PdfBlobState = {
   document: ReactElement;
-  url: string;
+  url: string | null;
   error: string | null;
 };
 
@@ -28,7 +28,7 @@ export function useCvPdfBlob(document: ReactElement) {
       if (!active) return;
       setState({
         document,
-        url: "",
+        url: null,
         error: cause instanceof Error ? cause.message : "The CV PDF could not be generated.",
       });
     });
