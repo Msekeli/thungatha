@@ -1,8 +1,7 @@
-import { CvAiSuggestions } from "./cv-ai-suggestions";
 import type { CvSuggestion } from "../server/cv-studio-schema";
-import { CvDraftExperienceCardHeader } from "./cv-draft-experience-card-header";
-
+import { CvAiSuggestions } from "./cv-ai-suggestions";
 import type { CvDraftContent } from "./cv-draft-content";
+import { CvDraftExperienceCardHeader } from "./cv-draft-experience-card-header";
 
 type CvDraftExperienceCardProps = {
   item: CvDraftContent["workExperience"][number];
