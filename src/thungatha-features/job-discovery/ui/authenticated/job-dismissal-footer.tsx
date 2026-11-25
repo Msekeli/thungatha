@@ -14,8 +14,19 @@ export function JobDismissalFooter({
 }) {
   return (
     <div className="mt-4 flex justify-end gap-2">
-      <Button variant="outline" size="sm" disabled={busy} onClick={onClose}>Cancel</Button>
-      <Button size="sm" disabled={busy || !activeScope} onClick={() => activeScope && onConfirm(activeScope)}>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={busy}
+        onClick={onClose}
+      >
+        Cancel
+      </Button>
+      <Button
+        size="sm"
+        disabled={busy || !activeScope}
+        onClick={() => activeScope && onConfirm(activeScope)}
+      >
         {busy ? "Dismissing…" : "Confirm dismissal"}
       </Button>
     </div>

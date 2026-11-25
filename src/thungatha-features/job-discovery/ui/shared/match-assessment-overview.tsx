@@ -22,7 +22,9 @@ export function MatchAssessmentOverview({ assessment }: { assessment: MatchAsses
         <section className="space-y-2">
           <h4 className="font-semibold">Overall supporting evidence</h4>
           {assessment.semanticAlignment.jobEvidence?.map((item) => (
-            <p key={item.id} className="rounded-md bg-panel p-2 text-fg-muted">{item.content}</p>
+            <p key={item.id} className="rounded-md bg-panel p-2 text-fg-muted">
+              {item.content}
+            </p>
           ))}
           {assessment.semanticAlignment.profileEvidence?.map((item) => (
             <p key={item.id} className="rounded-md bg-panel p-2 text-fg-muted">

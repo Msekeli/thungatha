@@ -10,12 +10,7 @@ type Props = {
   onRetry: () => void;
 };
 
-export function MatchAssessmentStatus({
-  status,
-  isRetrying,
-  retryError,
-  onRetry,
-}: Props) {
+export function MatchAssessmentStatus({ status, isRetrying, retryError, onRetry }: Props) {
   if (status === "loading") return <p className="text-fg-muted">Loading assessment…</p>;
   if (status === "pending") {
     return (
@@ -52,13 +47,25 @@ export function MatchAssessmentStatus({
     );
   }
   if (status === "profile_unconfirmed") {
-    return <p className="text-fg-muted">Confirm your Profile before Thungatha can assess how your experience aligns with this role.</p>;
+    return (
+      <p className="text-fg-muted">
+        Confirm your Profile before Thungatha can assess how your experience aligns with this role.
+      </p>
+    );
   }
   if (status === "unusable_description") {
-    return <p className="text-fg-muted">This advert does not contain enough readable job information for a reliable assessment.</p>;
+    return (
+      <p className="text-fg-muted">
+        This advert does not contain enough readable job information for a reliable assessment.
+      </p>
+    );
   }
   if (status === "error") {
-    return <p className="text-fg-muted">The assessment could not be loaded. Close this panel and try again.</p>;
+    return (
+      <p className="text-fg-muted">
+        The assessment could not be loaded. Close this panel and try again.
+      </p>
+    );
   }
   return null;
 }

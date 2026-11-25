@@ -15,7 +15,12 @@ type Props = {
   onClose: () => void;
 };
 
-export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) {
+export function MatchBreakdownDialog({
+  open,
+  anchorEl,
+  jobId,
+  onClose,
+}: Props) {
   const { status, assessment, isRetrying, retryError, retryAssessment } =
     useMatchAssessment(open, jobId);
 
@@ -29,7 +34,12 @@ export function MatchBreakdownDialog({ open, anchorEl, jobId, onClose }: Props) 
     >
       <header className="flex items-center justify-between gap-4 border-b border-line px-4 py-3">
         <strong>AI job assessment</strong>
-        <Button variant="ghost" size="sm" aria-label="Close match breakdown" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label="Close match breakdown"
+          onClick={onClose}
+        >
           <X size={16} />
         </Button>
       </header>

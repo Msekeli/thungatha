@@ -5,7 +5,10 @@ import { AnchoredPopover } from "@/components/ui/anchored-popover";
 import type { Job } from "../job-discovery-utils";
 import { JobDismissalFooter } from "./job-dismissal-footer";
 import { JobDismissalHeader } from "./job-dismissal-header";
-import { JobDismissalOption, type DismissalScope } from "./job-dismissal-option";
+import {
+  JobDismissalOption,
+  type DismissalScope,
+} from "./job-dismissal-option";
 
 export function JobDismissalDialog({
   job,
@@ -19,7 +22,9 @@ export function JobDismissalDialog({
   onConfirm: (scope: DismissalScope) => void;
 }) {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [selectedScope, setSelectedScope] = useState<DismissalScope | null>(null);
+  const [selectedScope, setSelectedScope] = useState<DismissalScope | null>(
+    null,
+  );
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const employer = job?.employer_name?.trim() || "this employer";
   const activeScope = selectedJobId === job?.id ? selectedScope : null;
@@ -51,7 +56,11 @@ export function JobDismissalDialog({
       className="relative w-[min(400px,calc(100vw-24px))] rounded-xl border border-line bg-panel p-4 text-fg shadow-xl"
     >
       <JobDismissalHeader busy={busy} onClose={close} />
-      <div className="mt-4 grid gap-2" role="radiogroup" aria-label="Dismissal scope">
+      <div
+        className="mt-4 grid gap-2"
+        role="radiogroup"
+        aria-label="Dismissal scope"
+      >
         <JobDismissalOption
           selected={activeScope === "job"}
           disabled={busy || !job}
@@ -67,7 +76,12 @@ export function JobDismissalDialog({
           onSelect={() => select("employer")}
         />
       </div>
-      <JobDismissalFooter activeScope={activeScope} busy={busy} onClose={close} onConfirm={onConfirm} />
+      <JobDismissalFooter
+        activeScope={activeScope}
+        busy={busy}
+        onClose={close}
+        onConfirm={onConfirm}
+      />
     </AnchoredPopover>
   );
 }

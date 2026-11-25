@@ -2,13 +2,27 @@
 
 import { JobResultsState } from "./job-results-state";
 import { JobResultsList } from "./job-results-list";
-import { JobResultsSortControl } from "./job-results-sort-control";
+import { JobResultsSortControl } from "./results-sort-control";
 import type { JobResultsPanelProps } from "./job-results-types";
 
 export function AuthenticatedJobResultsPanel({
-  jobs, feed, loading, error, hasFilters, mobileDetail, selectedId,
-  loadMoreRef, formatDate, onRetry, onSelect, onSave, onDismiss,
-  configured, resultCount, sortOrder, onSortOrderChange,
+  jobs,
+  feed,
+  loading,
+  error,
+  hasFilters,
+  mobileDetail,
+  selectedId,
+  loadMoreRef,
+  formatDate,
+  onRetry,
+  onSelect,
+  onSave,
+  onDismiss,
+  configured,
+  resultCount,
+  sortOrder,
+  onSortOrderChange,
 }: JobResultsPanelProps) {
   return (
     <section
@@ -19,18 +33,37 @@ export function AuthenticatedJobResultsPanel({
       <div className="mb-3 flex shrink-0 items-center justify-between gap-2 border-b border-[var(--th-line)] pb-3 max-[700px]:mb-2 max-[700px]:pb-2">
         <div className="min-w-0 text-sm text-[var(--th-fg-muted)]">
           <span aria-live="polite" className="whitespace-nowrap">
-            {resultCount > 0 ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities` : "0 opportunities"}
+            {resultCount > 0
+              ? `1–${Math.min(30, resultCount)} of ${resultCount} opportunities`
+              : "0 opportunities"}
           </span>
         </div>
-        <JobResultsSortControl value={sortOrder} onChange={onSortOrderChange} />
+        <JobResultsSortControl
+          value={sortOrder}
+          onChange={onSortOrderChange}
+        />
       </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
-        <JobResultsState loading={loading} hasFeed={Boolean(feed)} error={error} hasJobs={jobs.length > 0} hasFilters={hasFilters} onRetry={onRetry} />
+        <JobResultsState
+          loading={loading}
+          hasFeed={Boolean(feed)}
+          error={error}
+          hasJobs={jobs.length > 0}
+          hasFilters={hasFilters}
+          onRetry={onRetry}
+        />
         {jobs.length > 0 && (
           <JobResultsList
-            jobs={jobs} selectedId={selectedId} loading={loading} feed={feed}
-            loadMoreRef={loadMoreRef} formatDate={formatDate} onSelect={onSelect}
-            onSave={onSave} onDismiss={onDismiss} configured={configured}
+            jobs={jobs}
+            selectedId={selectedId}
+            loading={loading}
+            feed={feed}
+            loadMoreRef={loadMoreRef}
+            formatDate={formatDate}
+            onSelect={onSelect}
+            onSave={onSave}
+            onDismiss={onDismiss}
+            configured={configured}
           />
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AssessmentStatus, MatchAssessment } from "./match-assessment-types";
+import { loadMatchAssessment, retryMatchAssessment } from "./match-assessment-client";
 
 export function useMatchAssessment(open: boolean, jobId: string | null) {
   const [status, setStatus] = useState<AssessmentStatus>("idle");
@@ -12,17 +13,12 @@ export function useMatchAssessment(open: boolean, jobId: string | null) {
   useEffect(() => {
     if (!open || !jobId) return;
     const controller = new AbortController();
-    setStatus("loading");
-    setAssessment(null);
-
-    fetch(`/api/jobs/${jobId}/match-assessment`, { signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Assessment could not be loaded.");
-        return response.json() as Promise<{
-          status: AssessmentStatus;
-          assessment?: MatchAssessment | null;
-        }>;
-      })
+    void Promise.resolve().then(() => {
+      if (controller.signal.aborted) return;
+      setStatus("loading");
+      setAssessment(null);
+    });
+    void loadMatchAssessment(jobId, controller.signal)
       .then((result) => {
         setStatus(result.status);
         setAssessment(result.assessment ?? null);
@@ -38,16 +34,10 @@ export function useMatchAssessment(open: boolean, jobId: string | null) {
     if (!open || !jobId || status !== "pending") return;
     const interval = window.setInterval(async () => {
       try {
-        const response = await fetch(`/api/jobs/${jobId}/match-assessment`);
-        if (!response.ok) return;
-        const result = (await response.json()) as {
-          status: AssessmentStatus;
-          assessment?: MatchAssessment | null;
-        };
-        if (result.status !== "pending") {
-          setStatus(result.status);
-          setAssessment(result.assessment ?? null);
-        }
+        const result = await loadMatchAssessment(jobId, new AbortController().signal);
+        if (result.status === "pending") return;
+        setStatus(result.status);
+        setAssessment(result.assessment ?? null);
       } catch {
         // Retain pending state; the next poll can recover from transient failures.
       }
@@ -60,21 +50,11 @@ export function useMatchAssessment(open: boolean, jobId: string | null) {
     setIsRetrying(true);
     setRetryError(null);
     try {
-      const response = await fetch(`/api/jobs/${jobId}/match-assessment`, {
-        method: "POST",
-      });
-      if (!response.ok) {
-        const result = (await response.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        throw new Error(result?.error ?? "The assessment could not be retried.");
-      }
+      await retryMatchAssessment(jobId);
       setAssessment(null);
       setStatus("pending");
     } catch (error) {
-      setRetryError(
-        error instanceof Error ? error.message : "The assessment could not be retried.",
-      );
+      setRetryError(error instanceof Error ? error.message : "The assessment could not be retried.");
     } finally {
       setIsRetrying(false);
     }
