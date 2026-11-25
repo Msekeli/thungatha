@@ -140,7 +140,7 @@ describe("CV tailoring evidence", () => {
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:0"],
       }],
-      coveredRequirementIds: [],
+      coveredRequirementIds: ["req-react", "req-reviews"],
       gaps: [],
     });
     expect(() => mapCvTailoringOutput(
@@ -170,6 +170,7 @@ describe("CV tailoring evidence", () => {
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:1"],
       }],
+      coveredRequirementIds: ["req-react", "req-reviews"],
       gaps: [],
     });
     expect(() => mapCvTailoringOutput(
@@ -229,6 +230,7 @@ describe("CV tailoring evidence", () => {
         requirementIds: ["req-react"],
         jobEvidenceRefs: ["job:description:0"],
       }],
+      coveredRequirementIds: ["req-react", "req-reviews"],
       gaps: [],
     });
     const mapped = mapCvTailoringOutput(
