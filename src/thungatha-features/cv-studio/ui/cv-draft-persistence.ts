@@ -1,7 +1,7 @@
 import type { CvSuggestion } from "../server/cv-studio-schema";
 import type { CvDraftContent } from "./cv-draft-content";
 import type { CvDraft } from "./cv-draft-types";
-import { requestCvDraftJson } from "./cv-draft-api";
+import { requestCvDraftJson } from "./cv-draft-request";
 
 export function saveCvDraft(
   id: string,
