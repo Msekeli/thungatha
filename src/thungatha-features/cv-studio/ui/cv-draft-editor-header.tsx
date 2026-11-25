@@ -8,7 +8,7 @@ type ReviewSection = {
 type CvDraftEditorHeaderProps = {
   activeIndex: number;
   activeSection: ReviewSection["id"];
-  sections: ReviewSection[];
+  sections: readonly ReviewSection[];
   onSectionChange: (section: ReviewSection["id"]) => void;
 };
 
