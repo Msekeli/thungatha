@@ -431,7 +431,7 @@ export function CvDraftEditor({
           </div>
         ) : activeSection === "summary" ? (
           <div className="flex h-full min-h-0 flex-col gap-2 text-fg">
-            <div className="shrink-0"><h3 className="text-base font-bold sm:text-lg">Professional Summary</h3><p className="text-xs text-fg-muted sm:text-sm">The proposed paragraph replaces the original here while you review it.</p></div>
+            <div className="shrink-0"><h3 className="text-base font-bold sm:text-lg">Professional Summary</h3><p className="text-xs text-fg-muted sm:text-sm">Review the current wording, then generate a job-specific proposal when ready.</p></div>
             <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-xl border border-line bg-panel-2 p-3 sm:p-4">
               {summaryDialogOpen ? (
                 <CvAiSuggestions
@@ -446,7 +446,7 @@ export function CvDraftEditor({
               ) : (
                 <>
                   <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Current summary</h4>
                     <div className="flex shrink-0 flex-wrap items-center gap-2">
                       {lastAppliedSuggestion?.targetPath === "professionalSummary" && (
                         <Button type="button" size="sm" variant="outline" disabled={busy || draft.status !== "draft"} onClick={undoLastAcceptedSuggestion}>Undo</Button>
