@@ -199,7 +199,7 @@ export function CvDraftEditor({
         method: "POST",
         signal: AbortSignal.timeout(180_000),
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ draftId, job }),
+        body: JSON.stringify({ draftId, job, section: "professionalSummary" }),
       });
       const body = await response.json();
       if (!response.ok) {
@@ -212,7 +212,7 @@ export function CvDraftEditor({
         tailoring_assessment: body.assessment,
       } : current);
       setTailoringFailed(false);
-      setMessage(body.suggestions.length
+      setMessage(body.generatedSuggestions?.length
         ? "Your professional summary proposal is ready. Review it, then accept or reject it."
         : "No summary change was recommended. Your existing summary remains unchanged.");
     } catch (e) {
