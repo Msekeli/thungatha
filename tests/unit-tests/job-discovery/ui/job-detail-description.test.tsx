@@ -11,7 +11,9 @@ describe("JobDetailDescription", () => {
     );
     const content = container.querySelector(".th-job-description-html");
 
-    expect(screen.getByRole("heading", { name: "Job description" })).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "Job description" }),
+    ).toBeTruthy();
     expect(content?.textContent).toContain("About the role");
     expect(content?.textContent).toContain(
       "Build and support web services with the engineering team.",

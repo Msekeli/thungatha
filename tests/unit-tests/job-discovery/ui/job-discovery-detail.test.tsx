@@ -22,13 +22,17 @@ const vacancy = {
 
 function setupFetch() {
   sessionStorage.clear();
-  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => ({
-    ok: true,
-    status: 200,
-    json: async () => String(input).includes(vacancy.id)
-      ? { job: vacancy }
-      : { jobs: [vacancy], page: 1, pageSize: 30, total: 1, totalPages: 1 },
-  })));
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: RequestInfo | URL) => ({
+      ok: true,
+      status: 200,
+      json: async () =>
+        String(input).includes(vacancy.id)
+          ? { job: vacancy }
+          : { jobs: [vacancy], page: 1, pageSize: 30, total: 1, totalPages: 1 },
+    })),
+  );
 }
 
 afterEach(() => {
@@ -41,13 +45,17 @@ describe("Scout job description detail", () => {
   it("shows readable job text from Scout's HTML description", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
-    fireEvent.click(await screen.findByRole("button", {
-      name: "View Software Engineer at Example Technologies",
-    }));
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "View Software Engineer at Example Technologies",
+      }),
+    );
 
-    expect(await screen.findByRole("heading", {
-      name: "Job description",
-    })).toBeTruthy();
+    expect(
+      await screen.findByRole("heading", {
+        name: "Job description",
+      }),
+    ).toBeTruthy();
     expect(screen.getAllByText(/About the role/).length).toBeGreaterThan(0);
     const renderedText = document.body.textContent ?? "";
     expect(renderedText).toContain(

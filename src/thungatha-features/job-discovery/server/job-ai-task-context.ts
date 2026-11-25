@@ -25,11 +25,13 @@ export async function loadCurrentJobAiTaskContext(
   task: TaskIdentity,
 ) {
   const [jobResult, profileResult] = await Promise.all([
-    db.from("jobs")
+    db
+      .from("jobs")
       .select("id,title,employer_name,location_text,description")
       .eq("id", task.job_id)
       .maybeSingle(),
-    db.from("profiles")
+    db
+      .from("profiles")
       .select(PROFILE_SELECT_COLUMNS)
       .eq("user_id", task.user_id)
       .maybeSingle(),
@@ -45,7 +47,8 @@ export async function loadCurrentJobAiTaskContext(
     !isUsableJobDescription(context.description) ||
     hashDescription(context.description) !== task.job_description_hash ||
     hashJobContext(context) !== task.job_context_hash
-  ) return null;
+  )
+    return null;
 
   const facts = deriveCandidateFacts(mapRowToProfileDto(row));
   if (!facts || facts.profileVersion !== task.profile_version) return null;

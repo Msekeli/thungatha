@@ -12,18 +12,14 @@ export function createTailoringEvidenceMap(
   jobEvidence: Array<{ id: string; content: string }>,
 ): TailoringEvidenceMap {
   const entries: Array<[string, TailoringEvidenceEntry]> = [
-    ...profileEvidence.map(
-      (item): [string, TailoringEvidenceEntry] => [
-        item.id,
-        { source: "profile", excerpt: item.content },
-      ],
-    ),
-    ...jobEvidence.map(
-      (item): [string, TailoringEvidenceEntry] => [
-        item.id,
-        { source: "job", excerpt: item.content },
-      ],
-    ),
+    ...profileEvidence.map((item): [string, TailoringEvidenceEntry] => [
+      item.id,
+      { source: "profile", excerpt: item.content },
+    ]),
+    ...jobEvidence.map((item): [string, TailoringEvidenceEntry] => [
+      item.id,
+      { source: "job", excerpt: item.content },
+    ]),
   ];
   return new Map(entries);
 }

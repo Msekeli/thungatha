@@ -12,7 +12,9 @@ export { parseJobUnderstanding };
 export async function understandJobWithAi(context: JobMatchingContext) {
   const evidence = buildJobEvidence(context.description, context);
   if (evidence.length === 0) {
-    throw new Error("The job description does not contain enough readable text.");
+    throw new Error(
+      "The job description does not contain enough readable text.",
+    );
   }
   const responseSchema = createJobUnderstandingResponseSchema();
   const userPrompt = JSON.stringify({
