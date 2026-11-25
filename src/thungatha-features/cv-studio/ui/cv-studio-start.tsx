@@ -9,6 +9,7 @@ import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/
 import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvDraftEditor } from "./cv-draft-editor";
+import { SavedCvGrid } from "./saved-cv-grid";
 
 type CvContent = {
   fullName: string;
@@ -65,17 +66,6 @@ type JobContext = {
   descriptionFingerprint: string;
   retrievedAt: string;
 };
-type SavedCvVersion = {
-  id: string;
-  cv_kind: "master" | "tailored";
-  status: "current" | "accepted";
-  version_number: number;
-  content: CvContent;
-  accent_colour: "teal" | "navy" | "burgundy" | "forest";
-  source_job_snapshot: { title?: string; company?: string | null } | null;
-  updated_at: string;
-  accepted_at: string | null;
-};
 type MatchingVersion = {
   id: string;
   versionNumber: number;
@@ -131,27 +121,6 @@ export function CvStudioStart() {
   const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
   const [previewTab, setPreviewTab] = useState<"preview" | "master" | "saved">("preview");
-  const [savedVersions, setSavedVersions] = useState<SavedCvVersion[]>([]);
-  const [savedVersionsLoading, setSavedVersionsLoading] = useState(false);
-  const [savedVersionsError, setSavedVersionsError] = useState<string | null>(null);
-  const [selectedSavedVersion, setSelectedSavedVersion] = useState<SavedCvVersion | null>(null);
-
-  async function showSavedVersions() {
-    setPreviewTab("saved");
-    setSelectedSavedVersion(null);
-    setSavedVersionsLoading(true);
-    setSavedVersionsError(null);
-    try {
-      const response = await fetch("/api/cv-studio/versions", { cache: "no-store" });
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error ?? "Saved CVs could not be loaded.");
-      setSavedVersions(body.versions as SavedCvVersion[]);
-    } catch (error) {
-      setSavedVersionsError(error instanceof Error ? error.message : "Saved CVs could not be loaded.");
-    } finally {
-      setSavedVersionsLoading(false);
-    }
-  }
   const [tailoredPreview, setTailoredPreview] = useState<{
     content: CvPdfContent;
     accent: string;
@@ -404,7 +373,7 @@ export function CvStudioStart() {
                         type="button"
                         role="tab"
                         aria-selected={previewTab === tab}
-                        onClick={() => tab === "saved" ? void showSavedVersions() : setPreviewTab(tab)}
+                        onClick={() => setPreviewTab(tab)}
                         className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${previewTab === tab ? "bg-panel text-fg shadow-sm" : "text-fg-muted hover:text-fg"}`}
                       >
                         {tab === "preview"
@@ -418,43 +387,7 @@ export function CvStudioStart() {
                 </header>
                 <div className="min-h-0 flex-1 overflow-auto pt-3">
                   {previewTab === "saved" ? (
-                    <div className="space-y-3">
-                      {selectedSavedVersion ? (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => setSelectedSavedVersion(null)}>Back to all CVs</Button>
-                          <CvPdfPreview
-                            content={selectedSavedVersion.content as unknown as CvPdfContent}
-                            accent={cvAccentHex[selectedSavedVersion.accent_colour]}
-                          />
-                        </>
-                      ) : savedVersionsLoading ? (
-                        <p className="p-6 text-center text-sm text-fg-muted">Loading your saved CVs…</p>
-                      ) : savedVersionsError ? (
-                        <p className="p-6 text-sm text-destructive" role="alert">{savedVersionsError}</p>
-                      ) : savedVersions.length === 0 ? (
-                        <p className="p-6 text-center text-sm text-fg-muted">No saved CV versions yet. Accepted tailored CVs will appear here.</p>
-                      ) : (
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                          {savedVersions.map((version) => {
-                            const isMaster = version.cv_kind === "master";
-                            const jobTitle = version.source_job_snapshot?.title ?? (isMaster ? "Master CV" : "Tailored CV");
-                            const company = version.source_job_snapshot?.company;
-                            return (
-                              <article key={version.id} className="flex min-w-0 flex-col rounded-xl border border-line bg-panel-2 p-4">
-                                <div className="mb-3 flex items-center justify-between gap-2">
-                                  <span className="rounded-full border border-line px-2 py-1 text-xs font-medium text-fg-muted">{isMaster ? "Master" : "Tailored"}</span>
-                                  <span className="text-xs text-fg-muted">{isMaster ? "Current" : "Accepted"}</span>
-                                </div>
-                                <h3 className="line-clamp-2 font-semibold text-fg">{jobTitle}</h3>
-                                <p className="mt-1 min-h-5 text-sm text-fg-muted">{company || "General CV"}</p>
-                                <p className="mt-3 text-xs text-fg-muted">Version {version.version_number} · {new Date(version.accepted_at ?? version.updated_at).toLocaleDateString()}</p>
-                                <Button className="mt-4 w-full" size="sm" variant="outline" onClick={() => setSelectedSavedVersion(version)}>Preview and download</Button>
-                              </article>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                    <SavedCvGrid />
                   ) : (
                     <CvPdfPreview
                       content={previewTab === "master" ? state.masterCv.content : (tailoredPreview?.content ?? state.masterCv.content)}
