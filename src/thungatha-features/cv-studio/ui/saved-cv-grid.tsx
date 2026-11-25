@@ -16,13 +16,6 @@ type SavedCv = {
   accepted_at: string | null;
 };
 
-const accents = {
-  teal: "#0F766E",
-  navy: "#1D4ED8",
-  burgundy: "#9F1239",
-  forest: "#166534",
-};
-
 import { SavedCvPreview } from "./saved-cv-preview";
 
 export function SavedCvGrid() {
