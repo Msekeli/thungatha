@@ -1,5 +1,6 @@
 "use client";
 
+import type { FormEventHandler } from "react";
 import { CvStudioWelcomePanel } from "./cv-studio-welcome-panel";
 import { CvStudioExternalJobForm } from "./cv-studio-external-job-form";
 import { CvStudioMasterPreview } from "./cv-studio-master-preview";
@@ -16,7 +17,7 @@ export function CvStudioJobEntryView({
   error: string | null;
   externalJobOpen: boolean;
   onFormChange: (value: JobForm) => void;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
   onClose: () => void;
   onReset: () => void;
   onAddExternalJob: () => void;
