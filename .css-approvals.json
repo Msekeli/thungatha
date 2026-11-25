@@ -1,3 +1,20 @@
 {
-  "approvals": []
+  "approvals": [
+    {
+      "path": "src/app/globals.css",
+      "reason": "Remove the bespoke job-card stylesheet after migrating card presentation to Tailwind utilities and shared React components.",
+      "tailwindAlternative": "Job card layout, responsive states, hover/focus states and action styling now use Tailwind utility classes in job-card-config.ts and the card components.",
+      "sharedComponentAlternative": "JobCardHeader, JobCardDetails and the existing shadcn Button component are reused across authenticated and public job cards.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/components/layout/workspace-content.css",
+      "reason": "Remove duplicated workspace, profile editor and results layout rules after migrating layout and responsive utilities into the relevant React components.",
+      "tailwindAlternative": "Workspace shell, Profile page layout, editor layout, job result spacing and CV Studio sizing use Tailwind utility classes.",
+      "sharedComponentAlternative": "Existing shadcn form controls and shared workspace components provide the controls and common UI; only state-dependent scroll behaviour and CV Studio theme surfaces remain.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    }
+  ]
 }

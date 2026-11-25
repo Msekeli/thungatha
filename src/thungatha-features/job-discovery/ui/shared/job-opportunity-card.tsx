@@ -44,7 +44,10 @@ export function JobOpportunityCard({
     .toUpperCase();
 
   return (
-    <article className={jobCardClassName} data-selected={selected}>
+    <article
+      className={jobCardClassName}
+      data-selected={selected}
+    >
       <button
         type="button"
         onClick={onSelect}
@@ -52,7 +55,11 @@ export function JobOpportunityCard({
         aria-label={`View ${job.title} at ${employer}`}
         className={jobCardSelectClassName}
       />
-      <JobCardHeader job={job} employer={employer} initials={initials} />
+      <JobCardHeader
+        job={job}
+        employer={employer}
+        initials={initials}
+      />
       <JobCardDetails
         job={job}
         ageDays={postedAgeDays(job.published_at)}
