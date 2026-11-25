@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { CvPdfContent } from "./cv-pdf-document";
+import { SavedCvCard } from "./saved-cv-card";
 
 type SavedCv = {
   id: string;
   cv_kind: "master" | "tailored";
   version_number: number;
-  content: unknown;
+  content: CvPdfContent;
   accent_colour: "teal" | "navy" | "burgundy" | "forest";
   source_job_snapshot: { title?: string; company?: string | null } | null;
   updated_at: string;
@@ -61,21 +63,9 @@ export function SavedCvGrid() {
         <p className="p-6 text-center text-sm text-fg-muted">No saved CV versions yet.</p>
       )}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {versions.map((version) => {
-          const master = version.cv_kind === "master";
-          return (
-            <article key={version.id} className="flex min-w-0 flex-col rounded-xl border border-line bg-panel-2 p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="rounded-full border border-line px-2 py-1 text-xs font-medium text-fg-muted">{master ? "Master" : "Tailored"}</span>
-                <span className="text-xs text-fg-muted">{master ? "Current" : "Accepted"}</span>
-              </div>
-              <h3 className="line-clamp-2 font-semibold text-fg">{version.source_job_snapshot?.title ?? "Master CV"}</h3>
-              <p className="mt-1 min-h-5 text-sm text-fg-muted">{version.source_job_snapshot?.company ?? "General CV"}</p>
-              <p className="mt-3 text-xs text-fg-muted">Version {version.version_number} · {new Date(version.accepted_at ?? version.updated_at).toLocaleDateString()}</p>
-              <Button className="mt-4 w-full" size="sm" variant="outline" onClick={() => setSelected(version)}>Preview and download</Button>
-            </article>
-          );
-        })}
+        {versions.map((version) => (
+          <SavedCvCard key={version.id} version={version} onSelect={() => setSelected(version)} />
+        ))}
       </div>
       </>}
     </section>
