@@ -130,7 +130,9 @@ export function CvDraftEditor({
   const [activeSection, setActiveSection] = useState<"summary" | "experience" | "skills" | "requirements">("summary");
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
   const [newSkill, setNewSkill] = useState("");
-  const [experienceTailorNoticeFor, setExperienceTailorNoticeFor] = useState<string | null>(null);
+  const [experienceDialogOpenFor, setExperienceDialogOpenFor] = useState<string | null>(null);
+  const [experienceTailoringBusyFor, setExperienceTailoringBusyFor] = useState<string | null>(null);
+  const [experienceTailoringError, setExperienceTailoringError] = useState<string | null>(null);
 
   const reviewSections = [
     { id: "summary" as const, label: "Professional Summary", target: "cv-review-summary" },
