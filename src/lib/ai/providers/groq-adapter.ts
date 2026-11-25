@@ -29,9 +29,7 @@ function toOpenAiJsonSchema(value: unknown): Record<string, unknown> {
     output.anyOf = schema.anyOf.map(toOpenAiJsonSchema);
   }
   if (Array.isArray(schema.type)) {
-    output.anyOf = schema.type.map((type) =>
-      toOpenAiJsonSchema({ type }),
-    );
+    output.anyOf = schema.type.map((type) => toOpenAiJsonSchema({ type }));
   } else if (typeof schema.type === "string") {
     output.type = JSON_SCHEMA_TYPES[schema.type] ?? schema.type.toLowerCase();
   }

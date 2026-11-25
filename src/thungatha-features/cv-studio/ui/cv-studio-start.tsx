@@ -119,11 +119,19 @@ export function CvStudioStart() {
   const [workflowBusy, setWorkflowBusy] = useState(false);
   const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
-  const [previewTab, setPreviewTab] = useState<"preview" | "master" | "tailored">("preview");
-  const [tailoredPreview, setTailoredPreview] = useState<{ content: CvPdfContent; accent: string } | null>(null);
-  const handleTailoredContentChange = useCallback((content: CvPdfContent, accent: string) => {
-    setTailoredPreview({ content, accent });
-  }, []);
+  const [previewTab, setPreviewTab] = useState<
+    "preview" | "master" | "tailored"
+  >("preview");
+  const [tailoredPreview, setTailoredPreview] = useState<{
+    content: CvPdfContent;
+    accent: string;
+  } | null>(null);
+  const handleTailoredContentChange = useCallback(
+    (content: CvPdfContent, accent: string) => {
+      setTailoredPreview({ content, accent });
+    },
+    [],
+  );
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -355,19 +363,41 @@ export function CvStudioStart() {
               </div>
               <section className="hidden min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm lg:flex">
                 <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line pb-3">
-                  <div className="flex items-center gap-1 rounded-full bg-panel-2 p-1" role="tablist" aria-label="CV preview version">
+                  <div
+                    className="flex items-center gap-1 rounded-full bg-panel-2 p-1"
+                    role="tablist"
+                    aria-label="CV preview version"
+                  >
                     {(["preview", "master", "tailored"] as const).map((tab) => (
-                      <button key={tab} type="button" role="tab" aria-selected={previewTab === tab} onClick={() => setPreviewTab(tab)}
-                        className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${previewTab === tab ? "bg-panel text-fg shadow-sm" : "text-fg-muted hover:text-fg"}`}>
-                        {tab === "preview" ? "CV Preview" : tab === "master" ? "Master CV" : "Tailored CV"}
+                      <button
+                        key={tab}
+                        type="button"
+                        role="tab"
+                        aria-selected={previewTab === tab}
+                        onClick={() => setPreviewTab(tab)}
+                        className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${previewTab === tab ? "bg-panel text-fg shadow-sm" : "text-fg-muted hover:text-fg"}`}
+                      >
+                        {tab === "preview"
+                          ? "CV Preview"
+                          : tab === "master"
+                            ? "Master CV"
+                            : "Tailored CV"}
                       </button>
                     ))}
                   </div>
                 </header>
                 <div className="min-h-0 flex-1 overflow-hidden pt-3">
                   <CvPdfPreview
-                    content={previewTab === "master" ? state.masterCv.content : (tailoredPreview?.content ?? state.masterCv.content)}
-                    accent={previewTab === "master" ? undefined : tailoredPreview?.accent}
+                    content={
+                      previewTab === "master"
+                        ? state.masterCv.content
+                        : (tailoredPreview?.content ?? state.masterCv.content)
+                    }
+                    accent={
+                      previewTab === "master"
+                        ? undefined
+                        : tailoredPreview?.accent
+                    }
                   />
                 </div>
               </section>
@@ -519,7 +549,12 @@ export function CvStudioStart() {
                       />
                     </div>
                   ) : (
-                    <CvPdfPreview content={tailoredPreview?.content ?? state.masterCv.content} accent={tailoredPreview?.accent} />
+                    <CvPdfPreview
+                      content={
+                        tailoredPreview?.content ?? state.masterCv.content
+                      }
+                      accent={tailoredPreview?.accent}
+                    />
                   )}
                 </section>
               </div>

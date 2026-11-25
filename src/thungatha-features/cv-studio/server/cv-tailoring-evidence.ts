@@ -23,12 +23,18 @@ export function buildCvTailoringEvidence(
       evidenceIds.add(id);
     }
   };
-  const addTarget = (path: string, value: string | null, evidencePath = path) => {
+  const addTarget = (
+    path: string,
+    value: string | null,
+    evidencePath = path,
+  ) => {
     const profileEvidenceRef = `cv:${evidencePath}`;
     editableTargets.push({
       path,
       currentText: value,
-      profileEvidenceRef: evidenceIds.has(profileEvidenceRef) ? profileEvidenceRef : null,
+      profileEvidenceRef: evidenceIds.has(profileEvidenceRef)
+        ? profileEvidenceRef
+        : null,
     });
   };
 

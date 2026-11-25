@@ -10,8 +10,14 @@ import type { JobMatchingContext } from "@/thungatha-features/job-discovery/serv
 import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
-import { buildCvTailoringSystemPrompt, buildCvWorkExperienceTailoringSystemPrompt } from "./cv-tailoring-prompt";
-import { mapCvSectionTailoringOutput, mapCvTailoringOutput } from "./map-cv-tailoring-output";
+import {
+  buildCvTailoringSystemPrompt,
+  buildCvWorkExperienceTailoringSystemPrompt,
+} from "./cv-tailoring-prompt";
+import {
+  mapCvSectionTailoringOutput,
+  mapCvTailoringOutput,
+} from "./map-cv-tailoring-output";
 import {
   CV_TAILORING_VERSION,
   createCvSectionTailoringResponseSchema,
@@ -19,17 +25,46 @@ import {
 } from "./cv-tailoring-schema";
 
 const EVIDENCE_STOP_WORDS = new Set([
-  "about", "after", "also", "and", "are", "based", "been", "being", "can",
-  "candidate", "demonstrate", "demonstrated", "experience", "from", "have",
-  "into", "job", "more", "must", "role", "should", "that", "their", "them",
-  "there", "these", "this", "through", "using", "with", "within", "work",
+  "about",
+  "after",
+  "also",
+  "and",
+  "are",
+  "based",
+  "been",
+  "being",
+  "can",
+  "candidate",
+  "demonstrate",
+  "demonstrated",
+  "experience",
+  "from",
+  "have",
+  "into",
+  "job",
+  "more",
+  "must",
+  "role",
+  "should",
+  "that",
+  "their",
+  "them",
+  "there",
+  "these",
+  "this",
+  "through",
+  "using",
+  "with",
+  "within",
+  "work",
 ]);
 
 function evidenceTerms(value: string) {
   return new Set(
-    value.toLowerCase().match(/[a-z0-9+#.]{2,}/g)?.filter(
-      (term) => !EVIDENCE_STOP_WORDS.has(term),
-    ) ?? [],
+    value
+      .toLowerCase()
+      .match(/[a-z0-9+#.]{2,}/g)
+      ?.filter((term) => !EVIDENCE_STOP_WORDS.has(term)) ?? [],
   );
 }
 
@@ -61,9 +96,10 @@ function selectSummaryEvidence(
   for (const { item } of ranked) {
     if (selected.length >= 24 || usedCharacters >= maxCharacters) break;
     const remaining = maxCharacters - usedCharacters;
-    const content = item.content.length > Math.min(700, remaining)
-      ? item.content.slice(0, Math.min(700, remaining)).trimEnd()
-      : item.content;
+    const content =
+      item.content.length > Math.min(700, remaining)
+        ? item.content.slice(0, Math.min(700, remaining)).trimEnd()
+        : item.content;
     if (!content) continue;
     selected.push({ id: item.id, content });
     usedCharacters += item.id.length + content.length;
@@ -77,9 +113,11 @@ function selectJobEvidence(
   maxCharacters = 2_000,
 ) {
   const byId = new Map(evidence.map((item) => [item.id, item]));
-  const requiredRefs = [...new Set(
-    requirements.flatMap((requirement) => requirement.sourceEvidenceRefs),
-  )].filter((ref) => byId.has(ref));
+  const requiredRefs = [
+    ...new Set(
+      requirements.flatMap((requirement) => requirement.sourceEvidenceRefs),
+    ),
+  ].filter((ref) => byId.has(ref));
   if (!requiredRefs.length || maxCharacters <= 0) return [];
 
   // Hard-bound the total evidence text. The previous implementation added
@@ -95,7 +133,10 @@ function selectJobEvidence(
   for (const ref of requiredRefs) {
     const remaining = maxCharacters - usedCharacters;
     if (remaining <= 0) break;
-    const contentBudget = Math.min(perExcerptBudget, remaining - ref.length - 1);
+    const contentBudget = Math.min(
+      perExcerptBudget,
+      remaining - ref.length - 1,
+    );
     if (contentBudget <= 0) break;
     const item = byId.get(ref);
     if (!item) continue;
@@ -183,8 +224,14 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
     understanding.requirements,
     2_000,
   );
-  if (!summaryEvidence.length || !jobEvidence.length || !editableTargets.length) {
-    throw new Error("There is not enough confirmed evidence to tailor this CV.");
+  if (
+    !summaryEvidence.length ||
+    !jobEvidence.length ||
+    !editableTargets.length
+  ) {
+    throw new Error(
+      "There is not enough confirmed evidence to tailor this CV.",
+    );
   }
 
   const schema = createCvTailoringResponseSchema(
@@ -210,12 +257,18 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
       // Send only ranked, bounded confirmed facts. The mapper still validates
       // model citations against the complete Profile evidence collection.
-      confirmedCvEvidence: summaryEvidence.map((item) => [item.id, item.content]),
-      editableTargets: editableTargets.map((item) => [item.path, item.currentText, item.profileEvidenceRef]),
+      confirmedCvEvidence: summaryEvidence.map((item) => [
+        item.id,
+        item.content,
+      ]),
+      editableTargets: editableTargets.map((item) => [
+        item.path,
+        item.currentText,
+        item.profileEvidenceRef,
+      ]),
     }),
   };
   // Length-only diagnostics make prompt growth observable without logging CV/job content.
-
 
   const response = provider
     ? await completeAiTaskWithProvider(provider, request)
@@ -237,7 +290,6 @@ export async function generateCvTailoringSuggestionsFromUnderstanding(
   };
 }
 
-
 /**
  * Tailor one selected work-experience record. Only that record's description
  * and achievements are editable targets; no other CV section is sent as an
@@ -256,7 +308,9 @@ export async function generateCvWorkExperienceSuggestions(
     (item) => item.sourceId === experienceSourceId,
   );
   if (!sourceExperience || !draftExperience) {
-    throw new Error("The selected work experience could not be found in this CV.");
+    throw new Error(
+      "The selected work experience could not be found in this CV.",
+    );
   }
 
   const jobContext: JobMatchingContext = {
@@ -267,14 +321,18 @@ export async function generateCvWorkExperienceSuggestions(
   };
   const understanding = await getOrCreateJobUnderstanding(jobContext);
   if (!understanding.analysis.requirements.length) {
-    throw new Error("No structured job requirements are available to justify an experience update.");
+    throw new Error(
+      "No structured job requirements are available to justify an experience update.",
+    );
   }
 
-  const { profileEvidence: allProfileEvidence, editableTargets: allEditableTargets } =
-    buildCvTailoringEvidence(masterContent, draftContent);
+  const {
+    profileEvidence: allProfileEvidence,
+    editableTargets: allEditableTargets,
+  } = buildCvTailoringEvidence(masterContent, draftContent);
   const experiencePrefix = `cv:workExperience[${experienceSourceId}]`;
-  const profileEvidence = allProfileEvidence.filter(
-    (item) => item.id.startsWith(`${experiencePrefix}.`),
+  const profileEvidence = allProfileEvidence.filter((item) =>
+    item.id.startsWith(`${experiencePrefix}.`),
   );
   const targetPrefix = `workExperience[${experienceSourceId}]`;
   const editableTargets = allEditableTargets.filter(
@@ -284,7 +342,9 @@ export async function generateCvWorkExperienceSuggestions(
       item.profileEvidenceRef !== null,
   );
   if (!profileEvidence.length || !editableTargets.length) {
-    throw new Error("This work experience has no confirmed description available to tailor.");
+    throw new Error(
+      "This work experience has no confirmed description available to tailor.",
+    );
   }
 
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
@@ -294,7 +354,9 @@ export async function generateCvWorkExperienceSuggestions(
     2_000,
   );
   if (!jobEvidence.length) {
-    throw new Error("There is not enough job-description evidence to tailor this experience.");
+    throw new Error(
+      "There is not enough job-description evidence to tailor this experience.",
+    );
   }
 
   const schema = createCvSectionTailoringResponseSchema(
@@ -319,7 +381,10 @@ export async function generateCvWorkExperienceSuggestions(
       },
       jobRequirements: compactRequirements(understanding.analysis.requirements),
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: profileEvidence.map((item) => [
+        item.id,
+        item.content,
+      ]),
       editableTargets: editableTargets.map((item) => [
         item.path,
         item.currentText,

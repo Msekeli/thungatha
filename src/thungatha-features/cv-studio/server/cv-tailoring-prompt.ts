@@ -23,7 +23,6 @@ export function buildCvTailoringSystemPrompt() {
   ].join("\n");
 }
 
-
 export function buildCvWorkExperienceTailoringSystemPrompt() {
   return [
     `You are preparing a truthful, evidence-grounded CV update for ONE work-experience record only. Task version: ${CV_TAILORING_VERSION}.`,

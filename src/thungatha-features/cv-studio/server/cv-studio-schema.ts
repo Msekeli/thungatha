@@ -102,11 +102,18 @@ export const cvSuggestionSchema = z
     proposedText: text(5000).min(1),
     reason: text(2000).min(1),
     evidenceRefs: z.array(z.string().trim().min(1).max(300)).min(1).max(50),
-    evidence: z.array(z.object({
-      ref: z.string().trim().min(1).max(300),
-      source: z.enum(["profile", "job"]),
-      excerpt: text(5000).min(1),
-    }).strict()).min(2).max(100),
+    evidence: z
+      .array(
+        z
+          .object({
+            ref: z.string().trim().min(1).max(300),
+            source: z.enum(["profile", "job"]),
+            excerpt: text(5000).min(1),
+          })
+          .strict(),
+      )
+      .min(2)
+      .max(100),
     decision: cvSuggestionDecisionSchema,
   })
   .strict();
