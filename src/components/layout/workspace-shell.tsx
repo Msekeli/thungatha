@@ -56,7 +56,9 @@ export function WorkspaceShell({
     "border-b border-[var(--th-workspace-header-border)]",
     "bg-[var(--th-workspace-header)] px-6 py-3.5",
     active === "/jobs" && "th-workspace-header--jobs",
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
   const pageContentClassName = [
     "th-workspace-page-content",
     "min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5",
