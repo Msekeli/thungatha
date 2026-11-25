@@ -1,51 +1,18 @@
 import "server-only";
-import { z } from "zod";
 import {
   completeAiTask,
   completeAiTaskWithProvider,
 } from "@/lib/ai/provider-router";
 import type { AiProvider } from "@/lib/ai/contracts";
 import { toGeminiResponseSchema } from "./cv-tailoring-gemini-schema";
-import type { TailoringSuggestionInput as Suggestion } from "./cv-tailoring-suggestion-mapper";
-const reviewSchema = z
-  .object({
-    reviews: z.array(
-      z
-        .object({
-          index: z.number().int().nonnegative(),
-          decision: z.enum(["approve", "reject"]),
-          issue: z.string(),
-        })
-        .strict(),
-    ),
-  })
-  .strict();
+import type { TailoringSuggestionInput } from "./cv-tailoring-suggestion-mapper";
+import { cvTailoringReviewSchema } from "./cv-tailoring-verification-schema";
+import { retainApprovedSuggestions } from "./cv-tailoring-verification-review";
 
-export function retainApprovedSuggestions(
-  suggestions: Suggestion[],
-  reviews: z.infer<typeof reviewSchema>["reviews"],
-) {
-  if (reviews.some((review) => review.index >= suggestions.length)) {
-    throw new Error(
-      "CV tailoring verification returned an unknown suggestion.",
-    );
-  }
-  const byIndex = new Map(reviews.map((review) => [review.index, review]));
-  if (
-    byIndex.size !== suggestions.length ||
-    suggestions.some((_, index) => !byIndex.has(index))
-  ) {
-    throw new Error(
-      "CV tailoring verification did not review every suggestion exactly once.",
-    );
-  }
-  return suggestions.filter(
-    (_, index) => byIndex.get(index)?.decision === "approve",
-  );
-}
+export { retainApprovedSuggestions };
 
 export async function verifyCvTailoringSuggestions(
-  suggestions: Suggestion[],
+  suggestions: TailoringSuggestionInput[],
   profileEvidence: Array<{ id: string; content: string }>,
   jobEvidence: Array<{ id: string; content: string }>,
   requirements: Array<{
@@ -59,7 +26,7 @@ export async function verifyCvTailoringSuggestions(
   const request = {
     task: "cv-tailoring" as const,
     responseFormat: "json" as const,
-    responseSchema: toGeminiResponseSchema(reviewSchema),
+    responseSchema: toGeminiResponseSchema(cvTailoringReviewSchema),
     temperature: 0,
     maxOutputTokens: Math.max(512, suggestions.length * 120),
     timeoutMs: 120_000,
@@ -85,15 +52,11 @@ export async function verifyCvTailoringSuggestions(
   const response = provider
     ? await completeAiTaskWithProvider(provider, request)
     : await completeAiTask(request);
-  if (
-    ["MAX_TOKENS", "LENGTH"].includes(
-      response.finishReason?.toUpperCase() ?? "",
-    )
-  ) {
-    throw new Error(
-      "CV tailoring verification returned an incomplete response.",
-    );
+  if (["MAX_TOKENS", "LENGTH"].includes(
+    response.finishReason?.toUpperCase() ?? "",
+  )) {
+    throw new Error("CV tailoring verification returned an incomplete response.");
   }
-  const parsed = reviewSchema.parse(JSON.parse(response.content));
+  const parsed = cvTailoringReviewSchema.parse(JSON.parse(response.content));
   return retainApprovedSuggestions(suggestions, parsed.reviews);
 }
