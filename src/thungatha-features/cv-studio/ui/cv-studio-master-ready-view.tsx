@@ -1,14 +1,11 @@
 "use client";
 
-import { CvStudioWelcomePanel } from "./cv-studio-welcome-panel";
-import { CvStudioExternalJobForm } from "./cv-studio-external-job-form";
 import { CvStudioTailoringWorkspace } from "./cv-studio-tailoring-workspace";
 import { CvStudioJobPreview } from "./cv-studio-job-preview";
-import { CvStudioMasterPreview } from "./cv-studio-master-preview";
 import { CvStudioJobDetailsPanel } from "./cv-studio-job-details-panel";
-import type { CvPdfContent } from "./cv-pdf-document";
-import type { JobContext, Suitability, JobForm, State } from "./cv-studio-types";
+import type { JobContext, Suitability, State } from "./cv-studio-types";
 import type { useCvStudioJobWorkflow } from "./use-cv-studio-job-workflow";
+import { CvStudioJobEntryView } from "./cv-studio-job-entry-view";
 
 type MasterReadyState = Extract<State, { status: "master_cv_ready" }>;
 type MasterReadyViewProps = {
@@ -60,25 +57,19 @@ export function CvStudioMasterReadyView({
           />
         </div>
       ) : (
-        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
-          <section className="min-w-0 rounded-2xl border border-line bg-panel p-5 text-fg shadow-sm sm:p-7">
-            {externalJobOpen ? (
-              <CvStudioExternalJobForm
-                value={jobForm}
-                busy={workflowBusy}
-                error={workflowError}
-                hasMasterCv={Boolean(state.masterCv)}
-                onChange={setJobForm}
-                onSubmit={submitPastedJob}
-                onClose={closeExternalJob}
-                onReset={resetExternalJob}
-              />
-            ) : (
-              <CvStudioWelcomePanel onAddExternalJob={() => setExternalJobOpen(true)} />
-            )}
-          </section>
-          <CvStudioMasterPreview content={state.masterCv} />
-        </div>
+        <CvStudioJobEntryView
+          masterContent={state.masterCv}
+          jobForm={jobForm}
+          busy={workflowBusy}
+          error={workflowError}
+          externalJobOpen={externalJobOpen}
+          onFormChange={setJobForm}
+          onSubmit={submitPastedJob}
+          onClose={closeExternalJob}
+          onReset={resetExternalJob}
+          onAddExternalJob={() => setExternalJobOpen(true)}
+        />
+
       )}
     </div>
   );
