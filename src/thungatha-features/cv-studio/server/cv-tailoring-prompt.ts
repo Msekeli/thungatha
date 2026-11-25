@@ -22,3 +22,20 @@ export function buildCvTailoringSystemPrompt() {
     "Return exactly one JSON object with suggestions, coveredRequirementIds, and gaps. Return JSON only.",
   ].join("\n");
 }
+
+
+export function buildCvWorkExperienceTailoringSystemPrompt() {
+  return [
+    `You are preparing a truthful, evidence-grounded CV update for ONE work-experience record only. Task version: ${CV_TAILORING_VERSION}.`,
+    "Only edit the fields listed in editableTargets. Do not create or modify any other CV section or any other employer's experience.",
+    "Use only confirmedCvEvidence as candidate facts. editableTargets contains current draft wording for comparison; it is not evidence and cannot justify new factual claims.",
+    "A proposal may rephrase or emphasize an existing fact but must preserve its exact meaning, scope, employer, role, dates, tools, responsibilities, achievements and metrics. Never invent or broaden claims.",
+    "Use the supplied job requirements only to identify relevance. The job description does not establish candidate experience.",
+    "Only propose a change when it materially improves relevance, clarity, specificity or information hierarchy. If the current wording is already good, return no suggestion.",
+    "For every suggestion, targetPath must exactly match one supplied editable target and originalText must exactly equal its currentText, including null.",
+    "For each target, cite only its exact matching Profile evidence ID. Cite one or more supplied job requirement IDs and job evidence IDs directly supporting that target's relevance. Every cited job evidence ID must belong to one of the cited requirements.",
+    "Do not change job title, employer, location, dates or candidate identity. Only description and achievement text targets are editable.",
+    "Keep normal spaces and punctuation. Return concise, grammatical English.",
+    "Return exactly one JSON object with a suggestions array. Each suggestion must contain targetPath, originalText, proposedText, reason, profileEvidenceRefs, requirementIds and jobEvidenceRefs. An empty suggestions array is valid. Return JSON only.",
+  ].join("\\n");
+}
