@@ -8,7 +8,7 @@ import type { useCvStudioData } from "./use-cv-studio-data";
 export function useCvStudioSavedCv(data: ReturnType<typeof useCvStudioData>) {
   const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
 
-  async function useAcceptedCv(versionId: string) {
+  async function reuseAcceptedCv(versionId: string) {
     if (!data.jobContext) return;
     data.setWorkflowBusy(true);
     data.setWorkflowError(null);
@@ -24,5 +24,5 @@ export function useCvStudioSavedCv(data: ReturnType<typeof useCvStudioData>) {
     }
   }
 
-  return { reusableCv, setReusableCv, useAcceptedCv };
+  return { reusableCv, setReusableCv, reuseAcceptedCv };
 }
