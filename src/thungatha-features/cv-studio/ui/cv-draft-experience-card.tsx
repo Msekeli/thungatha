@@ -1,19 +1,11 @@
-import { Button } from "@/components/ui/button";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
 import type { CvSuggestion } from "../server/cv-studio-schema";
+import { CvDraftExperienceCardHeader } from "./cv-draft-experience-card-header";
 
-type Experience = {
-  sourceId: string;
-  jobTitle: string;
-  employer: string;
-  location: string | null;
-  startDate: string;
-  endDate: string | null;
-  isCurrent: boolean;
-  description: string | null;
-};
+import type { CvDraftContent } from "./cv-draft-content";
+
 type CvDraftExperienceCardProps = {
-  item: Experience;
+  item: CvDraftContent["workExperience"][number];
   suggestions: CvSuggestion[];
   isTailoring: boolean;
   isReviewing: boolean;
@@ -35,29 +27,15 @@ export function CvDraftExperienceCard({
 }: CvDraftExperienceCardProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4">
-      <div className="shrink-0">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h4 className="min-w-0 text-sm font-semibold sm:text-base">{item.jobTitle}</h4>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            {canUndo && (
-              <Button type="button" size="sm" variant="outline" disabled={disabled} onClick={onUndo}>
-                Undo
-              </Button>
-            )}
-            {!isReviewing && (
-              <Button type="button" size="sm" disabled={disabled || isTailoring} onClick={onTailor}>
-                {isTailoring ? "Tailoring…" : "Tailor this experience"}
-              </Button>
-            )}
-          </div>
-        </div>
-        <p className="mt-1 text-xs text-fg-muted sm:text-sm">
-          {item.employer}{item.location ? ` · ${item.location}` : ""}
-        </p>
-        <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">
-          {item.startDate} – {item.isCurrent ? "Present" : (item.endDate ?? "—")}
-        </p>
-      </div>
+      <CvDraftExperienceCardHeader
+        item={item}
+        isTailoring={isTailoring}
+        isReviewing={isReviewing}
+        disabled={disabled}
+        canUndo={canUndo}
+        onUndo={onUndo}
+        onTailor={onTailor}
+      />
       <div className="min-h-0 flex-1 overflow-y-auto pt-3">
         {isReviewing ? (
           <CvAiSuggestions
