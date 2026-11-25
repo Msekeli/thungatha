@@ -1,10 +1,11 @@
 "use client";
 
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { JobForm } from "./cv-studio-types";
+import { CvStudioFormField } from "./cv-studio-form-field";
 
 type CvStudioExternalJobFormProps = {
   value: JobForm;
@@ -37,22 +38,22 @@ export function CvStudioExternalJobForm({
         </Button>
       </div>
       <form className="space-y-4" onSubmit={onSubmit}>
-        <Field label="Job title" required>
+        <CvStudioFormField label="Job title" required>
           <Input
             required minLength={2} maxLength={300}
             value={value.title}
             onChange={(event) => onChange({ ...value, title: event.target.value })}
             placeholder="e.g. Software Developer"
           />
-        </Field>
-        <Field label="Company name" required>
+        </CvStudioFormField>
+        <CvStudioFormField label="Company name" required>
           <Input
             required minLength={2} maxLength={300}
             value={value.company}
             onChange={(event) => onChange({ ...value, company: event.target.value })}
             placeholder="e.g. Example Technologies"
           />
-        </Field>
+        </CvStudioFormField>
         <Field
           label="Job description"
           required
@@ -64,7 +65,7 @@ export function CvStudioExternalJobForm({
             onChange={(event) => onChange({ ...value, description: event.target.value })}
             placeholder="Paste the complete job description here…"
           />
-        </Field>
+        </CvStudioFormField>
         {error && <p className="text-sm text-rose-700" role="alert">{error}</p>}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={busy || !hasMasterCv}>
@@ -76,24 +77,5 @@ export function CvStudioExternalJobForm({
         </div>
       </form>
     </div>
-  );
-}
-
-function Field({
-  label, required, hint, children,
-}: {
-  label: string;
-  required?: boolean;
-  hint?: string;
-  children: ReactNode;
-}) {
-  return (
-    <label className="block space-y-1.5">
-      <span className="block text-sm font-medium text-slate-800">
-        {label}{required ? " *" : ""}
-      </span>
-      {children}
-      {hint && <span className="block text-xs leading-5 text-slate-500">{hint}</span>}
-    </label>
   );
 }
