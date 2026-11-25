@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CvPdfPreview } from "./cv-pdf-preview";
-import type { CvPdfContent } from "./cv-pdf-document";
 
 type SavedCv = {
   id: string;
   cv_kind: "master" | "tailored";
   version_number: number;
-  content: CvPdfContent;
+  content: unknown;
   accent_colour: "teal" | "navy" | "burgundy" | "forest";
   source_job_snapshot: { title?: string; company?: string | null } | null;
   updated_at: string;
@@ -22,6 +20,8 @@ const accents = {
   burgundy: "#9F1239",
   forest: "#166534",
 };
+
+import { SavedCvPreview } from "./saved-cv-preview";
 
 export function SavedCvGrid() {
   const [versions, setVersions] = useState<SavedCv[]>([]);
@@ -44,15 +44,12 @@ export function SavedCvGrid() {
     }
   }
 
-  if (selected) return (
-    <div className="space-y-3">
-      <Button size="sm" variant="outline" onClick={() => setSelected(null)}>Back to all CVs</Button>
-      <CvPdfPreview content={selected.content} accent={accents[selected.accent_colour]} />
-    </div>
-  );
+
 
   return (
     <section className="space-y-3">
+      {selected && <SavedCvPreview version={selected} onBack={() => setSelected(null)} />}
+      {!selected && <>
       <div className="flex justify-end">
         <Button size="sm" variant="outline" onClick={() => void loadVersions()} disabled={loading}>
           {loading ? "Refreshing…" : "Refresh CVs"}
@@ -80,6 +77,7 @@ export function SavedCvGrid() {
           );
         })}
       </div>
+      </>}
     </section>
   );
 }
