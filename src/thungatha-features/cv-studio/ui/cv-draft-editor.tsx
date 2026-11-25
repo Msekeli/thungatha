@@ -409,27 +409,32 @@ export function CvDraftEditor({
             {createFailed && <Button className="w-fit" size="sm" onClick={() => void createDraft()} disabled={busy}>Retry</Button>}
           </div>
         ) : activeSection === "summary" ? (
-          <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
-            <div className="shrink-0"><h3 className="text-lg font-bold">Professional Summary</h3><p className="text-sm text-fg-muted">Your original summary stays unchanged until you request and accept a proposal.</p></div>
-            <section className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-4">
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
+          <div className="flex h-full min-h-0 flex-col gap-2 text-fg">
+            <div className="shrink-0"><h3 className="text-base font-bold sm:text-lg">Professional Summary</h3><p className="text-xs text-fg-muted sm:text-sm">The proposed paragraph replaces the original here while you review it.</p></div>
+            <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-line bg-panel-2 p-3 sm:p-4">
+              {summaryDialogOpen ? (
+                <CvAiSuggestions
+                  open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}
+                  suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+                  hasCompletedReview={draft.tailoring_assessment !== null}
+                  generating={tailoringBusy} generationError={tailoringFailed ? error : null}
+                  disabled={busy || draft.status !== "draft"}
+                  onAccept={(id) => decideSuggestion(id, "accepted")} onReject={(id) => decideSuggestion(id, "rejected")}
+                  onRegenerate={() => void generateSuggestions()} onDiscard={() => setSummaryDialogOpen(false)}
+                />
+              ) : (
+                <>
+                  <h4 className="shrink-0 text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
+                  <p className="mt-2 line-clamp-[9] whitespace-pre-wrap text-sm leading-5 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
+                </>
+              )}
             </section>
-            {!summaryDialogOpen && !tailoringBusy && (
-              <Button type="button" className="w-fit" disabled={busy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
+            {!summaryDialogOpen && (
+              <Button type="button" className="w-fit shrink-0" size="sm" disabled={busy || tailoringBusy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
                 {pendingSuggestion ? "Review summary suggestion" : "Tailor professional summary"}
               </Button>
             )}
-            {summaryDialogOpen && <CvAiSuggestions
-              open={summaryDialogOpen} onOpenChange={setSummaryDialogOpen}
-              suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
-              hasCompletedReview={draft.tailoring_assessment !== null}
-              generating={tailoringBusy} generationError={tailoringFailed ? error : null}
-              disabled={busy || draft.status !== "draft"}
-              onAccept={(id) => decideSuggestion(id, "accepted")} onReject={(id) => decideSuggestion(id, "rejected")}
-              onRegenerate={() => void generateSuggestions()} onDiscard={() => setSummaryDialogOpen(false)}
-            />}
-            {error && !tailoringFailed && <p className="text-sm text-destructive" role="alert">{error}</p>}
+            {error && !tailoringFailed && <p className="shrink-0 text-xs text-destructive" role="alert">{error}</p>}
           </div>
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
@@ -449,39 +454,52 @@ export function CvDraftEditor({
                   </div>
                   {content.workExperience[activeExperienceIndex] && (() => {
                     const item = content.workExperience[activeExperienceIndex];
+                    const isTailoring = experienceTailoringBusyFor === item.sourceId;
+                    const isReviewing = experienceDialogOpenFor === item.sourceId;
+                    const experienceSuggestions = draft.suggestions.filter((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."));
                     return (
-                      <div key={item.sourceId} className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4">
-                        <h4 className="text-sm font-semibold sm:text-base">{item.jobTitle}</h4>
-                        <p className="mt-1 text-xs text-fg-muted sm:text-sm">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
-                        <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
-                        <div className="mt-3 space-y-3 sm:mt-4">
-                          <section>
-                            <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original responsibilities / description</h5>
-                            <p className="mt-2 whitespace-pre-wrap text-xs leading-5 sm:text-sm sm:leading-6">{item.description || "No description provided."}</p>
-                          </section>
-                          <section>
-                            <h5 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Achievements</h5>
-                            {item.achievements.length ? <ul className="mt-2 list-disc space-y-1.5 pl-5 text-xs leading-5 sm:space-y-2 sm:text-sm sm:leading-6">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-2 text-sm text-fg-muted">No achievements listed.</p>}
-                          </section>
+                      <div key={item.sourceId} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4">
+                        <div className="shrink-0">
+                          <h4 className="text-sm font-semibold sm:text-base">{item.jobTitle}</h4>
+                          <p className="mt-1 truncate text-xs text-fg-muted sm:text-sm">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
+                          <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
                         </div>
-                        <div className="mt-5 border-t border-line pt-4">
-                          <Button type="button" disabled={busy || draft.status !== "draft" || experienceTailoringBusyFor !== null} onClick={() => void generateExperienceSuggestions(item.sourceId)}>
-                            {experienceTailoringBusyFor === item.sourceId ? "Tailoring…" : draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "].") && suggestion.decision === "pending") ? "Review suggestion" : "Tailor this experience"}
-                          </Button>
-                          <CvAiSuggestions
-                            open={experienceDialogOpenFor === item.sourceId}
-                            onOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
-                            suggestions={draft.suggestions.filter((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."))}
-                            hasCompletedReview={draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "].")) || (experienceDialogOpenFor === item.sourceId && experienceTailoringBusyFor === null && experienceTailoringError === null)}
-                            generating={experienceTailoringBusyFor === item.sourceId}
-                            generationError={experienceDialogOpenFor === item.sourceId ? experienceTailoringError : null}
-                            disabled={busy || draft.status !== "draft"}
-                            onAccept={(id) => decideSuggestion(id, "accepted")}
-                            onReject={(id) => decideSuggestion(id, "rejected")}
-                            onRegenerate={() => void generateExperienceSuggestions(item.sourceId)}
-                            onDiscard={() => setExperienceDialogOpenFor(null)}
-                          />
+                        <div className="min-h-0 flex-1 overflow-hidden pt-3">
+                          {isReviewing ? (
+                            <CvAiSuggestions
+                              open={isReviewing}
+                              onOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
+                              suggestions={experienceSuggestions}
+                              hasCompletedReview={experienceSuggestions.length > 0 || (!isTailoring && !experienceTailoringError)}
+                              generating={isTailoring}
+                              generationError={experienceTailoringError}
+                              disabled={busy || draft.status !== "draft"}
+                              onAccept={(id) => decideSuggestion(id, "accepted")}
+                              onReject={(id) => decideSuggestion(id, "rejected")}
+                              onRegenerate={() => void generateExperienceSuggestions(item.sourceId)}
+                              onDiscard={() => setExperienceDialogOpenFor(null)}
+                            />
+                          ) : (
+                            <div className="space-y-3">
+                              <section>
+                                <h5 className="text-[10px] font-semibold uppercase tracking-wide text-fg-muted sm:text-xs">Original responsibilities / description</h5>
+                                <p className="mt-1 line-clamp-4 whitespace-pre-wrap text-xs leading-4 sm:text-sm sm:leading-5">{item.description || "No description provided."}</p>
+                              </section>
+                              <section>
+                                <h5 className="text-[10px] font-semibold uppercase tracking-wide text-fg-muted sm:text-xs">Achievements</h5>
+                                {item.achievements.length ? <ul className="mt-1 list-disc space-y-1 pl-4 text-xs leading-4 sm:text-sm sm:leading-5">{item.achievements.slice(0, 3).map((achievement, i) => <li key={i} className="line-clamp-2">{achievement}</li>)}</ul> : <p className="mt-1 text-xs text-fg-muted">No achievements listed.</p>}
+                                {item.achievements.length > 3 && <p className="mt-1 text-[10px] text-fg-muted">+{item.achievements.length - 3} more achievements in your master CV</p>}
+                              </section>
+                            </div>
+                          )}
                         </div>
+                        {!isReviewing && (
+                          <div className="shrink-0 border-t border-line pt-2">
+                            <Button type="button" size="sm" disabled={busy || draft.status !== "draft" || experienceTailoringBusyFor !== null} onClick={() => void generateExperienceSuggestions(item.sourceId)}>
+                              Tailor this experience
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     );
                   })()}
@@ -492,8 +510,8 @@ export function CvDraftEditor({
         ) : activeSection === "skills" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review existing skills or add another skill to this CV.</p></div>
-            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-              <div className="flex flex-wrap content-start gap-2">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
+              <div className="flex max-h-32 flex-wrap content-start gap-2 overflow-hidden">
                 {content.technicalSkills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-accent/30 bg-accent-bg px-3 py-1.5 text-sm text-fg">{skill}</span>)}
                 {!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}
               </div>
@@ -507,11 +525,11 @@ export function CvDraftEditor({
         ) : (
           <div className="flex h-full min-h-0 flex-col gap-3">
             <div className="shrink-0"><h3 className="text-lg font-bold">Job Requirements</h3><p className="text-sm text-fg-muted">Requirements from the job that your confirmed Profile does not currently demonstrate. This assessment is informational and does not change your CV.</p></div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-              {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.map((gap, index) => (
-                <div key={index} className="rounded-xl border border-line bg-panel-2 p-4 text-fg">
+            <div className="min-h-0 flex-1 space-y-2 overflow-hidden pr-1">
+              {draft.tailoring_assessment?.gaps.length ? draft.tailoring_assessment.gaps.slice(0, 3).map((gap, index) => (
+                <div key={index} className="rounded-xl border border-line bg-panel-2 p-3 text-fg">
                   <div className="flex items-start gap-2"><span className="mt-0.5 shrink-0 rounded-full border border-warn bg-warn-bg px-2 py-0.5 text-xs font-semibold text-warn">Not demonstrated</span><h4 className="text-sm font-semibold text-fg">{gap.requirement}</h4></div>
-                  <p className="mt-2 text-sm leading-5 text-fg-muted">{gap.explanation}</p>
+                  <p className="mt-1 line-clamp-2 text-xs leading-4 text-fg-muted">{gap.explanation}</p>
                 </div>
               )) : (
                 <div className="rounded-xl border border-line bg-panel-2 p-4">
