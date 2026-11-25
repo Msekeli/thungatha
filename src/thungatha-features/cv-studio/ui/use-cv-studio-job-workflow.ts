@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useState, type FormEvent } from "react";
-import { createCvStudioPastedJob, reuseCvStudioVersion } from "./cv-studio-api";
-import type { ReusableCv } from "./cv-studio-content-types";
+import { createCvStudioPastedJob } from "./cv-studio-api";
 import type { CvPdfContent } from "./cv-pdf-document";
 import type { useCvStudioData } from "./use-cv-studio-data";
 import { useCvStudioJobForm } from "./use-cv-studio-job-form";
+import { useCvStudioSavedCv } from "./use-cv-studio-saved-cv";
 
 type CvStudioJobWorkflowProps = {
   data: ReturnType<typeof useCvStudioData>;
@@ -15,7 +15,7 @@ type CvStudioJobWorkflowProps = {
 export function useCvStudioJobWorkflow({
   data, onNavigateToStudio,
 }: CvStudioJobWorkflowProps) {
-  const [reusableCv, setReusableCv] = useState<ReusableCv | null>(null);
+  const savedCv = useCvStudioSavedCv(data);
   const [tailoringStarted, setTailoringStarted] = useState(false);
   const jobFormState = useCvStudioJobForm(data.setWorkflowError);
   const { jobForm, setExternalJobOpen, resetExternalJob } = jobFormState;
@@ -29,21 +29,6 @@ export function useCvStudioJobWorkflow({
     [],
   );
 
-  async function useAcceptedCv(versionId: string) {
-    if (!data.jobContext) return;
-    data.setWorkflowBusy(true);
-    data.setWorkflowError(null);
-    try {
-      const body = await reuseCvStudioVersion(versionId, data.jobContext);
-      setReusableCv(body.version);
-    } catch (cause) {
-      data.setWorkflowError(
-        cause instanceof Error ? cause.message : "The saved CV could not be reused.",
-      );
-    } finally {
-      data.setWorkflowBusy(false);
-    }
-  }
 
   async function submitPastedJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,7 +54,7 @@ export function useCvStudioJobWorkflow({
     data.setJobId(null);
     data.setJobContext(null);
     data.setSuitability(null);
-    setReusableCv(null);
+    savedCv.setReusableCv(null);
     data.setWorkflowError(null);
     resetExternalJob();
     setTailoringStarted(false);
@@ -79,8 +64,8 @@ export function useCvStudioJobWorkflow({
 
   return {
     ...jobFormState,
-    reusableCv, setReusableCv, tailoringStarted, setTailoringStarted,
-    tailoredPreview, handleTailoredContentChange, useAcceptedCv,
+    ...savedCv, tailoringStarted, setTailoringStarted,
+    tailoredPreview, handleTailoredContentChange,
     submitPastedJob, clearSelectedJob,
   };
 }
