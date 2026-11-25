@@ -463,7 +463,7 @@ export function CvDraftEditor({
                             open={experienceDialogOpenFor === item.sourceId}
                             onOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
                             suggestions={draft.suggestions.filter((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."))}
-                            hasCompletedReview={draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."))}
+                            hasCompletedReview={draft.suggestions.some((suggestion) => suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "].")) || (experienceDialogOpenFor === item.sourceId && experienceTailoringBusyFor === null && experienceTailoringError === null)}
                             generating={experienceTailoringBusyFor === item.sourceId}
                             generationError={experienceDialogOpenFor === item.sourceId ? experienceTailoringError : null}
                             disabled={busy || draft.status !== "draft"}
