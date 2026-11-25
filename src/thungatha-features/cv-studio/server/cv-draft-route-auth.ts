@@ -1,6 +1,5 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
 import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server/profile-route-auth";
 import { readProfile } from "@/thungatha-features/user-profile/server/repository";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
