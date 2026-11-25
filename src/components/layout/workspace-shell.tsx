@@ -46,6 +46,29 @@ export function WorkspaceShell({
   const activeDestination = jobsStatus
     ? `/jobs?status=${jobsStatus}`
     : active;
+  const contentClassName = [
+    "th-workspace-content",
+    "flex h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+  ].join(" ");
+  const headerClassName = [
+    "th-workspace-header",
+    "flex min-h-[92px] items-center justify-between gap-5",
+    "border-b border-[var(--th-workspace-header-border)]",
+    "bg-[var(--th-workspace-header)] px-6 py-3.5",
+    active === "/jobs" && "th-workspace-header--jobs",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const pageContentClassName = [
+    "th-workspace-page-content",
+    "min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5",
+    "has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col",
+    "has-[.th-profile-page]:p-0",
+    "has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col",
+    "has-[.th-jobs-page]:p-0",
+    "has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col",
+    "has-[.th-cv-studio-page]:p-0",
+  ].join(" ");
 
   return (
     <div className="th-workspace-shell">
@@ -65,10 +88,8 @@ export function WorkspaceShell({
           )}
         </div>
       </aside>
-      <div className="th-workspace-content flex h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <header
-          className={`th-workspace-header flex min-h-[92px] items-center justify-between gap-5 border-b border-[var(--th-workspace-header-border)] bg-[var(--th-workspace-header)] px-6 py-3.5 ${active === "/jobs" ? "th-workspace-header--jobs" : ""}`}
-        >
+      <div className={contentClassName}>
+        <header className={headerClassName}>
           <div className="th-workspace-heading min-w-0">
             <h1 className="m-0 text-[22px] font-semibold leading-[1.3] text-[var(--th-workspace-header-text)]">
               {page.title}
@@ -79,11 +100,7 @@ export function WorkspaceShell({
           </div>
           <ThemeToggle className="th-workspace-theme-toggle shrink-0" />
         </header>
-        <main
-          className="th-workspace-page-content min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5 has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col has-[.th-profile-page]:p-0 has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col has-[.th-jobs-page]:p-0 has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col has-[.th-cv-studio-page]:p-0"
-        >
-          {children}
-        </main>
+        <main className={pageContentClassName}>{children}</main>
       </div>
     </div>
   );
