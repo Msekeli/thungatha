@@ -2,27 +2,29 @@
 
 import { useEffect, useState } from "react";
 
+type PdfRenderState = {
+  pdfUrl: string;
+  containerWidth: number;
+  zoom: number;
+  pageCount: number;
+  canvases: HTMLCanvasElement[];
+  error: string | null;
+};
+
 export function useCvPdfPageRendering(
   pdfUrl: string | null,
   containerWidth: number,
   zoom: number,
 ) {
-  const [pageCount, setPageCount] = useState(0);
-  const [canvases, setCanvases] = useState<HTMLCanvasElement[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<PdfRenderState | null>(null);
+  const current = state?.pdfUrl === pdfUrl &&
+    state?.containerWidth === containerWidth &&
+    state?.zoom === zoom ? state : null;
 
   useEffect(() => {
-    if (!pdfUrl || !containerWidth) {
-      setPageCount(0);
-      setCanvases([]);
-      setError(null);
-      return;
-    }
+    if (!pdfUrl || !containerWidth) return;
     let active = true;
     let loadedDocument: { destroy: () => Promise<void>; numPages: number } | null = null;
-    setError(null);
-    setPageCount(0);
-    setCanvases([]);
 
     void (async () => {
       try {
@@ -34,7 +36,10 @@ export function useCvPdfPageRendering(
         const pdfDocument = await loadingTask.promise;
         loadedDocument = pdfDocument;
         if (!active) return;
-        setPageCount(pdfDocument.numPages);
+        setState({
+          pdfUrl, containerWidth, zoom,
+          pageCount: pdfDocument.numPages, canvases: [], error: null,
+        });
 
         const firstPage = await pdfDocument.getPage(1);
         const baseWidth = firstPage.getViewport({ scale: 1 }).width;
@@ -59,10 +64,18 @@ export function useCvPdfPageRendering(
           await page.render({ canvas, canvasContext: context, viewport }).promise;
           if (!active) return;
           rendered.push(canvas);
-          setCanvases([...rendered]);
+          setState({
+            pdfUrl, containerWidth, zoom,
+            pageCount: pdfDocument.numPages, canvases: [...rendered], error: null,
+          });
         }
       } catch (cause) {
-        if (active) setError(cause instanceof Error ? cause.message : "The PDF preview could not be rendered.");
+        if (active) {
+          setState({
+            pdfUrl, containerWidth, zoom, pageCount: 0, canvases: [],
+            error: cause instanceof Error ? cause.message : "The PDF preview could not be rendered.",
+          });
+        }
       }
     })();
 
@@ -72,5 +85,9 @@ export function useCvPdfPageRendering(
     };
   }, [pdfUrl, containerWidth, zoom]);
 
-  return { pageCount, canvases, error };
+  return {
+    pageCount: current?.pageCount ?? 0,
+    canvases: current?.canvases ?? [],
+    error: current?.error ?? null,
+  };
 }
