@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvPdfPreview } from "./cv-pdf-preview";
 import { CvAiSuggestions } from "./cv-ai-suggestions";
+import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftSkillsSection } from "./cv-draft-skills-section";
 import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
 import {
@@ -493,13 +494,6 @@ export function CvDraftEditor({
   const activeIndex = reviewSections.findIndex(
     (item) => item.id === activeSection,
   );
-  const pendingSuggestion =
-    draft?.suggestions.some(
-      (item) =>
-        item.targetPath === "professionalSummary" &&
-        item.decision === "pending",
-    ) ?? false;
-
   async function saveDraft() {
     if (!draft || draft.status !== "draft") return;
     setBusy(true);
@@ -517,8 +511,7 @@ export function CvDraftEditor({
         }),
       });
       const body = await response.json();
-      if (!response.ok)
-        throw new Error(body.error ?? "Draft could not be saved.");      setDraft(body.draft as Draft);
+      if (!response.ok)        throw new Error(body.error ?? "Draft could not be saved.");      setDraft(body.draft as Draft);
       setMessage("Draft saved. Review the preview before accepting it.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Draft could not be saved.");
@@ -624,87 +617,34 @@ export function CvDraftEditor({
             )}
           </div>
         ) : activeSection === "summary" ? (
-          <div className="flex h-full min-h-0 flex-col gap-2 text-fg">
-            <div className="shrink-0">
-              <h3 className="text-base font-bold sm:text-lg">
-                Professional Summary
-              </h3>
-              <p className="text-xs text-fg-muted sm:text-sm">
-                Review the current wording, then generate a job-specific
-                proposal when ready.
-              </p>
-            </div>
-            <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-xl border border-line bg-panel-2 p-3 sm:p-4">
-              {summaryDialogOpen ? (
-                <CvAiSuggestions
-                  open={summaryDialogOpen}
-                  onOpenChange={setSummaryDialogOpen}
-                  suggestions={draft.suggestions.filter(
-                    (item) => item.targetPath === "professionalSummary",
-                  )}
-                  hasCompletedReview={draft.tailoring_assessment !== null}
-                  generating={tailoringBusy}
-                  generationError={tailoringFailed ? error : null}
-                  disabled={busy || draft.status !== "draft"}
-                  onAccept={(id) => decideSuggestion(id, "accepted")}
-                  onReject={(id) => decideSuggestion(id, "rejected")}
-                  onRegenerate={() => void generateSuggestions()}
-                  onDiscard={() => setSummaryDialogOpen(false)}
-                />
-              ) : (
-                <>
-                  <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
-                      Current summary
-                    </h4>
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
-                      {lastAppliedSuggestion?.targetPath ===
-                        "professionalSummary" && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={busy || draft.status !== "draft"}
-                          onClick={undoLastAcceptedSuggestion}
-                        >
-                          Undo
-                        </Button>
-                      )}
-                      <Button
-                        type="button"
-                        size="sm"
-                        disabled={
-                          busy || tailoringBusy || draft.status !== "draft"
-                        }
-                        onClick={() => {
-                          if (pendingSuggestion) setSummaryDialogOpen(true);
-                          else void generateSuggestions();
-                        }}
-                      >
-                        {pendingSuggestion
-                          ? "Review suggestion"
-                          : draft.suggestions.some(
-                                (item) =>
-                                  item.targetPath === "professionalSummary",
-                              )
-                            ? "Generate another version"
-                            : "Tailor summary"}
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-5 text-fg">
-                    {content.professionalSummary ||
-                      "No professional summary is available in the master CV."}
-                  </p>
-                </>
-              )}
-            </section>
-            {error && !tailoringFailed && (
-              <p className="shrink-0 text-xs text-destructive" role="alert">
-                {error}
-              </p>
+          <CvDraftSummarySection
+            summary={content.professionalSummary}
+            suggestions={draft.suggestions.filter(
+              (item) => item.targetPath === "professionalSummary",
             )}
-          </div>
+            hasCompletedReview={draft.tailoring_assessment !== null}
+            reviewOpen={summaryDialogOpen}
+            generating={tailoringBusy}
+            generationError={tailoringFailed ? error : null}
+            disabled={busy || draft.status !== "draft"}
+            canUndo={lastAppliedSuggestion?.targetPath === "professionalSummary"}
+            error={tailoringFailed ? null : error}
+            onReviewOpenChange={setSummaryDialogOpen}
+            onDecision={decideSuggestion}
+            onRegenerate={() => void generateSuggestions()}
+            onUndo={undoLastAcceptedSuggestion}
+            onTailor={() => {
+              if (
+                draft.suggestions.some(
+                  (item) =>
+                    item.targetPath === "professionalSummary" &&
+                    item.decision === "pending",
+                )
+              ) setSummaryDialogOpen(true);
+              else void generateSuggestions();
+            }}
+          />
+
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0">
