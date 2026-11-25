@@ -46,7 +46,7 @@ function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
   return output;
 }
 
-export const CV_TAILORING_VERSION = "m4-cv-tailoring-v8";
+export const CV_TAILORING_VERSION = "m4-cv-tailoring-v9";
 
 export function createCvTailoringResponseSchema(
   profileEvidenceIds: string[],
