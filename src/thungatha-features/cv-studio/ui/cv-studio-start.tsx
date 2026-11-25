@@ -355,7 +355,8 @@ export function CvStudioStart() {
                   onContentChange={handleTailoredContentChange}
                   jobContext={jobContext}
                   initialContent={state.masterCv.content}
-                  startImmediately                />
+                  startImmediately
+                />
               </div>
               <section className="hidden min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm lg:flex">
                 <CvStudioPreviewPanel
