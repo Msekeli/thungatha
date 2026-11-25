@@ -1,7 +1,7 @@
-function firstMatch(text: string, pattern: RegExp) {
+export function firstMatch(text: string, pattern: RegExp) {
   return text.match(pattern)?.[0]?.trim() ?? null;
 }
-function sectionLines(lines: string[], headings: RegExp, stops: RegExp) {
+export function sectionLines(lines: string[], headings: RegExp, stops: RegExp) {
   const start = lines.findIndex((line) => headings.test(line));
   if (start < 0) return [];
   const endOffset = lines
