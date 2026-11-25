@@ -5,45 +5,8 @@ import {
   completeAiTaskWithProvider,
 } from "@/lib/ai/provider-router";
 import type { AiProvider } from "@/lib/ai/contracts";
-
-type Suggestion = {
-  targetPath: string;
-  originalText: string | null;
-  proposedText: string;
-  reason: string;
-  profileEvidenceRefs: string[];
-  requirementIds: string[];
-  jobEvidenceRefs: string[];
-};
-
-function toGeminiSchema(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  const schema = value as Record<string, unknown>;
-  const types: Record<string, string> = {
-    object: "OBJECT",
-    array: "ARRAY",
-    string: "STRING",
-    number: "NUMBER",
-    integer: "INTEGER",
-    boolean: "BOOLEAN",
-  };
-  const output: Record<string, unknown> = {};
-  if (typeof schema.type === "string")
-    output.type = types[schema.type] ?? schema.type.toUpperCase();
-  for (const key of ["enum", "required", "description"]) {
-    if (schema[key] !== undefined) output[key] = schema[key];
-  }
-  if (schema.items) output.items = toGeminiSchema(schema.items);
-  if (schema.properties && typeof schema.properties === "object") {
-    output.properties = Object.fromEntries(
-      Object.entries(schema.properties as Record<string, unknown>).map(
-        ([key, child]) => [key, toGeminiSchema(child)],
-      ),
-    );
-  }
-  return output;
-}
-
+import { toGeminiResponseSchema } from "./cv-tailoring-gemini-schema";
+import type { TailoringSuggestionInput as Suggestion } from "./cv-tailoring-suggestion-mapper";
 const reviewSchema = z
   .object({
     reviews: z.array(
@@ -96,9 +59,7 @@ export async function verifyCvTailoringSuggestions(
   const request = {
     task: "cv-tailoring" as const,
     responseFormat: "json" as const,
-    responseSchema: toGeminiSchema(
-      z.toJSONSchema(reviewSchema, { target: "draft-07" }),
-    ),
+    responseSchema: toGeminiResponseSchema(reviewSchema),
     temperature: 0,
     maxOutputTokens: Math.max(512, suggestions.length * 120),
     timeoutMs: 120_000,

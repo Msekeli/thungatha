@@ -1,4 +1,3 @@
-import "server-only";
 import { completeAiTask } from "@/lib/ai/provider-router";
 import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import { buildCvWorkExperienceTailoringSystemPrompt } from "./cv-tailoring-prompt";
