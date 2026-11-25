@@ -55,19 +55,20 @@ describe("job understanding service", () => {
     });
   });
 
-  it("constrains job-understanding evidence references to the supplied evidence IDs", () => {
-    const responseSchema = createJobUnderstandingResponseSchema(["job:segment:1", "job:segment:2"]);
+  it("keeps the provider schema independent of per-job evidence IDs", () => {
+    const responseSchema = createJobUnderstandingResponseSchema();
     expect(responseSchema).toMatchObject({
       properties: {
         responsibilities: {
           items: {
             properties: {
-              sourceEvidenceRefs: { items: { enum: ["job:segment:1", "job:segment:2"] } },
+              sourceEvidenceRefs: { items: { type: "STRING" } },
             },
           },
         },
       },
     });
+    expect(responseSchema.properties.responsibilities.items.properties.sourceEvidenceRefs.items).not.toHaveProperty("enum");
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
