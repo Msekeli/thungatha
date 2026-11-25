@@ -8,7 +8,6 @@ import "./workspace-sidebar-nav.css";
 import "./workspace-content.css";
 import "./workspace-responsive.css";
 import "./workspace-mobile-shell.css";
-import "./profile-editor.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication";
 import { ThemeToggle } from "@/components/theme/theme-toggle";

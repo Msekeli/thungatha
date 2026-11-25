@@ -58,7 +58,7 @@ export function ProfileEditorSidebar({
   const required = items.filter((item) => item.required);
   const completed = required.filter((item) => item.done).length;
   return (
-    <section className="th-profile-completion rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+    <section className="sticky top-4 max-h-[calc(100vh-32px)] overflow-y-auto rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">Profile completion</h2>
         <span className="text-xs text-muted-foreground">
@@ -71,7 +71,7 @@ export function ProfileEditorSidebar({
           style={{ width: `${(completed / required.length) * 100}%` }}
         />
       </div>
-      <ul className="th-profile-completion-list mt-4 space-y-3">
+      <ul className="mt-4 grid gap-2.5">
         {items.map(({ label, done, required: isRequired }) => (
           <li key={label} className="flex items-start gap-2 text-sm">
             {done ? (
@@ -94,7 +94,7 @@ export function ProfileEditorSidebar({
               className={done ? "text-foreground" : "text-muted-foreground"}
             >
               {label}
-              <span className="th-profile-completion-kind">
+              <span className="ml-2 inline text-[10px] leading-tight text-muted-foreground max-[1400px]:ml-0 max-[1400px]:mt-px max-[1400px]:block">
                 {done ? "Added" : isRequired ? "Required" : "Optional"}
               </span>
             </span>

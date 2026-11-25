@@ -23,6 +23,14 @@
       "sharedComponentAlternative": "Shared JobCardHeader and JobCardDetails components replace duplicated card markup; shadcn Button handles card actions.",
       "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
       "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/components/layout/profile-editor.css",
+      "reason": "Remove the remaining profile editor stylesheet after moving layout, accordion, responsive and completion-panel styles to Tailwind utilities.",
+      "tailwindAlternative": "Profile editor layout, responsive columns, scroll regions, accordion open states, completion sidebar and mobile visibility now use Tailwind utilities.",
+      "sharedComponentAlternative": "The existing shadcn Button and shared profile form components remain responsible for interactive controls and section content.",
+      "approvedBy": "User — explicit request to minimise custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
     }
   ]
 }
