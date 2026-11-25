@@ -3,8 +3,6 @@ name: Quality checks
 on:
   push:
     branches: ["**"]
-  pull_request:
-    branches: [dev]
 
 jobs:
   quality:
@@ -21,22 +19,9 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Preview policy formatting
-        run: |
-          for file in \
-            scripts/check-repository-policy.mjs \
-            scripts/repository-css-policy.mjs \
-            scripts/repository-naming-policy.mjs \
-            scripts/repository-policy.mjs \
-            scripts/repository-source-policy.mjs \
-            tests/unit-tests/repository-policy/boundaries-and-css.test.ts \
-            tests/unit-tests/repository-policy/naming-and-lines.test.ts; do
-            echo "===== FORMAT:$file ====="
-            npx prettier "$file"
-          done
       - name: Repository policy
         env:
-          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          BASE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.sha }}
         run: |
           if [[ "$BASE_SHA" =~ ^0+$ ]]; then
@@ -45,7 +30,7 @@ jobs:
           npm run check:repository-policy -- --base "$BASE_SHA" --head "$HEAD_SHA"
       - name: Formatting
         env:
-          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          BASE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.sha }}
         run: |
           if [[ "$BASE_SHA" =~ ^0+$ ]]; then

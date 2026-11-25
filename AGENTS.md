@@ -68,7 +68,7 @@
 
 ## Repository Policy and Push CI
 
-- GitHub Actions runs the quality workflow on every push to every branch and on pull requests targeting dev. A push containing several commits produces one run for the pushed range; checks do not run separately for each commit.
+- GitHub Actions runs the quality workflow on every push to every branch. A push containing several commits produces one run for the pushed range; checks do not run separately for each commit.
 - The workflow runs the repository policy check, Prettier verification for changed files, TypeScript, ESLint, unit tests, and the production build. Formatting debt in untouched legacy files does not fail an unrelated push.
 - The repository-policy check evaluates changed files and newly introduced paths. Existing naming and import-boundary debt is not made a baseline-wide failure; a changed legacy file must comply with the applicable rule.
 - New or modified stylesheets require a complete, user-approved entry in .css-approvals.json describing why Tailwind and existing shared components are insufficient. Generated src/styles/tokens.css is excluded. The manifest records approval; it does not replace the requirement to obtain approval before making the CSS change.
