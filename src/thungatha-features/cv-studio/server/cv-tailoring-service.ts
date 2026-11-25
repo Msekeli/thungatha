@@ -280,7 +280,7 @@ export async function generateCvWorkExperienceSuggestions(
   const editableTargets = allEditableTargets.filter(
     (item) =>
       item.path.startsWith(`${targetPrefix}.`) &&
-      (item.path.endsWith(".description") || /\\.achievements\\[\\d+\\]$/.test(item.path)) &&
+      (item.path.endsWith(".description") || item.path.includes(".achievements[")) &&
       item.profileEvidenceRef !== null,
   );
   if (!profileEvidence.length || !editableTargets.length) {
