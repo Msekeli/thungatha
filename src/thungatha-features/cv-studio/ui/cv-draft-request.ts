@@ -1,5 +1,3 @@
-import type { CvSuggestion } from "../server/cv-studio-schema";
-
 export async function requestCvDraftJson<T>(
   url: string,
   options: RequestInit,
