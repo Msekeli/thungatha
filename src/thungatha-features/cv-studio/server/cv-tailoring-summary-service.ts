@@ -1,3 +1,4 @@
+import "server-only";
 import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { CvContent } from "./cv-studio-schema";
 import { buildCvTailoringEvidence } from "./cv-tailoring-evidence";
