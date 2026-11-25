@@ -9,7 +9,7 @@ import {
 } from "./job-ai-queue-eligibility";
 import { completeJobAiTask, markJobAiAssessmentUnavailable } from "./job-ai-task-state";
 import { loadCurrentJobAiTaskContext } from "./job-ai-task-context";
-import { getOrCreateJobUnderstanding } from "./job-ai-understanding-cache";
+import { getOrCreateQueuedJobUnderstanding } from "./job-ai-queued-understanding";
 import { persistJobAiAssessment } from "./job-ai-assessment-persistence";
 
 export type QueueTask = {
@@ -45,7 +45,7 @@ export async function processJobAiTask(
     jobId: task.job_id,
     title: job.title,
   });
-  const understanding = await getOrCreateJobUnderstanding(
+  const understanding = await getOrCreateQueuedJobUnderstanding(
     db, task.job_id, context, task.job_context_hash,
   );
 
