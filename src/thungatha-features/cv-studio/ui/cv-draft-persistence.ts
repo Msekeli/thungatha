@@ -8,6 +8,7 @@ export function saveCvDraft(
   content: CvDraftContent,
   suggestions: CvSuggestion[],
   accentColour: CvDraft["accent_colour"],
+  fallback = "Draft could not be saved.",
 ) {
   return requestCvDraftJson<{ draft: CvDraft }>(
     "/api/cv-studio/drafts",
@@ -16,7 +17,7 @@ export function saveCvDraft(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, content, suggestions, accentColour }),
     },
-    "Draft could not be saved.",
+    fallback,
   );
 }
 
