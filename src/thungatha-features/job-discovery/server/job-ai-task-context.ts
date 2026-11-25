@@ -12,10 +12,17 @@ import {
 import type { createServiceClient } from "./job-ai-queue-eligibility";
 
 type Database = ReturnType<typeof createServiceClient>;
+type TaskIdentity = {
+  job_id: string;
+  user_id: string;
+  profile_version: number;
+  job_description_hash: string;
+  job_context_hash: string;
+};
 
 export async function loadCurrentJobAiTaskContext(
   db: Database,
-  task: { job_id: string; user_id: string; profile_version: number },
+  task: TaskIdentity,
 ) {
   const [jobResult, profileResult] = await Promise.all([
     db.from("jobs")

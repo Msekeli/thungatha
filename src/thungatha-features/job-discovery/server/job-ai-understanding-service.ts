@@ -28,7 +28,6 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     responseFormat: "json",
     responseSchema,
     temperature: 0.1,
-    maxOutputTokens: 4_096,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: buildJobUnderstandingPrompt(),
