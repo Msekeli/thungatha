@@ -69,7 +69,6 @@ export function CvStudioMasterReadyView({
           onReset={resetExternalJob}
           onAddExternalJob={() => setExternalJobOpen(true)}
         />
-
       )}
     </div>
   );
