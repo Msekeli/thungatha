@@ -101,6 +101,7 @@ export async function POST(request: Request) {
     const masterContent = cvContentSchema.parse(master.content);
     const draftContent = cvContentSchema.parse(draft.content);
     const section = parsed.data.section;
+    const experienceSourceId = parsed.data.section === "workExperience" ? parsed.data.experienceSourceId : null;
     let generatedSuggestions: z.infer<typeof cvSuggestionSchema>[];
     let generationMetadata: { provider: string; model: string; taskVersion: string };
     let nextAssessment = draft.tailoring_assessment;
@@ -122,15 +123,15 @@ export async function POST(request: Request) {
         masterContent,
         draftContent,
         job,
-        parsed.data.experienceSourceId,
+        experienceSourceId!,
       );
       generatedSuggestions = result.suggestions;
       generationMetadata = { provider: result.provider, model: result.model, taskVersion: result.taskVersion };
     }
 
     const existingSuggestions = z.array(cvSuggestionSchema).max(200).parse(draft.suggestions ?? []);
-    const experienceTargetPrefix = parsed.data.section === "workExperience"
-      ? "workExperience[" + parsed.data.experienceSourceId + "]."
+    const experienceTargetPrefix = experienceSourceId
+      ? "workExperience[" + experienceSourceId + "]."
       : null;
     const isTargetedSuggestion = (targetPath: string) =>
       section === "professionalSummary"
