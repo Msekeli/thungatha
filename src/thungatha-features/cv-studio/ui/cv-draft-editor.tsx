@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { CvPdfContent } from "./cv-pdf-document";
-import type { CvDraftContent, CvDraftJobContext } from "./cv-draft-content";
+import type { CvDraftJobContext } from "./cv-draft-content";
 import { CV_DRAFT_ACCENT_HEX } from "./cv-draft-types";
-import { createCvDraft, generateCvDraftSuggestions } from "./cv-draft-api";
-import { acceptCvDraft, saveCvDraft } from "./cv-draft-persistence";
-import type { CvDraft } from "./cv-draft-types";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
 import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
 import { CvDraftExperienceCard } from "./cv-draft-experience-card";
@@ -21,6 +18,8 @@ import { CvDraftFeedback } from "./cv-draft-feedback";
 import { useCvDraftSummaryGeneration } from "./use-cv-draft-summary-generation";
 import { useCvDraftExperienceGeneration } from "./use-cv-draft-experience-generation";
 import { useCvDraftSuggestionDecisions } from "./use-cv-draft-suggestion-decisions";
+import { useCvDraftSession } from "./use-cv-draft-session";
+import { useCvDraftPersistence } from "./use-cv-draft-persistence";
 
 
 export function CvDraftEditor({
@@ -36,23 +35,15 @@ export function CvDraftEditor({
   startImmediately?: boolean;
   onContentChange?: (content: CvPdfContent, accent: string) => void;
 }) {
-  const createStarted = useRef(false);
-  const [draft, setDraft] = useState<CvDraft | null>(null);
-  const [createFailed, setCreateFailed] = useState(false);
-  const [content, setContent] = useState<CvDraftContent>(
-    initialContent as CvDraftContent,
-  );
-
-  useEffect(() => {
-    if (draft?.id)
-      onContentChange?.(
-        content as unknown as CvPdfContent,
-        CV_DRAFT_ACCENT_HEX[draft.accent_colour],
-      );
-  }, [content, draft?.id, draft?.accent_colour, onContentChange]);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    draft, setDraft, content, setContent, busy, setBusy,
+    message, setMessage, error, setError, createFailed, createDraft,
+  } = useCvDraftSession({
+    masterVersionId, jobContext, initialContent, startImmediately, onContentChange,
+  });
+  const { saveDraft, acceptDraft } = useCvDraftPersistence({
+    draft, content, setDraft, setBusy, setError, setMessage,
+  });
   const summaryGeneration = useCvDraftSummaryGeneration({
     draft, jobContext, setDraft, setError, setMessage,
   });
@@ -88,97 +79,6 @@ export function CvDraftEditor({
       target: "cv-review-requirements",
     },
   ];
-
-  async function createDraft() {
-    setBusy(true);
-    setCreateFailed(false);
-    setError(null);
-    setMessage(null);
-    try {
-      const body = await createCvDraft(masterVersionId, jobContext);
-      setDraft(body.draft);
-      summaryGeneration.setReviewOpen(false);
-      setContent(body.draft.content);
-      setMessage(
-        body.reusedDraft
-          ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
-          : "Your separate working draft is ready. Your master CV and Profile remain unchanged.",
-      );
-    } catch (e) {
-      setCreateFailed(true);
-      setError(
-        e instanceof DOMException && e.name === "TimeoutError"
-          ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
-          : e instanceof Error
-            ? e.message
-            : "Draft could not be created.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!startImmediately || createStarted.current) return;
-    createStarted.current = true;
-    void createDraft();
-    // The editor is mounted only after the user chooses Tailor my CV.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startImmediately]);
-
-  async function acceptDraft() {
-    if (!draft || draft.status !== "draft") return;
-    setBusy(true);
-    setError(null);
-    try {
-      await saveCvDraft(
-        draft.id,
-        content,
-        draft.suggestions,
-        draft.accent_colour,
-        "Save your latest edits before accepting the CV.",
-      );
-      const body = await acceptCvDraft(draft.id);
-      setDraft({
-        ...draft,
-        ...body.version,
-        status: "accepted",
-      });
-      setMessage(
-        "Your tailored CV has been accepted and saved as a new CV version. The master CV and Profile remain unchanged.",
-      );
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "The CV could not be accepted.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const activeIndex = reviewSections.findIndex(
-    (item) => item.id === activeSection,
-  );
-  async function saveDraft() {
-    if (!draft || draft.status !== "draft") return;
-    setBusy(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const body = await saveCvDraft(
-        draft.id,
-        content,
-        draft.suggestions,
-        draft.accent_colour,
-      );
-      setDraft(body.draft);
-      setMessage("Draft saved. Review the preview before accepting it.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Draft could not be saved.");
-    } finally {
-      setBusy(false);
-    }
-  }
 
   if (draft?.status === "accepted") {
     return (
