@@ -6,15 +6,24 @@ import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server
 import { readProfile } from "@/thungatha-features/user-profile/server/repository";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
 import { getProfileCompletion } from "@/thungatha-features/cv-studio/server/master-cv";
-import { cvContentSchema } from "@/thungatha-features/cv-studio/server/cv-studio-schema";
+import { cvContentSchema, cvSuggestionSchema } from "@/thungatha-features/cv-studio/server/cv-studio-schema";
 import { cvJobContextInputSchema } from "@/thungatha-features/cv-studio/server/job-context-schema";
 import { resolveCvJobContext } from "@/thungatha-features/cv-studio/server/job-context-service";
-import { generateCvTailoringSuggestions } from "@/thungatha-features/cv-studio/server/cv-tailoring-service";
+import { generateCvTailoringSuggestions, generateCvWorkExperienceSuggestions } from "@/thungatha-features/cv-studio/server/cv-tailoring-service";
 
-const requestSchema = z.object({
-  draftId: z.string().uuid(),
-  job: cvJobContextInputSchema,
-}).strict();
+const requestSchema = z.discriminatedUnion("section", [
+  z.object({
+    section: z.literal("professionalSummary"),
+    draftId: z.string().uuid(),
+    job: cvJobContextInputSchema,
+  }).strict(),
+  z.object({
+    section: z.literal("workExperience"),
+    draftId: z.string().uuid(),
+    experienceSourceId: z.string().trim().min(1).max(100),
+    job: cvJobContextInputSchema,
+  }).strict(),
+]);
 
 export async function POST(request: Request) {
   const parsed = requestSchema.safeParse(
@@ -41,7 +50,7 @@ export async function POST(request: Request) {
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const { data: draft, error: draftError } = await db
       .from("cv_versions")
-      .select("id,status,content,cv_kind,source_profile_version,parent_version_id,source_job_snapshot,source_job_id")
+      .select("id,status,content,suggestions,tailoring_assessment,cv_kind,source_profile_version,parent_version_id,source_job_snapshot,source_job_id")
       .eq("id", parsed.data.draftId)
       .eq("user_id", identity.userId)
       .maybeSingle();
@@ -91,22 +100,55 @@ export async function POST(request: Request) {
 
     const masterContent = cvContentSchema.parse(master.content);
     const draftContent = cvContentSchema.parse(draft.content);
-    const result = await generateCvTailoringSuggestions(masterContent, draftContent, job);
-    const assessment = {
-      coveredRequirementIds: result.coveredRequirementIds,
-      gaps: result.gaps,
-      provider: result.provider,
-      model: result.model,
-      taskVersion: result.taskVersion,
-      generatedAt: new Date().toISOString(),
+    const result = parsed.data.section === "professionalSummary"
+      ? await generateCvTailoringSuggestions(masterContent, draftContent, job)
+      : await generateCvWorkExperienceSuggestions(
+          masterContent,
+          draftContent,
+          job,
+          parsed.data.experienceSourceId,
+        );
+
+    const existingSuggestions = z.array(cvSuggestionSchema).max(200).parse(
+      draft.suggestions ?? [],
+    );
+    const isTargetedSuggestion = (targetPath: string) =>
+      parsed.data.section === "professionalSummary"
+        ? targetPath === "professionalSummary"
+        : targetPath.startsWith(`workExperience[${parsed.data.experienceSourceId}].`);
+    // Replace only pending proposals for the requested section. Keep decisions
+    // already made in other sections and the user's accepted/rejected history.
+    const mergedSuggestions = [
+      ...existingSuggestions.filter(
+        (item) => !isTargetedSuggestion(item.targetPath) || item.decision !== "pending",
+      ),
+      ...result.suggestions,
+    ];
+    if (mergedSuggestions.length > 200) {
+      return apiError("This draft has reached its suggestion history limit. Start a new tailored draft to continue.", 409);
+    }
+
+    const updatePayload: {
+      suggestions: typeof mergedSuggestions;
+      tailoring_assessment?: Record<string, unknown>;
+      updated_at: string;
+    } = {
+      suggestions: mergedSuggestions,
+      updated_at: new Date().toISOString(),
     };
+    if (parsed.data.section === "professionalSummary") {
+      updatePayload.tailoring_assessment = {
+        coveredRequirementIds: result.coveredRequirementIds,
+        gaps: result.gaps,
+        provider: result.provider,
+        model: result.model,
+        taskVersion: result.taskVersion,
+        generatedAt: new Date().toISOString(),
+      };
+    }
     const { data: saved, error: saveError } = await db
       .from("cv_versions")
-      .update({
-        suggestions: result.suggestions,
-        tailoring_assessment: assessment,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", draft.id)
       .eq("user_id", identity.userId)
       .eq("status", "draft")
@@ -114,7 +156,11 @@ export async function POST(request: Request) {
       .single();
     if (saveError) throw saveError;
     if (!saved) return apiError("The tailored draft is no longer editable.", 409);
-    return NextResponse.json({ ...result, assessment: saved.tailoring_assessment });
+    return NextResponse.json({
+      ...result,
+      suggestions: saved.suggestions,
+      assessment: saved.tailoring_assessment,
+    });
   } catch (error) {
     return apiFailure(error);
   }
