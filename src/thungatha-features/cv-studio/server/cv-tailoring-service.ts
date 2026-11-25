@@ -309,7 +309,6 @@ export async function generateCvWorkExperienceSuggestions(
     responseSchema: schema.responseSchema,
     temperature: 0.2,
     timeoutMs: 120_000,
-    maxOutputTokens: 3_000,
     systemPrompt: buildCvWorkExperienceTailoringSystemPrompt(),
     userPrompt: JSON.stringify({
       job: [job.title, job.company],
