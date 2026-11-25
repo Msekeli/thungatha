@@ -1,7 +1,7 @@
 import type { ExtractedEducation } from "./cv-extraction-types";
 import { sectionLines } from "./cv-extraction-text";
 
-function parseEducation(lines: string[]): ExtractedEducation[] {
+export function parseEducation(lines: string[]): ExtractedEducation[] {
   const section = sectionLines(
     lines,
     /^(education|academic background|qualifications|educational background)$/i,

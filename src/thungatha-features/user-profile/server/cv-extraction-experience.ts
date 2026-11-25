@@ -2,7 +2,7 @@ import type { ExtractedExperience } from "./cv-extraction-types";
 import { sectionLines } from "./cv-extraction-text";
 import { createExperienceDateParser } from "./cv-extraction-date";
 
-function parseExperience(lines: string[]): ExtractedExperience[] {
+export function parseExperience(lines: string[]): ExtractedExperience[] {
   const section = sectionLines(
     lines,
     /^(work experience|professional experience|employment history|career history|professional employment|experience)$/i,
