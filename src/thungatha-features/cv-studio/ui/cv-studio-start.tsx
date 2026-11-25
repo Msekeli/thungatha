@@ -9,7 +9,7 @@ import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/
 import { CvPdfPreview } from "./cv-pdf-preview";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvDraftEditor } from "./cv-draft-editor";
-import { SavedCvGrid } from "./saved-cv-grid";
+import { CvStudioPreviewPanel } from "./cv-studio-preview-panel";
 
 type CvContent = {
   fullName: string;
@@ -120,7 +120,6 @@ export function CvStudioStart() {
   const [workflowBusy, setWorkflowBusy] = useState(false);
   const [externalJobOpen, setExternalJobOpen] = useState(false);
   const [tailoringStarted, setTailoringStarted] = useState(false);
-  const [previewTab, setPreviewTab] = useState<"preview" | "master" | "saved">("preview");
   const [tailoredPreview, setTailoredPreview] = useState<{
     content: CvPdfContent;
     accent: string;
@@ -177,8 +176,7 @@ export function CvStudioStart() {
   const resolveDiscoveryJob = useCallback(
     async (selectedJobId: string, masterVersionId: string) => {
       setWorkflowBusy(true);
-      setWorkflowError(null);
-      setSuitability(null);
+      setWorkflowError(null);      setSuitability(null);
       try {
         const response = await fetch("/api/cv-studio/job-context", {
           method: "POST",
@@ -357,44 +355,13 @@ export function CvStudioStart() {
                   onContentChange={handleTailoredContentChange}
                   jobContext={jobContext}
                   initialContent={state.masterCv.content}
-                  startImmediately
-                />
+                  startImmediately                />
               </div>
               <section className="hidden min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm lg:flex">
-                <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line pb-3">
-                  <div
-                    className="flex items-center gap-1 rounded-full bg-panel-2 p-1"
-                    role="tablist"
-                    aria-label="CV preview version"
-                  >
-                    {(["preview", "master", "saved"] as const).map((tab) => (
-                      <button
-                        key={tab}
-                        type="button"
-                        role="tab"
-                        aria-selected={previewTab === tab}
-                        onClick={() => setPreviewTab(tab)}
-                        className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${previewTab === tab ? "bg-panel text-fg shadow-sm" : "text-fg-muted hover:text-fg"}`}
-                      >
-                        {tab === "preview"
-                          ? "CV Preview"
-                          : tab === "master"
-                            ? "Master CV"
-                            : "My CVs"}
-                      </button>
-                    ))}
-                  </div>
-                </header>
-                <div className="min-h-0 flex-1 overflow-auto pt-3">
-                  {previewTab === "saved" ? (
-                    <SavedCvGrid />
-                  ) : (
-                    <CvPdfPreview
-                      content={previewTab === "master" ? state.masterCv.content : (tailoredPreview?.content ?? state.masterCv.content)}
-                      accent={previewTab === "master" ? undefined : tailoredPreview?.accent}
-                    />
-                  )}
-                </div>
+                <CvStudioPreviewPanel
+                  masterContent={state.masterCv.content}
+                  tailoredPreview={tailoredPreview}
+                />
               </section>
             </div>
           ) : jobContext && state.masterCv ? (
@@ -537,8 +504,7 @@ export function CvStudioStart() {
                       <p className="text-sm font-medium text-fg">
                         Reusing accepted CV · Version{" "}
                         {reusableCv.version_number}
-                      </p>
-                      <CvPdfPreview
+                      </p>                      <CvPdfPreview
                         content={reusableCv.content}
                         accent={cvAccentHex[reusableCv.accent_colour]}
                       />
