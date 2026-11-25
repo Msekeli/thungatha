@@ -424,16 +424,16 @@ export function CvDraftEditor({
                 />
               ) : (
                 <>
-                  <h4 className="shrink-0 text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
+                  <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
+                    <Button type="button" size="sm" disabled={busy || tailoringBusy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
+                      {pendingSuggestion ? "Review suggestion" : "Tailor summary"}
+                    </Button>
+                  </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-5 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
                 </>
               )}
             </section>
-            {!summaryDialogOpen && (
-              <Button type="button" className="w-fit shrink-0" size="sm" disabled={busy || tailoringBusy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
-                {pendingSuggestion ? "Review summary suggestion" : "Tailor professional summary"}
-              </Button>
-            )}
             {error && !tailoringFailed && <p className="shrink-0 text-xs text-destructive" role="alert">{error}</p>}
           </div>
         ) : activeSection === "experience" ? (
@@ -492,11 +492,6 @@ export function CvDraftEditor({
                                 <h5 className="text-[10px] font-semibold uppercase tracking-wide text-fg-muted sm:text-xs">Original responsibilities / description</h5>
                                 <p className="mt-1 whitespace-pre-wrap text-xs leading-4 sm:text-sm sm:leading-5">{item.description || "No description provided."}</p>
                               </section>
-                              <section>
-                                <h5 className="text-[10px] font-semibold uppercase tracking-wide text-fg-muted sm:text-xs">Achievements</h5>
-                                {item.achievements.length ? <ul className="mt-1 list-disc space-y-1 pl-4 text-xs leading-4 sm:text-sm sm:leading-5">{item.achievements.map((achievement, i) => <li key={i}>{achievement}</li>)}</ul> : <p className="mt-1 text-xs text-fg-muted">No achievements listed.</p>}
-                                
-                              </section>
                             </div>
                           )}
                         </div>
@@ -511,16 +506,18 @@ export function CvDraftEditor({
         ) : activeSection === "skills" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0"><h3 className="text-lg font-bold">Skills</h3><p className="text-sm text-fg-muted">Review existing skills or add another skill to this CV.</p></div>
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
-              <div className="flex max-h-40 flex-wrap content-start gap-2 overflow-y-auto">
-                {content.technicalSkills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-accent/30 bg-accent-bg px-3 py-1.5 text-sm text-fg">{skill}</span>)}
-                {!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}
-              </div>
-              <form className="flex max-w-xl gap-2" onSubmit={(event) => { event.preventDefault(); const value = newSkill.trim(); if (!value || content.technicalSkills.some((skill) => skill.toLowerCase() === value.toLowerCase())) return; setContent((current) => ({ ...current, technicalSkills: [...current.technicalSkills, value] })); setNewSkill(""); }}>
+            <div className="flex min-h-0 flex-1 flex-col gap-3">
+              <form className="flex max-w-xl shrink-0 gap-2" onSubmit={(event) => { event.preventDefault(); const value = newSkill.trim(); if (!value || content.technicalSkills.some((skill) => skill.toLowerCase() === value.toLowerCase())) return; setContent((current) => ({ ...current, technicalSkills: [...current.technicalSkills, value] })); setNewSkill(""); }}>
                 <input value={newSkill} onChange={(event) => setNewSkill(event.target.value)} maxLength={50} placeholder="Add a skill" aria-label="New skill" className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-panel px-3 text-sm text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" />
                 <Button type="submit" variant="outline" disabled={!newSkill.trim() || busy || draft.status !== "draft"}><Plus className="mr-1 size-4" /> Add skill</Button>
               </form>
-              <p className="text-xs text-fg-muted">Only add skills you genuinely have. Added skills update this draft and its PDF preview when saved.</p>
+              <p className="shrink-0 text-xs text-fg-muted">Only add skills you genuinely have. Added skills update this draft and its PDF preview when saved.</p>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="flex flex-wrap content-start gap-2">
+                  {content.technicalSkills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-accent/30 bg-accent-bg px-3 py-1.5 text-sm text-fg">{skill}</span>)}
+                  {!content.technicalSkills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}
+                </div>
+              </div>
             </div>
           </div>
         ) : (
