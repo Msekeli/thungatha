@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvPdfContent } from "./cv-pdf-document";
 import { CvPdfPreview } from "./cv-pdf-preview";
-import { CvAiSuggestions } from "./cv-ai-suggestions";
 import { CvDraftSummarySection } from "./cv-draft-summary-section";
+import { CvDraftExperienceNavigation } from "./cv-draft-experience-navigation";
+import { CvDraftExperienceCard } from "./cv-draft-experience-card";
 import { CvDraftSkillsSection } from "./cv-draft-skills-section";
 import { CvDraftRequirementsSection } from "./cv-draft-requirements-section";
 import {
@@ -517,8 +518,7 @@ export function CvDraftEditor({
       setError(e instanceof Error ? e.message : "Draft could not be saved.");
     } finally {
       setBusy(false);
-    }
-  }
+    }  }
 
   if (draft?.status === "accepted") {
     return (
@@ -648,9 +648,7 @@ export function CvDraftEditor({
         ) : activeSection === "experience" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0">
-              <h3 className="text-base font-bold sm:text-lg">
-                Work Experience
-              </h3>
+              <h3 className="text-base font-bold sm:text-lg">Work Experience</h3>
               <p className="text-xs text-fg-muted sm:text-sm">
                 Review the experience included in your tailored CV.
               </p>
@@ -658,185 +656,45 @@ export function CvDraftEditor({
             <div className="flex min-h-0 flex-1 flex-col gap-3 text-fg">
               {content.workExperience.length ? (
                 <>
-                  <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-line bg-panel-2 px-3 py-2 text-fg sm:gap-3">
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-medium text-fg-muted sm:text-xs">
-                        Experience {activeExperienceIndex + 1} of{" "}
-                        {content.workExperience.length}
-                      </p>
-                      <p className="truncate text-xs font-semibold sm:text-sm">
-                        {
-                          content.workExperience[activeExperienceIndex]
-                            ?.employer
-                        }
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        className="px-2 text-xs"
-                        variant="outline"
-                        disabled={activeExperienceIndex === 0}
-                        onClick={() =>
-                          setActiveExperienceIndex((index) =>
-                            Math.max(0, index - 1),
-                          )
-                        }
-                      >
-                        Previous
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        className="px-2 text-xs"
-                        variant="outline"
-                        disabled={
-                          activeExperienceIndex >=
-                          content.workExperience.length - 1
-                        }
-                        onClick={() =>
-                          setActiveExperienceIndex((index) =>
-                            Math.min(
-                              content.workExperience.length - 1,
-                              index + 1,
-                            ),
-                          )
-                        }
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  </div>
-                  {content.workExperience[activeExperienceIndex] &&
-                    (() => {
-                      const item =
-                        content.workExperience[activeExperienceIndex];
-                      const isTailoring =
-                        experienceTailoringBusyFor === item.sourceId;
-                      const isReviewing =
-                        experienceDialogOpenFor === item.sourceId;
-                      const experienceSuggestions = draft.suggestions.filter(
-                        (suggestion) =>
-                          suggestion.targetPath.startsWith(
-                            "workExperience[" + item.sourceId + "].",
-                          ),
-                      );
-                      return (
-                        <div
-                          key={item.sourceId}
-                          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4"
-                        >
-                          <div className="shrink-0">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <h4 className="min-w-0 text-sm font-semibold sm:text-base">
-                                {item.jobTitle}
-                              </h4>
-                              <div className="flex shrink-0 flex-wrap items-center gap-2">
-                                {lastAppliedSuggestion?.targetPath ===
-                                  "workExperience[" +
-                                    item.sourceId +
-                                    "].description" && (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={busy || draft.status !== "draft"}
-                                    onClick={undoLastAcceptedSuggestion}
-                                  >
-                                    Undo
-                                  </Button>
-                                )}
-                                {!isReviewing && (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    disabled={
-                                      busy ||
-                                      draft.status !== "draft" ||
-                                      experienceTailoringBusyFor !== null
-                                    }
-                                    onClick={() =>
-                                      void generateExperienceSuggestions(
-                                        item.sourceId,
-                                      )
-                                    }
-                                  >
-                                    {isTailoring
-                                      ? "Tailoring…"
-                                      : "Tailor this experience"}
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            <p className="mt-1 text-xs text-fg-muted sm:text-sm">
-                              {item.employer}
-                              {item.location ? ` · ${item.location}` : ""}
-                            </p>
-                            <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">
-                              {item.startDate} –{" "}
-                              {item.isCurrent
-                                ? "Present"
-                                : (item.endDate ?? "—")}
-                            </p>
-                          </div>
-                          <div className="min-h-0 flex-1 overflow-y-auto pt-3">
-                            {isReviewing ? (
-                              <CvAiSuggestions
-                                open={isReviewing}
-                                onOpenChange={(open) =>
-                                  setExperienceDialogOpenFor(
-                                    open ? item.sourceId : null,
-                                  )
-                                }
-                                suggestions={experienceSuggestions}
-                                hasCompletedReview={
-                                  experienceSuggestions.length > 0 ||
-                                  (!isTailoring && !experienceTailoringError)
-                                }
-                                generating={isTailoring}
-                                generationError={experienceTailoringError}
-                                disabled={busy || draft.status !== "draft"}
-                                onAccept={(id) =>
-                                  decideSuggestion(id, "accepted")
-                                }
-                                onReject={(id) =>
-                                  decideSuggestion(id, "rejected")
-                                }
-                                onRegenerate={() =>
-                                  void generateExperienceSuggestions(
-                                    item.sourceId,
-                                  )
-                                }
-                                onDiscard={() =>
-                                  setExperienceDialogOpenFor(null)
-                                }
-                              />
-                            ) : (
-                              <div className="space-y-3">
-                                <section>
-                                  <h5 className="text-[10px] font-semibold uppercase tracking-wide text-fg-muted sm:text-xs">
-                                    Original responsibilities / description
-                                  </h5>
-                                  <p className="mt-1 whitespace-pre-wrap text-xs leading-4 sm:text-sm sm:leading-5">
-                                    {item.description ||
-                                      "No description provided."}
-                                  </p>
-                                </section>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })()}
+                  <CvDraftExperienceNavigation
+                    activeIndex={activeExperienceIndex}
+                    total={content.workExperience.length}
+                    employer={content.workExperience[activeExperienceIndex]?.employer ?? ""}
+                    onPrevious={() => setActiveExperienceIndex((index) => Math.max(0, index - 1))}
+                    onNext={() => setActiveExperienceIndex((index) => Math.min(content.workExperience.length - 1, index + 1))}
+                  />
+                  {content.workExperience[activeExperienceIndex] && (() => {
+                    const item = content.workExperience[activeExperienceIndex];
+                    const suggestions = draft.suggestions.filter((suggestion) =>
+                      suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."),
+                    );
+                    const isTailoring = experienceTailoringBusyFor === item.sourceId;
+                    const isReviewing = experienceDialogOpenFor === item.sourceId;
+                    return (
+                      <CvDraftExperienceCard
+                        item={item}
+                        suggestions={suggestions}
+                        isTailoring={isTailoring}
+                        isReviewing={isReviewing}
+                        hasCompletedReview={suggestions.length > 0 || (!isTailoring && !experienceTailoringError)}
+                        tailoringError={experienceTailoringError}
+                        disabled={busy || draft.status !== "draft"}
+                        canUndo={lastAppliedSuggestion?.targetPath === "workExperience[" + item.sourceId + "].description"}
+                        onUndo={undoLastAcceptedSuggestion}
+                        onTailor={() => void generateExperienceSuggestions(item.sourceId)}
+                        onReviewOpenChange={(open) => setExperienceDialogOpenFor(open ? item.sourceId : null)}
+                        onDecision={decideSuggestion}
+                        onRegenerate={() => void generateExperienceSuggestions(item.sourceId)}
+                      />
+                    );
+                  })()}
                 </>
               ) : (
-                <p className="text-sm text-fg-muted">
-                  No work experience is included in this CV.
-                </p>
+                <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>
               )}
             </div>
           </div>
+
         ) : activeSection === "skills" ? (
           <div className="flex h-full min-h-0 flex-col gap-3 text-fg">
             <div className="shrink-0">
