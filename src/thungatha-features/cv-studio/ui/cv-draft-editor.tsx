@@ -232,6 +232,45 @@ export function CvDraftEditor({
     await generateSuggestionsForDraft(draft.id);
   }
 
+  async function generateExperienceSuggestions(sourceId: string) {
+    if (!draft || draft.status !== "draft" || experienceTailoringBusyFor) return;
+    const targetPrefix = "workExperience[" + sourceId + "].";
+    const existing = draft.suggestions.filter((item) => item.targetPath.startsWith(targetPrefix));
+    if (existing.some((item) => item.decision === "pending")) {
+      setExperienceDialogOpenFor(sourceId);
+      return;
+    }
+    setExperienceDialogOpenFor(sourceId);
+    setExperienceTailoringBusyFor(sourceId);
+    setExperienceTailoringError(null);
+    try {
+      const job = jobContext.source === "discovery"
+        ? { source: "discovery" as const, jobId: jobContext.jobId }
+        : { source: "pasted" as const, title: jobContext.title, company: jobContext.company ?? "", description: jobContext.description };
+      const response = await fetch("/api/cv-studio/drafts/tailor", {
+        method: "POST",
+        signal: AbortSignal.timeout(180_000),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ draftId: draft.id, job, section: "workExperience", experienceSourceId: sourceId }),
+      });
+      const body = await response.json();
+      if (!response.ok) {
+        const requestId = typeof body.requestId === "string" ? " (Request ID: " + body.requestId + ")" : "";
+        throw new Error((body.error ?? "Work experience tailoring failed.") + requestId);
+      }
+      setDraft((current) => current ? { ...current, suggestions: body.suggestions } : current);
+      setMessage(body.generatedSuggestions?.length
+        ? "A proposal for this work experience is ready to review."
+        : "No change was recommended for this work experience.");
+    } catch (e) {
+      setExperienceTailoringError(e instanceof DOMException && e.name === "TimeoutError"
+        ? "Work experience tailoring exceeded three minutes. Your draft is still available; you can retry."
+        : e instanceof Error ? e.message : "Work experience tailoring failed.");
+    } finally {
+      setExperienceTailoringBusyFor(null);
+    }
+  }
+
   function decideSuggestion(id: string, decision: "accepted" | "rejected") {
     const suggestion = draft?.suggestions.find((item) => item.id === id);
     if (!suggestion || suggestion.decision !== "pending") return;
