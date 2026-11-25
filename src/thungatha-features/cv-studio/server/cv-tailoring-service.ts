@@ -280,11 +280,11 @@ export async function generateCvWorkExperienceSuggestions(
   const editableTargets = allEditableTargets.filter(
     (item) =>
       item.path.startsWith(`${targetPrefix}.`) &&
-      (item.path.endsWith(".description") || item.path.includes(".achievements[")) &&
+      item.path.endsWith(".description") &&
       item.profileEvidenceRef !== null,
   );
   if (!profileEvidence.length || !editableTargets.length) {
-    throw new Error("This work experience has no confirmed description or achievements available to tailor.");
+    throw new Error("This work experience has no confirmed description available to tailor.");
   }
 
   const allJobEvidence = buildJobEvidence(job.description, jobContext);
