@@ -426,9 +426,17 @@ export function CvDraftEditor({
                 <>
                   <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
                     <h4 className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Original summary</h4>
-                    <Button type="button" size="sm" disabled={busy || tailoringBusy || draft.status !== "draft"} onClick={() => { setSummaryDialogOpen(true); if (!pendingSuggestion && !draft.suggestions.some((item) => item.targetPath === "professionalSummary")) void generateSuggestions(); }}>
-                      {pendingSuggestion ? "Review suggestion" : "Tailor summary"}
-                    </Button>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      {lastAppliedSuggestion?.targetPath === "professionalSummary" && (
+                        <Button type="button" size="sm" variant="outline" disabled={busy || draft.status !== "draft"} onClick={undoLastAcceptedSuggestion}>Undo</Button>
+                      )}
+                      <Button type="button" size="sm" disabled={busy || tailoringBusy || draft.status !== "draft"} onClick={() => {
+                        if (pendingSuggestion) setSummaryDialogOpen(true);
+                        else void generateSuggestions();
+                      }}>
+                        {pendingSuggestion ? "Review suggestion" : draft.suggestions.some((item) => item.targetPath === "professionalSummary") ? "Generate another version" : "Tailor summary"}
+                      </Button>
+                    </div>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-5 text-fg">{content.professionalSummary || "No professional summary is available in the master CV."}</p>
                 </>
@@ -462,11 +470,16 @@ export function CvDraftEditor({
                         <div className="shrink-0">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <h4 className="min-w-0 text-sm font-semibold sm:text-base">{item.jobTitle}</h4>
-                            {!isReviewing && (
-                              <Button type="button" size="sm" className="shrink-0" disabled={busy || draft.status !== "draft" || experienceTailoringBusyFor !== null} onClick={() => void generateExperienceSuggestions(item.sourceId)}>
-                                {isTailoring ? "Tailoring…" : "Tailor this experience"}
-                              </Button>
-                            )}
+                            <div className="flex shrink-0 flex-wrap items-center gap-2">
+                              {lastAppliedSuggestion?.targetPath === "workExperience[" + item.sourceId + "].description" && (
+                                <Button type="button" size="sm" variant="outline" disabled={busy || draft.status !== "draft"} onClick={undoLastAcceptedSuggestion}>Undo</Button>
+                              )}
+                              {!isReviewing && (
+                                <Button type="button" size="sm" disabled={busy || draft.status !== "draft" || experienceTailoringBusyFor !== null} onClick={() => void generateExperienceSuggestions(item.sourceId)}>
+                                  {isTailoring ? "Tailoring…" : "Tailor this experience"}
+                                </Button>
+                              )}
+                            </div>
                           </div>
                           <p className="mt-1 text-xs text-fg-muted sm:text-sm">{item.employer}{item.location ? ` · ${item.location}` : ""}</p>
                           <p className="mt-1 text-[11px] text-fg-muted sm:text-xs">{item.startDate} – {item.isCurrent ? "Present" : item.endDate ?? "—"}</p>
@@ -540,6 +553,16 @@ export function CvDraftEditor({
           </div>
         )}
       </div>
+      {(message || error || draft?.status === "accepted") && (
+        <div className="shrink-0 border-t border-line px-3 py-2 sm:px-6" aria-live="polite">
+          {draft?.status === "accepted" ? (
+            <p className="text-xs font-medium text-accent-text">CV accepted and saved. This version is now available in your saved CVs.</p>
+          ) : message ? (
+            <p className="text-xs text-fg-muted">{message}</p>
+          ) : null}
+          {error && <p className="mt-1 text-xs text-destructive" role="alert">{error}</p>}
+        </div>
+      )}
       <footer className="grid shrink-0 grid-cols-3 items-center gap-2 border-t border-line px-3 py-2 sm:flex sm:justify-between sm:gap-3 sm:px-6 sm:py-3">
         <Button type="button" size="sm" className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm" variant="outline" disabled={activeIndex === 0} onClick={() => setActiveSection(reviewSections[Math.max(0, activeIndex - 1)].id)}><ArrowLeft className="mr-1 size-3.5 sm:size-4" /><span className="sm:hidden">Back</span><span className="hidden sm:inline">Previous</span></Button>
         {draft?.status === "draft" && <Button type="button" size="sm" className="w-full px-2 text-xs sm:w-auto sm:px-3 sm:text-sm" variant="outline" disabled={busy} onClick={() => void saveDraft()}>{busy ? "Saving…" : <><span className="sm:hidden">Save</span><span className="hidden sm:inline">Save draft</span></>}</Button>}
