@@ -283,17 +283,21 @@ export function CvDraftEditor({
         return;
       }
     }
-    if (decision === "accepted") setSummaryDialogOpen(false);
+    if (suggestion.targetPath === "professionalSummary") setSummaryDialogOpen(false);
+    if (suggestion.targetPath.startsWith("workExperience[")) setExperienceDialogOpenFor(null);
     setDraft((current) => current ? {
       ...current,
       suggestions: current.suggestions.map((item) =>
         item.id === id ? { ...item, decision } : item,
       ),
     } : current);
+    const sectionLabel = suggestion.targetPath === "professionalSummary"
+      ? "Professional summary"
+      : suggestion.targetPath.startsWith("workExperience[") ? "Work experience" : "CV section";
     setMessage(
       decision === "accepted"
-        ? "Summary accepted and applied to the live PDF preview. Save the draft to keep this change."
-        : "Summary proposal rejected. The original summary remains in your CV.",
+        ? sectionLabel + " proposal accepted and applied to the live PDF preview. Save the draft to keep this change."
+        : sectionLabel + " proposal rejected. The original content remains in your CV.",
     );
   }
 
