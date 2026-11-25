@@ -22,6 +22,7 @@ export function CvStudioJobDetailsPanel({
 }) {
   return (
     <section className="min-w-0 space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2">
+      <div className="rounded-2xl border border-line bg-panel p-4 text-fg shadow-sm sm:p-6">
       <CvStudioJobDescriptionPanel jobContext={jobContext} onClose={onClose} />
       <CvStudioSuitabilityPanel
         suitability={suitability}
@@ -35,6 +36,7 @@ export function CvStudioJobDetailsPanel({
         onStartTailoring={onStartTailoring}
         onReturnToMaster={onReturnToMaster}
       />
+      </div>
     </section>
   );
 }
