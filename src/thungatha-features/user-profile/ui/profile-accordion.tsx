@@ -33,7 +33,9 @@ export function ProfileAccordion({
         <span className="grid min-w-0 gap-[3px]">
           <span className="text-sm font-semibold text-foreground">{title}</span>
           {description && (
-            <span className="text-xs leading-[1.4] text-muted-foreground max-[700px]:text-[10px]">
+            <span
+              className="text-xs leading-[1.4] text-muted-foreground max-[700px]:text-[10px]"
+            >
               {description}
             </span>
           )}
