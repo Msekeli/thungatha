@@ -73,7 +73,7 @@ export function CvStudioTailoringWorkspace({
           id="cv-editor-panel-preview"
           role="tabpanel"
           aria-labelledby="cv-editor-tab-preview"
-          className={mobileTab === "preview" ? "flex h-[70dvh] min-h-[420px] min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:h-full lg:min-h-0" : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"}
+          className={mobileTab === "preview" ? "flex h-[calc(100dvh-150px)] min-h-[520px] min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:h-full lg:min-h-0" : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"}
         >
           <CvStudioPreviewPanel
             masterContent={masterContent}
