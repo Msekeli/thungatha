@@ -13,9 +13,9 @@ export function CvStudioJobPreview({
   tailoredPreview: { content: CvPdfContent; accent: string } | null;
 }) {
   return (
-    <section className="hidden min-w-0 rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-4 lg:block lg:h-full lg:overflow-y-auto">
+    <section className="flex min-h-0 min-w-0 flex-col rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-4 lg:h-full lg:overflow-y-auto">
       {reusableCv ? (
-        <div className="space-y-2">
+        <div className="min-h-0 flex-1 space-y-2">
           <p className="text-sm font-medium text-fg">
             Reusing accepted CV · Version {reusableCv.version_number}
           </p>
