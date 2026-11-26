@@ -194,6 +194,21 @@ A user should be able to quickly answer:
 
 Status transitions and history must be explicit and testable. Do not infer a positive outcome from silence or from opening a destination link.
 
+### Job-description retention and compact tracking records
+
+Thungatha must minimise long-lived storage of large vacancy payloads while preserving the information needed to track an application or recognise an opportunity.
+
+- When an application becomes **Rejected** or **Withdrawn**, permanently delete its application-specific full job-description snapshot and redundant full-description copies. Retain the employer, job title, requisition/reference ID and original URL/source reference where available, application date, final status, status history, CV reference, notes, recruiter/contact details, interview history and follow-up outcomes.
+- Do not duplicate full job descriptions into status events, notes, logs, caches or audit metadata. Store status changes as compact events.
+- A user's **Dismiss** or **Unsave** action affects only that user's relationship to a shared Job Discovery listing. It must never delete the shared catalogue record or description, because other users or active workflows may still need it.
+- When an employer/source listing is verified as closed, expired, removed or unavailable, mark its lifecycle state and retain its compact identity/history. Do not purge it immediately.
+- Large descriptions and redundant source payloads for stale catalogue records may be permanently purged only after a configurable retention period and only when no active application, saved-user state or other supported workflow still depends on the content. Retain a compact catalogue identity: company, title, stable source/job ID, URL where available, useful location metadata and lifecycle timestamps/state. The retention duration must be configured and documented before implementation; a transient source failure is never a deletion trigger.
+- Prefer one canonical full-description payload over copies across jobs, matching, CV and application tables. Dependent features should use references and only the minimum evidence excerpts required.
+- CV files and exact submitted-CV references have a separate retention policy and must not be removed by job-description cleanup.
+
+The deletion must be enforced by server-side application logic and cover database rows, object storage and application-managed caches. It must be idempotent and preserve compact tracking records. Backup expiry follows the separately documented backup policy; do not claim immediate erasure from immutable backups.
+
+
 ## 9. Account and navigation
 
 The landing page introduces the three main experiences and provides clear entry points. Private actions and personal data require sign-in.
