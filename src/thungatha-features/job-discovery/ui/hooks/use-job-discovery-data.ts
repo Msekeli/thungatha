@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useJobActivitySync } from "./use-job-activity-sync";
-import { useInfiniteJobPagination } from "./use-infinite-job-pagination";
 import { useUpdateJobState } from "./use-update-job-state";
 import { useSelectedJobDetail } from "./use-selected-job-detail";
 import { useUndoJobState } from "./use-undo-job-state";
@@ -9,57 +8,22 @@ import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
-export function useJobDiscoveryData(state: DiscoveryState) {
+export function useJobDiscoveryData(state: DiscoveryState, userId: string | null, enabled: boolean, activeCategory: string) {
   const s = state;
   const { undoAction, setUndoAction } = state;
   useJobFeed(
-    s.page,
-    s.category,
-    s.filters,
-    s.sortOrder,
-    s.retryFeed,
-    s.setFeed,
-    s.setDismissedCount,
-    s.setLoading,
-    s.setError,
-    s.setIsAuthenticated,
-    s.setSelectedId,
+    userId, enabled, s.page, activeCategory, s.filters, s.sortOrder, s.retryFeed,
+    s.setFeed, s.setDismissedCount, s.setLoading, s.setError,
+    s.setIsAuthenticated, s.setSelectedId,
   );
-  useInfiniteJobPagination(s.loadMoreRef, s.loading, s.feed, s.page, s.setPage);
-  useSelectedJobDetail(
-    s.selectedId,
-    s.retryDetail,
-    s.setDetail,
-    s.setDetailLoading,
-    s.setDetailError,
-  );
-  useJobActivitySync(
-    s.userSignedIn,
-    s.selectedId,
-    s.setJobActivity,
-    s.setActivityError,
-    s.setForceAppliedPrompt,
-    s.setDismissedPromptForJobId,
-  );
+  useSelectedJobDetail(s.selectedId, s.retryDetail, s.setDetail, s.setDetailLoading, s.setDetailError);
+  useJobActivitySync(s.userSignedIn, s.selectedId, s.setJobActivity, s.setActivityError, s.setForceAppliedPrompt, s.setDismissedPromptForJobId);
   const updateJobState = useUpdateJobState(
-    s.stateBusy,
-    s.setStateBusy,
-    s.setStateError,
-    s.setStateMessage,
-    s.setFeed,
-    s.setDetail,
-    s.setSelectedId,
-    s.setUndoAction,
-    s.setRetryFeed,
+    s.stateBusy, s.setStateBusy, s.setStateError, s.setStateMessage,
+    s.setFeed, s.setDetail, s.setSelectedId, s.setUndoAction, s.setRetryFeed,
   );
   const undoLastStateChange = useUndoJobState(
-    s.undoAction,
-    s.stateBusy,
-    s.detail,
-    s.feed,
-    updateJobState,
-    s.setUndoAction,
-    s.setStateMessage,
+    s.undoAction, s.stateBusy, s.detail, s.feed, updateJobState, s.setUndoAction, s.setStateMessage,
   );
   useEffect(() => {
     if (!undoAction) return;

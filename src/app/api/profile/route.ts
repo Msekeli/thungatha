@@ -22,12 +22,10 @@ export async function GET() {
       identity.getToken,
     );
     if (error) throw error;
-
     return NextResponse.json({ profile: mapRowToProfileDto(data) });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError) {
+    if (error instanceof SupabaseConfigurationError)
       return apiError("Profile storage is not configured", 503);
-    }
     return apiFailure(error);
   }
 }
@@ -50,29 +48,42 @@ export async function PATCH(request: Request) {
       400,
     );
   }
-  if (
-    parsed.data.confirmedAt &&
-    !profileCompletionSchema.safeParse(parsed.data).success
-  ) {
-    return apiError(
-      "Complete the required profile fields before confirming it.",
-      400,
-    );
-  }
 
   try {
+    if (parsed.data.confirmedAt) {
+      const current = await readProfile(identity.userId, identity.getToken);
+      if (current.error) throw current.error;
+      const existing = mapRowToProfileDto(current.data);
+      const candidate = {
+        ...existing,
+        ...parsed.data,
+        personalDetails: {
+          ...existing.personalDetails,
+          ...parsed.data.personalDetails,
+        },
+      };
+      if (!profileCompletionSchema.safeParse(candidate).success) {
+        return apiError(
+          "Complete the required profile fields before confirming it.",
+          400,
+        );
+      }
+    }
+
+    const saveInput = {
+      ...parsed.data,
+      confirmedAt: parsed.data.confirmedAt ?? null,
+    };
     const { data, error } = await saveProfile(
       identity.userId,
-      parsed.data,
+      saveInput,
       identity.getToken,
     );
     if (error) throw error;
-
     return NextResponse.json({ profile: mapRowToProfileDto(data) });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError) {
+    if (error instanceof SupabaseConfigurationError)
       return apiError("Profile storage is not configured", 503);
-    }
     return apiFailure(error);
   }
 }

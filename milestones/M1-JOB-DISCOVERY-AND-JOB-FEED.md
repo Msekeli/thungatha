@@ -234,7 +234,7 @@ Security and lifecycle boundaries:
 - Provide deterministic search and filters supported by available data.
 - Present role, employer, location/work mode, source and relevant dates when known.
 - Implement the detail panel and actions shown in the supplied design.
-- Display a match score only when M3 produces a valid score; otherwise do not fabricate a score.
+- Do not display numerical match scores. M3 may later provide only the approved Match or Relevant categorical badge; Unclassified has no badge.
 - Show applied status only when linked to an actual M5 application.
 - Provide loading, empty, error, retry, unavailable and responsive states.
 

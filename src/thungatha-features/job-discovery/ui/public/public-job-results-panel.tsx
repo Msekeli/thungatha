@@ -2,7 +2,7 @@
 
 import { JobResultsState } from "../authenticated/job-results-state";
 import { JobList } from "../shared/job-list";
-import type { RefObject } from "react";
+import { JobFeedPagination } from "../shared/job-feed-pagination";
 import type { JobDiscoveryWorkspaceProps } from "../shared/job-discovery-workspace-types";
 import type { Job } from "../job-discovery-utils";
 import { PublicJobCardActions } from "./public-job-card-actions";
@@ -23,36 +23,37 @@ function postedAge(data: ResultsData, id: string) {
 
 export function PublicJobResultsPanel({
   data,
-  loadMoreRef,
   onSelect,
 }: {
   data: ResultsData;
-  loadMoreRef: RefObject<HTMLDivElement | null>;
   onSelect: (job: Job) => void;
 }) {
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden">
-      <header className="flex min-h-10 shrink-0 items-center justify-between gap-2 text-detail text-public-muted">
-        <span
-          aria-live="polite"
-          className="inline-flex w-fit flex-none items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-2 text-control font-bold text-accent-text shadow-sm max-[700px]:px-2.5 max-[700px]:py-1.5"
-        >
-          {data.resultCount} opportunities
-        </span>
-        <PublicJobSortSelect
-          value={data.sortOrder}
-          onChange={data.onSortOrderChange}
+    <section
+      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden"
+      aria-label="Job search results"
+    >
+      <div className="th-job-results-scroll min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 pb-4 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch] max-[700px]:pb-[calc(76px+env(safe-area-inset-bottom))]">
+        <header className="flex min-h-10 items-center justify-between gap-2 pb-2 text-detail text-public-muted">
+          <span
+            aria-live="polite"
+            className="inline-flex w-fit flex-none items-center rounded-lg border border-accent/40 bg-accent-bg px-3 py-2 text-control font-bold text-accent-text shadow-sm max-[700px]:px-2.5 max-[700px]:py-1.5"
+          >
+            {data.resultCount} opportunities
+          </span>
+          <PublicJobSortSelect
+            value={data.sortOrder}
+            onChange={data.onSortOrderChange}
+          />
+        </header>
+        <JobResultsState
+          loading={data.loading}
+          hasFeed={Boolean(data.feed)}
+          error={data.error}
+          hasJobs={data.jobs.length > 0}
+          hasFilters={data.hasFilters}
+          onRetry={data.onRetryFeed}
         />
-      </header>
-      <JobResultsState
-        loading={data.loading}
-        hasFeed={Boolean(data.feed)}
-        error={data.error}
-        hasJobs={data.jobs.length > 0}
-        hasFilters={data.hasFilters}
-        onRetry={data.onRetryFeed}
-      />
-      <div className="th-job-results-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain pr-1 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
         {data.jobs.length > 0 && (
           <JobList
             jobs={data.jobs}
@@ -72,16 +73,13 @@ export function PublicJobResultsPanel({
             )}
           />
         )}
-        {data.feed && data.feed.page < data.feed.totalPages && (
-          <div
-            ref={loadMoreRef}
-            aria-live="polite"
-            className="py-4 text-center text-detail text-fg-muted"
-          >
-            {data.loading
-              ? "Loading more opportunities…"
-              : "Scroll to load more opportunities"}
-          </div>
+        {data.feed && (
+          <JobFeedPagination
+            page={data.feed.page}
+            totalPages={data.feed.totalPages}
+            loading={data.loading}
+            onPageChange={data.onPageChange}
+          />
         )}
       </div>
     </section>

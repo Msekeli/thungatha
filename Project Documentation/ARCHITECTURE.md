@@ -2,7 +2,7 @@
 
 **Document status:** Working architecture authority for review  
 **Version:** 1.0  
-**Last updated:** 15 October 2026
+**Last updated:** 21 November 2026
 
 ## 1. Purpose and architectural direction
 
@@ -12,9 +12,10 @@ The architecture must deliver the approved product specification and milestones 
 
 ### Architectural rules
 
-1. Product rules and ownership checks are enforced by server-side application code, not by the UI or AI.
-2. Confirmed Profile data is authoritative; imported and AI-produced content remains unconfirmed until reviewed.
-3. Unknown data stays unknown; don't turn missing evidence into a negative conclusion.
+1. AI is a first-class capability for contextual understanding, semantic comparison, and generated assistance in the owning product features; it is not restricted to optional extraction.
+2. Application code—not the UI or model—owns identity, authorization, evidence validation, persistence, deterministic invariants, and state transitions.
+3. Confirmed Profile data is authoritative; imported and AI-produced personal claims remain unconfirmed until reviewed.
+4. Unknown data stays unknown; don't turn missing evidence into a negative conclusion.
 4. User-owned reads and writes must use server-derived identity and enforce ownership.
 5. External providers and AI models are replaceable adapters, not sources of authority.
 6. Keep one deployable application. Do not add microservices, a mandatory queue, or a generic agent framework without an approved, evidenced need.
@@ -62,7 +63,7 @@ flowchart TD
     UseCases --> Sources[Approved job-source adapters]
     Sources --> Providers[External job sources]
     UseCases --> AIAdapter[AI provider boundary]
-    AIAdapter --> AIProviders[Gemini / Groq; optional experiments]
+    AIAdapter --> AIProviders[Ollama Local in development; Gemini and Groq when hosted]
 ```
 
 Trust boundaries:
@@ -79,7 +80,8 @@ The app can organize code by feature and responsibility inside the existing `src
 
 - **Route and presentation layer:** App Router pages/layouts, route handlers, and React components. Compose screens and handle user interaction.
 - **Application/use-case layer:** coordinates use cases, validation, authorization, persistence, provider calls, and state transitions.
-- **Domain rules:** deterministic rules such as deduplication, matching classification, CV version rules, and application status transitions. Domain logic should not depend on Next.js, Clerk SDKs, database clients, or AI SDKs.
+- **Domain rules:** deterministic invariants such as deduplication, evidence-reference validation, approved categorical result rules, CV version rules, and application status transitions. Domain logic should not depend on Next.js, Clerk SDKs, database clients, or AI SDKs.
+- **AI use cases:** feature-owned orchestration for job-description understanding, semantic role-to-Profile comparison, transferable-skill interpretation, grounded explanations, and CV assistance. These use cases call provider-neutral AI contracts and return schema-validated proposals with source references.
 - **Infrastructure:** SQL/repository functions, Clerk identity integration, storage, job-source adapters, and AI-provider adapters.
 - **Shared cross-cutting utilities:** authentication helpers, response/error conventions, schemas, environment validation, and logging. Do not turn `src/lib` into a catch-all for feature business logic.
 
@@ -210,10 +212,10 @@ Feature-specific business rules must not drift into generic shared utilities. Av
 
 | Module/experience | Owns                                                                                                                | Does not own                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, Profile-based scoring in M1 |
+| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, candidate-specific matching in M1 |
 | Profile           | Confirmed professional facts, import drafts, confirmation, profile history                                          | Silent AI-driven edits                                          |
-| Matching          | Requirement extraction, evidence mapping, deterministic scoring, explanation and stale-state                        | Owning job listings or CV versions                              |
-| CV Studio         | Master CV and tailored versions, recommendation, review, preview, comparison, export                                | Editing Profile silently; application status history            |
+| Matching          | AI-assisted full-context job understanding, semantic candidate comparison, transferable-skill interpretation, evidence validation, Match/Relevant explanations, unavailable assessment state and freshness | Owning job listings or CV versions; identity, authorization, or persistence |
+| CV Studio         | AI-assisted recommendations and tailoring, master CV and tailored versions, review, preview, comparison, export   | Editing Profile silently; application status history            |
 | Job Tracking      | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups | Job-source catalogue ownership or CV authoring                  |
 | Account           | User preferences and account-level settings defined in M6                                                           | Duplicating Clerk identity or feature data                      |
 

@@ -42,7 +42,12 @@ describe("sortJobDiscoveries", () => {
     ]);
   });
 
-  it("prioritises title matches for relevance searches", () => {
-    expect(sortJobDiscoveries(jobs, "relevance", "software")[0].id).toBe("newer");
+  it("preserves the server's catalogue-wide relevance order instead of re-ranking one page by search text", () => {
+    const serverOrdered = [jobs[1], jobs[0], jobs[2]];
+    expect(sortJobDiscoveries(serverOrdered, "relevance").map((job) => job.id)).toEqual([
+      "older",
+      "newer",
+      "undated",
+    ]);
   });
 });

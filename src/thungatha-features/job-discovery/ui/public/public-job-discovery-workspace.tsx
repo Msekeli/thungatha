@@ -12,15 +12,17 @@ export function PublicJobDiscoveryWorkspace({
   data: JobDiscoveryWorkspaceProps;
 }) {
   const [detailOpen, setDetailOpen] = useState(false);
-  const { loadMoreRef, ...resultsData } = data;
+
   function selectJob(job: Job) {
     data.onSelect(job);
     setDetailOpen(true);
   }
+
   function closeDetails() {
     setDetailOpen(false);
     data.onBack();
   }
+
   return (
     <>
       <div
@@ -32,11 +34,7 @@ export function PublicJobDiscoveryWorkspace({
       >
         {data.leadingColumn}
         <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
-          <PublicJobResultsPanel
-            data={resultsData}
-            loadMoreRef={loadMoreRef}
-            onSelect={selectJob}
-          />
+          <PublicJobResultsPanel data={data} onSelect={selectJob} />
         </div>
       </div>
       <PublicJobDetailDialog

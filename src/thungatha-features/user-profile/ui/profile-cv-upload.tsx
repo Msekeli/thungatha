@@ -28,9 +28,9 @@ export function ProfileCvUpload({
       setFile(null);
       return;
     }
-    if (!/\.pdf$/i.test(next.name) && !/\.docx$/i.test(next.name)) {
+    if (!/\.pdf$/i.test(next.name)) {
       setFile(null);
-      setError("Choose a PDF or DOCX file.");
+      setError("Choose a PDF file.");
       return;
     }
     if (!next.size) {
@@ -82,7 +82,7 @@ export function ProfileCvUpload({
             {hasCurrentCv ? "Upload a replacement CV" : "Start from your CV"}
           </h2>
           <p className="mt-1 text-xs leading-4 text-muted-foreground sm:text-sm sm:leading-normal">
-            PDF or DOCX · Maximum 5 MB. Your file is stored privately.
+            PDF only · Maximum 5 MB. Your file is stored privately.
           </p>
         </div>
       </div>

@@ -1,0 +1,32 @@
+export const educationLevels = [
+  "Below Grade 12",
+  "Grade 12 (Matric) — NQF Level 4",
+  "Certificate",
+  "Higher Certificate",
+  "Diploma",
+  "Advanced Certificate",
+  "Advanced Diploma",
+  "Bachelor's Degree",
+  "Honours Degree",
+  "Postgraduate Diploma",
+  "Master's Degree",
+  "Doctoral Degree",
+  "Other",
+];
+
+export const educationFields = [
+  "Agriculture",
+  "Computer Science",
+  "Information Technology",
+  "Software Development",
+  "Business Management",
+  "Accounting and Finance",
+  "Engineering",
+  "Education",
+  "Healthcare",
+  "Law",
+  "Marketing",
+  "Science",
+  "Humanities and Social Sciences",
+  "Other",
+];

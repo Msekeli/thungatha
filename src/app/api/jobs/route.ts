@@ -13,6 +13,8 @@ import { jobFeedQuerySchema } from "@/thungatha-features/job-discovery/server/jo
 import { syncScoutVacanciesIfDue } from "@/thungatha-features/job-discovery/server/scout-export-client";
 import { readJobFeed } from "@/thungatha-features/job-discovery/server/job-feed-reader";
 
+export const maxDuration = 120;
+
 export async function GET(request: Request) {
   await connection();
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>> = null;
@@ -56,6 +58,7 @@ export async function GET(request: Request) {
       parsed.data,
       statesOnly,
     );
+
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof SupabaseConfigurationError) {

@@ -103,6 +103,7 @@ thungatha/
 │   │   ├── ui/                          # Reusable interface primitives such as buttons, modals, skeletons, and toast notifications.
 │   │   └── theme/                       # Theme toggle UI; theme configuration and token ownership still need a separate audit.
 │   ├── lib/                             # Existing shared technical modules and integrations; keep only code with a clear cross-feature or infrastructure role.
+│   │   ├── ai/                          # Shared server-side AI contracts, provider adapters, routing, and quota controls.
 │   │   ├── http/                        # HTTP response and API response utilities.
 │   │   └── supabase/                    # Supabase client construction and access configuration.
 │   ├── styles/                          # Global design tokens and shared component stylesheets.
@@ -110,6 +111,7 @@ thungatha/
 │   └── proxy.ts                         # Next.js request proxy entry point.
 ├── tests/
 │   ├── unit-tests/                      # Isolated functions, schemas, providers, and component behaviour.
+│   │   ├── ai/                          # Shared AI contracts, provider adapters, routing, and quota policy tests.
 │   │   ├── job-discovery/               # Job ingestion, search, schemas, providers, and discovery UI.
 │   │   │   ├── providers/               # Provider-specific tests grouped by provider type.
 │   │   │   ├── schemas/                  # Job catalogue schema tests.

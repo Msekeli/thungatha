@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useLayoutEffect, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { readWorkspaceCache, writeWorkspaceCache } from "@/lib/workspace-data-cache";
 import {
   buildJobFeedParams,
   type Feed,
   type Filters,
 } from "../job-discovery-utils";
 import { JobFeedRequestError, requestJobFeed } from "../request-job-feed";
-import {
-  canReusePublicJobFeed,
-  getReusablePublicFeed,
-} from "../job-feed-cache";
+
+type CachedJobFeed = { feed: Feed; dismissedCount: number };
+const JOB_FEED_CACHE_TTL = 45 * 1000;
 
 export function useJobFeed(
+  userId: string | null,
+  enabled: boolean,
   page: number,
   category: string,
   filters: Filters,
@@ -28,64 +30,43 @@ export function useJobFeed(
     () => buildJobFeedParams(page, category, filters, sortOrder),
     [page, category, filters, sortOrder],
   );
+  const cacheKey = `job-feed:${params}`;
+
   const refreshFeed = useCallback(
-    async (signal: AbortSignal) => {
-      setLoading(true);
-      setError(null);
+    async function refresh(signal: AbortSignal, background = false) {
+      if (!background) {
+        setLoading(true);
+        setError(null);
+      }
       try {
-        if (
-          sortOrder !== "oldest" &&
-          canReusePublicJobFeed(page, category, filters)
-        ) {
-          const cached = await getReusablePublicFeed(signal);
-          if (cached) {
-            setIsAuthenticated(true);
-            setFeed(cached);
-            setSelectedId((current) =>
-              current && cached.jobs.some((job) => job.id === current)
-                ? current
-                : null,
-            );
-            void requestJobFeed(
-              buildJobFeedParams(1, "dismissed", filters),
-              signal,
-            )
-              .then((dismissedFeed) => {
-                if (!signal.aborted) setDismissedCount(dismissedFeed.total);
-              })
-              .catch(() => {
-                // Keep the last known count if the separate count request fails.
-              });
-            return;
-          }
-        }
         const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
-        setFeed((current) => {
-          if (page <= 1 || !current) return data;
-          const knownIds = new Set(current.jobs.map((job) => job.id));
-          return {
-            ...data,
-            jobs: [
-              ...current.jobs,
-              ...data.jobs.filter((job) => !knownIds.has(job.id)),
-            ],
-          };
+        setFeed(data);
+        const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
+        writeWorkspaceCache(userId, cacheKey, {
+          feed: data,
+          dismissedCount: cached?.value.dismissedCount ?? 0,
         });
+        if (data.jobs.some((job) => job.matchStatus === "processing")) {
+          window.setTimeout(() => {
+            if (!signal.aborted) void refresh(signal, true);
+          }, 60_000);
+        }
         setSelectedId((current) =>
-          current && (page > 1 || data.jobs.some((job) => job.id === current))
+          current && data.jobs.some((job) => job.id === current)
             ? current
-            : null,
+            : (data.jobs[0]?.id ?? null),
         );
         if (category === "dismissed") {
           setDismissedCount(data.total);
+          writeWorkspaceCache(userId, cacheKey, { feed: data, dismissedCount: data.total });
         } else if (page === 1) {
-          void requestJobFeed(
-            buildJobFeedParams(1, "dismissed", filters),
-            signal,
-          )
+          void requestJobFeed(buildJobFeedParams(1, "dismissed", filters), signal)
             .then((dismissedFeed) => {
-              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+              if (!signal.aborted) {
+                setDismissedCount(dismissedFeed.total);
+                writeWorkspaceCache(userId, cacheKey, { feed: data, dismissedCount: dismissedFeed.total });
+              }
             })
             .catch(() => {
               // Count refresh is independent; it must not fail the main feed.
@@ -93,6 +74,12 @@ export function useJobFeed(
         }
       } catch (reason) {
         if (reason instanceof Error && reason.name === "AbortError") return;
+        if (background) {
+          window.setTimeout(() => {
+            if (!signal.aborted) void refresh(signal, true);
+          }, 60_000);
+          return;
+        }
         setFeed(null);
         if (reason instanceof JobFeedRequestError)
           setIsAuthenticated(reason.status !== 401);
@@ -102,29 +89,39 @@ export function useJobFeed(
             : "Could not reach Job Discovery. Check your connection and retry.",
         );
       } finally {
-        if (!signal.aborted) setLoading(false);
+        if (!signal.aborted && !background) setLoading(false);
       }
     },
     [
-      params,
-      page,
-      category,
-      filters,
-      sortOrder,
-      setLoading,
-      setError,
-      setFeed,
-      setDismissedCount,
-      setIsAuthenticated,
-      setSelectedId,
+      params, cacheKey, userId, page, category, filters, setLoading, setError,
+      setFeed, setDismissedCount, setIsAuthenticated, setSelectedId,
     ],
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
-    void Promise.resolve().then(() => refreshFeed(controller.signal));
+    const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
+    if (cached) {
+      setFeed(cached.value.feed);
+      setDismissedCount(cached.value.dismissedCount);
+      setSelectedId(current => current && cached.value.feed.jobs.some(job => job.id === current)
+        ? current : (cached.value.feed.jobs[0]?.id ?? null));
+      setLoading(false);
+      setError(null);
+      if (cached.fresh && retryFeed === 0) {
+        return () => controller.abort();
+      }
+    } else {
+      // Never leave the previous category visible while the new feed is loading.
+      setFeed(null);
+      setSelectedId(null);
+      setLoading(true);
+      setError(null);
+    }
+    void Promise.resolve().then(() => refreshFeed(controller.signal, Boolean(cached)));
     return () => controller.abort();
-  }, [refreshFeed, retryFeed]);
+  }, [refreshFeed, retryFeed, userId, enabled, cacheKey, setFeed, setDismissedCount, setSelectedId, setLoading, setError]);
 
   return { params };
 }

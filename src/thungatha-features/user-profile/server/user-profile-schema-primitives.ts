@@ -31,7 +31,16 @@ export const workExperienceItemSchema = z
       .max(50)
       .optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((item, context) => {
+    if (!item.isCurrent && item.endDate && item.endDate < item.startDate) {
+      context.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "End date cannot be before start date.",
+      });
+    }
+  });
 
 export const educationItemSchema = z
   .object({
@@ -44,7 +53,16 @@ export const educationItemSchema = z
     endDate: z.string().trim().max(50).nullable().optional(),
     isCurrent: z.boolean().optional().default(false),
   })
-  .strict();
+  .strict()
+  .superRefine((item, context) => {
+    if (item.startDate && item.endDate && item.endDate < item.startDate) {
+      context.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "Completion date cannot be before start date.",
+      });
+    }
+  });
 
 export const certificationItemSchema = z
   .object({
@@ -68,20 +86,12 @@ export const certificationItemSchema = z
     endorsements: z.string().trim().max(500).nullable().optional(),
   })
   .strict()
-  .superRefine((entry, context) => {
-    if (!entry.type) return;
-    if (entry.type === "drivers-licence" && !entry.issuingCountry?.trim()) {
+  .superRefine((item, context) => {
+    if (item.issueDate && item.expiryDate && item.expiryDate < item.issueDate) {
       context.addIssue({
         code: "custom",
-        path: ["issuingCountry"],
-        message: "Issuing country is required.",
-      });
-    }
-    if (entry.type !== "drivers-licence" && !entry.issuer?.trim()) {
-      context.addIssue({
-        code: "custom",
-        path: ["issuer"],
-        message: "Issuing organisation is required.",
+        path: ["expiryDate"],
+        message: "Expiry date cannot be before issue date.",
       });
     }
   });

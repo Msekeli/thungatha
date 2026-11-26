@@ -3,30 +3,33 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-function TagList({
-  title,
-  items,
-  onChange,
+
+export function ProfileLanguageAttributesEditor({
+  attributes,
+  onAttributesChange,
 }: {
-  title: string;
-  items: string[];
-  onChange: (items: string[]) => void;
+  attributes: string[];
+  onAttributesChange: (items: string[]) => void;
 }) {
   const [value, setValue] = useState("");
   const add = () => {
     const clean = value.trim();
     if (
       clean &&
-      !items.some((item) => item.toLowerCase() === clean.toLowerCase())
+      !attributes.some((item) => item.toLowerCase() === clean.toLowerCase())
     )
-      onChange([...items, clean]);
+      onAttributesChange([...attributes, clean]);
     setValue("");
   };
   return (
     <section className="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm">
-      <h2 className="text-base font-semibold">{title}</h2>
+      <h2 className="text-base font-semibold">Interests and hobbies</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        What do you enjoy doing outside work? Add hobbies, sports, creative
+        activities or community interests. This section is optional.
+      </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        {items.map((item) => (
+        {attributes.map((item) => (
           <span
             key={item}
             className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary px-3 py-1.5 text-sm"
@@ -35,16 +38,18 @@ function TagList({
             <button
               type="button"
               aria-label={`Remove ${item}`}
-              onClick={() => onChange(items.filter((entry) => entry !== item))}
+              onClick={() =>
+                onAttributesChange(attributes.filter((entry) => entry !== item))
+              }
               className="text-muted-foreground hover:text-foreground"
             >
               <X className="size-3.5" />
             </button>
           </span>
         ))}
-        {!items.length && (
+        {!attributes.length && (
           <p className="text-sm text-muted-foreground">
-            Optional — add only what applies to you.
+            No interests or hobbies added.
           </p>
         )}
       </div>
@@ -58,41 +63,13 @@ function TagList({
         <Input
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder={
-            title === "Languages" ? "Add a language" : "Add an attribute"
-          }
-          aria-label={`Add ${title.toLowerCase()}`}
+          placeholder="e.g. Reading, football, volunteering"
+          aria-label="Add an interest or hobby"
         />
         <Button type="submit" variant="outline" disabled={!value.trim()}>
           Add
         </Button>
       </form>
     </section>
-  );
-}
-export function ProfileLanguageAttributesEditor({
-  languages,
-  attributes,
-  onLanguagesChange,
-  onAttributesChange,
-}: {
-  languages: string[];
-  attributes: string[];
-  onLanguagesChange: (items: string[]) => void;
-  onAttributesChange: (items: string[]) => void;
-}) {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <TagList
-        title="Languages"
-        items={languages}
-        onChange={onLanguagesChange}
-      />
-      <TagList
-        title="Personal attributes"
-        items={attributes}
-        onChange={onAttributesChange}
-      />
-    </div>
   );
 }

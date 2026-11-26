@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import {
   getAuthenticatedIdentity,
@@ -10,6 +11,7 @@ import {
   createPublicSupabaseClient,
   SupabaseConfigurationError,
 } from "@/lib/supabase/server";
+import { JOB_AI_ASSESSMENT_VERSION } from "@/thungatha-features/job-discovery/server/job-ai-queue";
 
 const idSchema = z.string().uuid();
 
@@ -19,7 +21,6 @@ export async function GET(
 ) {
   await connection();
   let identity: Awaited<ReturnType<typeof getAuthenticatedIdentity>> = null;
-
   if (hasClerkConfiguration()) {
     try {
       identity = await getAuthenticatedIdentity();
@@ -43,27 +44,58 @@ export async function GET(
       .eq("id", id)
       .not("scout_vacancy_id", "is", null)
       .maybeSingle();
-
     if (error) throw error;
     if (!data) return apiError("Job not found", 404);
 
     let state: "saved" | "dismissed" | null = null;
+    let matchClassification: "match" | "relevant" | "unclassified" | undefined;
     if (identity) {
-      const stateResult = await db
+      const stateQuery = db
         .from("user_job_states")
-        .select("state")
-        .eq("user_id", identity.userId)
+        ?.select("state")
+        ?.eq("user_id", identity.userId)
         .eq("job_id", id)
         .maybeSingle();
+      const profileQuery = db
+        .from("profiles")
+        ?.select("profile_version,confirmed_at")
+        ?.eq("user_id", identity.userId)
+        .maybeSingle();
+      const [stateResult, profileResult] = await Promise.all([
+        stateQuery ?? Promise.resolve({ data: null, error: null }),
+        profileQuery ?? Promise.resolve({ data: null, error: null }),
+      ]);
       if (stateResult.error) throw stateResult.error;
+      if (profileResult.error) throw profileResult.error;
       state = stateResult.data?.state ?? null;
+      if (profileResult.data?.confirmed_at) {
+        const descriptionHash = createHash("sha256")
+          .update(data.description ?? "")
+          .digest("hex");
+        const assessmentResult = await db
+          .from("job_match_assessments")
+          ?.select("classification")
+          ?.eq("user_id", identity.userId)
+          .eq("job_id", id)
+          ?.eq("profile_version", profileResult.data.profile_version ?? 1)
+          ?.eq("job_description_hash", descriptionHash)
+          ?.eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
+          .maybeSingle();
+        if (assessmentResult?.error) throw assessmentResult.error;
+        matchClassification = assessmentResult?.data
+          ?.classification as typeof matchClassification;
+      }
     }
-
-    return NextResponse.json({ job: { ...data, state } });
+    return NextResponse.json({
+      job: {
+        ...data,
+        state,
+        ...(matchClassification ? { matchClassification } : {}),
+      },
+    });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError) {
+    if (error instanceof SupabaseConfigurationError)
       return apiError("Job storage is not configured", 503);
-    }
     return apiFailure(error);
   }
 }

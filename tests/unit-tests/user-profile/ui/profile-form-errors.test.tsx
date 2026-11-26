@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({ userId: "user_test", isLoaded: true }),
+}));
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -19,42 +23,66 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
-    expect(await screen.findByRole("button", { name: "Enter details manually" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Enter details manually" }),
+    ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("shows error alert when save fails due to network error", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ profile: null }), { status: 200 }))
-      .mockRejectedValueOnce(new TypeError("Failed to fetch"));
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          throw new TypeError("Failed to fetch");
+        }
+        return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      },
+    );
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
     const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getAllByRole("button", { name: "Save draft" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection and try again",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 
   it("shows API error message when rejected by server", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ profile: null }), { status: 200 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ error: "Invalid profile" }), { status: 400 }));
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          return new Response(JSON.stringify({ error: "Invalid profile" }), {
+            status: 400,
+          });
+        }
+        return new Response(JSON.stringify({ profile: null }), { status: 200 });
+      },
+    );
 
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm initialMode="edit" />);
 
     const nameInput = await screen.findByLabelText(/^Full name/);
     fireEvent.change(nameInput, { target: { value: "Sam" } });
-    fireEvent.click(screen.getAllByRole("button", { name: "Save draft" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Invalid profile",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 });

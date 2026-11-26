@@ -17,46 +17,51 @@ const blank = (): Entry => ({
   licenceNumber: null,
   endorsements: null,
 });
-const typeName: Record<string, string> = {
+const labels: Record<string, string> = {
   "professional-certification": "Professional certification",
-  "occupational-certificate": "Occupational or trade certificate",
-  "professional-licence": "Professional licence",
-  "drivers-licence": "Driver's licence",
-  other: "Other",
+  "occupational-certificate": "Occupational / trade certificate",
+  "professional-licence": "Professional registration",
+  "drivers-licence": "South African driver's licence",
+  other: "Other certificate",
 };
 export function ProfileCertificationsEditor({
   items,
   onChange,
+  onSave,
 }: {
   items: Entry[];
   onChange: (items: Entry[]) => void;
+  onSave: (items: Entry[]) => void;
 }) {
   const [draft, setDraft] = useState<Entry | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const save = () => {
     if (
       !draft?.type ||
-      !draft.name.trim() ||
-      (draft.type !== "drivers-licence" && !draft.issuer?.trim())
+      (draft.type !== "drivers-licence" && !draft.name?.trim()) ||
+      ([
+        "professional-certification",
+        "occupational-certificate",
+        "professional-licence",
+      ].includes(draft.type) &&
+        !draft.issuer?.trim())
     )
       return;
-    onChange(
-      editingId
-        ? items.map((item) => (item.id === editingId ? draft : item))
-        : [...items, draft],
-    );
+    const updated = editingId
+      ? items.map((item) => (item.id === editingId ? draft : item))
+      : [...items, draft];
+    onChange(updated);
+    onSave(updated);
     setDraft(null);
     setEditingId(null);
   };
   return (
     <section className="w-full rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
-      <div>
-        <h2 className="text-base font-semibold">Certifications and licences</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Optional. Leave this section empty if you have none. Choose the entry
-          type first so the relevant fields appear.
-        </p>
-      </div>
+      <h2 className="text-base font-semibold">Certifications and licences</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Optional. Add South African professional registrations, certificates,
+        trade qualifications or driving licence details.
+      </p>
       <ul className="mt-4 divide-y divide-border">
         {items.map((item) => (
           <li
@@ -64,14 +69,16 @@ export function ProfileCertificationsEditor({
             className="flex items-start justify-between gap-3 py-3"
           >
             <div className="min-w-0">
-              <p className="break-words text-sm font-medium">{item.name}</p>
+              <p className="break-words text-sm font-medium">
+                {item.name || "South African driver's licence"}
+              </p>
               <p className="text-xs text-muted-foreground">
-                {typeName[item.type || ""] || "Certification or licence"}
+                {labels[item.type || ""] || "Certificate"}
                 {item.issuer ? ` · ${item.issuer}` : ""}
               </p>
               {item.licenceCategories?.length ? (
                 <p className="text-xs text-muted-foreground">
-                  Categories: {item.licenceCategories.join(", ")}
+                  Codes: {item.licenceCategories.join(", ")}
                 </p>
               ) : null}
               {item.issueDate || item.expiryDate ? (
@@ -135,7 +142,7 @@ export function ProfileCertificationsEditor({
             setEditingId(null);
           }}
         >
-          <Plus className="size-4" /> Add certification or licence
+          <Plus className="size-4" /> Add certificate or licence
         </Button>
       )}
     </section>

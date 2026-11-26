@@ -53,7 +53,7 @@ describe("profile API persistence and validation", () => {
     const getRes = await GET();
     const patchRes = await PATCH(patchReq({ displayName: "Alice C" }));
     expect(read).toHaveBeenCalledWith("u_alice", getToken);
-    expect(save).toHaveBeenCalledWith("u_alice", { displayName: "Alice C" }, getToken);
+    expect(save).toHaveBeenCalledWith("u_alice", { displayName: "Alice C", confirmedAt: null }, getToken);
     expect(getRes.status).toBe(200);
     expect(patchRes.status).toBe(200);
   });
@@ -87,7 +87,7 @@ describe("profile API persistence and validation", () => {
 
     const res = await PATCH(patchReq(payload));
     expect(res.status).toBe(200);
-    expect(save).toHaveBeenCalledWith("u_lerato", payload, getToken);
+    expect(save).toHaveBeenCalledWith("u_lerato", { ...payload, confirmedAt: null }, getToken);
     const profile = (await res.json()).profile;
     expect(profile.skills).toEqual(["React"]);
     expect(profile.personalDetails.country).toBe("South Africa");

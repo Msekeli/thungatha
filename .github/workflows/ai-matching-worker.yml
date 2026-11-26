@@ -1,0 +1,31 @@
+name: AI Job Matching Worker
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-matching-worker
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Process queued assessments
+        env:
+          APP_BASE_URL: ${{ secrets.THUNGATHA_BASE_URL }}
+          AI_WORKER_SECRET: ${{ secrets.AI_WORKER_SECRET }}
+        run: |
+          if [ -z "$APP_BASE_URL" ] || [ -z "$AI_WORKER_SECRET" ]; then
+            echo "Skipping: configure THUNGATHA_BASE_URL and AI_WORKER_SECRET repository secrets."
+            exit 0
+          fi
+
+          curl --fail-with-body --silent --show-error --max-time 330 \
+            --request POST "${APP_BASE_URL%/}/api/internal/ai-matching/worker" \
+            --header "Authorization: Bearer $AI_WORKER_SECRET" \
+            --header "Content-Type: application/json"

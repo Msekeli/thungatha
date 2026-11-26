@@ -1,6 +1,6 @@
 # Thungatha
 
-Thungatha is an AI-assisted personal job-search and application-management platform. It helps job seekers discover opportunities, assess job fit against verified professional experience, prepare accurate CVs, and manage applications.
+Thungatha is an AI-powered personal job-search and application-management platform. AI is central to understanding job descriptions, comparing responsibilities and transferable skills with confirmed professional evidence across different titles and industries, explaining job relevance, and assisting with accurate CV tailoring. Application code validates evidence and owns security, persistence, and user-controlled decisions.
 
 ## Core Features
 
@@ -28,7 +28,7 @@ Thungatha uses a single-repository modular-monolith architecture with feature-ba
 
 For Jobs, public discovery at `/` and authenticated discovery at `/jobs` remain separate experiences over the same job catalogue. Thungatha consumes approved vacancy records from the separate **Thungatha Scout** extraction system through Scout's authenticated, paginated GET export API. Scout owns employer-source retrieval, vacancy validation and sanitisation of employer-supplied description HTML. Thungatha owns server-side export consumption, persistence, job discovery, job details, saved/dismissed state and application tracking. Thungatha does not run independent job-board or ATS provider adapters.
 
-Application code enforces business rules, data ownership, validation, and state transitions. AI assists with interpretation and recommendations but does not replace deterministic application logic or silently modify confirmed user information.
+AI is a core product capability, not merely an optional extraction helper. It performs contextual job understanding, semantic candidate-to-role comparison, transferable-skill interpretation, grounded explanations, and reviewed CV assistance. Application code validates model output and evidence references and retains authority over identity, authorization, persistence, categorical business rules, and state transitions. AI proposals never silently modify confirmed user information.
 
 ## Getting Started
 

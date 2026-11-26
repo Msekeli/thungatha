@@ -1,23 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
-import { sanitizeJobSearchTerm } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
-
-function emptyFeed(page: number, pageSize: number) {
-  return { jobs: [], page, pageSize, total: 0, totalPages: 0 };
-}
-
-function isMissingEmployerDismissalsSchema(error: {
-  code?: string;
-  message?: string;
-}) {
-  return (
-    error.code === "42P01" ||
-    error.code === "42703" ||
-    error.code === "PGRST204" ||
-    error.code === "PGRST205"
-  );
-}
+import { readEmployerDismissals } from "./job-feed-dismissals";
+import { enqueueVisibleJobAssessments } from "./job-ai-queue";
+import { readJobFeedRows } from "./job-feed-page-data";
+import { buildJobFeedResponseRows } from "./job-feed-response-rows";
 
 export async function readJobFeed(
   db: SupabaseClient,
@@ -26,109 +13,71 @@ export async function readJobFeed(
   statesOnly: boolean,
 ) {
   const states = userId ? await readUserJobStates(db, userId, input.state) : [];
-
-  let employerDismissals: { employer_key: string; employer_name: string }[] =
-    [];
-  let employerDismissalsAvailable = false;
-
-  if (userId) {
-    const result = await db
-      .from("user_employer_dismissals")
-      .select("employer_key,employer_name")
-      .eq("user_id", userId);
-
-    if (result.error) {
-      if (!isMissingEmployerDismissalsSchema(result.error)) throw result.error;
-    } else {
-      employerDismissals = result.data ?? [];
-      employerDismissalsAvailable = true;
-    }
-  }
-
-  if (statesOnly) return { states, employerDismissals };
-  if (!userId && input.state !== "all")
-    return emptyFeed(input.page, input.pageSize);
-  if (userId && input.state !== "all" && !states.length)
-    return emptyFeed(input.page, input.pageSize);
-
-  const stateByJob = new Map(states.map((item) => [item.job_id, item.state]));
-  let query = db.from("job_discovery_feed").select("*", { count: "exact" });
-
-  if (input.query) {
-    const term = sanitizeJobSearchTerm(input.query);
-    if (term) {
-      query = query.or(
-        `title.ilike.%${term}%,employer_name.ilike.%${term}%,description.ilike.%${term}%`,
-      );
-    }
-  }
-
-  if (input.location) {
-    const location = sanitizeJobSearchTerm(input.location);
-    if (location) query = query.ilike("location_text", `%${location}%`);
-  }
-
-  if (input.publishedWithin !== "any") {
-    const ageInHours = {
-      "24h": 24,
-      "7d": 168,
-      "14d": 336,
-      "30d": 720,
-    }[input.publishedWithin];
-    query = query.gte(
-      "published_at",
-      new Date(Date.now() - ageInHours * 60 * 60 * 1000).toISOString(),
-    );
-  }
-
-  const dismissedEmployerKeys = employerDismissals.map(
-    (item) => item.employer_key,
+  const { dismissals, dismissalsAvailable } = await readEmployerDismissals(
+    db,
+    userId,
   );
-  if (
-    employerDismissalsAvailable &&
-    userId &&
-    input.state !== "dismissed" &&
-    dismissedEmployerKeys.length
-  ) {
-    query = query.not(
-      "employer_key",
-      "in",
-      `(${dismissedEmployerKeys.join(",")})`,
-    );
+  if (statesOnly) return { states, employerDismissals: dismissals };
+  if ((!userId || !states.length) && input.state !== "all") {
+    return {
+      jobs: [],
+      page: input.page,
+      pageSize: input.pageSize,
+      total: 0,
+      totalPages: 0,
+    };
   }
 
-  if (userId && input.state !== "all") {
-    const ids = states.map((item) => item.job_id);
-    query = query.in("id", ids);
-  } else if (userId) {
-    const dismissed = states
-      .filter((item) => item.state === "dismissed")
-      .map((item) => item.job_id);
-    if (dismissed.length)
-      query = query.not("id", "in", `(${dismissed.join(",")})`);
+  const queryOpts = {
+    userId,
+    states,
+    dismissedEmployerKeys: dismissals.map((d) => d.employer_key),
+    employerDismissalsAvailable: dismissalsAvailable,
+  };
+  let profileVersion: number | null = null;
+  let hasProfileError = false;
+  if (userId) {
+    const pRes = await db
+      .from("profiles")
+      .select("profile_version,confirmed_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (pRes.error) {
+      console.error("[job-feed-reader] Failed to read profile:", pRes.error);
+      hasProfileError = true;
+    } else if (pRes.data?.confirmed_at)
+      profileVersion = pRes.data.profile_version ?? 1;
   }
 
-  const from = (input.page - 1) * input.pageSize;
-  const { data, error, count } = await query
-    .order("published_at", {
-      ascending: input.sortOrder === "oldest",
-      nullsFirst: false,
-    })
-    .order("updated_at", { ascending: false })
-    .order("id", { ascending: true })
-    .range(from, from + input.pageSize - 1);
+  const { data, count, rankWhole, from } = await readJobFeedRows(
+    db, input, queryOpts, profileVersion,
+  );
 
-  if (error) throw error;
-  const jobs = (data ?? []).map((job) => ({
-    ...job,
-    state: stateByJob.get(job.id) ?? null,
-  }));
-  const total = count ?? 0;
+  // Enqueue the complete set of jobs returned for this feed page. Database
+  // deduplication prevents duplicate work; accepted tasks are not capped.
+  if (userId && profileVersion !== null && data.length) {
+    const assessmentCandidates = rankWhole
+      ? data.slice(from, from + input.pageSize)
+      : data;
+    try {
+      await enqueueVisibleJobAssessments(
+        userId,
+        assessmentCandidates.map((job) => job.id),
+      );
+    } catch (error) {
+      console.error("[job-feed-reader] Could not queue assessments:", error);
+    }
+  }
+
+  const safeJobs = await buildJobFeedResponseRows({
+    db, userId, profileVersion, data, states, hasProfileError,
+    rankWhole, from, pageSize: input.pageSize,
+  });
   return {
-    jobs,
+    jobs: safeJobs,
     page: input.page,
     pageSize: input.pageSize,
-    total,
-    totalPages: Math.ceil(total / input.pageSize),
+    total: count,
+    totalPages: Math.ceil(count / input.pageSize),
   };
 }

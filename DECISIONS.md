@@ -139,7 +139,6 @@ The project has discussed a broad source-coverage goal. The candidate inventory 
 | D-025 | Exact Clerk–Supabase authorization and Row Level Security design | Verify the supported integration and token/connection model; test cross-user isolation. | Open |
 | D-026 | CV/document storage, access, retention, export, deletion, and backup policy | Select compatible storage and define access-control and lifecycle requirements before production reliance. | Open |
 | D-027 | Job refresh and scheduled-work execution | Validate source terms, idempotency, refresh requirements, quotas, and current Vercel/runtime limits. | Open |
-| D-028 | Job matching score weights, badge thresholds, and visual bands | Approve a documented scoring rubric and representative test cases before production use. | Open |
 | D-029 | Evidence required to label an employer application destination as verified | Define verification rules, evidence requirements, and uncertain/failure states. | Open |
 | D-030 | Whether to add an ORM, advanced table library, monitoring service, or background-work service | Demonstrate a concrete need and compare compatibility, cost, privacy, and operational burden. | Open |
 | D-031 | Production operational thresholds, recovery procedures, and alerting | Define before release based on observed usage and failure impact. | Open |
@@ -170,7 +169,7 @@ M1's nine checkpoints remain defined in the M1 specification:
 - **M1-C08:** Save, dismiss, undo, and truthful source/application status.
 - **M1-C09:** End-to-end verification, hardening, documentation, and acceptance.
 
-The M1 specification is the detailed source of truth for these checkpoints and their evidence. `IMPLEMENTATION-PLAN.md` remains the cross-milestone summary.
+The M1 specification is the detailed source of truth for these checkpoints and their evidence. Its decision not to add AI extraction applied only to M1's structured source payloads; it does not restrict the AI-powered semantic capabilities approved for M3 and CV assistance in M4. `IMPLEMENTATION-PLAN.md` remains the cross-milestone summary.
 
 Do not mark a checkpoint accepted merely because implementation is complete. Record actual tests, observed results, remaining issues, and user review.
 

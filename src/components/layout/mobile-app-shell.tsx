@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import styles from "./mobile-app-shell.module.css";
 import { HomeAuthActions } from "@/thungatha-features/authentication/ui/home-auth-actions";
 import { MobileWorkspaceMenu } from "@/components/layout/mobile-workspace-menu";
-import { MobileWorkspaceBottomNav } from "@/components/layout/mobile-workspace-bottom-nav";
 
 const workspaceRoutes = [
   "/jobs",
@@ -76,11 +75,6 @@ export function MobileAppShell({ configured }: { configured: boolean }) {
           onClose={() => setOpen(false)}
         />
       )}
-      <MobileWorkspaceBottomNav
-        configured={configured}
-        publicMode
-        isActive={active}
-      />
     </>
   );
 }

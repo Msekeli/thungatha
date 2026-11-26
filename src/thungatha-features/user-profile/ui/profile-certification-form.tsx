@@ -1,26 +1,13 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { NativeSelect } from "@/components/ui/native-select";
 import type { UserProfileDto } from "../server/user-profile-schema";
+import { ProfileCertificationDates } from "./profile-certification-dates";
+import { ProfileCertificationFields } from "./profile-certification-fields";
+import { ProfileCertificationLicense } from "./profile-certification-license";
+
 type Entry = UserProfileDto["certifications"][number];
-const types = [
-  { value: "professional-certification", label: "Professional certification" },
-  {
-    value: "occupational-certificate",
-    label: "Occupational or trade certificate",
-  },
-  { value: "professional-licence", label: "Professional licence" },
-  { value: "drivers-licence", label: "Driver's licence" },
-  { value: "other", label: "Other" },
-];
-const categories = ["A1", "A", "B", "C1", "C", "EB", "EC1", "EC"];
-const countries = [
-  "South Africa",
-  "United Kingdom",
-  "United States",
-  "Australia",
-];
+
 export function ProfileCertificationForm({
   value,
   onChange,
@@ -34,32 +21,35 @@ export function ProfileCertificationForm({
   onCancel: () => void;
   editing: boolean;
 }) {
-  const set = (key: keyof Entry, next: string | string[]) =>
-    onChange({
-      ...value,
-      [key]: key === "issuingCountry" ? next : next || null,
-    } as Entry);
   const driver = value.type === "drivers-licence";
-  const country = value.issuingCountry ?? "South Africa";
-  const knownCountry = countries.includes(country);
-  const setType = (type: string) =>
+  const professional = value.type === "professional-licence";
+  const needsIssuer = !driver && value.type !== "other";
+  const set = (key: keyof Entry, next: string | string[]) => {
+    const fieldValue = key === "name" ? next : next || null;
+    onChange({ ...value, [key]: fieldValue } as Entry);
+  };
+  const setType = (type: string) => {
     onChange({
       ...value,
       type: type as Entry["type"],
-      issuingCountry:
+      name:
         type === "drivers-licence"
-          ? value.issuingCountry || "South Africa"
-          : value.issuingCountry,
+          ? "South African driver's licence"
+          : value.name,
+      issuingCountry: type === "drivers-licence" ? "South Africa" : null,
       licenceCategories:
         type === "drivers-licence" ? value.licenceCategories || [] : [],
     });
-  const toggleCategory = (category: string, checked: boolean) =>
+  };
+  const toggleCategory = (code: string, checked: boolean) => {
     set(
       "licenceCategories",
       checked
-        ? [...(value.licenceCategories || []), category]
-        : (value.licenceCategories || []).filter((item) => item !== category),
+        ? [...(value.licenceCategories || []), code]
+        : (value.licenceCategories || []).filter((item) => item !== code),
     );
+  };
+
   return (
     <form
       className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4"
@@ -68,191 +58,34 @@ export function ProfileCertificationForm({
         onSave();
       }}
     >
-      <label className="block space-y-2 text-sm font-medium">
-        Entry type <span className="text-destructive">(Required)</span>
-        <NativeSelect
-          required
-          value={value.type || ""}
-          onChange={(event) => setType(event.target.value)}
-        >
-          <option value="">Choose what you are adding</option>
-          {types.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </NativeSelect>
-      </label>
-      <label className="block space-y-2 text-sm font-medium">
-        {driver ? "Licence name or class" : "Certificate or licence name"}{" "}
-        <span className="text-destructive">(Required)</span>
-        <Input
-          required
-          maxLength={150}
-          value={value.name}
-          onChange={(event) => set("name", event.target.value)}
-          placeholder={
-            driver
-              ? "e.g. Driver's licence"
-              : "Full certificate or licence title"
-          }
-        />
-      </label>
-      {driver ? (
-        <>
-          <label className="block space-y-2 text-sm font-medium">
-            Issuing country <span className="text-destructive">(Required)</span>
-            <NativeSelect
-              required
-              value={knownCountry ? country : "Other country"}
-              onChange={(event) =>
-                set(
-                  "issuingCountry",
-                  event.target.value === "Other country"
-                    ? ""
-                    : event.target.value,
-                )
-              }
-            >
-              <option>South Africa</option>
-              <option>United Kingdom</option>
-              <option>United States</option>
-              <option>Australia</option>
-              <option>Other country</option>
-            </NativeSelect>
-          </label>
-          {!knownCountry && (
-            <label className="block space-y-2 text-sm font-medium">
-              Country name{" "}
-              <Input
-                required
-                value={country}
-                onChange={(event) => set("issuingCountry", event.target.value)}
-                placeholder="Enter issuing country"
-              />
-            </label>
-          )}
-          {country === "South Africa" && (
-            <fieldset className="space-y-2">
-              <legend className="text-sm font-medium">
-                Licence categories{" "}
-                <span className="font-normal text-muted-foreground">
-                  (Select all that apply)
-                </span>
-              </legend>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {categories.map((category) => (
-                  <label
-                    key={category}
-                    className="flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm"
-                  >
-                    <input
-                      type="checkbox"
-                      className="size-4 accent-primary"
-                      checked={(value.licenceCategories || []).includes(
-                        category,
-                      )}
-                      onChange={(event) =>
-                        toggleCategory(category, event.target.checked)
-                      }
-                    />
-                    Code {category}
-                  </label>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Categories follow the South African Department of Transport
-                list.{" "}
-                <a
-                  className="underline"
-                  href="https://www.transport.gov.za/?page_id=1179"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Official guidance
-                </a>
-                .
-              </p>
-            </fieldset>
-          )}
-          <label className="block space-y-2 text-sm font-medium">
-            Issuing authority{" "}
-            <span className="font-normal text-muted-foreground">
-              (Optional)
-            </span>
-            <Input
-              value={value.issuer || ""}
-              onChange={(event) => set("issuer", event.target.value)}
-              placeholder="Driving licence testing centre or authority"
-            />
-          </label>
-          <label className="block space-y-2 text-sm font-medium">
-            Licence number{" "}
-            <span className="font-normal text-muted-foreground">
-              (Optional; stored privately)
-            </span>
-            <Input
-              value={value.licenceNumber || ""}
-              onChange={(event) => set("licenceNumber", event.target.value)}
-              placeholder="Licence number"
-              autoComplete="off"
-            />
-          </label>
-          <label className="block space-y-2 text-sm font-medium">
-            Endorsements or restrictions{" "}
-            <span className="font-normal text-muted-foreground">
-              (Optional)
-            </span>
-            <Input
-              value={value.endorsements || ""}
-              onChange={(event) => set("endorsements", event.target.value)}
-              placeholder="Any endorsements or restrictions"
-            />
-          </label>
-        </>
-      ) : (
-        <label className="block space-y-2 text-sm font-medium">
-          Issuing organisation or authority{" "}
-          <span className="text-destructive">(Required)</span>
-          <Input
-            required
-            value={value.issuer || ""}
-            onChange={(event) => set("issuer", event.target.value)}
-            placeholder="Organisation that issued it"
-          />
-        </label>
+      <ProfileCertificationFields
+        value={value}
+        driver={driver}
+        professional={professional}
+        needsIssuer={needsIssuer}
+        onSet={set}
+        onSetType={setType}
+      />
+      {driver && (
+        <ProfileCertificationLicense value={value} onToggle={toggleCategory} />
       )}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block space-y-2 text-sm font-medium">
-          Issue date{" "}
-          <span className="font-normal text-muted-foreground">(Optional)</span>
-          <Input
-            type="month"
-            value={value.issueDate || ""}
-            onChange={(event) => set("issueDate", event.target.value)}
-          />
-        </label>
-        <label className="block space-y-2 text-sm font-medium">
-          Expiry date{" "}
-          <span className="font-normal text-muted-foreground">(Optional)</span>
-          <Input
-            type="month"
-            value={value.expiryDate || ""}
-            onChange={(event) => set("expiryDate", event.target.value)}
-          />
-        </label>
-      </div>
+      {value.type && (
+        <ProfileCertificationDates value={value} onChange={set} />
+      )}
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button
           type="submit"
           disabled={
             !value.type ||
-            !value.name.trim() ||
-            (!driver && !value.issuer?.trim()) ||
-            (driver && !country.trim())
+            (!driver && !value.name?.trim()) ||
+            (needsIssuer && !value.issuer?.trim())
           }
         >
-          {editing ? "Save changes" : "Add entry"}
+          {editing
+            ? "Save changes"
+            : driver
+              ? "Save licence"
+              : "Save certificate"}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel

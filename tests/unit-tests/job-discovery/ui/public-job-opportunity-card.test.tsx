@@ -48,4 +48,34 @@ describe("PublicJobOpportunityCard publication date", () => {
     );
     expect(screen.getByText("Date unknown")).toBeTruthy();
   });
+
+  it("shows a relevant badge beside the location in the metadata row", () => {
+    render(
+      <PublicJobOpportunityCard
+        job={{ ...job, matchClassification: "relevant" }}
+        ageDays={1}
+        postedLabel="Today"
+        onSelect={vi.fn()}
+      />,
+    );
+    const location = screen.getByText("Cape Town");
+    const badge = screen.getByText("Relevant");
+    expect(location.closest(".th-job-card__metadata")).toBe(
+      badge.closest(".th-job-card__metadata"),
+    );
+  });
+
+  it("does not show a badge for unclassified jobs", () => {
+    render(
+      <PublicJobOpportunityCard
+        job={{ ...job, matchClassification: "unclassified" }}
+        ageDays={1}
+        postedLabel="Today"
+        onSelect={vi.fn()}
+      />,
+    );
+    expect(screen.queryByText("Relevant")).toBeNull();
+    expect(screen.queryByText("Partially relevant")).toBeNull();
+  });
+
 });

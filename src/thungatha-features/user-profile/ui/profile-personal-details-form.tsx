@@ -1,6 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import type { UserProfileDto } from "../server/user-profile-schema";
+import { ProfileLanguagesEditor } from "./profile-languages-editor";
 type Details = UserProfileDto["personalDetails"];
 type Field = [keyof Details, string, string, string?, boolean?];
 const fields: Field[] = [
@@ -37,9 +38,13 @@ const fields: Field[] = [
 export function ProfilePersonalDetailsForm({
   details,
   onChange,
+  languages,
+  onLanguagesChange,
 }: {
   details: Details;
   onChange: (updated: Details) => void;
+  languages: string[];
+  onLanguagesChange: (languages: string[]) => void;
 }) {
   const update = (key: keyof Details, value: string) =>
     onChange({ ...details, [key]: value || null });
@@ -86,6 +91,10 @@ export function ProfilePersonalDetailsForm({
           </div>
         ))}
       </div>
+      <ProfileLanguagesEditor
+        languages={languages}
+        onChange={onLanguagesChange}
+      />
     </section>
   );
 }

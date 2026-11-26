@@ -1,6 +1,6 @@
 # Thungatha — Master Implementation Plan
 
-**Document status:** Maintained roadmap — M1 accepted and closed; M2-C02 accepted  
+**Document status:** Maintained roadmap — M1 and M2 accepted and closed; M2 completed  
 **Purpose:** Master roadmap, milestone scope, dependencies, progress and acceptance tracking  
 **Product:** Thungatha  
 **Architecture:** Next.js modular monolith  
@@ -46,9 +46,9 @@ The product specification and architecture document will define these experience
 |---|---|---|
 | M0 | Foundation and Authentication | **Accepted — complete** |
 | M1 | Job Discovery and Job Feed | **Accepted — complete (2026-10-24)** |
-| M2 | Profile and CV Import | **In progress — C02/C03 accepted; C04 in review** |
-| M3 | Job Matching and Fit Analysis | Not started |
-| M4 | CV Studio | Not started |
+| M2 | Profile and CV Import | **Accepted — complete and closed (2026-11-23)** |
+| M3 | Job Matching and Fit Analysis | In progress |
+| M4 | CV Studio | **In progress** |
 | M5 | Job Tracking | Not started |
 | M6 | Account, Integration and Release Readiness | Not started |
 
@@ -74,7 +74,7 @@ The completed scope is Job Discovery and the persisted job feed: source adapters
 
 **C05 decision:** AI extraction is not required for the current M1 implementation because available provider responses can be normalized deterministically. Keep AI extraction out of M1 unless a future source audit demonstrates a concrete gap and the scope is explicitly reopened.
 
-**Current milestone:** M2 — Profile and CV Import. C02 — Profile view and manual editing — was accepted by the user on 2026-10-24. C01 migrations have been applied by the user; automated verification and RLS isolation evidence were not run by ChatGPT. C03 — CV upload and private storage — has been implemented for review with user-approved PDF/DOCX, 5 MB, private storage, retention, and replacement rules. The user must apply the migration and review the result. M1 remains closed.
+**Current milestone:** M4 — CV Studio. M3 — AI-Powered Job Matching and Relevance — remains In progress. M4 work must not make master-CV generation or user-directed CV creation dependent on matching availability. M2 — Profile and CV Import — was explicitly accepted as complete by the user on 2026-11-23 and is completed and closed unless the user explicitly reopens it. All M2 checkpoints C00–C07 are accepted. The user's confirmation is the acceptance authority; supplied screenshots support the visible Profile and Job Discovery state. M2 has no outstanding work. M0, M1 and M2 are closed.
 
 ## Architecture and Jobs refactor (separate from milestone acceptance)
 
@@ -120,7 +120,7 @@ Scope includes:
 - Handling unavailable sources, incomplete listings and errors honestly.
 - Verifying security, reliability, accessibility and the end-to-end experience.
 
-M1 does not include Profile-dependent match scores, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
+M1 does not include Profile-dependent matching, CV tailoring or the complete application lifecycle. It does include a minimal explicit applied confirmation for roles opened from Discovery, so a user can record an application without returning from the external site. Opening an external application page must never itself imply submission.
 
 **Dependency:** M0.
 
@@ -130,11 +130,11 @@ Detailed scope and checkpoint records belong in the M1 milestone document.
 
 ### M2 — Profile and CV Import
 
-**Status: In progress — C02 accepted; C03 next**
+**Status: Accepted — complete and closed (2026-11-23).**
 
 **Planning note:** C01 backend foundation has been implemented and the user reports applying the migrations. C02 manual profile editing was accepted on 2026-10-24. Begin C03 only after upload/storage decisions are agreed.
 
-**Outcome:** A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
+**Outcome:** Achieved. A reliable Profile containing confirmed professional information and an imported, reviewable master CV.
 
 Scope includes:
 
@@ -156,36 +156,41 @@ M2 execution begins with an audit of the existing Profile page, `src/thungatha-f
 
 Detailed checkpoints belong in the M2 milestone document.
 
-### M3 — Job Matching and Fit Analysis
+### M3 — AI-Powered Job Matching and Relevance
 
-**Status: Not started**
+**Status: In progress — semantic AI matching direction approved; existing deterministic extraction/classification is an interim implementation only.**
 
-**Outcome:** An explainable assessment of how a user's confirmed professional evidence aligns with a job's requirements.
+**Outcome:** An explainable, evidence-grounded AI assessment of how the actual work and requirements in a job relate to a user's confirmed professional evidence, including transferable skills and equivalent responsibilities across different job titles and industries.
+
+AI is a core part of this milestone. Do not downgrade M3 to keyword matching, title matching, or deterministic-only comparison. Job titles and role-family labels are context, not hard gates or deciding factors.
 
 Scope includes:
 
-- Extracting and structuring job requirements.
-- Mapping requirements to evidence in the user's Profile and CV.
-- Calculating a deterministic, explainable fit estimate.
-- Showing matched, partially supported, missing and unverifiable requirements.
-- Explaining the evidence behind the assessment.
-- Distinguishing confirmed information from inferred information.
-- Integrating fit analysis into Job Discovery where appropriate.
-- Testing scoring behaviour, edge cases and stale data.
+- Using AI to understand complete job descriptions and interpret responsibilities, skills, technologies/tools, experience, qualifications, certifications, languages, and domain context without relying on fixed dictionaries or regex as the semantic engine.
+- Comparing the actual work and requirements semantically with confirmed Profile evidence, including transferable skills and substantially equivalent work expressed with different titles or terminology. Interpret individual requirements in the context of the full advert; do not use one extracted phrase, threshold, title, or missing field as an automatic rejection gate.
+- Preserving job-source snippets/references and confirmed Profile evidence references for every factual comparison.
+- Validating AI output and evidence references in application code; keeping identity, authorization, persistence, freshness, deterministic data integrity, and categorical outcome enforcement application-owned. Use asynchronous, idempotent processing and cached assessments; do not call AI synchronously on every feed request.
+- Producing only two public classifications: **Match** and **Relevant**. Match means strong evidence-based alignment with the central work and core requirements; Relevant means meaningful supported alignment with material gaps or unknowns.
+- Representing insufficient evidence, missing confirmation, unusable job content, provider failure, or invalid AI output as an **unavailable assessment**, not as a third classification. Unavailable assessments receive no classification badge.
+- Ordering assessed jobs by Match, then Relevant before pagination. Unavailable assessments are not assigned a relevance rank; date-based fallback behaviour remains available.
+- Explaining the evidence and uncertainty behind each result without inventing candidate or job facts.
+- Testing semantic equivalence across titles and industries, transferable-skill recognition, false positives, false negatives, evidence grounding, provider failures, and stale results.
 
-The score is an estimate of fit, not a probability of being hired. Missing evidence must not automatically be treated as proof that the user lacks a qualification. Requirements that cannot be verified must be clearly distinguished from requirements with no supporting evidence.
+No numerical scoring of any kind is permitted: no score, percentage, weight, threshold, weighted total, fit points, score bands, hidden numeric ranking, or hiring-probability estimate. Do not sort or display by a numerical score.
+
+AI analysis failure must be represented honestly; do not silently substitute keyword-only matching and claim it is equivalent. Job feed access and ordinary discovery actions must remain usable when AI is unavailable. Existing regex extraction, fixed dictionaries, exact-match evaluators, and role-family gates are interim legacy logic to retire from semantic decision-making.
 
 **Dependencies:** M1 and M2.
 
-**Completion condition:** Matching produces explainable, tested results based on available evidence and handles uncertainty honestly.
+**Completion condition:** AI-powered semantic comparison produces explainable and validated Match or Relevant classifications grounded in job-source evidence and confirmed Profile evidence. Insufficient evidence or provider failure is represented as unavailable, not as a third public classification. Representative cross-title/cross-industry evaluation and honest uncertainty/failure handling are required.
 
 Detailed checkpoints belong in the M3 milestone document.
 
 ### M4 — CV Studio
 
-**Status: Not started**
+**Status: In progress — the Profile-backed master CV, job-context flow, exact-context reuse, manual draft editing, A4 preview, acceptance and PDF export are present in source; AI tailoring, comparison and final verification remain outstanding.**
 
-**Outcome:** A complete workflow for assessing, tailoring, reviewing, managing and exporting CV versions for specific opportunities.
+**Outcome:** An AI-powered workflow that interprets a target role and helps users create accurate, evidence-grounded CV versions tailored to specific opportunities.
 
 Scope includes:
 
@@ -193,8 +198,9 @@ Scope includes:
 - Supporting CV upload when a master CV is not yet available.
 - Accepting a job URL, pasted job description or a job selected from Discovery.
 - Handling unreadable job URLs by asking the user to paste the description.
-- Recommending whether to use the master CV, reuse an existing tailored version or create a new version.
-- Allowing users to review and accept or reject recommendations.
+- Using AI to interpret the target role, identify relevant confirmed experience and transferable skills, and recommend whether to use the master CV, reuse an existing tailored version or create a new version.
+- Using AI to propose role-appropriate ordering, emphasis, structure, and wording grounded in confirmed Profile evidence.
+- Allowing users to review, edit, accept or reject recommendations and proposed changes.
 - Supporting AI-assisted tailoring and a live preview.
 - Managing versions and providing appropriate comparison and export workflows.
 - Preserving the master CV and confirmed Profile information.
@@ -268,7 +274,7 @@ The main functional dependencies are:
 
 - M1 establishes Job Discovery.
 - M2 provides confirmed Profile information and the master CV.
-- M3 uses job requirements and Profile evidence to calculate fit.
+- M3 uses AI semantic job understanding and comparison against confirmed Profile evidence to assign categorical relevance classifications. Deterministic application code validates evidence and enforces security, persistence, freshness, and approved outcome invariants.
 - M4 uses the master CV and job information to manage tailored CV versions.
 - M5 links actual applications to relevant jobs and submitted CV versions.
 - M6 verifies the integrated product and release readiness.
@@ -365,14 +371,14 @@ The SQL smoke test returned `PASS`: one record received, one job inserted, one s
 
 **Scope of evidence:** this verifies the tested database RPC path only. It does not establish that every provider integration, scheduled execution, or the full application ingestion pipeline has been end-to-end verified. Do not repeat C04 checks unless a concrete failure appears.
 
-**C05 status:** Under investigation — no AI extraction implementation is approved yet. The decision is deferred until the source/content audit establishes a concrete need. Do not mark C05 accepted or imply that investigation is complete.
+**C05 status:** Under investigation for M1 only — no AI extraction was required for the structured source payloads in the accepted M1 scope. This does not restrict the approved AI capabilities in M3 or later milestones.
 
 **Next active checkpoint:** M1-C06 — Discovery query and action contracts. Backend/API implementation has started on `dev`; see the detailed milestone record for endpoint scope and verification status. C05 remains open and must be resolved before M1 acceptance.
 
 
 ## M1-C05 status update — 2026-10-16
 
-**Status: Under investigation; implementation decision pending.** The checkpoint will determine whether any concrete job-content extraction gap justifies AI. No AI extraction feature is approved or claimed complete. Deterministic validation, normalization, deduplication and persistence remain authoritative, and Discovery must remain usable with AI disabled.
+**Status: Accepted for M1 scope only.** M1 used deterministic validation, normalization, deduplication and persistence because its approved source payloads were already structured. This M1-specific decision does not prohibit AI-powered semantic understanding and matching in M3 or AI-assisted CV tailoring in M4.
 
 **Sequencing decision:** proceed with M1-C06 — Discovery query and action contracts, because its documented scope is API/data-operation work and does not require AI extraction. C05 remains open; this does not change the M1 checkpoint requirements or constitute C05 acceptance.
 
@@ -399,7 +405,7 @@ No provider ingestion was re-run and no production database changes were made du
 
 **Implemented:** The `/jobs` placeholder now uses C06's persisted feed/detail API. The UI provides keyword/employer, location, country, work-mode and employment-type filters; paginated results; selected-job details; loading, empty, error, retry and missing-detail states; keyboard-operable selectable cards; responsive small-screen detail navigation; and distinct original discovery-source and application-destination links.
 
-**Reused:** `GET /api/jobs`, `GET /api/jobs/[id]`, shared `Button`, and the existing CSS design tokens. No new dependencies, endpoint, or database schema were added. No mock job data, matching percentages, M5 application state, manual job entry, or save/dismiss state writes were added.
+**Reused:** `GET /api/jobs`, `GET /api/jobs/[id]`, shared `Button`, and the existing CSS design tokens. No new dependencies, endpoint, or database schema were added. No mock job data or numerical matching scores, M5 application state, manual job entry, or save/dismiss state writes were added.
 
 **Files changed:** `src/app/jobs/page.tsx`, `src/components/jobs/jobs-discovery.tsx`, `src/components/jobs/jobs-discovery.test.tsx`, `src/styles/components.css`, `milestones/M1-JOB-DISCOVERY-AND-JOB-FEED.md`, `IMPLEMENTATION-PLAN.md`.
 
@@ -425,4 +431,33 @@ No provider ingestion was re-run and no production database changes were made du
 
 ## M2-C04 status update — 2026-10-24
 
-Server-side deterministic PDF/DOCX text extraction is implemented on `dev` using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Candidate fields remain unconfirmed and are not persisted. C04 remains in review pending user review with representative CVs. No automated or browser checks were run by ChatGPT, per instruction. Ensure local dependency manifest and lockfile changes are synchronized before a clean install.
+Server-side PDF-only deterministic extraction is being revised on `dev` using the existing `pdf-parse@2.4.5` dependency. DOCX and Mammoth have been removed from the active implementation. Candidate fields remain unconfirmed and are not persisted. C04 remains in progress pending review against representative linear and multi-column PDFs. No automated or browser checks were run by ChatGPT, per instruction.
+
+
+**M2 CV format decision (2026-11-19):** CV upload and extraction are PDF-only until PDF extraction passes review and acceptance. DOCX is out of scope. Manual Profile entry remains the fallback for missing or incorrect extraction. CV documents must remain within Thungatha's own infrastructure; no external parsing API is permitted for this checkpoint.
+
+
+## 2026-11-21 — Job Discovery AI workload reduction
+
+**Status:** Implemented on `dev`; local verification and migration application pending.
+
+Historical workload-control implementation (not the approved completion policy): the M3 pipeline cached job understanding by description hash, reused it across records/users, sent a compact evidence subset to candidate assessment, and introduced queue/backfill admission caps. These caps are not an approved way to manage AI consumption because they can prevent valid work from being admitted or completed. The replacement implementation must preserve every accepted task, avoid arbitrary AI call/token/output/queue budgets, and reduce duplicate work through context-aware caching and deduplication. A worker may process tasks incrementally, but it must persist progress and resume until each accepted task reaches a terminal result; an invocation boundary must not truncate an assessment.
+
+**Migration required:** `supabase/migrations/20261121000600_cache_job_understanding_by_description.sql`. Not applied by this change.
+
+**Verification:** No tests, builds, lint, type-checks, worker runs, AI calls, or database operations were executed, per instruction. Code and migration were reviewed manually only.
+
+**Next action:** User pulls `dev`, reviews the change, applies the migration manually, and performs local verification.
+
+**M3 workload policy clarification (2026-11-23):** Do not introduce arbitrary internal AI quotas, per-job call/token budgets, output-count caps, or queue-admission limits that can truncate, reject, or abandon valid matching work. Reduce unnecessary consumption through context-aware caching, request deduplication, compact evidence preparation, and reuse of completed results. When actual provider rate limits or temporary outages prevent progress, persist and defer the task, then resume safely. Never present partial AI output as a completed Match/Relevant assessment. This clarification supersedes the historical queue/backfill caps described above.
+
+
+## M2 final acceptance and completion status — 2026-11-23
+
+M2 is **Accepted — complete and closed**. The user explicitly confirmed that all M2 functionality is already implemented, complete and verified. All checkpoints C00–C07 are accepted. The supplied screenshots show the populated, confirmed Profile and the functioning Job Discovery workspace.
+
+This is user-confirmed acceptance; it is not a claim that ChatGPT independently reran automated tests, lint, builds, browser checks, or database/security verification during closeout. Historical checkpoint notes remain as an audit trail and are superseded by this final status.
+
+**Completion status:** M2 is finished and has no outstanding checkpoints or planned implementation work. Any genuinely new enhancement should be treated as new scope and discussed separately.
+
+**Active milestone:** M3 — AI-Powered Job Matching and Relevance. M2 is a satisfied dependency.

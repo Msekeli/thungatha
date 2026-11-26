@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 export type ExperienceDraft = {
   title: string;
   employer: string;
@@ -62,11 +63,11 @@ export function ProfileExperienceForm({
         </label>
         <label className="space-y-2 text-sm font-medium">
           Start date <Required />
-          <Input
-            required
-            type="month"
+          <MonthYearPicker
+            label="Start month and year"
             value={value.startDate}
-            onChange={(e) => set("startDate", e.target.value)}
+            onChange={(date) => set("startDate", date)}
+            max={!value.current ? value.endDate || undefined : undefined}
           />
         </label>
         <label className="space-y-2 text-sm font-medium">
@@ -78,12 +79,12 @@ export function ProfileExperienceForm({
           ) : (
             <Required />
           )}
-          <Input
-            required={!value.current}
-            type="month"
+          <MonthYearPicker
+            label="End month and year"
             value={value.endDate}
+            min={value.startDate || undefined}
             disabled={value.current}
-            onChange={(e) => set("endDate", e.target.value)}
+            onChange={(date) => set("endDate", date)}
           />
         </label>
         <label className="space-y-2 text-sm font-medium sm:col-span-2">
@@ -123,7 +124,8 @@ export function ProfileExperienceForm({
             !value.title.trim() ||
             !value.employer.trim() ||
             !value.startDate ||
-            (!value.current && !value.endDate)
+            (!value.current && !value.endDate) ||
+            (!value.current && value.endDate < value.startDate)
           }
         >
           {editing ? "Save changes" : "Save role"}

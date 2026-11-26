@@ -73,7 +73,7 @@ export function ProfileSavedDetailsCard({
       {profile.personalAttributes.length > 0 && (
         <p className="mt-2 text-sm text-muted-foreground">
           <span className="font-medium text-foreground">
-            Personal attributes:
+            Interests and hobbies:
           </span>{" "}
           {profile.personalAttributes.join(", ")}
         </p>

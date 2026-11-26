@@ -26,19 +26,28 @@ export const profileCompletionSchema = z.object({
   }),
   summary: z.string().trim().min(1).max(5000),
   education: z
-    .array(
-      educationItemSchema.extend({
-        educationLevel: z.string().trim().min(1).max(100),
-      }),
-    )
-    .min(1),
+    .array(educationItemSchema)
+    .min(1)
+    .refine(
+      (items) =>
+        items.some(
+          (item) =>
+            Boolean(item.educationLevel?.trim()) &&
+            Boolean(item.qualification.trim()) &&
+            Boolean(item.institution.trim()),
+        ),
+      { message: "At least one education record is required." },
+    ),
 });
 
+export const draftPersonalDetailsSchema = personalDetailsSchema.extend({
+  email: z.string().trim().email().max(255).nullable().optional(),
+});
 export const updateProfileSchema = z
   .object({
     displayName: z.string().trim().min(1).max(100).optional(),
     nextRole: z.string().trim().max(150).nullable().optional(),
-    personalDetails: personalDetailsSchema.optional(),
+    personalDetails: draftPersonalDetailsSchema.optional(),
     summary: z.string().trim().max(5000).nullable().optional(),
     workExperience: z.array(workExperienceItemSchema).max(100).optional(),
     education: z.array(educationItemSchema).max(100).optional(),

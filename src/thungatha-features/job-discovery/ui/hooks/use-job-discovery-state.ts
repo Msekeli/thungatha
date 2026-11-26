@@ -58,7 +58,7 @@ export function useJobDiscoveryState(
   const [matchAnchorEl, setMatchAnchorEl] = useState<HTMLElement | null>(null);
   const [applicationPromptAnchorEl, setApplicationPromptAnchorEl] =
     useState<HTMLElement | null>(null);
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOrder, setSortOrder] = useState("relevance");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   return {

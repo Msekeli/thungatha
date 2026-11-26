@@ -1,7 +1,12 @@
 "use client";
 
 import { Bookmark, EyeOff, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Job } from "../job-discovery-utils";
+import {
+  jobCardActionsClassName,
+  jobCardActionClassName,
+} from "./job-card-config";
 import { ProtectedDiscoveryAction } from "./protected-discovery-action";
 
 export function JobCardActions({
@@ -17,18 +22,24 @@ export function JobCardActions({
 }) {
   const saved = job.state === "saved";
   const hidden = job.state === "dismissed";
+  const actionBase = jobCardActionClassName + " hover:cursor-pointer";
 
   return (
-    <div className="th-job-card__actions">
+    <div className={jobCardActionsClassName}>
       <ProtectedDiscoveryAction
         configured={configured}
         title={saved ? "Remove saved opportunity" : "Save this opportunity"}
         description="Sign in or create a free account to save this job and return to it later."
         onAction={() => onSave(job)}
       >
-        <button
+        <Button
           type="button"
-          className="th-job-card__action th-job-card__action--save"
+          variant="outline"
+          size="sm"
+          className={[
+            actionBase,
+            "border-[var(--th-accent)] bg-[var(--th-accent-bg)] text-[var(--th-accent-text)] hover:bg-[var(--th-accent)] hover:text-[var(--th-btn-fg)] aria-pressed:bg-[var(--th-accent)] aria-pressed:text-[var(--th-btn-fg)]",
+          ].join(" ")}
           aria-label={
             saved ? `Remove ${job.title} from saved jobs` : `Save ${job.title}`
           }
@@ -36,7 +47,7 @@ export function JobCardActions({
         >
           <Bookmark size={16} aria-hidden="true" />
           <span>{saved ? "Saved" : "Save"}</span>
-        </button>
+        </Button>
       </ProtectedDiscoveryAction>
       <ProtectedDiscoveryAction
         configured={configured}
@@ -44,9 +55,14 @@ export function JobCardActions({
         description="Sign in or create a free account to hide jobs that are not right for you."
         onAction={() => onHide(job)}
       >
-        <button
+        <Button
           type="button"
-          className="th-job-card__action th-job-card__action--hide"
+          variant="outline"
+          size="sm"
+          className={[
+            actionBase,
+            "border-[var(--th-danger)] bg-[var(--th-danger-bg)] text-[var(--th-danger)] hover:bg-[var(--th-danger)] hover:text-white",
+          ].join(" ")}
           aria-label={hidden ? `Restore ${job.title}` : `Hide ${job.title}`}
           aria-pressed={hidden}
         >
@@ -56,7 +72,7 @@ export function JobCardActions({
             <EyeOff size={16} aria-hidden="true" />
           )}
           <span>{hidden ? "Restore" : "Hide"}</span>
-        </button>
+        </Button>
       </ProtectedDiscoveryAction>
     </div>
   );

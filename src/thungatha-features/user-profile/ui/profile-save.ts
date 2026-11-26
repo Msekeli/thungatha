@@ -3,7 +3,7 @@ import {
   type UserProfileDto,
 } from "../server/user-profile-schema";
 
-export async function saveProfileDraft(draft: UserProfileDto) {
+export async function saveProfileDraft(draft: UserProfileDto, confirm = false) {
   try {
     const {
       profileVersion: _profileVersion,
@@ -18,7 +18,7 @@ export async function saveProfileDraft(draft: UserProfileDto) {
       ...editable,
       displayName:
         draft.personalDetails.fullName || draft.displayName || undefined,
-      confirmedAt: complete ? new Date().toISOString() : null,
+      confirmedAt: confirm && complete ? new Date().toISOString() : null,
     };
     const response = await fetch("/api/profile", {
       method: "PATCH",

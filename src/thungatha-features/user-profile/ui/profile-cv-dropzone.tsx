@@ -43,7 +43,7 @@ export function ProfileCvDropzone({
           Drag your CV here or choose a file
         </p>
         <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">
-          PDF and DOCX files only
+          PDF files only
         </p>
         <Button
           type="button"
@@ -56,7 +56,7 @@ export function ProfileCvDropzone({
         <input
           ref={inputRef}
           type="file"
-          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          accept=".pdf,application/pdf"
           className="sr-only"
           onChange={(event) => onSelectFile(event.target.files?.[0] || null)}
         />

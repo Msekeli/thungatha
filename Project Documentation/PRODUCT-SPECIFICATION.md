@@ -2,11 +2,11 @@
 
 **Document status:** Working product authority for review  
 **Version:** 1.0  
-**Last updated:** 15 October 2026
+**Last updated:** 21 November 2026
 
 ## 1. Purpose
 
-Thungatha is a job-search workspace that helps a person discover relevant opportunities, understand how their confirmed experience fits a role, prepare accurate CVs, and manage applications through to an outcome.
+Thungatha is an AI-powered job-search and application-management platform. It helps people discover opportunities, understand job requirements, interpret how their confirmed experience and transferable skills relate to different roles, prepare accurate tailored CVs, and manage applications through to an outcome. AI is a core product capability used for contextual understanding and assistance; it is not limited to optional text extraction.
 
 The product is one application with three primary experiences:
 
@@ -25,7 +25,8 @@ Supporting areas are Profile and Account. Matching is a shared capability used b
 - **Traceability:** job-fit explanations should link to evidence. Application records should preserve what was submitted and which CV version was used.
 - **No false completion claims:** opening an employer's application page does not mean an application was submitted.
 - **Privacy by default:** user-owned records are protected by server-side identity and ownership checks.
-- **Resilience:** core discovery and record-management workflows should not depend on an AI provider being available.
+- **AI as a core capability:** use AI for tasks that require contextual language understanding, semantic interpretation, comparison, synthesis, and user-facing assistance. Do not replace these tasks with keyword-only or title-only rules merely to avoid AI integration.
+- **Resilience:** core discovery and record-management workflows should remain usable when an AI provider is unavailable. AI-dependent capabilities must expose clear unavailable/retry states rather than fabricate deterministic substitutes.
 - **Incremental delivery:** the six approved milestones are the delivery sequence. Do not expand or reorder them without explicit agreement.
 
 ## 3. Main experiences and routes
@@ -87,22 +88,47 @@ The Profile is the authoritative source for confirmed professional facts: work h
 
 Profile and CV import are delivered in M2. The current profile implementation is foundation code to reuse and extend after inspecting it, not a reason to rebuild the foundation.
 
-## 6. Matching and fit analysis
+## 6. Job understanding, matching and relevance
 
-Matching is a shared capability used by Job Discovery and CV Studio. A separate top-level route is not required initially.
+Matching is a shared AI-powered capability used by Job Discovery and CV Studio. It is not a separate top-level route.
 
-- Extract role requirements into structured, validated data.
-- Map requirements to evidence in the user's confirmed Profile.
-- Classify each requirement as **Confirmed**, **Inferred**, **Missing**, or **Can't verify**.
-- Confirmed evidence receives full credit under the agreed scoring rules.
-- Inferred evidence may receive half credit provisionally, with the uncertainty explained.
-- Missing evidence is not the same as “Can't verify.”
-- “Can't verify” is excluded from the score rather than treated as a negative.
-- Explain how the score was produced and show supporting evidence.
-- Present the result as an estimate of evidence-based fit, not a probability of being hired.
-- Recalculate or mark the result stale when the job description or confirmed profile changes.
+AI is responsible for understanding the meaning of a job description and comparing that meaning with the user's confirmed professional evidence. This includes responsibilities, skills, technologies and tools, experience, qualifications, certifications, languages, transferable skills, and relevant domain context. The comparison must recognise equivalent work expressed through different job titles and terminology, including related work across industries.
 
-Final weights and thresholds must be specified and tested in M3 before being treated as fixed product rules.
+Job titles and role-family labels are contextual signals only. They must never be hard gates or the deciding factor. Two roles with different titles may be a strong match when their actual responsibilities, required capabilities, and work are substantially aligned. Conversely, similar titles do not prove that the work is equivalent.
+
+### Assessment approach
+
+- Use AI to interpret the complete job description in context, understand the role's actual purpose and responsibilities, identify relevant capabilities and requirements, and semantically compare the work with confirmed Profile evidence. Do not restrict interpretation to predefined skill lists, regex patterns, title taxonomies, or fixed requirement templates.
+- Preserve source evidence for every extracted job requirement, including the source description and supporting text snippet or reference.
+- Ground candidate-side claims in confirmed Profile evidence and retain the exact Profile field/evidence references. Imported CV content remains a draft until the user confirms it.
+- Distinguish evidence states as **Confirmed**, **Inferred**, **Missing**, or **Can't verify** where applicable. An inference must be labelled and explained; it must not be promoted to confirmed fact.
+- Consider transferable skills and equivalent responsibilities even when wording, job title, seniority labels, or industry differ. Explain the basis and any limits of the comparison.
+- Interpret qualifications, experience durations, credentials, subject marks, mandatory/preferred wording, and alternative pathways in the context of the full advert. No single phrase, field, threshold, or extracted requirement is an automatic rejection rule or universal gate.
+- Missing Profile information is not evidence that the person lacks the requirement. Contradictory or ambiguous evidence must remain visible as uncertainty.
+- Validate AI output against feature-owned schemas and verify all evidence references in application code. Treat model output as untrusted data, not as an instruction or authority.
+- Application code validates evidence, authorization, persistence, freshness, sorting, and the two approved public classifications. It must not introduce rigid requirement checklists, keyword-triggered rejection, role-family gates, or a hidden score as a substitute for the AI's full-context assessment.
+- Explain why an assessed role is a **Match** or **Relevant**, citing job-side and candidate-side evidence. Do not present a hiring prediction.
+
+### Approved result labels
+
+- **Match:** strong, supported alignment with the central work and genuinely core requirements, grounded in confirmed Profile evidence. A different job title or industry does not prevent this result when the underlying work and capabilities align. Interpret stated mandatory requirements in context; do not mechanically reject on one extracted phrase or missing field.
+- **Relevant:** meaningful supported alignment exists, including transferable skills or related responsibilities, but material gaps, unknowns, or incomplete evidence prevent a strong Match conclusion.
+- **Unavailable assessment (not a classification):** there is not enough trustworthy evidence to assess the role, the Profile is not confirmed, the job description is unusable, or the AI/provider response is unavailable or fails validation. Show no Match/Relevant badge and do not expose this state as a third relevance label.
+
+**Match and Relevant are the only public matching classifications.** Do not create a third classification, intermediate labels, hidden ranking scores, numerical scores, percentages, weights, thresholds, weighted totals, score bands, fit points, or hiring-probability estimates. Do not persist, return, display, or sort by a numerical matching score.
+
+### Sorting and freshness
+
+- "Most relevant" orders assessed jobs by **Match**, then **Relevant**. Jobs without a valid assessment are not assigned a third category; keep them outside the classified ordering and use the agreed date-based fallback/tie-break behaviour.
+- Newest and Oldest remain date sorts and do not depend on Profile availability.
+- Candidate-specific results require a confirmed Profile. Without one, do not fabricate a personalised result; use the agreed newest-first fallback.
+- Reassess or mark results stale when the job description, confirmed Profile, AI task/prompt/schema version, or applicable business rules change.
+- If evidence is insufficient or AI analysis is unavailable or cannot be validated, represent the assessment as unavailable, without assigning a classification or badge, and keep the job feed usable. Do not silently fall back to title or keyword matching and present it as equivalent AI analysis.
+
+
+### AI workload continuity
+
+Reduce unnecessary AI work through reusable, versioned job understanding, valid assessment caching, compact task-specific inputs, and by avoiding duplicate requests. Do not impose arbitrary internal AI call, token, output-length, queue-depth, or per-request task budgets that truncate or abandon an otherwise valid assessment. If a provider's actual rate limit or temporary availability prevents completion, persist the task and its progress, defer/retry it safely, and resume without presenting partial output as a completed assessment. Respect provider terms and actual hard limits; do not silently incur paid usage or route work to a disabled provider. Keep model output complete enough to cover all material job content rather than dropping requirements to fit an arbitrary application-defined count.
 
 ## 7. CV Studio
 
@@ -120,13 +146,9 @@ If a URL cannot be read safely or the page content is unavailable, ask the user 
 
 When a confirmed Profile/master CV exists, show it as the starting point. If no usable master CV exists, offer CV upload/import or guide the user to complete Profile.
 
-AI may recommend one of three paths:
+AI actively supports the job-specific CV workflow. It should interpret the target role, identify the most relevant confirmed experience and transferable skills, recommend whether to use the master CV, reuse an existing tailored version, or create a new version, and propose role-appropriate ordering, emphasis, structure, and wording.
 
-1. use the master CV as-is;
-2. reuse an existing tailored CV version; or
-3. create a new tailored CV version.
-
-The user reviews the recommendation and can accept or reject it. Tailoring must use confirmed facts and may reorganize or clarify evidence, but must not fabricate experience, qualifications, dates, achievements, or skills.
+The user reviews each recommendation and proposed change and can accept, edit, or reject it. Tailoring must use confirmed facts and may reorganize or clarify evidence, but must not fabricate experience, qualifications, dates, achievements, or skills. Every factual addition must trace to confirmed Profile evidence. AI must not silently overwrite the master CV or confirmed Profile data.
 
 ### Version management
 
@@ -180,7 +202,16 @@ After authentication, navigation should make Job Discovery, CV Studio, and Job T
 
 Account settings and preferences are delivered in M6. Do not invent account features beyond those agreed in the product requirements and M6 checkpoint document.
 
-## 10. AI behaviour and provider strategy
+## 10. AI product strategy and provider boundary
+
+AI is a first-class product capability in Thungatha. It should materially improve the user's ability to understand opportunities, recognise relevant experience, and prepare accurate application materials. It is not merely a future enhancement or a thin extraction layer around otherwise keyword-driven features.
+
+### Core AI responsibilities
+
+- **Job Discovery and matching (M3):** understand complete job context semantically; identify responsibilities, skills, technologies, qualifications, experience and context; compare roles with confirmed Profile evidence; recognise equivalent work across different titles and industries; identify transferable skills; and produce evidence-grounded Match or Relevant explanations. When assessment cannot be supported, return an unavailable state rather than a third classification.
+- **CV Studio (M4):** assist with role-specific CV recommendations, tailoring, restructuring, and wording using only confirmed facts. Users review proposed changes. AI must not fabricate or silently overwrite the master CV.
+- **Profile and CV import (M2):** the current approved PDF-import checkpoint remains governed by its explicit local extraction and privacy constraints. AI-based interpretation of imported personal data is not automatically enabled by this product strategy; it requires a separately approved task, privacy review, and user-facing confirmation flow.
+- **Other experiences:** add AI assistance only where an agreed user problem benefits from it. Do not invent autonomous actions or allow AI to submit applications, change application status, or make irreversible decisions.
 
 AI is a meaningful user-facing capability in Thungatha, not merely an optional implementation detail. It assists users with career decisions and CV preparation, while deterministic application code remains authoritative for professional facts, authorization, validation, persistence and state changes.
 

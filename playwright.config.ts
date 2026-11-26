@@ -17,6 +17,11 @@ export default defineConfig({
   webServer: {
     command: "npm run dev -- --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
+    env: {
+      AI_AGENT: "",
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "",
+      CLERK_SECRET_KEY: "",
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

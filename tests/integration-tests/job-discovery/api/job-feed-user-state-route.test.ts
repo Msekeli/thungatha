@@ -8,10 +8,19 @@ vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
   hasClerkConfiguration: vi.fn(),
 }));
+vi.mock("@/thungatha-features/job-discovery/server/candidate-fact-reader", () => ({
+  readCandidateFacts: vi.fn().mockResolvedValue(null),
+}));
 vi.mock("@/lib/supabase/server", () => ({
   createAuthenticatedSupabaseClient: vi.fn(),
   createPublicSupabaseClient: vi.fn(),
   SupabaseConfigurationError: class SupabaseConfigurationError extends Error {},
+}));
+vi.mock("@/thungatha-features/job-discovery/server/job-ai-queue", () => ({
+  enqueueVisibleJobAssessments: vi.fn().mockResolvedValue(0),
+}));
+vi.mock("@/thungatha-features/job-discovery/server/job-ai-worker", () => ({
+  processJobAiQueue: vi.fn(),
 }));
 
 const identity = vi.mocked(getAuthenticatedIdentity);
@@ -31,11 +40,13 @@ describe("GET /api/jobs user state feed", () => {
       error: null,
     });
     const employerDismissals = createQueryMock({ data: [], error: null });
+    const profile = createQueryMock({ data: { profile_version: 1, confirmed_at: null }, error: null });
     const feed = createQueryMock({ data: [scoutVacancyRecord], error: null, count: 1 });
     const from = vi
       .fn()
       .mockReturnValueOnce(states)
       .mockReturnValueOnce(employerDismissals)
+      .mockReturnValueOnce(profile)
       .mockReturnValueOnce(feed);
     client.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
