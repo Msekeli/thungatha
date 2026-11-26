@@ -66,7 +66,8 @@ export function createProviderHttpError(
         : undefined;
   const safeDetail = detail?.replace(/\\s+/g, " ").slice(0, 240);
   const isTokenCapacityLimit =
-    status === 413 && /tokens per minute|TPM|requested \\d+/i.test(detail ?? "");
+    status === 413 &&
+    /tokens per minute|TPM|requested \\d+/i.test(detail ?? "");
   const code: AiErrorCode = isTokenCapacityLimit
     ? "rate-limited"
     : status === 401 || status === 403

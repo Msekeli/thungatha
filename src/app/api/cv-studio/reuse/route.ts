@@ -1,13 +1,9 @@
 import { connection, NextResponse } from "next/server";
-import { apiError, apiFailure } from "@/lib/http/api-response";
-import {
-  createAuthenticatedSupabaseClient,
-  SupabaseConfigurationError,
-} from "@/lib/supabase/server";
+import { apiError } from "@/lib/http/api-response";
+import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
 import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server/profile-route-auth";
-import { readProfile } from "@/thungatha-features/user-profile/server/repository";
-import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
-import { getProfileCompletion } from "@/thungatha-features/cv-studio/server/master-cv";
+import { getConfirmedCvProfile } from "@/thungatha-features/cv-studio/server/cv-profile-route-context";
+import { handleCvDraftRouteError } from "@/thungatha-features/cv-studio/server/cv-draft-route-error";
 import { cvJobContextSchema } from "@/thungatha-features/cv-studio/server/job-context-schema";
 
 export async function POST(request: Request) {
@@ -22,27 +18,24 @@ export async function POST(request: Request) {
     !body ||
     typeof body.versionId !== "string" ||
     !/^[0-9a-f-]{36}$/i.test(body.versionId)
-  )
+  ) {
     return apiError("A valid accepted CV version is required.", 400);
+  }
   const job = cvJobContextSchema.safeParse(body.jobContext);
-  if (!job.success)
+  if (!job.success) {
     return apiError("A valid job context is required to verify CV reuse.", 400);
+  }
 
   try {
-    const profileResult = await readProfile(identity.userId, identity.getToken);
-    if (profileResult.error) throw profileResult.error;
-    const profile = mapRowToProfileDto(profileResult.data);
-    const completion = getProfileCompletion(profile);
-    if (!completion.complete || !profile.confirmedAt)
-      return NextResponse.json(
-        {
-          error:
-            "Complete and confirm your Profile before reusing a tailored CV.",
-          missing: completion.missing,
-        },
-        { status: 409 },
-      );
-
+    const profileContext = await getConfirmedCvProfile(
+      identity,
+      (missing) => NextResponse.json({
+        error: "Complete and confirm your Profile before reusing a tailored CV.",
+        missing,
+      }, { status: 409 }),
+    );
+    if (profileContext.response) return profileContext.response;
+    const profile = profileContext.profile;
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const { data, error } = await db
       .from("cv_versions")
@@ -55,28 +48,28 @@ export async function POST(request: Request) {
       .eq("status", "accepted")
       .maybeSingle();
     if (error) throw error;
-    if (!data)
+    if (!data) {
       return apiError("The accepted CV version is no longer available.", 404);
-    if (data.source_profile_version !== profile.profileVersion)
+    }
+    if (data.source_profile_version !== profile.profileVersion) {
       return apiError(
         "This accepted CV uses an older Profile version. Update your Profile and review a new CV instead.",
         409,
       );
+    }
 
     const exactMatch = job.data.jobId
       ? data.source_job_id === job.data.jobId
       : data.source_job_snapshot?.descriptionFingerprint ===
         job.data.descriptionFingerprint;
-    if (!exactMatch)
+    if (!exactMatch) {
       return apiError(
         "This CV was not created for the exact job context. Reuse is not available without a suitability assessment.",
         409,
       );
-
+    }
     return NextResponse.json({ version: data, reused: true });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError)
-      return apiError("CV Studio storage is not configured.", 503);
-    return apiFailure(error);
+    return handleCvDraftRouteError(error);
   }
 }

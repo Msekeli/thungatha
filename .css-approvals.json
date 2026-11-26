@@ -1,0 +1,36 @@
+{
+  "approvals": [
+    {
+      "path": "src/app/globals.css",
+      "reason": "Remove the bespoke job-card stylesheet after migrating card presentation to Tailwind utilities and shared React components.",
+      "tailwindAlternative": "Job card layout, responsive states, hover/focus states and action styling now use Tailwind utility classes in job-card-config.ts and the card components.",
+      "sharedComponentAlternative": "JobCardHeader, JobCardDetails and the existing shadcn Button component are reused across authenticated and public job cards.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/components/layout/workspace-content.css",
+      "reason": "Remove duplicated workspace, profile editor and results layout rules after migrating layout and responsive utilities into the relevant React components.",
+      "tailwindAlternative": "Workspace shell, Profile page layout, editor layout, job result spacing and CV Studio sizing use Tailwind utility classes.",
+      "sharedComponentAlternative": "Existing shadcn form controls and shared workspace components provide the controls and common UI; only state-dependent scroll behaviour and CV Studio theme surfaces remain.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/styles/components/job-cards.css",
+      "reason": "Delete the bespoke job-card stylesheet after migrating its presentation and responsive states to Tailwind utilities.",
+      "tailwindAlternative": "The shared job card style tokens and responsive utilities are defined in job-card-config.ts and applied by the public and authenticated card components.",
+      "sharedComponentAlternative": "Shared JobCardHeader and JobCardDetails components replace duplicated card markup; shadcn Button handles card actions.",
+      "approvedBy": "User — explicit request to reduce custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/components/layout/profile-editor.css",
+      "reason": "Remove the remaining profile editor stylesheet after moving layout, accordion, responsive and completion-panel styles to Tailwind utilities.",
+      "tailwindAlternative": "Profile editor layout, responsive columns, scroll regions, accordion open states, completion sidebar and mobile visibility now use Tailwind utilities.",
+      "sharedComponentAlternative": "The existing shadcn Button and shared profile form components remain responsible for interactive controls and section content.",
+      "approvedBy": "User — explicit request to minimise custom CSS and prioritise shadcn UI",
+      "approvedAt": "2026-11-26"
+    }
+  ]
+}

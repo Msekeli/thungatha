@@ -13,7 +13,6 @@
 @import "../styles/components/badges.css";
 @import "../styles/components/requirements-status.css";
 @import "../styles/components/content-surfaces.css";
-@import "../styles/components/job-cards.css";
 @import "../styles/components/brand-auth.css";
 @import "../styles/components/motion.css";
 @import "../styles/components/buttons.css";
@@ -21,6 +20,7 @@
 @import "../styles/components/form-controls.css";
 @import "../styles/components/clerk.css";
 @import "../styles/components/navigation.css";
+@import "../styles/components/job-cards.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/shadcn-theme.css";

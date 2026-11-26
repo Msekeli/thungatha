@@ -4,15 +4,10 @@ import {
   createServiceClient,
   hashJobContext,
 } from "./job-ai-queue-eligibility";
-import {
-  parseJobUnderstanding,
-  understandJobWithAi,
-} from "./job-ai-service";
+import { parseJobUnderstanding, understandJobWithAi } from "./job-ai-service";
 import type { JobMatchingContext } from "./job-ai-queue-eligibility";
 
-export async function getOrCreateJobUnderstanding(
-  context: JobMatchingContext,
-) {
+export async function getOrCreateJobUnderstanding(context: JobMatchingContext) {
   const db = createServiceClient();
   const contextHash = hashJobContext(context);
   const cached = await db

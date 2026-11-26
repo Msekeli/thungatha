@@ -43,10 +43,7 @@ describe("job understanding service", () => {
           items: {
             properties: {
               sourceEvidenceRefs: {
-                items: { enum: [
-                  "job:context:title", "job:context:employer", "job:context:location",
-                  "job:segment:1", "job:segment:2", "job:segment:3", "job:segment:4", "job:segment:5",
-                ] },
+                items: { type: "STRING" },
               },
             },
           },
@@ -55,19 +52,20 @@ describe("job understanding service", () => {
     });
   });
 
-  it("constrains job-understanding evidence references to the supplied evidence IDs", () => {
-    const responseSchema = createJobUnderstandingResponseSchema(["job:segment:1", "job:segment:2"]);
+  it("keeps the provider schema independent of per-job evidence IDs", () => {
+    const responseSchema = createJobUnderstandingResponseSchema();
     expect(responseSchema).toMatchObject({
       properties: {
         responsibilities: {
           items: {
             properties: {
-              sourceEvidenceRefs: { items: { enum: ["job:segment:1", "job:segment:2"] } },
+              sourceEvidenceRefs: { items: { type: "STRING" } },
             },
           },
         },
       },
     });
+    expect(JSON.stringify(responseSchema)).not.toContain("job:segment:1");
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {

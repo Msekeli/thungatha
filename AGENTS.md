@@ -55,7 +55,24 @@
 - If a change would push a file over 100 lines, split it by cohesive responsibility in the same change where practical. Do not shrink line counts by compressing statements, removing useful formatting, or creating one-file-per-function fragmentation.
 - Preserve behaviour while splitting: check React state/effect boundaries, imports, CSS cascade and responsive rules, framework conventions, and test coverage. Keep Next.js-required entry filenames such as `page.tsx` and `route.ts`, but move substantial logic into clearly named modules.
 - Existing files over 100 lines are known technical debt, not automatically fixed by a documentation change. Record them and refactor incrementally with targeted tests and visual verification.
-- Add an automated line-count check with an 80-line warning and a 100-line failure to local/CI checks in a separate implementation step. Until that checker exists and is verified, agents must perform and report manual counts.
+- Enforce the 80-line warning and 100-line failure through the push-triggered repository-policy CI check. Run npm run check:repository-policy -- --base <base-sha> --head <head-sha> when validating a local branch comparison. Until the check has run successfully, agents must still perform and report manual counts.
+
+
+## Component Ownership and Feature Boundaries
+
+- Feature-owned components remain inside their owning directory under src/thungatha-features/<feature>/. A feature may import its own private UI, but must not import another feature's private UI.
+- src/components/ui/ is the global, domain-neutral UI library. Put a component there only when it is genuinely reusable across features and does not encode one feature's domain or workflow.
+- src/components/layout/ contains app-wide layout and shell components. Global UI and layout components must not import feature-private UI. Compose feature UI from the route or feature entry point, or pass neutral actions/content through props.
+- A feature's ui/shared/ directory is shared only within that feature; it is not a global component library.
+- The automated import-boundary check enforces private UI ownership for changed source files. It deliberately does not ban feature-to-feature server imports; those require an explicit shared-contract decision rather than a blanket UI rule.
+
+## Repository Policy and Push CI
+
+- GitHub Actions runs the quality workflow on every push to every branch. A push containing several commits produces one run for the pushed range; checks do not run separately for each commit.
+- The workflow runs the repository policy check, Prettier verification for changed files, TypeScript, ESLint, unit tests, and the production build. Formatting debt in untouched legacy files does not fail an unrelated push.
+- The repository-policy check evaluates changed files and newly introduced paths. Existing naming and import-boundary debt is not made a baseline-wide failure; a changed legacy file must comply with the applicable rule.
+- New or modified stylesheets require a complete, user-approved entry in .css-approvals.json describing why Tailwind and existing shared components are insufficient. Generated src/styles/tokens.css is excluded. The manifest records approval; it does not replace the requirement to obtain approval before making the CSS change.
+- No pre-commit hook is required. Local commits do not trigger GitHub Actions; pushing the branch triggers the workflow.
 
 ## Component Discovery and Reuse Rules
 

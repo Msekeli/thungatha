@@ -1,13 +1,9 @@
 import { connection, NextResponse } from "next/server";
-import { apiError, apiFailure } from "@/lib/http/api-response";
-import {
-  createAuthenticatedSupabaseClient,
-  SupabaseConfigurationError,
-} from "@/lib/supabase/server";
+import { apiError } from "@/lib/http/api-response";
+import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
 import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server/profile-route-auth";
-import { readProfile } from "@/thungatha-features/user-profile/server/repository";
-import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
-import { getProfileCompletion } from "@/thungatha-features/cv-studio/server/master-cv";
+import { getConfirmedCvProfile } from "@/thungatha-features/cv-studio/server/cv-profile-route-context";
+import { handleCvDraftRouteError } from "@/thungatha-features/cv-studio/server/cv-draft-route-error";
 
 export async function POST(request: Request) {
   await connection();
@@ -28,21 +24,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profileResult = await readProfile(identity.userId, identity.getToken);
-    if (profileResult.error) throw profileResult.error;
-    const profile = mapRowToProfileDto(profileResult.data);
-    const completion = getProfileCompletion(profile);
-    if (!completion.complete || !profile.confirmedAt) {
-      return NextResponse.json(
-        {
-          error:
-            "Complete and confirm your Profile before accepting a tailored CV.",
-          missing: completion.missing,
-        },
-        { status: 409 },
-      );
-    }
-
+    const profileContext = await getConfirmedCvProfile(
+      identity,
+      (missing) => NextResponse.json({
+        error: "Complete and confirm your Profile before accepting a tailored CV.",
+        missing,
+      }, { status: 409 }),
+    );
+    if (profileContext.response) return profileContext.response;
+    const profile = profileContext.profile;
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const { data: existing, error: readError } = await db
       .from("cv_versions")
@@ -53,17 +43,21 @@ export async function POST(request: Request) {
       .eq("user_id", identity.userId)
       .maybeSingle();
     if (readError) throw readError;
-    if (!existing || existing.cv_kind !== "tailored")
+    if (!existing || existing.cv_kind !== "tailored") {
       return apiError("This tailored draft could not be found.", 404);
-    if (existing.status === "accepted")
+    }
+    if (existing.status === "accepted") {
       return NextResponse.json({ version: existing, alreadyAccepted: true });
-    if (existing.status !== "draft")
+    }
+    if (existing.status !== "draft") {
       return apiError("Only a working draft can be accepted.", 409);
-    if (existing.source_profile_version !== profile.profileVersion)
+    }
+    if (existing.source_profile_version !== profile.profileVersion) {
       return apiError(
         "Your Profile has changed. Refresh the master CV and review a new draft before accepting.",
         409,
       );
+    }
 
     const { data, error } = await db
       .from("cv_versions")
@@ -84,8 +78,6 @@ export async function POST(request: Request) {
     if (error) throw error;
     return NextResponse.json({ version: data });
   } catch (error) {
-    if (error instanceof SupabaseConfigurationError)
-      return apiError("CV Studio storage is not configured.", 503);
-    return apiFailure(error);
+    return handleCvDraftRouteError(error);
   }
 }

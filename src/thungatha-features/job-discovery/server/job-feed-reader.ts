@@ -1,18 +1,10 @@
-import {
-  createJobMatchingContext,
-  hashJobContext,
-} from "./job-ai-queue-eligibility";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { JobFeedQuery } from "./job-feed-query-schema";
 import { readUserJobStates } from "./job-state-repository";
-import { buildFeedJobQuery } from "./job-feed-query-builder";
-import { relevanceOrder, type FeedJob } from "./job-feed-sorting";
-import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
-import { resolveJobMatchStatus } from "./job-feed-status";
 import { readEmployerDismissals } from "./job-feed-dismissals";
 import { enqueueVisibleJobAssessments } from "./job-ai-queue";
-
-const BATCH_SIZE = 500;
+import { readJobFeedRows } from "./job-feed-page-data";
+import { buildJobFeedResponseRows } from "./job-feed-response-rows";
 
 export async function readJobFeed(
   db: SupabaseClient,
@@ -57,45 +49,9 @@ export async function readJobFeed(
       profileVersion = pRes.data.profile_version ?? 1;
   }
 
-  let data: FeedJob[] = [];
-  let count = 0;
-  let rankWhole = false;
-  const from = (input.page - 1) * input.pageSize;
-
-  if (input.sortOrder === "relevance" && profileVersion !== null) {
-    for (let offset = 0; ; offset += BATCH_SIZE) {
-      const bRes = await buildFeedJobQuery(db, input, queryOpts)
-        .order("published_at", { ascending: false, nullsFirst: false })
-        .order("updated_at", { ascending: false })
-        .order("id", { ascending: true })
-        .range(offset, offset + BATCH_SIZE - 1);
-      if (bRes.error) throw bRes.error;
-      const batch = (bRes.data ?? []) as FeedJob[];
-      data.push(...batch);
-      count = bRes.count ?? data.length;
-      if (
-        (bRes.count !== null && data.length >= bRes.count) ||
-        batch.length < BATCH_SIZE
-      ) {
-        rankWhole = true;
-        break;
-      }
-    }
-  }
-
-  if (!rankWhole) {
-    const pRes = await buildFeedJobQuery(db, input, queryOpts)
-      .order("published_at", {
-        ascending: input.sortOrder === "oldest",
-        nullsFirst: false,
-      })
-      .order("updated_at", { ascending: false })
-      .order("id", { ascending: true })
-      .range(from, from + input.pageSize - 1);
-    if (pRes.error) throw pRes.error;
-    data = (pRes.data ?? []) as FeedJob[];
-    count = pRes.count ?? count;
-  }
+  const { data, count, rankWhole, from } = await readJobFeedRows(
+    db, input, queryOpts, profileVersion,
+  );
 
   // Enqueue the complete set of jobs returned for this feed page. Database
   // deduplication prevents duplicate work; accepted tasks are not capped.
@@ -113,61 +69,9 @@ export async function readJobFeed(
     }
   }
 
-  const currentHashes = new Map(
-    data.map((job) => [job.id, hashJobContext(createJobMatchingContext(job))]),
-  );
-  const stateByJob = new Map(states.map((s) => [s.job_id, s.state]));
-  const {
-    assessmentsByJob,
-    queueStatusByJob,
-    hasError: hasAssessmentError,
-  } = userId && profileVersion !== null && data.length
-    ? await fetchFeedAssessmentsAndQueue(
-        db,
-        userId,
-        profileVersion,
-        data.map((j) => j.id),
-        currentHashes,
-      )
-    : {
-        assessmentsByJob: new Map(),
-        queueStatusByJob: new Map(),
-        hasError: false,
-      };
-
-  let jobs: FeedJob[] = data.map((job) => {
-    const currentHash = currentHashes.get(job.id)!;
-    const statusResult = resolveJobMatchStatus({
-      hasError: hasProfileError || hasAssessmentError,
-      profileConfirmed: profileVersion !== null,
-      currentHash,
-      assessment: assessmentsByJob.get(job.id),
-      queueStatus: queueStatusByJob.get(job.id),
-    });
-    return {
-      ...job,
-      state: stateByJob.get(job.id) ?? null,
-      matchStatus: statusResult.matchStatus,
-      ...(statusResult.matchClassification
-        ? { matchClassification: statusResult.matchClassification }
-        : {}),
-    };
-  });
-
-  if (rankWhole) {
-    jobs.sort(relevanceOrder);
-    jobs = jobs.slice(from, from + input.pageSize);
-  }
-
-  // Persisted results are read above so badges reflect only completed current-version work.
-
-  const safeJobs = jobs.map((job) => {
-    const safe = { ...job };
-    delete safe.extracted_requirements;
-    delete safe.requirements_description_hash;
-    delete safe.requirements_extraction_version;
-    delete safe.requirements_extraction_status;
-    return safe;
+  const safeJobs = await buildJobFeedResponseRows({
+    db, userId, profileVersion, data, states, hasProfileError,
+    rankWhole, from, pageSize: input.pageSize,
   });
   return {
     jobs: safeJobs,
