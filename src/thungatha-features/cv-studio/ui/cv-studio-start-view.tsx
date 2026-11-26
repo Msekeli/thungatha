@@ -21,7 +21,6 @@ export function CvStudioStartView({
         <CvStudioMasterReadyView
           state={state}
           jobContext={data.jobContext}
-          jobId={data.jobId}
           suitability={data.suitability}
           workflowBusy={data.workflowBusy}
           workflowError={data.workflowError}

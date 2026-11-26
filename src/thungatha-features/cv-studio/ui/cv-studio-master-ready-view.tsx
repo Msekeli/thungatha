@@ -11,7 +11,6 @@ type MasterReadyState = Extract<State, { status: "master_cv_ready" }>;
 type MasterReadyViewProps = {
   state: MasterReadyState;
   jobContext: JobContext | null;
-  jobId: string | null;
   suitability: Suitability | null;
   workflowBusy: boolean;
   workflowError: string | null;
@@ -19,7 +18,7 @@ type MasterReadyViewProps = {
 };
 
 export function CvStudioMasterReadyView({
-  state, jobContext, jobId, suitability, workflowBusy, workflowError, workflow,
+  state, jobContext, suitability, workflowBusy, workflowError, workflow,
 }: MasterReadyViewProps) {
   const {
     jobForm, setJobForm, reusableCv, setReusableCv, externalJobOpen,
@@ -63,7 +62,6 @@ export function CvStudioMasterReadyView({
           jobForm={jobForm}
           busy={workflowBusy}
           error={workflowError}
-          jobId={jobId}
           externalJobOpen={externalJobOpen}
           onFormChange={setJobForm}
           onSubmit={submitPastedJob}

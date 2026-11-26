@@ -6,11 +6,7 @@ import type { JobContext, State, Suitability } from "./cv-studio-types";
 
 export function useCvStudioData() {
   const [state, setState] = useState<State>({ status: "loading" });
-  const [jobId, setJobId] = useState<string | null>(() =>
-    typeof window === "undefined"
-      ? null
-      : new URLSearchParams(window.location.search).get("jobId"),
-  );
+  const [jobId, setJobId] = useState<string | null>(null);
   const [jobContext, setJobContext] = useState<JobContext | null>(null);
   const [suitability, setSuitability] = useState<Suitability | null>(null);
   const [workflowError, setWorkflowError] = useState<string | null>(null);
@@ -29,7 +25,9 @@ export function useCvStudioData() {
   }, []);
 
   useEffect(() => {
-    void Promise.resolve().then(load);
+    const selectedJobId = new URLSearchParams(window.location.search).get("jobId");
+    setJobId(selectedJobId);
+    void load();
   }, [load]);
 
   const assessContext = useCallback(async (
