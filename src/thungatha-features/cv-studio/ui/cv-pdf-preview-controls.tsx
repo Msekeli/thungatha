@@ -17,8 +17,8 @@ export function CvPdfPreviewControls({
   zoom, setZoom, pageCount, allowDownload, isPreparing, pdfUrl, onDownload,
 }: CvPdfPreviewControlsProps) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-3">
-      <div className="flex min-w-0 items-center gap-3">
+    <div className="flex shrink-0 items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 p-2 sm:p-3">
+      <div className="hidden min-w-0 items-center gap-3 sm:flex">
         <button type="button" onClick={() => setZoom(100)} disabled={zoom === 100} className="flex items-center gap-2 text-sm font-medium text-fg-muted transition-colors hover:text-fg disabled:cursor-default disabled:opacity-60" aria-label="Fit page width">
           <Maximize2 className="size-4" /><span>Fit width</span>
         </button>
@@ -32,13 +32,12 @@ export function CvPdfPreviewControls({
           </button>
         </div>
       </div>
-      <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end">
+      <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
         {pageCount > 0 && <span className="text-xs text-fg-muted">{pageCount} {pageCount === 1 ? "page" : "pages"}</span>}
         {allowDownload && (
           <Button type="button" onClick={onDownload} disabled={!pdfUrl}>
             <Download />
-            <span className="hidden sm:inline">{isPreparing ? "Preparing PDF…" : "Download PDF"}</span>
-            <span className="sm:hidden">PDF</span>
+            {isPreparing ? "Preparing PDF…" : "Download PDF"}
           </Button>
         )}
       </div>
