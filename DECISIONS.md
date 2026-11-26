@@ -31,7 +31,7 @@ When a decision changes, record the change and rationale. Do not erase meaningfu
 | D-012 | Job Discovery must work without AI | Source ingestion, persisted jobs, feed rendering, search, manual entry, and user actions must not depend on AI availability. | Confirmed |
 | D-013 | Job discovery and application tracking are separate product responsibilities | Discovering, viewing, saving, or dismissing a job does not itself create an application record. Actual applications are managed in the application-tracking experience. | Confirmed |
 | D-014 | Source identity and application destination must remain distinct | A discovery provider is not necessarily the employer or the official destination for applying. Verification claims require evidence. | Confirmed |
-| D-015 | Preserve job and application history | Temporary provider failures must not erase stored jobs or falsely mark listings unavailable. Submitted application materials must be preserved as appropriate snapshots. | Confirmed |
+| D-015 | Preserve job and application tracking history while applying explicit content retention | Temporary provider failures must not erase jobs or falsely mark listings unavailable. Compact job/application identity and history remain; bulky job-description payloads are removed under the approved retention rules. Submitted CV material follows its separate policy. | Confirmed |
 | D-016 | AI must not invent professional facts or silently overwrite confirmed information | User review and deterministic validation remain authoritative. | Confirmed |
 
 ### D-035 — Tailwind CSS and shadcn/ui direction
@@ -186,6 +186,18 @@ Do not mark a checkpoint accepted merely because implementation is complete. Rec
 - **Evidence/validation:** Link tests, official documentation, or measurements when available.
 - **Consequences:** Implementation, security, cost, maintenance, or product impact.
 - **Review trigger:** What would cause this decision to be reconsidered?
+
+### D-043 — Minimise retained job-description content
+
+- **Date:** 2026-11-27
+- **Status:** Confirmed
+- **Context:** Full job descriptions and duplicated vacancy payloads can consume substantial database and object-storage capacity. Users still need a durable, compact record of where they applied and what happened.
+- **Decision:** When an application becomes **Rejected** or **Withdrawn**, permanently delete its application-specific full job-description snapshot and redundant copies. Retain company, job title, stable job/requisition reference and original URL/source where available, application date, final status, status history, CV reference, notes, contacts, interview history and follow-up outcomes.
+- **Shared catalogue boundary:** A user's dismiss/unsave action never deletes a shared Job Discovery record. Verified closed/expired/removed/unavailable listings are marked accordingly, not immediately purged. Stale shared descriptions may be purged only after a configurable retention period and dependency checks confirm there is no active application, saved-user state or supported workflow requiring the content. Preserve a compact catalogue identity and lifecycle metadata.
+- **Storage safeguards:** Avoid full-description duplication across feature tables, events, logs, caches and object storage. Preserve only minimum evidence excerpts/references where traceability requires them. CV files and submitted-CV snapshots have a separate retention policy. Backup expiry is separate from live-data deletion.
+- **Rationale:** Preserve useful tracking history while reducing unnecessary long-lived storage and avoiding destructive effects on other users.
+- **Consequences:** M5 and architecture/product specifications must enforce this policy server-side, idempotently, across database rows, object storage and application-managed caches. The stale-catalogue retention duration remains an implementation decision and must be set before enabling that purge.
+- **Review trigger:** Evidence of an active dependency, storage constraints, or a change to the user's retention/privacy requirements.
 
 ## 8. Change control
 
