@@ -221,6 +221,18 @@ Feature-specific business rules must not drift into generic shared utilities. Av
 
 Job Tracking links to the exact CV version or submitted-material snapshot used for an application. CV Studio remains the owner of CV versions. A user can record an externally sourced application in Job Tracking without first creating a Job Discovery catalogue record.
 
+### Job-description retention and deletion boundaries
+
+- Keep one canonical full job-description payload where practical; other features should reference it rather than persist redundant full copies.
+- Rejected and Withdrawn Job Tracking applications trigger permanent deletion of the application-specific full-description snapshot and redundant copies. Preserve compact employer/job identity, application metadata, status history and tracking records.
+- Job Discovery dismiss/unsave actions are per-user state changes and must never delete shared catalogue data.
+- A source listing becoming closed, expired, removed or unavailable changes its lifecycle state; it does not by itself authorise immediate deletion. Transient provider failures never trigger cleanup.
+- Purge bulky content from stale shared catalogue records only after a configured retention period and after checking that no active application, saved-user state or supported workflow still depends on it. Retain a compact catalogue identity and lifecycle history.
+- Keep full descriptions out of logs, status events and duplicated analysis payloads. Preserve only the minimum evidence excerpts/references required for traceability.
+- Cleanup must cover PostgreSQL content, Supabase Storage objects and application-managed caches where applicable; be idempotent, ownership-safe and retryable. Backup retention is separate.
+- CV files and submitted-CV snapshots follow a separate policy and must not be deleted by job-description cleanup.
+
+
 ## 8. Data access, authentication, and ownership
 
 - Resolve the authenticated user on the server through Clerk integration.
