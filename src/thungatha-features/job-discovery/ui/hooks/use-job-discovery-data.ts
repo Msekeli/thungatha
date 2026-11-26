@@ -8,11 +8,11 @@ import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
-export function useJobDiscoveryData(state: DiscoveryState, userId: string | null) {
+export function useJobDiscoveryData(state: DiscoveryState, userId: string | null, enabled: boolean) {
   const s = state;
   const { undoAction, setUndoAction } = state;
   useJobFeed(
-    userId, s.page, s.category, s.filters, s.sortOrder, s.retryFeed,
+    userId, enabled, s.page, s.category, s.filters, s.sortOrder, s.retryFeed,
     s.setFeed, s.setDismissedCount, s.setLoading, s.setError,
     s.setIsAuthenticated, s.setSelectedId,
   );

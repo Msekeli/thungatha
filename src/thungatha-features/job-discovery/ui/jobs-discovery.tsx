@@ -16,7 +16,7 @@ export default function JobsDiscovery({
   workspaceLeadingColumn?: ReactNode;
 }) {
   if (configured) return <ClerkJobsDiscovery showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
-  return <JobsDiscoveryCore configured={false} isSignedIn={false} userId={null} showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
+  return <JobsDiscoveryCore configured={false} isSignedIn={false} userId={null} authReady showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
 }
 
 function ClerkJobsDiscovery({
@@ -30,17 +30,19 @@ function ClerkJobsDiscovery({
     configured
     isSignedIn={Boolean(isLoaded && isSignedIn)}
     userId={isLoaded && isSignedIn ? userId : null}
+    authReady={isLoaded}
     showProfileSetupPrompt={showProfileSetupPrompt}
     workspaceLeadingColumn={workspaceLeadingColumn}
   />;
 }
 
 function JobsDiscoveryCore({
-  configured, isSignedIn, userId, showProfileSetupPrompt, workspaceLeadingColumn,
+  configured, isSignedIn, userId, authReady, showProfileSetupPrompt, workspaceLeadingColumn,
 }: {
   configured: boolean;
   isSignedIn: boolean;
   userId: string | null;
+  authReady: boolean;
   showProfileSetupPrompt: boolean;
   workspaceLeadingColumn?: ReactNode;
 }) {
@@ -61,7 +63,7 @@ function JobsDiscoveryCore({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const controller = useJobDiscoveryController(state, userId);
+  const controller = useJobDiscoveryController(state, userId, authReady);
   return <JobDiscoveryScreen
     configured={configured}
     state={state}

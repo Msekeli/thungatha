@@ -9,8 +9,8 @@ import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
-export function useJobDiscoveryController(s: DiscoveryState, userId: string | null) {
-  const data = useJobDiscoveryData(s, userId);
+export function useJobDiscoveryController(s: DiscoveryState, userId: string | null, enabled: boolean) {
+  const data = useJobDiscoveryData(s, userId, enabled);
   const view = buildJobDiscoveryViewModel({
     detail: s.detail, selectedId: s.selectedId, feed: s.feed,
     jobActivity: s.jobActivity, filters: s.filters, sortOrder: s.sortOrder,

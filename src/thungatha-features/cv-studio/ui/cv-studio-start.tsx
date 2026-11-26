@@ -8,17 +8,17 @@ import { useCvStudioJobWorkflow } from "./use-cv-studio-job-workflow";
 
 export function CvStudioStart({ configured = true }: { configured?: boolean }) {
   if (configured) return <AuthenticatedCvStudioStart />;
-  return <CvStudioStartContent userId={null} />;
+  return <CvStudioStartContent userId={null} enabled />;
 }
 
 function AuthenticatedCvStudioStart() {
-  const { userId } = useAuth();
-  return <CvStudioStartContent userId={userId} />;
+  const { userId, isLoaded } = useAuth();
+  return <CvStudioStartContent userId={userId} enabled={isLoaded} />;
 }
 
-function CvStudioStartContent({ userId }: { userId: string | null }) {
+function CvStudioStartContent({ userId, enabled }: { userId: string | null; enabled: boolean }) {
   const router = useRouter();
-  const data = useCvStudioData(userId);
+  const data = useCvStudioData(userId, enabled);
   const workflow = useCvStudioJobWorkflow({ data, onNavigateToStudio: () => router.replace("/cv-studio") });
   return <CvStudioStartView data={data} workflow={workflow} />;
 }

@@ -13,6 +13,7 @@ const JOB_FEED_CACHE_TTL = 45 * 1000;
 
 export function useJobFeed(
   userId: string | null,
+  enabled: boolean,
   page: number,
   category: string,
   filters: Filters,
@@ -98,6 +99,7 @@ export function useJobFeed(
   );
 
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
     if (cached) {
@@ -113,7 +115,7 @@ export function useJobFeed(
     }
     void Promise.resolve().then(() => refreshFeed(controller.signal, Boolean(cached)));
     return () => controller.abort();
-  }, [refreshFeed, retryFeed, userId, cacheKey, setFeed, setDismissedCount, setSelectedId, setLoading, setError]);
+  }, [refreshFeed, retryFeed, userId, enabled, cacheKey, setFeed, setDismissedCount, setSelectedId, setLoading, setError]);
 
   return { params };
 }

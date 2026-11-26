@@ -18,19 +18,19 @@ export function ProfileForm({
   configured?: boolean;
 }) {
   if (configured) return <AuthenticatedProfileForm initialMode={initialMode} />;
-  return <ProfileFormContent initialMode={initialMode} userId={null} />;
+  return <ProfileFormContent initialMode={initialMode} userId={null} enabled />;
 }
 
 function AuthenticatedProfileForm({ initialMode }: { initialMode?: "empty" | "view" | "edit" }) {
-  const { userId } = useAuth();
-  return <ProfileFormContent initialMode={initialMode} userId={userId} />;
+  const { userId, isLoaded } = useAuth();
+  return <ProfileFormContent initialMode={initialMode} userId={userId} enabled={isLoaded} />;
 }
 
-function ProfileFormContent({ initialMode, userId }: { initialMode?: "empty" | "view" | "edit"; userId: string | null }) {
+function ProfileFormContent({ initialMode, userId, enabled }: { initialMode?: "empty" | "view" | "edit"; userId: string | null; enabled: boolean }) {
   const {
     profile, draft, setDraft, loading, saving, error, message, dismissError,
     dismissMessage, loadFailed, mode, setMode, loadProfile, handleSave,
-  } = useProfile(userId);
+  } = useProfile(userId, enabled);
   const [reviewing, setReviewing] = useState(false);
   const currentMode = reviewing ? "review" : initialMode || mode;
 
