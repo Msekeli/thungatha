@@ -383,3 +383,28 @@ The following is the current source-level picture, not a claim of runtime accept
 - CV tailoring gaps are returned for the current review session; only suggestion decisions/content are persisted in the existing draft structure. Durable gap history is not part of this increment.
 - The provider router uses one global primary/fallback plan. Per-task routing is not implemented and should not be added without measured need.
 - M4-C06 and M4-C07 remain In progress. This increment does not accept either checkpoint or M4.
+
+## CV Studio mobile interaction follow-up — 2026-11-26
+
+**Status:** In review — responsive source changes are prepared; automated and browser verification have not been run.
+
+This follow-up extends the existing mobile-responsiveness prerequisite. It does not create a new M4 checkpoint or change the M4 scope.
+
+**Changes**
+- The mobile tailoring workspace now gives its Edit CV / Preview CV navigation a fixed place above a flexible content area. The content panel fills the remaining available height instead of adding a full-height grid below the navigation.
+- The mobile PDF preview keeps the document fitted to the available content width by default. Switching to a different CV document resets zoom to fit width. Desktop zoom controls remain available at the existing small-screen breakpoint and above.
+- Added application-level two-pointer pinch handling for the PDF viewer. Zoom is clamped to the existing 50–200% range and rounded to 5% increments.
+- Zoomed canvases can exceed the viewer width and use the viewer's horizontal overflow rather than being constrained back to phone width.
+- Added a mobile “Pinch to zoom” hint and unit coverage for pinch zoom calculation.
+
+**Verification**
+- Source was inspected on the live `dev` branch before changes.
+- Focused pinch-zoom unit tests were added but **not run**.
+- Lint, TypeScript, formatting, production build, browser/device testing, and regression checks were **not run** in this remote change.
+- No database, API, CV content, Profile, or Job Tracking behaviour was changed.
+
+**Acceptance condition**
+- Verify on real touch input or mobile-device emulation at 320px, 360px and a typical phone width: the editor fills the available viewport below its tabs; users can switch between Edit CV and Preview CV; PDF pages fit the phone width initially; pinch-in and pinch-out change document zoom; enlarged pages can be panned horizontally and vertically; download remains accessible; multiple pages scroll naturally.
+- Verify tablet and desktop layouts, including the existing desktop zoom toolbar and two-panel tailoring workspace.
+- Run the focused unit test, then the repository lint, type-check, format check, unit suite and production build. Record actual results before treating this work as verified.
+- M4-C09 remains responsible for full milestone verification and user acceptance. M4 remains In progress.

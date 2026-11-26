@@ -8,11 +8,17 @@ type RenderPdfPagesOptions = {
 };
 
 export async function renderCvPdfPages({
-  pdfUrl, containerWidth, zoom, isActive, onPageCount, onPageRendered,
+  pdfUrl,
+  containerWidth,
+  zoom,
+  isActive,
+  onPageCount,
+  onPageRendered,
 }: RenderPdfPagesOptions) {
   const pdfjs = await import("pdfjs-dist");
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url,
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url,
   ).toString();
   const loadingTask = pdfjs.getDocument(pdfUrl);
   const pdfDocument = await loadingTask.promise;
@@ -44,7 +50,7 @@ export async function renderCvPdfPages({
       canvas.height = Math.floor(viewport.height * outputScale);
       canvas.style.width = `${viewport.width}px`;
       canvas.style.height = `${viewport.height}px`;
-      canvas.className = "block h-auto max-w-full bg-white shadow-sm";
+      canvas.className = "block h-auto bg-white shadow-sm";
       context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
       await page.render({ canvas, canvasContext: context, viewport }).promise;
       if (!isActive()) {

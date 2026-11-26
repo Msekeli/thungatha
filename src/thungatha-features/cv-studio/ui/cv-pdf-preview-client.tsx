@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 import { useCvPdfBlob } from "./use-cv-pdf-blob";
 import { useCvPdfPageRendering } from "./use-cv-pdf-page-rendering";
@@ -8,7 +8,9 @@ import { CvPdfPreviewControls } from "./cv-pdf-preview-controls";
 import { CvPdfPageViewer } from "./cv-pdf-page-viewer";
 
 export function CvPdfPreviewClient({
-  content, accent, allowDownload = true,
+  content,
+  accent,
+  allowDownload = true,
 }: {
   content: CvPdfContent;
   accent?: string;
@@ -22,10 +24,16 @@ export function CvPdfPreviewClient({
   );
   const { pdfUrl, isPreparing, error: generationError } = useCvPdfBlob(document);
   const { pageCount, canvases, error: renderingError } = useCvPdfPageRendering(
-    pdfUrl, containerWidth, zoom,
+    pdfUrl,
+    containerWidth,
+    zoom,
   );
   const pdfError = generationError ?? renderingError;
   const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
+
+  useEffect(() => {
+    setZoom(100);
+  }, [content, accent]);
 
   function downloadPdf() {
     if (!pdfUrl) return;
@@ -50,6 +58,8 @@ export function CvPdfPreviewClient({
         isPreparing={isPreparing}
         error={pdfError}
         canvases={canvases}
+        zoom={zoom}
+        setZoom={setZoom}
         onWidthChange={setContainerWidth}
       />
     </section>
