@@ -229,6 +229,8 @@ Scope includes:
 - Providing application lists and detailed records.
 - Providing a quick-recall view of what was submitted, what happened and what action is next.
 - Linking relevant Discovery jobs and CV Studio versions without confusing discovery with application submission.
+- Applying compact-record retention: permanently remove application-specific full job descriptions when an application is Rejected or Withdrawn, while preserving company/job identity and tracking history.
+- Keep shared Discovery listings independent of per-user dismiss/unsave actions; purge stale shared descriptions only after a configured retention period and dependency checks.
 
 An application record is created when the user confirms a submission or explicitly records an application they already made. Discovering, saving or dismissing a job does not itself create an application record.
 
