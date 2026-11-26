@@ -260,6 +260,9 @@ Security and lifecycle boundaries:
 - “Yes, I applied” records an explicit, persisted applied confirmation for that user and job; it must be idempotent and must not create duplicate records. “No, not yet” dismisses the prompt for that occurrence only; the prompt may appear again if the role reappears later.
 - Do not prompt again once the role is confirmed applied. Keep the application confirmation distinct from saved/dismissed discovery state.
 - Preserve state if a listing later becomes unavailable.
+- Save/dismiss/undo and unsave are per-user actions only; they must never delete or purge the shared catalogue job or its description.
+- A verified source closure, expiry or removal changes listing availability/lifecycle state. It does not trigger immediate deletion. Any later purge of bulky shared description content follows the cross-product retention policy and must first verify that no active application, saved-user state or supported workflow depends on it.
+- Temporary or partial source failures must never trigger vacancy-content deletion.
 - M5 extends this minimal job-linked confirmation into the full application record, submitted-material snapshot, lifecycle/status history and follow-up workflow.
 
 **Exit criteria**
