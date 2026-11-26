@@ -33,7 +33,9 @@ export function JobDetailActions({
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className="flex min-w-0 items-center gap-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-0">
+    <div
+      className="flex min-w-0 items-center gap-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-0"
+    >
       <Button
         className={`${actionClass} min-h-11 min-w-0 flex-1 justify-center max-[600px]:min-h-12 max-[600px]:w-full`}
         disabled={!applicationDestination || disabled}
@@ -48,7 +50,9 @@ export function JobDetailActions({
         <ExternalLink size={16} aria-hidden="true" />
         Apply on company site
       </Button>
-      <div className="min-w-0 max-[600px]:block max-[600px]:w-full [&>div]:max-[600px]:w-full [&>div]:max-[600px]:flex-col [&>div]:max-[600px]:items-stretch [&>div]:max-[600px]:gap-2 [&_a]:max-[600px]:min-h-11 [&_a]:max-[600px]:w-full [&_a]:max-[600px]:justify-center [&_button]:max-[600px]:min-h-11 [&_button]:max-[600px]:w-full [&_button]:max-[600px]:justify-center">
+      <div
+        className="min-w-0 max-[600px]:block max-[600px]:w-full max-[600px]:[&>div]:w-full max-[600px]:[&>div]:flex-col max-[600px]:[&>div]:items-stretch max-[600px]:[&>div]:gap-2 max-[600px]:[&>div>span]:block max-[600px]:[&>div>span]:w-full max-[600px]:[&_a]:min-h-11 max-[600px]:[&_a]:w-full max-[600px]:[&_a]:justify-center max-[600px]:[&_button]:min-h-11 max-[600px]:[&_button]:w-full max-[600px]:[&_button]:justify-center"
+      >
         <JobDetailProtectedActions
           configured={configured}
           job={job}
