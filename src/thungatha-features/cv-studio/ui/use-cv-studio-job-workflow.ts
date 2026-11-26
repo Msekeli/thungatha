@@ -13,7 +13,8 @@ type CvStudioJobWorkflowProps = {
 };
 
 export function useCvStudioJobWorkflow({
-  data, onNavigateToStudio,
+  data,
+  onNavigateToStudio,
 }: CvStudioJobWorkflowProps) {
   const savedCv = useCvStudioSavedCv(data);
   const [tailoringStarted, setTailoringStarted] = useState(false);
@@ -25,10 +26,10 @@ export function useCvStudioJobWorkflow({
   } | null>(null);
 
   const handleTailoredContentChange = useCallback(
-    (content: CvPdfContent, accent: string) => setTailoredPreview({ content, accent }),
+    (content: CvPdfContent, accent: string) =>
+      setTailoredPreview({ content, accent }),
     [],
   );
-
 
   async function submitPastedJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,7 +44,9 @@ export function useCvStudioJobWorkflow({
       await data.assessContext(body.jobContext, data.state.masterCv.id);
     } catch (cause) {
       data.setWorkflowError(
-        cause instanceof Error ? cause.message : "The job description could not be validated.",
+        cause instanceof Error
+          ? cause.message
+          : "The job description could not be validated.",
       );
     } finally {
       data.setWorkflowBusy(false);
@@ -64,8 +67,12 @@ export function useCvStudioJobWorkflow({
 
   return {
     ...jobFormState,
-    ...savedCv, tailoringStarted, setTailoringStarted,
-    tailoredPreview, handleTailoredContentChange,
-    submitPastedJob, clearSelectedJob,
+    ...savedCv,
+    tailoringStarted,
+    setTailoringStarted,
+    tailoredPreview,
+    handleTailoredContentChange,
+    submitPastedJob,
+    clearSelectedJob,
   };
 }

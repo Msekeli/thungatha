@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import type { JobCardData } from "./job-card-config";
 import {
@@ -21,9 +22,12 @@ export function JobCardHeader({
   return (
     <div className={jobCardHeaderClassName}>
       {job.company_logo_url ? (
-        <img
+        <Image
           src={job.company_logo_url}
           alt=""
+          width={48}
+          height={48}
+          unoptimized
           className={jobCardLogoClassName}
         />
       ) : (

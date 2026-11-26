@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({ userId: "user_test", isLoaded: true }),
+}));
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -19,10 +23,14 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
-    expect(await screen.findByRole("button", { name: "Enter details manually" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Enter details manually" }),
+    ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -43,8 +51,12 @@ describe("ProfileForm error recovery", () => {
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
-    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection and try again",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 
   it("shows API error message when rejected by server", async () => {
@@ -66,7 +78,11 @@ describe("ProfileForm error recovery", () => {
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
-    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Invalid profile",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 });

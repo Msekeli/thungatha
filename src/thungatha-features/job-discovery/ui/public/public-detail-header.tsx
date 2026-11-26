@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Dialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,13 +19,14 @@ export function PublicJobDetailHeader({
   formatDate: JobDiscoveryWorkspaceProps["formatDate"];
 }) {
   return (
-    <header
-      className="relative flex shrink-0 items-center gap-3 border-b border-public-modal-border bg-[var(--th-workspace-header)] px-4 py-3 pr-14 text-[var(--th-workspace-header-text)] max-[600px]:flex-wrap max-[600px]:items-start max-[600px]:gap-y-[0.15rem] max-[600px]:pt-4 max-[600px]:pr-[3.75rem] sm:gap-4 sm:px-6 sm:py-4 sm:pr-16 [&_[data-slot=button]]:text-[var(--th-workspace-header-text)] [&_button]:text-[var(--th-workspace-header-text)]"
-    >
+    <header className="relative flex shrink-0 items-center gap-3 border-b border-public-modal-border bg-[var(--th-workspace-header)] px-4 py-3 pr-14 text-[var(--th-workspace-header-text)] max-[600px]:flex-wrap max-[600px]:items-start max-[600px]:gap-y-[0.15rem] max-[600px]:pt-4 max-[600px]:pr-[3.75rem] sm:gap-4 sm:px-6 sm:py-4 sm:pr-16 [&_[data-slot=button]]:text-[var(--th-workspace-header-text)] [&_button]:text-[var(--th-workspace-header-text)]">
       {job?.company_logo_url ? (
-        <img
+        <Image
           src={job.company_logo_url}
           alt=""
+          width={48}
+          height={48}
+          unoptimized
           className="size-11 shrink-0 rounded-xl border border-logo-border bg-white object-contain p-1 sm:size-12"
         />
       ) : (
@@ -41,9 +43,7 @@ export function PublicJobDetailHeader({
         </p>
       </div>
       {job && (
-        <div
-          className="ml-auto min-w-0 max-w-[52%] flex-[0_1_auto] pb-0 pr-[3.25rem] max-[600px]:ml-[3.5rem] max-[600px]:max-w-none max-[600px]:flex-[1_0_100%] max-[600px]:pr-0 [&_.th-job-detail-meta]:flex-wrap [&_.th-job-detail-meta]:justify-end max-[600px]:[&_.th-job-detail-meta]:justify-start [&_.th-job-detail-meta-item]:border-[var(--th-public-nav-border)] [&_.th-job-detail-meta-item]:text-[var(--th-workspace-header-muted)] [&_.th-job-detail-meta-item_svg]:text-[var(--th-workspace-header-muted)]"
-        >
+        <div className="ml-auto min-w-0 max-w-[52%] flex-[0_1_auto] pb-0 pr-[3.25rem] max-[600px]:ml-[3.5rem] max-[600px]:max-w-none max-[600px]:flex-[1_0_100%] max-[600px]:pr-0 [&_.th-job-detail-meta]:flex-wrap [&_.th-job-detail-meta]:justify-end max-[600px]:[&_.th-job-detail-meta]:justify-start [&_.th-job-detail-meta-item]:border-[var(--th-public-nav-border)] [&_.th-job-detail-meta-item]:text-[var(--th-workspace-header-muted)] [&_.th-job-detail-meta-item_svg]:text-[var(--th-workspace-header-muted)]">
           <JobDetailMeta
             location={job.location_text}
             postedAt={job.published_at}

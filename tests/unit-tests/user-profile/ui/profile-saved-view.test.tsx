@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({ userId: "user_test", isLoaded: true }),
+}));
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -27,10 +31,24 @@ describe("ProfileForm saved view", () => {
       },
       summary: "Software engineer in React",
       workExperience: [
-        { id: "1", jobTitle: "Frontend Dev", employer: "Studio", startDate: "2022", isCurrent: true, achievements: [] },
+        {
+          id: "1",
+          jobTitle: "Frontend Dev",
+          employer: "Studio",
+          startDate: "2022",
+          isCurrent: true,
+          achievements: [],
+        },
       ],
       education: [
-        { id: "2", educationLevel: "Degree", qualification: "BSc CS", institution: "Univ", endDate: "2020", isCurrent: false },
+        {
+          id: "2",
+          educationLevel: "Degree",
+          qualification: "BSc CS",
+          institution: "Univ",
+          endDate: "2020",
+          isCurrent: false,
+        },
       ],
       skills: ["React", "TypeScript"],
       certifications: [],
@@ -42,9 +60,11 @@ describe("ProfileForm saved view", () => {
       profileVersion: 1,
     };
 
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ profile: profileData }), { status: 200 }),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ profile: profileData }), { status: 200 }),
+      );
     vi.stubGlobal("fetch", fetchMock);
 
     render(<ProfileForm />);
@@ -56,6 +76,8 @@ describe("ProfileForm saved view", () => {
     expect(screen.getByText("React")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Edit profile" }));
-    expect(await screen.findByLabelText(/^Full name/)).toHaveValue("Lerato Naidoo");
+    expect(await screen.findByLabelText(/^Full name/)).toHaveValue(
+      "Lerato Naidoo",
+    );
   });
 });
