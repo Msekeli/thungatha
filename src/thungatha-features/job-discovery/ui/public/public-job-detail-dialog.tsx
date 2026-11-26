@@ -1,6 +1,5 @@
 "use client";
 
-import "./public-job-detail-dialog.css";
 import { Dialog } from "@base-ui/react/dialog";
 import { LoaderCircle } from "lucide-react";
 import { JobDetailDescription } from "../shared/job-detail-description";
@@ -31,17 +30,17 @@ export function PublicJobDetailDialog({
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop
-          className="th-public-job-detail-dialog__backdrop fixed inset-0 bg-overlay backdrop-blur-sm"
+          className="fixed inset-0 z-[1600] bg-overlay backdrop-blur-sm"
           onClick={onClose}
         />
-        <Dialog.Popup className="th-public-job-detail-dialog fixed left-1/2 top-1/2 flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border text-[var(--th-fg)] shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
+        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[1601] isolate flex h-public-modal max-h-[calc(100dvh-1rem)] w-[min(780px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-modal border border-public-modal-border bg-[var(--th-public-modal-bg,var(--th-modal))] text-fg shadow-public-modal outline-none sm:max-h-[calc(100dvh-3rem)] sm:w-[min(780px,calc(100vw-3rem))]">
           <PublicJobDetailHeader
             job={job}
             employer={employer}
             initials={initials}
             formatDate={data.formatDate}
           />
-          <div className="th-public-job-detail-dialog__content min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6 sm:py-5">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain bg-[var(--th-public-modal-bg,var(--th-modal))] px-4 py-4 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable] sm:px-6 sm:py-5">
             {data.detailLoading && !job ? (
               <div
                 role="status"

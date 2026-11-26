@@ -18,7 +18,7 @@ export function PublicJobDetailHeader({
   formatDate: JobDiscoveryWorkspaceProps["formatDate"];
 }) {
   return (
-    <header className="th-public-job-detail-dialog__header relative flex shrink-0 items-center gap-3 border-b border-public-modal-border px-4 py-3 pr-14 sm:gap-4 sm:px-6 sm:py-4 sm:pr-16">
+    <header className="relative flex shrink-0 items-center gap-3 border-b border-public-modal-border bg-[var(--th-workspace-header)] px-4 py-3 pr-14 text-[var(--th-workspace-header-text)] max-[600px]:flex-wrap max-[600px]:items-start max-[600px]:gap-y-1 max-[600px]:pt-4 max-[600px]:pr-15 sm:gap-4 sm:px-6 sm:py-4 sm:pr-16 [&_[data-slot=button]]:text-[var(--th-workspace-header-text)] [&_button]:text-[var(--th-workspace-header-text)]">
       {job?.company_logo_url ? (
         <img
           src={job.company_logo_url}
@@ -30,7 +30,7 @@ export function PublicJobDetailHeader({
           {initials || "?"}
         </span>
       )}
-      <div className="th-public-job-detail-dialog__identity min-w-0 flex-1">
+      <div className="min-w-0 flex-1 max-[600px]:pt-0.5">
         <Dialog.Title className="truncate text-title font-bold leading-tight text-[var(--th-workspace-header-text)] sm:text-modal-title">
           {job?.title ?? "Job details"}
         </Dialog.Title>
@@ -39,7 +39,7 @@ export function PublicJobDetailHeader({
         </p>
       </div>
       {job && (
-        <div className="th-public-job-detail-dialog__meta min-w-0 shrink-0">
+        <div className="ml-auto min-w-0 max-w-[52%] shrink-0 pb-0 pr-[3.25rem] max-[600px]:ml-[3.5rem] max-[600px]:max-w-none max-[600px]:flex-[1_0_100%] max-[600px]:pr-0 [&_.th-job-detail-meta]:flex-wrap [&_.th-job-detail-meta]:justify-end max-[600px]:[&_.th-job-detail-meta]:justify-start [&_.th-job-detail-meta-item]:border-[var(--th-public-nav-border)] [&_.th-job-detail-meta-item]:text-[var(--th-workspace-header-muted)] [&_.th-job-detail-meta-item_svg]:text-[var(--th-workspace-header-muted)]">
           <JobDetailMeta
             location={job.location_text}
             postedAt={job.published_at}
@@ -53,7 +53,7 @@ export function PublicJobDetailHeader({
             variant="outline"
             size="icon"
             aria-label="Close job details"
-            className="th-public-job-detail-dialog__close absolute right-3 top-3 size-9 border-public-modal-border bg-public-modal-bg text-fg shadow-sm hover:bg-public-modal-footer focus-visible:outline-accent sm:right-4 sm:top-3"
+            className="absolute right-3 top-3 size-9 border-public-modal-border bg-public-modal-bg text-fg shadow-sm hover:bg-public-modal-footer focus-visible:outline-accent sm:right-4"
           >
             <X className="size-5" />
           </Button>

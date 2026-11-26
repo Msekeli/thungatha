@@ -33,9 +33,9 @@ export function JobDetailActions({
   const actionClass = "th-job-detail-action-button";
 
   return (
-    <div className="th-job-detail-actions-layout">
+    <div className="flex min-w-0 items-center gap-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-0">
       <Button
-        className={`${actionClass} th-job-detail-apply-button`}
+        className={`${actionClass} min-h-11 min-w-0 flex-1 justify-center max-[600px]:min-h-12 max-[600px]:w-full`}
         disabled={!applicationDestination || disabled}
         title={
           applicationUrl
@@ -48,7 +48,7 @@ export function JobDetailActions({
         <ExternalLink size={16} aria-hidden="true" />
         Apply on company site
       </Button>
-      <div className="th-job-detail-secondary-actions">
+      <div className="min-w-0 max-[600px]:block max-[600px]:w-full [&>div]:max-[600px]:w-full [&>div]:max-[600px]:flex-col [&>div]:max-[600px]:items-stretch [&>div]:max-[600px]:gap-2 [&_a]:max-[600px]:min-h-11 [&_a]:max-[600px]:w-full [&_a]:max-[600px]:justify-center [&_button]:max-[600px]:min-h-11 [&_button]:max-[600px]:w-full [&_button]:max-[600px]:justify-center">
         <JobDetailProtectedActions
           configured={configured}
           job={job}

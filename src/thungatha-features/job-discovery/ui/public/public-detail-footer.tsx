@@ -12,7 +12,7 @@ export function PublicJobDetailFooter({
   job: Job;
 }) {
   return (
-    <footer className="th-public-job-detail-dialog__footer flex shrink-0 flex-col gap-2 border-t border-public-modal-border px-4 py-3 sm:px-6 sm:py-3">
+    <footer className="flex shrink-0 flex-col gap-2 border-t border-public-modal-border bg-[var(--th-public-nav)] px-4 py-3 text-[var(--th-on-band)] sm:px-6 sm:py-3 [&_.text-fg-muted]:text-[var(--th-on-band-muted)]">
       <JobDetailStatus
         activityError={data.activityError}
         detailError={data.detailError}
