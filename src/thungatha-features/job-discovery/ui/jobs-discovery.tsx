@@ -16,24 +16,17 @@ export default function JobsDiscovery({
   workspaceLeadingColumn?: ReactNode;
 }) {
   if (configured) return <ClerkJobsDiscovery showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
-  return <JobsDiscoveryCore configured={false} isSignedIn={false} userId={null} authReady showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
+  return <JobsDiscoveryCore configured={false} isSignedIn={false} userId={null} authReady workspaceLeadingColumn={workspaceLeadingColumn} showProfileSetupPrompt={showProfileSetupPrompt} />;
 }
 
-function ClerkJobsDiscovery({
-  showProfileSetupPrompt, workspaceLeadingColumn,
-}: {
+function ClerkJobsDiscovery({ showProfileSetupPrompt, workspaceLeadingColumn }: {
   showProfileSetupPrompt: boolean;
   workspaceLeadingColumn?: ReactNode;
 }) {
   const { isLoaded, isSignedIn, userId } = useAuth();
-  return <JobsDiscoveryCore
-    configured
-    isSignedIn={Boolean(isLoaded && isSignedIn)}
-    userId={isLoaded && isSignedIn ? userId : null}
-    authReady={isLoaded}
-    showProfileSetupPrompt={showProfileSetupPrompt}
-    workspaceLeadingColumn={workspaceLeadingColumn}
-  />;
+  return <JobsDiscoveryCore configured isSignedIn={Boolean(isLoaded && isSignedIn)}
+    userId={isLoaded && isSignedIn ? userId : null} authReady={isLoaded}
+    showProfileSetupPrompt={showProfileSetupPrompt} workspaceLeadingColumn={workspaceLeadingColumn} />;
 }
 
 function JobsDiscoveryCore({
@@ -55,8 +48,7 @@ function JobsDiscoveryCore({
   useEffect(() => {
     const status = searchParams.get("status");
     setCategory(status === "saved" || status === "dismissed" ? status : "new");
-    setPage(1);
-    setMobileDetail(false);
+    setPage(1); setMobileDetail(false);
   }, [searchParams, setCategory, setPage, setMobileDetail]);
   useEffect(() => {
     if (!showProfileSetupPrompt) return;
@@ -64,11 +56,6 @@ function JobsDiscoveryCore({
   }, [showProfileSetupPrompt]);
 
   const controller = useJobDiscoveryController(state, userId, authReady);
-  return <JobDiscoveryScreen
-    configured={configured}
-    state={state}
-    controller={controller}
-    routerPushProfile={() => router.push("/profile")}
-    workspaceLeadingColumn={workspaceLeadingColumn}
-  />;
+  return <JobDiscoveryScreen configured={configured} state={state} controller={controller}
+    routerPushProfile={() => router.push("/profile")} workspaceLeadingColumn={workspaceLeadingColumn} />;
 }
