@@ -386,7 +386,7 @@ The following is the current source-level picture, not a claim of runtime accept
 
 ## CV Studio mobile interaction follow-up — 2026-11-26
 
-**Status:** In review — responsive source changes are prepared; automated and browser verification have not been run.
+**Status:** In review — responsive source changes are committed; automated and browser verification have not been run.
 
 This follow-up extends the existing mobile-responsiveness prerequisite. It does not create a new M4 checkpoint or change the M4 scope.
 
