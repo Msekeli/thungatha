@@ -20,6 +20,7 @@
 @import "../styles/components/form-controls.css";
 @import "../styles/components/clerk.css";
 @import "../styles/components/navigation.css";
+@import "../styles/components/job-cards.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/shadcn-theme.css";
