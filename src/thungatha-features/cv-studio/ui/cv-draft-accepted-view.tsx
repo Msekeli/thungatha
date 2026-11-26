@@ -9,7 +9,7 @@ export function CvDraftAcceptedView({
   accent: string;
 }) {
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-6">
+    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-3 text-fg shadow-sm sm:p-6 max-[700px]:h-auto max-[700px]:overflow-visible">
       <header className="shrink-0 border-b border-line pb-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">CV Studio</p>
         <h2 className="mt-1 text-xl font-bold sm:text-2xl">Your CV is ready</h2>
@@ -20,7 +20,7 @@ export function CvDraftAcceptedView({
           <span aria-hidden="true">✓</span> Accepted and saved
         </p>
       </header>
-      <div className="min-h-0 flex-1 pt-4">
+      <div className="min-h-[70dvh] flex-1 pt-4">
         <CvPdfPreview content={content} accent={accent} allowDownload />
       </div>
     </section>

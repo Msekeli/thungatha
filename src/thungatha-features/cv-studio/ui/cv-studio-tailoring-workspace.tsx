@@ -23,7 +23,7 @@ export function CvStudioTailoringWorkspace({
   const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col max-[700px]:flex-none">
       <nav
         className="mb-3 grid shrink-0 grid-cols-2 gap-2 rounded-xl bg-panel-2 p-1 lg:hidden"
         aria-label="CV editor panels"
@@ -53,12 +53,12 @@ export function CvStudioTailoringWorkspace({
         </button>
       </nav>
 
-      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:h-full lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-3">
+      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-visible lg:h-full lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-3 lg:overflow-hidden">
         <div
           id="cv-editor-panel-edit"
           role="tabpanel"
           aria-labelledby="cv-editor-tab-edit"
-          className={mobileTab === "edit" ? "h-full min-h-0 min-w-0" : "hidden min-h-0 min-w-0 lg:block"}
+          className={mobileTab === "edit" ? "h-auto min-h-0 min-w-0 lg:h-full" : "hidden min-h-0 min-w-0 lg:block"}
         >
           <CvDraftEditor
             masterVersionId={masterVersionId}
@@ -73,7 +73,7 @@ export function CvStudioTailoringWorkspace({
           id="cv-editor-panel-preview"
           role="tabpanel"
           aria-labelledby="cv-editor-tab-preview"
-          className={mobileTab === "preview" ? "flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:p-3" : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"}
+          className={mobileTab === "preview" ? "flex h-[70dvh] min-h-[420px] min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:h-full lg:min-h-0" : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"}
         >
           <CvStudioPreviewPanel
             masterContent={masterContent}

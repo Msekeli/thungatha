@@ -14,14 +14,14 @@ type CvDraftEditorShellProps = {
 
 export function CvDraftEditorShell({ state }: CvDraftEditorShellProps) {
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm">
+    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel text-fg shadow-sm max-[700px]:h-auto max-[700px]:overflow-visible">
       <CvDraftEditorHeader
         activeIndex={state.activeIndex}
         activeSection={state.activeSection}
         sections={state.reviewSections}
         onSectionChange={state.setActiveSection}
       />
-      <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-3 py-3 sm:px-6 sm:py-4 max-[700px]:flex-none max-[700px]:overflow-visible">
         {state.draft ? (
           <CvDraftEditorReviewBody state={{ ...state, draft: state.draft as CvDraft }} />
         ) : (
