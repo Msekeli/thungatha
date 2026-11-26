@@ -98,9 +98,9 @@ export function createGeminiAdapter(
         throw new AiProviderError(
           "Gemini truncated the structured response at its output-token limit.",
           {
-            code: "rate-limited",
+            code: "output-limit",
             provider: "gemini",
-            retryable: true,
+            retryable: false,
           },
         );
       }

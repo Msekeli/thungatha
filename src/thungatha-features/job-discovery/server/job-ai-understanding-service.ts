@@ -9,6 +9,10 @@ import { buildJobUnderstandingPrompt } from "./job-ai-prompts";
 
 export { parseJobUnderstanding };
 
+// Structured job extraction can contain several evidence-backed items. Keep an
+// explicit budget so hosted providers do not fall back to restrictive defaults.
+const JOB_UNDERSTANDING_MAX_OUTPUT_TOKENS = 4_096;
+
 export async function understandJobWithAi(context: JobMatchingContext) {
   const evidence = buildJobEvidence(context.description, context);
   if (evidence.length === 0) {
@@ -30,6 +34,7 @@ export async function understandJobWithAi(context: JobMatchingContext) {
     responseFormat: "json",
     responseSchema,
     temperature: 0.1,
+    maxOutputTokens: JOB_UNDERSTANDING_MAX_OUTPUT_TOKENS,
     timeoutMs: 120_000,
     reasoning: false,
     systemPrompt: buildJobUnderstandingPrompt(),

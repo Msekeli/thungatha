@@ -107,6 +107,41 @@ describe("Groq adapter", () => {
     });
   });
 
+  it("sends the requested completion-token budget to Groq", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
+      choices: [{ message: { content: '{"ok":true}' }, finish_reason: "stop" }],
+    }), { status: 200 }));
+
+    await createGroqAdapter({ apiKey: "test-key", model: "openai/gpt-oss-120b", fetcher }).complete({
+      task: "job-requirement-extraction",
+      systemPrompt: "Return JSON.",
+      userPrompt: "Extract.",
+      responseFormat: "json",
+      maxOutputTokens: 4_096,
+    });
+
+    const [, init] = fetcher.mock.calls[0] ?? [];
+    expect(JSON.parse(String(init?.body)).max_completion_tokens).toBe(4_096);
+  });
+
+  it("classifies Groq output truncation as a non-retryable output-limit failure", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
+      error: { message: "max completion tokens reached before generating a valid document: output was truncated" },
+    }), { status: 400 }));
+    const adapter = createGroqAdapter({ apiKey: "test-key", model: "openai/gpt-oss-120b", fetcher });
+
+    await expect(adapter.complete({
+      task: "job-requirement-extraction",
+      systemPrompt: "Return JSON.",
+      userPrompt: "Extract.",
+      responseFormat: "json",
+    })).rejects.toMatchObject({
+      code: "output-limit",
+      provider: "groq",
+      retryable: false,
+    });
+  });
+
   it("uses JSON object mode when no schema is supplied", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
       choices: [{ message: { content: '{"ok":true}' } }],

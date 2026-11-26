@@ -7,6 +7,7 @@ export type AiErrorCode =
   | "timeout"
   | "unavailable"
   | "invalid-response"
+  | "output-limit"
   | "content-filtered"
   | "unknown";
 
@@ -64,21 +65,27 @@ export function createProviderHttpError(
           typeof (payload as { message?: unknown }).message === "string"
         ? (payload as { message: string }).message
         : undefined;
-  const safeDetail = detail?.replace(/\\s+/g, " ").slice(0, 240);
+  const safeDetail = detail?.replace(/\s+/g, " ").slice(0, 240);
   const isTokenCapacityLimit =
-    status === 413 &&
-    /tokens per minute|TPM|requested \\d+/i.test(detail ?? "");
-  const code: AiErrorCode = isTokenCapacityLimit
-    ? "rate-limited"
-    : status === 401 || status === 403
-      ? "authentication"
-      : status === 429
-        ? "rate-limited"
-        : status === 408
-          ? "timeout"
-          : status >= 500
-            ? "unavailable"
-            : "unknown";
+    status === 413 && /tokens per minute|TPM|requested \d+/i.test(detail ?? "");
+  const isOutputLimit =
+    status === 400 &&
+    /max[_ ]completion[_ ]tokens|output.{0,40}truncat|truncat.{0,40}output|failed_generation/i.test(
+      detail ?? "",
+    );
+  const code: AiErrorCode = isOutputLimit
+    ? "output-limit"
+    : isTokenCapacityLimit
+      ? "rate-limited"
+      : status === 401 || status === 403
+        ? "authentication"
+        : status === 429
+          ? "rate-limited"
+          : status === 408
+            ? "timeout"
+            : status >= 500
+              ? "unavailable"
+              : "unknown";
   const retryable =
     isTokenCapacityLimit || status === 408 || status === 429 || status >= 500;
   return new AiProviderError(

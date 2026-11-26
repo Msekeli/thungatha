@@ -32,11 +32,13 @@ export async function completeAiTask(
   } catch (primaryError) {
     if (
       !(primaryError instanceof AiProviderError) ||
-      !primaryError.retryable ||
+      (!primaryError.retryable && primaryError.code !== "output-limit") ||
       !fallbacks.length
     ) {
       throw primaryError;
     }
+    // Output-limit failures are deterministic for this request. Do not retry
+    // the same model with the same token budget; move directly to a fallback.
     return completeWithFallbacks(primary, fallbacks, request, primaryError);
   }
 }

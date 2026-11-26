@@ -24,7 +24,7 @@ export async function parseGroqResponse(
   if (finishReason?.toUpperCase() === "LENGTH") {
     throw new AiProviderError(
       "Groq truncated the structured response at its completion-token limit.",
-      { code: "invalid-response", provider: "groq", retryable: false },
+      { code: "output-limit", provider: "groq", retryable: false },
     );
   }
   const content = payload?.choices?.[0]?.message?.content;

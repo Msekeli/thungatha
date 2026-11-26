@@ -34,7 +34,7 @@ describe("job understanding service", () => {
     expect(parsed.analysis.responsibilities).toHaveLength(1);
     expect(completeAiTask).toHaveBeenCalledOnce();
     const request = vi.mocked(completeAiTask).mock.calls[0]?.[0];
-    expect(request?.maxOutputTokens).toBeUndefined();
+    expect(request?.maxOutputTokens).toBe(4_096);
     expect(request?.responseSchema).toMatchObject({
       type: "OBJECT",
       properties: {
