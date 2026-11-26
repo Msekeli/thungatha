@@ -1,0 +1,50 @@
+@media (max-width: 700px) {
+  .th-workspace-shell:has(.th-cv-studio-page) {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+  }
+
+  .th-workspace-shell:has(.th-cv-studio-page) > .th-workspace-sidebar {
+    display: none !important;
+  }
+
+  .th-workspace-shell:has(.th-cv-studio-page) > .th-mobile-workspace-header {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .th-workspace-shell:has(.th-cv-studio-page) > .th-workspace-content {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .th-workspace-shell:has(.th-cv-studio-page) .th-workspace-page-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .th-cv-studio-page {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+  }
+}

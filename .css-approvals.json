@@ -39,6 +39,14 @@
       "sharedComponentAlternative": "The existing workspace shell and mobile navigation remain in use; no new navigation or scrolling component is needed.",
       "approvedBy": "User — explicit request to implement the responsive website direction without sacrificing usability",
       "approvedAt": "2026-11-26"
+    },
+    {
+      "path": "src/thungatha-features/cv-studio/ui/cv-studio-mobile-shell.css",
+      "reason": "Keep CV Studio mobile layout single-column and full-width while restoring natural document scrolling; isolate route-specific shell overrides from shared workspace navigation.",
+      "tailwindAlternative": "The html/body and shared workspace shell selectors need route-scoped CSS; component sizing remains in Tailwind utilities.",
+      "sharedComponentAlternative": "Existing mobile navigation and workspace shell components are reused; no replacement components are introduced.",
+      "approvedBy": "User — explicit request to correct the broken mobile CV Studio layout",
+      "approvedAt": "2026-11-26"
     }
   ]
 }

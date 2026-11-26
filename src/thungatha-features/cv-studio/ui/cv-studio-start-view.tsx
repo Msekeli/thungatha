@@ -1,5 +1,6 @@
 "use client";
 
+import "./cv-studio-mobile-shell.css";
 import { CvStudioStatusPanels } from "./cv-studio-status-panels";
 import type { useCvStudioData } from "./use-cv-studio-data";
 import type { useCvStudioJobWorkflow } from "./use-cv-studio-job-workflow";
