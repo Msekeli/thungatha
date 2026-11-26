@@ -31,7 +31,7 @@ export function CvPdfPageViewer({
   }
 
   return (
-    <div ref={viewerRef} className="flex min-h-0 flex-1 flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-2 sm:p-4" aria-label="CV document pages">
+    <div ref={viewerRef} className="flex min-h-0 flex-1 flex-col items-center gap-0 overflow-auto rounded-xl border border-line bg-panel-2 p-2 sm:p-4 [touch-action:pan-y_pinch-zoom]" aria-label="CV document pages">
       {isPreparing && (
         <div className="flex h-full items-center justify-center text-sm text-fg-muted">
           Preparing A4 document…
