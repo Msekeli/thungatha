@@ -8,56 +8,22 @@ import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
-export function useJobDiscoveryData(state: DiscoveryState) {
+export function useJobDiscoveryData(state: DiscoveryState, userId: string | null) {
   const s = state;
   const { undoAction, setUndoAction } = state;
   useJobFeed(
-    s.page,
-    s.category,
-    s.filters,
-    s.sortOrder,
-    s.retryFeed,
-    s.setFeed,
-    s.setDismissedCount,
-    s.setLoading,
-    s.setError,
-    s.setIsAuthenticated,
-    s.setSelectedId,
+    userId, s.page, s.category, s.filters, s.sortOrder, s.retryFeed,
+    s.setFeed, s.setDismissedCount, s.setLoading, s.setError,
+    s.setIsAuthenticated, s.setSelectedId,
   );
-  useSelectedJobDetail(
-    s.selectedId,
-    s.retryDetail,
-    s.setDetail,
-    s.setDetailLoading,
-    s.setDetailError,
-  );
-  useJobActivitySync(
-    s.userSignedIn,
-    s.selectedId,
-    s.setJobActivity,
-    s.setActivityError,
-    s.setForceAppliedPrompt,
-    s.setDismissedPromptForJobId,
-  );
+  useSelectedJobDetail(s.selectedId, s.retryDetail, s.setDetail, s.setDetailLoading, s.setDetailError);
+  useJobActivitySync(s.userSignedIn, s.selectedId, s.setJobActivity, s.setActivityError, s.setForceAppliedPrompt, s.setDismissedPromptForJobId);
   const updateJobState = useUpdateJobState(
-    s.stateBusy,
-    s.setStateBusy,
-    s.setStateError,
-    s.setStateMessage,
-    s.setFeed,
-    s.setDetail,
-    s.setSelectedId,
-    s.setUndoAction,
-    s.setRetryFeed,
+    s.stateBusy, s.setStateBusy, s.setStateError, s.setStateMessage,
+    s.setFeed, s.setDetail, s.setSelectedId, s.setUndoAction, s.setRetryFeed,
   );
   const undoLastStateChange = useUndoJobState(
-    s.undoAction,
-    s.stateBusy,
-    s.detail,
-    s.feed,
-    updateJobState,
-    s.setUndoAction,
-    s.setStateMessage,
+    s.undoAction, s.stateBusy, s.detail, s.feed, updateJobState, s.setUndoAction, s.setStateMessage,
   );
   useEffect(() => {
     if (!undoAction) return;

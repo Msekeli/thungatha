@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { readWorkspaceCache, writeWorkspaceCache } from "@/lib/workspace-data-cache";
 import {
   buildJobFeedParams,
   type Feed,
@@ -7,7 +8,11 @@ import {
 } from "../job-discovery-utils";
 import { JobFeedRequestError, requestJobFeed } from "../request-job-feed";
 
+type CachedJobFeed = { feed: Feed; dismissedCount: number };
+const JOB_FEED_CACHE_TTL = 45 * 1000;
+
 export function useJobFeed(
+  userId: string | null,
   page: number,
   category: string,
   filters: Filters,
@@ -24,6 +29,8 @@ export function useJobFeed(
     () => buildJobFeedParams(page, category, filters, sortOrder),
     [page, category, filters, sortOrder],
   );
+  const cacheKey = `job-feed:${params}`;
+
   const refreshFeed = useCallback(
     async function refresh(signal: AbortSignal, background = false) {
       if (!background) {
@@ -34,6 +41,11 @@ export function useJobFeed(
         const data = await requestJobFeed(params, signal);
         setIsAuthenticated(true);
         setFeed(data);
+        const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
+        writeWorkspaceCache(userId, cacheKey, {
+          feed: data,
+          dismissedCount: cached?.value.dismissedCount ?? 0,
+        });
         if (data.jobs.some((job) => job.matchStatus === "processing")) {
           window.setTimeout(() => {
             if (!signal.aborted) void refresh(signal, true);
@@ -46,13 +58,14 @@ export function useJobFeed(
         );
         if (category === "dismissed") {
           setDismissedCount(data.total);
+          writeWorkspaceCache(userId, cacheKey, { feed: data, dismissedCount: data.total });
         } else if (page === 1) {
-          void requestJobFeed(
-            buildJobFeedParams(1, "dismissed", filters),
-            signal,
-          )
+          void requestJobFeed(buildJobFeedParams(1, "dismissed", filters), signal)
             .then((dismissedFeed) => {
-              if (!signal.aborted) setDismissedCount(dismissedFeed.total);
+              if (!signal.aborted) {
+                setDismissedCount(dismissedFeed.total);
+                writeWorkspaceCache(userId, cacheKey, { feed: data, dismissedCount: dismissedFeed.total });
+              }
             })
             .catch(() => {
               // Count refresh is independent; it must not fail the main feed.
@@ -79,25 +92,28 @@ export function useJobFeed(
       }
     },
     [
-      params,
-      page,
-      category,
-      filters,
-      sortOrder,
-      setLoading,
-      setError,
-      setFeed,
-      setDismissedCount,
-      setIsAuthenticated,
-      setSelectedId,
+      params, cacheKey, userId, page, category, filters, setLoading, setError,
+      setFeed, setDismissedCount, setIsAuthenticated, setSelectedId,
     ],
   );
 
   useEffect(() => {
     const controller = new AbortController();
-    void Promise.resolve().then(() => refreshFeed(controller.signal));
+    const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
+    if (cached) {
+      setFeed(cached.value.feed);
+      setDismissedCount(cached.value.dismissedCount);
+      setSelectedId(current => current && cached.value.feed.jobs.some(job => job.id === current)
+        ? current : (cached.value.feed.jobs[0]?.id ?? null));
+      setLoading(false);
+      setError(null);
+      if (cached.fresh && retryFeed === 0) {
+        return () => controller.abort();
+      }
+    }
+    void Promise.resolve().then(() => refreshFeed(controller.signal, Boolean(cached)));
     return () => controller.abort();
-  }, [refreshFeed, retryFeed]);
+  }, [refreshFeed, retryFeed, userId, cacheKey, setFeed, setDismissedCount, setSelectedId, setLoading, setError]);
 
   return { params };
 }
