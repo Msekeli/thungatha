@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useLayoutEffect, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { readWorkspaceCache, writeWorkspaceCache } from "@/lib/workspace-data-cache";
 import {
@@ -98,7 +98,7 @@ export function useJobFeed(
     ],
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
     const cached = readWorkspaceCache<CachedJobFeed>(userId, cacheKey, JOB_FEED_CACHE_TTL);
@@ -112,6 +112,12 @@ export function useJobFeed(
       if (cached.fresh && retryFeed === 0) {
         return () => controller.abort();
       }
+    } else {
+      // Never leave the previous category visible while the new feed is loading.
+      setFeed(null);
+      setSelectedId(null);
+      setLoading(true);
+      setError(null);
     }
     void Promise.resolve().then(() => refreshFeed(controller.signal, Boolean(cached)));
     return () => controller.abort();

@@ -55,7 +55,9 @@ function JobsDiscoveryCore({
     window.history.replaceState(null, "", "/jobs");
   }, [showProfileSetupPrompt]);
 
-  const controller = useJobDiscoveryController(state, userId, authReady);
+  const urlStatus = searchParams.get("status");
+  const activeCategory = urlStatus === "saved" || urlStatus === "dismissed" ? urlStatus : "new";
+  const controller = useJobDiscoveryController(state, userId, authReady, activeCategory);
   return <JobDiscoveryScreen configured={configured} state={state} controller={controller}
     routerPushProfile={() => router.push("/profile")} workspaceLeadingColumn={workspaceLeadingColumn} />;
 }
