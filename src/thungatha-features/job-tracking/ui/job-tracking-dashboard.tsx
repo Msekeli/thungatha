@@ -117,16 +117,8 @@ export function JobTrackingDashboard() {
 
   return (
     <div className="th-job-tracking-page flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-2.5 overflow-hidden px-4 py-2 sm:gap-3 sm:px-6 sm:py-2.5 lg:px-8">
-        <section className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
-            <h2 className="text-xl font-semibold tracking-tight text-foreground">
-              Your applications
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Track progress from submission to final outcome.
-            </p>
-          </div>
+      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-3 overflow-hidden sm:gap-4">
+        <section className="flex shrink-0 justify-end">
           <Button onClick={() => setDialogOpen(true)}>
             <Plus data-icon="inline-start" />
             Record an application
