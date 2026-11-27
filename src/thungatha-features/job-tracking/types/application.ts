@@ -11,6 +11,14 @@ export const applicationStatuses = [
 
 export type ApplicationStatus = (typeof applicationStatuses)[number];
 
+export type ApplicationStatusHistoryEntry = {
+  id: string;
+  fromStatus: ApplicationStatus | null;
+  toStatus: ApplicationStatus;
+  changedAt: string;
+  actor: "user";
+};
+
 export type ApplicationRecord = {
   id: string;
   company: string;
@@ -19,6 +27,7 @@ export type ApplicationRecord = {
   source: string;
   url: string;
   status: ApplicationStatus;
+  statusHistory: ApplicationStatusHistoryEntry[];
   notes: string;
   jobDescription: string;
 };
