@@ -29,7 +29,7 @@ export function ApplicationFilters({
   onQueryChange,
 }: Props) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-2.5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative w-full lg:max-w-sm">
           <Search
@@ -50,7 +50,7 @@ export function ApplicationFilters({
         </div>
       </div>
       <div
-        className="flex gap-2 overflow-x-auto pb-1"
+        className="flex gap-1.5 overflow-x-auto pb-1"
         aria-label="Application status filters"
       >
         {filters.map((filter) => (
@@ -59,7 +59,7 @@ export function ApplicationFilters({
             type="button"
             onClick={() => onSelect(filter)}
             aria-pressed={selected === filter}
-            className="shrink-0 rounded-full border border-border bg-card px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+            className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
           >
             {filter}
           </button>
