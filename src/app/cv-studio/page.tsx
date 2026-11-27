@@ -14,7 +14,7 @@ export default async function Page({ searchParams }: PageProps) {
   const configured = hasClerkConfiguration();
   return (
     <WorkspaceShell active="/cv-studio" configured={configured}>
-      <CvStudioStart configured={configured} jobId={jobId} />
+      <CvStudioStart />
     </WorkspaceShell>
   );
 }
