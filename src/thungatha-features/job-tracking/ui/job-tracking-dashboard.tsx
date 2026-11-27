@@ -1,24 +1,89 @@
 "use client";
 
-import { useState } from "react";
-import { BriefcaseBusiness, CalendarClock, CheckCircle2, Plus, Send, Trophy } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  BriefcaseBusiness,
+  CalendarClock,
+  CheckCircle2,
+  Plus,
+  Send,
+  Trophy,
+  Building2,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { ApplicationEmptyState } from "./application-empty-state";
 import { ApplicationFilters } from "./application-filters";
 import { ApplicationStatCard } from "./application-stat-card";
+import { ApplicationList } from "./application-list";
+import { ApplicationStatusBadge } from "./application-status-badge";
 import { RecordApplicationDialog } from "./record-application-dialog";
-
-const stats = [
-  { label: "Total applications", value: 0, description: "All roles you have recorded", icon: BriefcaseBusiness },
-  { label: "Awaiting response", value: 0, description: "Submitted and under review", icon: Send },
-  { label: "Upcoming interviews", value: 0, description: "Interviews on your calendar", icon: CalendarClock },
-  { label: "Offers received", value: 0, description: "Offers to review", icon: Trophy },
-];
+import type { ApplicationRecord } from "../types/application";
 
 export function JobTrackingDashboard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [query, setQuery] = useState("");
+  const [applications, setApplications] = useState<ApplicationRecord[]>([]);
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationRecord | null>(null);
+
+  const filteredApplications = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    return applications.filter((application) => {
+      const matchesStatus =
+        selectedFilter === "All" || application.status === selectedFilter;
+      const matchesQuery =
+        !normalizedQuery ||
+        application.company.toLocaleLowerCase().includes(normalizedQuery) ||
+        application.jobTitle.toLocaleLowerCase().includes(normalizedQuery);
+      return matchesStatus && matchesQuery;
+    });
+  }, [applications, query, selectedFilter]);
+
+  const activeCount = applications.filter((application) =>
+    ["Submitted", "Under review"].includes(application.status),
+  ).length;
+  const interviewCount = applications.filter(
+    (application) => application.status === "Interview",
+  ).length;
+  const offerCount = applications.filter(
+    (application) => application.status === "Offer",
+  ).length;
+
+  function addApplication(application: Omit<ApplicationRecord, "id">) {
+    setApplications((current) => [
+      { ...application, id: crypto.randomUUID() },
+      ...current,
+    ]);
+  }
+
+  const stats = [
+    {
+      label: "Total applications",
+      value: applications.length,
+      description: "Roles recorded in this session",
+      icon: BriefcaseBusiness,
+    },
+    {
+      label: "Awaiting response",
+      value: activeCount,
+      description: "Submitted and under review",
+      icon: Send,
+    },
+    {
+      label: "Interviews",
+      value: interviewCount,
+      description: "Applications at interview stage",
+      icon: CalendarClock,
+    },
+    {
+      label: "Offers received",
+      value: offerCount,
+      description: "Offers to review",
+      icon: Trophy,
+    },
+  ];
 
   return (
     <div className="h-full min-h-0 overflow-y-auto">
@@ -26,27 +91,136 @@ export function JobTrackingDashboard() {
         <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-primary">APPLICATION WORKSPACE</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Your applications</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Track progress from submission to final outcome.</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+              Your applications
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Track progress from submission to final outcome.
+            </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}><Plus data-icon="inline-start" />Record an application</Button>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Plus data-icon="inline-start" />
+            Record an application
+          </Button>
         </section>
+
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Application overview">
-          {stats.map((item) => <ApplicationStatCard key={item.label} {...item} />)}
+          {stats.map((item) => (
+            <ApplicationStatCard key={item.label} {...item} />
+          ))}
         </section>
+
         <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <div className="mb-5 flex items-center justify-between gap-3">
-            <div><h3 className="font-semibold text-card-foreground">Application pipeline</h3><p className="mt-1 text-xs text-muted-foreground">A view of where each application stands.</p></div>
+            <div>
+              <h3 className="font-semibold text-card-foreground">Application pipeline</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                A view of where each application stands.
+              </p>
+            </div>
             <CheckCircle2 aria-hidden="true" className="size-5 text-muted-foreground" />
           </div>
-          <ApplicationFilters selected={selectedFilter} onSelect={setSelectedFilter} query={query} onQueryChange={setQuery} />
+          <ApplicationFilters
+            selected={selectedFilter}
+            onSelect={setSelectedFilter}
+            query={query}
+            onQueryChange={setQuery}
+          />
           <div className="mt-5">
-            <ApplicationEmptyState onRecord={() => setDialogOpen(true)} />
+            {applications.length === 0 ? (
+              <ApplicationEmptyState onRecord={() => setDialogOpen(true)} />
+            ) : filteredApplications.length === 0 ? (
+              <div className="flex min-h-56 flex-col items-center justify-center rounded-lg border border-dashed border-border px-6 text-center">
+                <p className="font-medium text-foreground">No matching applications</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Try another search term or choose a different status.
+                </p>
+                <Button
+                  className="mt-4"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setQuery("");
+                    setSelectedFilter("All");
+                  }}
+                >
+                  Clear filters
+                </Button>
+              </div>
+            ) : (
+              <ApplicationList
+                applications={filteredApplications}
+                onOpen={setSelectedApplication}
+              />
+            )}
           </div>
         </section>
-        <p className="text-center text-xs text-muted-foreground">Application records will appear here after you add them.</p>
+        <p className="text-center text-xs text-muted-foreground">
+          Preview only — records are cleared when this page session ends.
+        </p>
       </div>
-      <RecordApplicationDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
+
+      <RecordApplicationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onCreate={addApplication}
+      />
+
+      {selectedApplication && (
+        <Modal
+          title={selectedApplication.jobTitle}
+          description={selectedApplication.company}
+          onClose={() => setSelectedApplication(null)}
+        >
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Building2 aria-hidden="true" className="size-4" />
+                {selectedApplication.company}
+              </span>
+              <ApplicationStatusBadge status={selectedApplication.status} />
+            </div>
+            <dl className="grid gap-4 rounded-lg border border-border p-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-muted-foreground">Application date</dt>
+                <dd className="mt-1 text-sm font-medium text-foreground">
+                  {selectedApplication.applicationDate || "Not provided"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">Source</dt>
+                <dd className="mt-1 text-sm font-medium text-foreground">
+                  {selectedApplication.source || "Not provided"}
+                </dd>
+              </div>
+            </dl>
+            {selectedApplication.url && (
+              <a
+                href={selectedApplication.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Open application link
+                <ExternalLink aria-hidden="true" className="size-4" />
+              </a>
+            )}
+            {selectedApplication.notes && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground">Notes</h4>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+                  {selectedApplication.notes}
+                </p>
+              </div>
+            )}
+            <div className="flex justify-end border-t border-border pt-4">
+              <Button variant="outline" onClick={() => setSelectedApplication(null)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
