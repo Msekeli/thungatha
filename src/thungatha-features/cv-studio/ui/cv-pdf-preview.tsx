@@ -4,8 +4,21 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { Download, FileText } from "lucide-react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 
-export function CvPdfPreview({ content, accent, allowDownload = true }: { content: CvPdfContent; accent?: string; allowDownload?: boolean }) {
-  const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
+type CvPdfPreviewProps = {
+  content: CvPdfContent;
+  accent?: string;
+  allowDownload?: boolean;
+};
+
+export function CvPdfPreview({
+  content,
+  accent,
+  allowDownload = true,
+}: CvPdfPreviewProps) {
+  const fileName = `${content.fullName
+    .trim()
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
 
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-line bg-panel-2">
@@ -15,20 +28,26 @@ export function CvPdfPreview({ content, accent, allowDownload = true }: { conten
           <span>A4 document preview</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="hidden text-xs text-fg-muted sm:inline">Zoom, page navigation and print controls are in the PDF toolbar.</span>
-{allowDownload && (
-          <PDFDownloadLink
-            document={<CvPdfDocument content={content} accent={accent} />}
-            fileName={fileName}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-foreground hover:opacity-90"
-          >
-            {({ loading, error }) => (
-              <>
-                <Download size={15} aria-hidden="true" />
-                {loading ? "Preparing PDF…" : error ? "Retry download" : "Download PDF"}
-              </>
-            )}
-          </PDFDownloadLink>
+          <span className="hidden text-xs text-fg-muted sm:inline">
+            Zoom, page navigation and print controls are in the PDF toolbar.
+          </span>
+          {allowDownload && (
+            <PDFDownloadLink
+              document={<CvPdfDocument content={content} accent={accent} />}
+              fileName={fileName}
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-foreground hover:opacity-90"
+            >
+              {({ loading, error }) => (
+                <>
+                  <Download size={15} aria-hidden="true" />
+                  {loading
+                    ? "Preparing PDF…"
+                    : error
+                      ? "Retry download"
+                      : "Download PDF"}
+                </>
+              )}
+            </PDFDownloadLink>
           )}
         </div>
       </div>
