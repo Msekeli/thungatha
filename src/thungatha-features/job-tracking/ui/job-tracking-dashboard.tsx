@@ -18,7 +18,6 @@ import { ApplicationEmptyState } from "./application-empty-state";
 import { ApplicationFilters } from "./application-filters";
 import { ApplicationStatCard } from "./application-stat-card";
 import { ApplicationList } from "./application-list";
-import { ApplicationStatusBadge } from "./application-status-badge";
 import { RecordApplicationDialog } from "./record-application-dialog";
 import { applicationStatuses, type ApplicationRecord, type ApplicationStatus } from "../types/application";
 
