@@ -22,6 +22,7 @@ const initialValues: Omit<ApplicationRecord, "id"> = {
   source: "",
   url: "",
   status: "Draft",
+  statusHistory: [],
   notes: "",
   jobDescription: "",
 };
@@ -46,6 +47,13 @@ export function RecordApplicationDialog({ open, onClose, onCreate }: Props) {
       jobTitle: values.jobTitle.trim(),
       url: values.url.trim(),
       notes: values.notes.trim(),
+      statusHistory: [{
+        id: crypto.randomUUID(),
+        fromStatus: null,
+        toStatus: values.status,
+        changedAt: new Date().toISOString(),
+        actor: "user",
+      }],
     });
     setValues(initialValues);
     onClose();
