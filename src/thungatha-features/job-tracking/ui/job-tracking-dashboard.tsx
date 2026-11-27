@@ -116,15 +116,14 @@ export function JobTrackingDashboard() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-4 overflow-hidden px-4 py-4 sm:gap-5 sm:px-6 sm:py-5 lg:px-8">
-        <section className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium text-primary">APPLICATION WORKSPACE</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+    <div className="th-job-tracking-page flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-3 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
+        <section className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
               Your applications
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Track progress from submission to final outcome.
             </p>
           </div>
