@@ -205,7 +205,7 @@ export function JobTrackingDashboard() {
                 <ExternalLink aria-hidden="true" className="size-4" />
               </a>
             )}
-            {selectedApplication.notes && (
+            {selectedApplication.jobDescription && (\n              <div>\n                <h4 className="text-sm font-semibold text-foreground">Job description</h4>\n                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">\n                  {selectedApplication.jobDescription}\n                </p>\n              </div>\n            )}\n            {selectedApplication.notes && (
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Notes</h4>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
