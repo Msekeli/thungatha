@@ -54,7 +54,6 @@ export function ApplicationList({ applications, onOpen }: Props) {
                 <span className="sr-only">View application details</span>
               </span>
             </button>
-}
           </li>
         ))}
       </ul>
