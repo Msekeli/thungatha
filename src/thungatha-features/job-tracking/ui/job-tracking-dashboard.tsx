@@ -116,9 +116,9 @@ export function JobTrackingDashboard() {
   ];
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-4 overflow-hidden px-4 py-4 sm:gap-5 sm:px-6 sm:py-5 lg:px-8">
+        <section className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-primary">APPLICATION WORKSPACE</p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
@@ -134,14 +134,14 @@ export function JobTrackingDashboard() {
           </Button>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Application overview">
+        <section className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Application overview">
           {stats.map((item) => (
             <ApplicationStatCard key={item.label} {...item} />
           ))}
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <div className="mb-5 flex items-center justify-between gap-3">
+        <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-5">
+          <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold text-card-foreground">Application pipeline</h3>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -150,13 +150,15 @@ export function JobTrackingDashboard() {
             </div>
             <CheckCircle2 aria-hidden="true" className="size-5 text-muted-foreground" />
           </div>
-          <ApplicationFilters
-            selected={selectedFilter}
-            onSelect={setSelectedFilter}
-            query={query}
-            onQueryChange={setQuery}
-          />
-          <div className="mt-5">
+          <div className="shrink-0">
+            <ApplicationFilters
+              selected={selectedFilter}
+              onSelect={setSelectedFilter}
+              query={query}
+              onQueryChange={setQuery}
+            />
+          </div>
+          <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
             {applications.length === 0 ? (
               <ApplicationEmptyState onRecord={() => setDialogOpen(true)} />
             ) : filteredApplications.length === 0 ? (
@@ -185,7 +187,7 @@ export function JobTrackingDashboard() {
             )}
           </div>
         </section>
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="shrink-0 text-center text-xs text-muted-foreground">
           Preview only — records are cleared when this page session ends.
         </p>
       </div>
