@@ -13,7 +13,7 @@ type Destination = { href: string; label: string; icon: typeof Search };
 const workspace: Destination[] = [
   { href: "/jobs", label: "Job Discovery", icon: Search },
   { href: "/cv-studio", label: "CV Studio", icon: PanelsTopLeft },
-  { href: "/applications", label: "Job Tracking", icon: ClipboardCheck },
+  { href: "/job-tracking", label: "Job Tracking", icon: ClipboardCheck },
   { href: "/jobs?status=saved", label: "Saved Jobs", icon: Bookmark },
   {
     href: "/jobs?status=dismissed",
