@@ -13,13 +13,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { NativeSelect } from "@/components/ui/native-select";
 import { ApplicationEmptyState } from "./application-empty-state";
 import { ApplicationFilters } from "./application-filters";
 import { ApplicationStatCard } from "./application-stat-card";
 import { ApplicationList } from "./application-list";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { RecordApplicationDialog } from "./record-application-dialog";
-import type { ApplicationRecord } from "../types/application";
+import { applicationStatuses, type ApplicationRecord, type ApplicationStatus } from "../types/application";
 
 export function JobTrackingDashboard() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,6 +51,21 @@ export function JobTrackingDashboard() {
   const offerCount = applications.filter(
     (application) => application.status === "Offer",
   ).length;
+
+  function updateApplicationStatus(id: string, status: ApplicationStatus) {
+    setApplications((current) =>
+      current.map((application) =>
+        application.id === id
+          ? { ...application, status, jobDescription: status === "Rejected" || status === "Withdrawn" ? "" : application.jobDescription }
+          : application,
+      ),
+    );
+    setSelectedApplication((current) =>
+      current && current.id === id
+        ? { ...current, status, jobDescription: status === "Rejected" || status === "Withdrawn" ? "" : current.jobDescription }
+        : current,
+    );
+  }
 
   function addApplication(application: Omit<ApplicationRecord, "id">) {
     setApplications((current) => [
@@ -178,7 +194,18 @@ export function JobTrackingDashboard() {
                 <Building2 aria-hidden="true" className="size-4" />
                 {selectedApplication.company}
               </span>
-              <ApplicationStatusBadge status={selectedApplication.status} />
+              <div className="min-w-40">
+                <label htmlFor="application-status" className="mb-1 block text-xs text-muted-foreground">Current status</label>
+                <NativeSelect
+                  id="application-status"
+                  value={selectedApplication.status}
+                  onChange={(event) => updateApplicationStatus(selectedApplication.id, event.target.value as ApplicationStatus)}
+                >
+                  {applicationStatuses.map((status) => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </NativeSelect>
+              </div>
             </div>
             <dl className="grid gap-4 rounded-lg border border-border p-4 sm:grid-cols-2">
               <div>
@@ -204,6 +231,11 @@ export function JobTrackingDashboard() {
                 Open application link
                 <ExternalLink aria-hidden="true" className="size-4" />
               </a>
+            )}
+            {(selectedApplication.status === "Rejected" || selectedApplication.status === "Withdrawn") && (
+              <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                The full job description is cleared when an application is rejected or withdrawn. This preview applies that rule immediately.
+              </p>
             )}
             {selectedApplication.jobDescription && (
               <div>
