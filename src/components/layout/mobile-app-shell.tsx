@@ -15,6 +15,7 @@ const workspaceRoutes = [
   "/jobs",
   "/cv-studio",
   "/applications",
+  "/job-tracking",
   "/profile",
   "/account",
 ];
