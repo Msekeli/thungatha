@@ -35,9 +35,9 @@ export function WorkspaceShell({
   ].join(" ");
   const headerClassName = [
     "th-workspace-header",
-    "flex min-h-[76px] shrink-0 items-center justify-between gap-5",
+    "flex min-h-[92px] shrink-0 items-center justify-between gap-5",
     "border-b border-[var(--th-workspace-header-border)]",
-    "bg-[var(--th-workspace-nav)] px-6 py-3",
+    "bg-[var(--th-workspace-header)] px-6 py-3.5",
     active === "/jobs" && "th-workspace-header--jobs",
   ]
     .filter(Boolean)
@@ -48,7 +48,6 @@ export function WorkspaceShell({
     "has-[.th-profile-page]:p-0",
     "has-[.th-jobs-page]:p-0",
     "has-[.th-cv-studio-page]:p-0",
-    "has-[.th-job-tracking-page]:p-0",
   ].join(" ");
 
   return (
