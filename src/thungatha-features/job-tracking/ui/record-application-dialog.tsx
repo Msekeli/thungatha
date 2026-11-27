@@ -23,11 +23,11 @@ const initialValues: Omit<ApplicationRecord, "id"> = {
   url: "",
   status: "Draft",
   notes: "",
+  jobDescription: "",
 };
 
 export function RecordApplicationDialog({ open, onClose, onCreate }: Props) {
   const [values, setValues] = useState(initialValues);
-  const [jobDescription, setJobDescription] = useState("");
 
   if (!open) return null;
 
@@ -45,12 +45,9 @@ export function RecordApplicationDialog({ open, onClose, onCreate }: Props) {
       company: values.company.trim(),
       jobTitle: values.jobTitle.trim(),
       url: values.url.trim(),
-      notes: [values.notes.trim(), jobDescription.trim() ? `Job description supplied in this preview: ${jobDescription.trim()}` : ""]
-        .filter(Boolean)
-        .join("\n\n"),
+      notes: values.notes.trim(),
     });
     setValues(initialValues);
-    setJobDescription("");
     onClose();
   }
 
@@ -143,8 +140,8 @@ export function RecordApplicationDialog({ open, onClose, onCreate }: Props) {
           <div className="pt-3">
             <Textarea
               rows={5}
-              value={jobDescription}
-              onChange={(event) => setJobDescription(event.target.value)}
+              value={values.jobDescription}
+              onChange={(event) => update("jobDescription", event.target.value)}
               placeholder="Paste the job advert if you need it alongside this application."
             />
             <p className="mt-2 text-xs text-muted-foreground">
