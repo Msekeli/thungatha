@@ -19,5 +19,6 @@ export type ApplicationRecord = {
   source: string;
   url: string;
   status: ApplicationStatus;
-  notes: string;\n  jobDescription: string;
+  notes: string;
+  jobDescription: string;
 };
