@@ -282,7 +282,7 @@ export function CvStudioStart() {
           </div>
           )}
 
-          {!jobContext && !jobId && (
+          {!jobContext && (
           <section className="rounded-2xl border border-line bg-panel p-5 text-fg sm:p-7">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -297,15 +297,6 @@ export function CvStudioStart() {
               <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
                 <p className="text-sm font-medium text-fg">Loading the job you selected in Discovery…</p>
                 {workflowBusy && <p className="mt-1 text-xs text-fg-muted">Retrieving the saved job description and checking existing CV versions.</p>}
-              </div>
-            )}
-
-            {jobContext && (
-              <div className="mt-5 rounded-xl border border-line bg-panel-2 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Selected job · {jobContext.source === "discovery" ? "Job Discovery" : "Pasted description"}</p>
-                <h3 className="mt-1 text-lg font-semibold text-fg">{jobContext.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}</p>
-                <p className="mt-3 line-clamp-4 whitespace-pre-line text-sm leading-6 text-fg-muted">{formatJobDescription(jobContext.description)}</p>
               </div>
             )}
 
