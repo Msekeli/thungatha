@@ -77,5 +77,4 @@ describe("PublicJobOpportunityCard publication date", () => {
     expect(screen.queryByText("Relevant")).toBeNull();
     expect(screen.queryByText("Partially relevant")).toBeNull();
   });
-
 });

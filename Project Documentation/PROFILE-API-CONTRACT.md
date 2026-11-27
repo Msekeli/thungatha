@@ -16,7 +16,7 @@
 
 Success: `200`
 
-~~~json
+```json
 {
   "profile": {
     "displayName": null,
@@ -46,7 +46,7 @@ Success: `200`
     "profileVersion": 1
   }
 }
-~~~
+```
 
 The response may also include `createdAt` and `updatedAt` when a row exists. An authenticated user without a profile receives an empty DTO; a row is created on the first successful save.
 
@@ -55,6 +55,7 @@ The response may also include `createdAt` and `updatedAt` when a row exists. An 
 The body is a strict, partial update object. Unknown properties—including `userId` and `profileVersion`—are rejected. Omitted properties are left unchanged; provided array properties replace that section's array. The server-owned profile version is not accepted from the client.
 
 Supported properties:
+
 - `displayName`
 - `personalDetails`: `fullName`, `email`, `phone`, legacy `location`, `country`, optional `residentialSuburb`, `residentialCity`, `residentialProvince`, `residentialPostalCode`, `linkedinUrl`, `portfolioUrl`
 - `summary`

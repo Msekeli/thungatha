@@ -125,7 +125,6 @@ Job titles and role-family labels are contextual signals only. They must never b
 - Reassess or mark results stale when the job description, confirmed Profile, AI task/prompt/schema version, or applicable business rules change.
 - If evidence is insufficient or AI analysis is unavailable or cannot be validated, represent the assessment as unavailable, without assigning a classification or badge, and keep the job feed usable. Do not silently fall back to title or keyword matching and present it as equivalent AI analysis.
 
-
 ### AI workload continuity
 
 Reduce unnecessary AI work through reusable, versioned job understanding, valid assessment caching, compact task-specific inputs, and by avoiding duplicate requests. Do not impose arbitrary internal AI call, token, output-length, queue-depth, or per-request task budgets that truncate or abandon an otherwise valid assessment. If a provider's actual rate limit or temporary availability prevents completion, persist the task and its progress, defer/retry it safely, and resume without presenting partial output as a completed assessment. Respect provider terms and actual hard limits; do not silently incur paid usage or route work to a disabled provider. Keep model output complete enough to cover all material job content rather than dropping requirements to fit an arbitrary application-defined count.

@@ -12,13 +12,23 @@ type SavedCvPreviewProps = {
   onBack: () => void;
 };
 
-const accents = { teal: "#0F766E", navy: "#1D4ED8", burgundy: "#9F1239", forest: "#166534" };
+const accents = {
+  teal: "#0F766E",
+  navy: "#1D4ED8",
+  burgundy: "#9F1239",
+  forest: "#166534",
+};
 
 export function SavedCvPreview({ version, onBack }: SavedCvPreviewProps) {
   return (
     <div className="space-y-3">
-      <Button size="sm" variant="outline" onClick={onBack}>Back to all CVs</Button>
-      <CvPdfPreview content={version.content} accent={accents[version.accent_colour]} />
+      <Button size="sm" variant="outline" onClick={onBack}>
+        Back to all CVs
+      </Button>
+      <CvPdfPreview
+        content={version.content}
+        accent={accents[version.accent_colour]}
+      />
     </div>
   );
 }

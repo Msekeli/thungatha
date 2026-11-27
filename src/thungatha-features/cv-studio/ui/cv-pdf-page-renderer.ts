@@ -35,7 +35,11 @@ export async function renderCvPdfPages({
     const scale = fitScale * (zoom / 100);
     const rendered: HTMLCanvasElement[] = [];
 
-    for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+    for (
+      let pageNumber = 1;
+      pageNumber <= pdfDocument.numPages;
+      pageNumber += 1
+    ) {
       const page = await pdfDocument.getPage(pageNumber);
       if (!isActive()) {
         await pdfDocument.destroy();
@@ -44,7 +48,10 @@ export async function renderCvPdfPages({
       const viewport = page.getViewport({ scale });
       const canvas = window.document.createElement("canvas");
       const context = canvas.getContext("2d");
-      if (!context) throw new Error("Your browser could not create the PDF preview canvas.");
+      if (!context)
+        throw new Error(
+          "Your browser could not create the PDF preview canvas.",
+        );
       const outputScale = window.devicePixelRatio || 1;
       canvas.width = Math.floor(viewport.width * outputScale);
       canvas.height = Math.floor(viewport.height * outputScale);

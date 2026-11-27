@@ -26,14 +26,19 @@ export function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
     );
     const nonNullTypes = types.filter((item) => item !== "null");
     if (nonNullTypes.length === 1) {
-      output.type = GEMINI_TYPES[nonNullTypes[0]] ?? nonNullTypes[0].toUpperCase();
+      output.type =
+        GEMINI_TYPES[nonNullTypes[0]] ?? nonNullTypes[0].toUpperCase();
       if (types.includes("null")) output.nullable = true;
     }
   } else if (typeof schema.type === "string") {
     output.type = GEMINI_TYPES[schema.type] ?? schema.type.toUpperCase();
   }
   for (const key of [
-    "enum", "required", "description", "format", "additionalProperties",
+    "enum",
+    "required",
+    "description",
+    "format",
+    "additionalProperties",
   ]) {
     if (schema[key] !== undefined) output[key] = schema[key];
   }
@@ -49,8 +54,10 @@ export function toGeminiSchemaNode(value: unknown): Record<string, unknown> {
 }
 
 export function toGeminiResponseSchema(schema: z.ZodType) {
-  return toGeminiSchemaNode(z.toJSONSchema(schema, {
-    target: "draft-07",
-    unrepresentable: "any",
-  }));
+  return toGeminiSchemaNode(
+    z.toJSONSchema(schema, {
+      target: "draft-07",
+      unrepresentable: "any",
+    }),
+  );
 }

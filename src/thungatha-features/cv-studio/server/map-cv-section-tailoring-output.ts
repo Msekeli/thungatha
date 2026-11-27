@@ -19,7 +19,9 @@ export function mapCvSectionTailoringOutput(
   const seenTargets = new Set<string>();
   const suggestions: CvSuggestion[] = parsed.suggestions.map((item) => {
     if (!item.requirementIds.length) {
-      throw new Error("AI suggestion must be linked to a specific job requirement.");
+      throw new Error(
+        "AI suggestion must be linked to a specific job requirement.",
+      );
     }
     return mapTailoringSuggestion(
       item,

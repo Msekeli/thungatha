@@ -35,10 +35,14 @@ export async function prepareCvTailoringDraft(
 ): Promise<PreparationResult> {
   const draft = await readCvTailoringDraft(db, identity.userId, input.draftId);
   if (!draft || draft.cv_kind !== "tailored") {
-    return { response: apiError("This tailored draft could not be found.", 404) };
+    return {
+      response: apiError("This tailored draft could not be found.", 404),
+    };
   }
   if (draft.status !== "draft") {
-    return { response: apiError("Only an unaccepted draft can be tailored.", 409) };
+    return {
+      response: apiError("Only an unaccepted draft can be tailored.", 409),
+    };
   }
   if (draft.source_profile_version !== profileVersion) {
     return {
@@ -65,16 +69,23 @@ export async function prepareCvTailoringDraft(
     (job.jobId && draft.source_job_id !== job.jobId) ||
     (snapshot?.jobId && snapshot.jobId !== job.jobId);
   if (jobMismatch) {
-    return { response: apiError("The job context does not match this CV draft.", 409) };
+    return {
+      response: apiError("The job context does not match this CV draft.", 409),
+    };
   }
   if (!draft.parent_version_id) {
     return {
-      response: apiError("The master CV linked to this draft could not be found.", 409),
+      response: apiError(
+        "The master CV linked to this draft could not be found.",
+        409,
+      ),
     };
   }
 
   const master = await readCvTailoringMaster(
-    db, identity.userId, draft.parent_version_id,
+    db,
+    identity.userId,
+    draft.parent_version_id,
   );
   if (
     !master ||
@@ -82,7 +93,9 @@ export async function prepareCvTailoringDraft(
     master.status !== "current" ||
     master.source_profile_version !== profileVersion
   ) {
-    return { response: apiError("The current master CV could not be found.", 409) };
+    return {
+      response: apiError("The current master CV could not be found.", 409),
+    };
   }
 
   return {

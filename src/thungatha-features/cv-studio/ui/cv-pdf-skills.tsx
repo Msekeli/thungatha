@@ -3,11 +3,18 @@ import type { CvPdfContent } from "./cv-pdf-types";
 import { styles } from "./cv-pdf-styles";
 import { CvPdfSection } from "./cv-pdf-section";
 
-export function CvPdfSkills({ content, accent }: { content: CvPdfContent; accent: string }) {
+export function CvPdfSkills({
+  content,
+  accent,
+}: {
+  content: CvPdfContent;
+  accent: string;
+}) {
   return (
     <CvPdfSection title="Skills" accent={accent}>
       <Text style={styles.body}>
-        {content.technicalSkills.join(" · ") || "No skills recorded in Profile."}
+        {content.technicalSkills.join(" · ") ||
+          "No skills recorded in Profile."}
       </Text>
     </CvPdfSection>
   );

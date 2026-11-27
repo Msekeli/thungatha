@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/jobs/[id]/activity/route";
-import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
+import {
+  getAuthenticatedIdentity,
+  hasClerkConfiguration,
+} from "@/thungatha-features/authentication/server/identity";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { createQueryMock, scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
+import {
+  createQueryMock,
+  scoutVacancyRecord,
+} from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
@@ -34,7 +40,10 @@ describe("GET /api/jobs/[id]/activity", () => {
   });
 
   it("returns only the current user's application activity", async () => {
-    const activity = { application_link_opened_at: "2026-11-07T10:00:00Z", applied_at: null };
+    const activity = {
+      application_link_opened_at: "2026-11-07T10:00:00Z",
+      applied_at: null,
+    };
     const query = createQueryMock({ data: activity, error: null });
     const from = vi.fn().mockReturnValue(query);
     client.mockResolvedValue({ from } as never);

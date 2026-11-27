@@ -17,7 +17,9 @@ export function useCvStudioSavedCv(data: ReturnType<typeof useCvStudioData>) {
       setReusableCv(body.version);
     } catch (cause) {
       data.setWorkflowError(
-        cause instanceof Error ? cause.message : "The saved CV could not be reused.",
+        cause instanceof Error
+          ? cause.message
+          : "The saved CV could not be reused.",
       );
     } finally {
       data.setWorkflowBusy(false);

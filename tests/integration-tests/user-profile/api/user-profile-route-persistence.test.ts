@@ -47,13 +47,23 @@ describe("profile API persistence and validation", () => {
   it("reads and saves with server identity", async () => {
     const getToken = vi.fn().mockResolvedValue("jwt");
     identity.mockResolvedValue({ userId: "u_alice", getToken });
-    read.mockResolvedValue({ data: { display_name: "Alice" }, error: null } as never);
-    save.mockResolvedValue({ data: { display_name: "Alice C" }, error: null } as never);
+    read.mockResolvedValue({
+      data: { display_name: "Alice" },
+      error: null,
+    } as never);
+    save.mockResolvedValue({
+      data: { display_name: "Alice C" },
+      error: null,
+    } as never);
 
     const getRes = await GET();
     const patchRes = await PATCH(patchReq({ displayName: "Alice C" }));
     expect(read).toHaveBeenCalledWith("u_alice", getToken);
-    expect(save).toHaveBeenCalledWith("u_alice", { displayName: "Alice C", confirmedAt: null }, getToken);
+    expect(save).toHaveBeenCalledWith(
+      "u_alice",
+      { displayName: "Alice C", confirmedAt: null },
+      getToken,
+    );
     expect(getRes.status).toBe(200);
     expect(patchRes.status).toBe(200);
   });
@@ -63,10 +73,13 @@ describe("profile API persistence and validation", () => {
     identity
       .mockResolvedValueOnce({ userId: "u_alice", getToken })
       .mockResolvedValueOnce({ userId: "u_bob", getToken });
-    read.mockImplementation(async (uid) => ({
-      data: { display_name: uid === "u_alice" ? "Alice" : "Bob" },
-      error: null,
-    }) as never);
+    read.mockImplementation(
+      async (uid) =>
+        ({
+          data: { display_name: uid === "u_alice" ? "Alice" : "Bob" },
+          error: null,
+        }) as never,
+    );
 
     const [alice, bob] = await Promise.all([GET(), GET()]);
     expect((await alice.json()).profile.displayName).toBe("Alice");
@@ -77,17 +90,30 @@ describe("profile API persistence and validation", () => {
     const getToken = vi.fn().mockResolvedValue("jwt");
     identity.mockResolvedValue({ userId: "u_lerato", getToken });
     const payload = {
-      personalDetails: { fullName: "Lerato", email: "l@example.com", country: "South Africa" },
+      personalDetails: {
+        fullName: "Lerato",
+        email: "l@example.com",
+        country: "South Africa",
+      },
       skills: ["React"],
     };
     save.mockResolvedValue({
-      data: { display_name: "Lerato", country: "South Africa", profile_version: 2, skills: ["React"] },
+      data: {
+        display_name: "Lerato",
+        country: "South Africa",
+        profile_version: 2,
+        skills: ["React"],
+      },
       error: null,
     } as never);
 
     const res = await PATCH(patchReq(payload));
     expect(res.status).toBe(200);
-    expect(save).toHaveBeenCalledWith("u_lerato", { ...payload, confirmedAt: null }, getToken);
+    expect(save).toHaveBeenCalledWith(
+      "u_lerato",
+      { ...payload, confirmedAt: null },
+      getToken,
+    );
     const profile = (await res.json()).profile;
     expect(profile.skills).toEqual(["React"]);
     expect(profile.personalDetails.country).toBe("South Africa");

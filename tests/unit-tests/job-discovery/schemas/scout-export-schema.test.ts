@@ -36,30 +36,38 @@ describe("Scout export contract", () => {
   });
 
   it("rejects invalid Scout vacancy identifiers", () => {
-    expect(scoutExportVacancySchema.safeParse({
-      ...vacancy,
-      scout_vacancy_id: "invalid",
-    }).success).toBe(false);
+    expect(
+      scoutExportVacancySchema.safeParse({
+        ...vacancy,
+        scout_vacancy_id: "invalid",
+      }).success,
+    ).toBe(false);
   });
 
   it("rejects non-HTTP application URLs", () => {
-    expect(scoutExportVacancySchema.safeParse({
-      ...vacancy,
-      application_url: "javascript:alert(1)",
-    }).success).toBe(false);
+    expect(
+      scoutExportVacancySchema.safeParse({
+        ...vacancy,
+        application_url: "javascript:alert(1)",
+      }).success,
+    ).toBe(false);
   });
 
   it("rejects additional vacancy fields rather than silently changing Scout's contract", () => {
-    expect(scoutExportVacancySchema.safeParse({
-      ...vacancy,
-      salary: 50000,
-    }).success).toBe(false);
+    expect(
+      scoutExportVacancySchema.safeParse({
+        ...vacancy,
+        salary: 50000,
+      }).success,
+    ).toBe(false);
   });
 
   it("rejects an invalid pagination scope", () => {
-    expect(scoutExportPageSchema.safeParse({
-      ...page,
-      location_scope: "everywhere",
-    }).success).toBe(false);
+    expect(
+      scoutExportPageSchema.safeParse({
+        ...page,
+        location_scope: "everywhere",
+      }).success,
+    ).toBe(false);
   });
 });

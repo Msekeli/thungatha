@@ -69,9 +69,7 @@ export function ProfileCertificationForm({
       {driver && (
         <ProfileCertificationLicense value={value} onToggle={toggleCategory} />
       )}
-      {value.type && (
-        <ProfileCertificationDates value={value} onChange={set} />
-      )}
+      {value.type && <ProfileCertificationDates value={value} onChange={set} />}
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button
           type="submit"

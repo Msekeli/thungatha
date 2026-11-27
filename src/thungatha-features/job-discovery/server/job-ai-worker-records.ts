@@ -39,12 +39,18 @@ export async function recordJobAiTaskFailure(
     attempt: task.attempts,
     terminal: details.terminal,
     error: details.message,
-    provider: typeof details.record?.provider === "string"
-      ? details.record.provider : undefined,
-    code: typeof details.record?.code === "string"
-      ? details.record.code : undefined,
-    retryable: typeof details.record?.retryable === "boolean"
-      ? details.record.retryable : undefined,
+    provider:
+      typeof details.record?.provider === "string"
+        ? details.record.provider
+        : undefined,
+    code:
+      typeof details.record?.code === "string"
+        ? details.record.code
+        : undefined,
+    retryable:
+      typeof details.record?.retryable === "boolean"
+        ? details.record.retryable
+        : undefined,
     retryAfterMs: details.retryAfterMs || undefined,
   });
   await saveTaskRetryState(db, task, details);

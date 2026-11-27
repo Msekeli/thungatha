@@ -12,12 +12,17 @@ export async function parseAssessmentWithJsonRepair(
   modelSchema: ReturnType<typeof createMatchAssessmentResponseSchema>,
 ) {
   try {
-    return parseAiResponse("Candidate assessment", content, modelSchema.validator);
+    return parseAiResponse(
+      "Candidate assessment",
+      content,
+      modelSchema.validator,
+    );
   } catch (error) {
     if (
       !(error instanceof Error) ||
       !error.message.includes("AI returned invalid JSON")
-    ) throw error;
+    )
+      throw error;
 
     const repair = await completeAiTask({
       task: "job-fit-assessment",
@@ -31,6 +36,10 @@ export async function parseAssessmentWithJsonRepair(
       userPrompt: content,
     });
     assertCompleteResponse("Candidate assessment JSON repair", repair);
-    return parseAiResponse("Candidate assessment", repair.content, modelSchema.validator);
+    return parseAiResponse(
+      "Candidate assessment",
+      repair.content,
+      modelSchema.validator,
+    );
   }
 }

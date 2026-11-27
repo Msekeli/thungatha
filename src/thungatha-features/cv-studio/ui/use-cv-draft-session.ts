@@ -16,12 +16,18 @@ type CvDraftSessionProps = {
 };
 
 export function useCvDraftSession({
-  masterVersionId, jobContext, initialContent, startImmediately, onContentChange,
+  masterVersionId,
+  jobContext,
+  initialContent,
+  startImmediately,
+  onContentChange,
 }: CvDraftSessionProps) {
   const createStarted = useRef(false);
   const [draft, setDraft] = useState<CvDraft | null>(null);
   const [createFailed, setCreateFailed] = useState(false);
-  const [content, setContent] = useState<CvDraftContent>(initialContent as CvDraftContent);
+  const [content, setContent] = useState<CvDraftContent>(
+    initialContent as CvDraftContent,
+  );
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +43,9 @@ export function useCvDraftSession({
         );
       }
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [content, draft?.id, draft?.accent_colour, onContentChange]);
 
   async function createDraft() {
@@ -49,15 +57,19 @@ export function useCvDraftSession({
       const body = await createCvDraft(masterVersionId, jobContext);
       setDraft(body.draft);
       setContent(body.draft.content);
-      setMessage(body.reusedDraft
-        ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
-        : "Your separate working draft is ready. Your master CV and Profile remain unchanged.");
+      setMessage(
+        body.reusedDraft
+          ? "Your existing working draft has been reopened. Your master CV and Profile remain unchanged."
+          : "Your separate working draft is ready. Your master CV and Profile remain unchanged.",
+      );
     } catch (cause) {
       setCreateFailed(true);
       setError(
         cause instanceof DOMException && cause.name === "TimeoutError"
           ? "Draft creation took longer than 15 seconds. Please retry; your Profile and master CV have not been changed."
-          : cause instanceof Error ? cause.message : "Draft could not be created.",
+          : cause instanceof Error
+            ? cause.message
+            : "Draft could not be created.",
       );
     } finally {
       setBusy(false);
@@ -73,7 +85,17 @@ export function useCvDraftSession({
   }, [startImmediately]);
 
   return {
-    draft, setDraft, content, setContent, busy, setBusy,
-    message, setMessage, error, setError, createFailed, createDraft,
+    draft,
+    setDraft,
+    content,
+    setContent,
+    busy,
+    setBusy,
+    message,
+    setMessage,
+    error,
+    setError,
+    createFailed,
+    createDraft,
   };
 }

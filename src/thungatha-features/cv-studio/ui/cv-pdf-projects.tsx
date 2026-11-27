@@ -3,7 +3,13 @@ import type { CvPdfContent } from "./cv-pdf-types";
 import { styles } from "./cv-pdf-styles";
 import { CvPdfSection } from "./cv-pdf-section";
 
-export function CvPdfProjects({ content, accent }: { content: CvPdfContent; accent: string }) {
+export function CvPdfProjects({
+  content,
+  accent,
+}: {
+  content: CvPdfContent;
+  accent: string;
+}) {
   return (
     <CvPdfSection title="Projects" accent={accent}>
       {content.projects.length ? (
@@ -11,7 +17,9 @@ export function CvPdfProjects({ content, accent }: { content: CvPdfContent; acce
           <View key={item.sourceId} style={styles.entry}>
             <Text style={styles.entryTitle}>{item.name}</Text>
             {item.role ? <Text style={styles.meta}>{item.role}</Text> : null}
-            {item.description ? <Text style={styles.entryBody}>{item.description}</Text> : null}
+            {item.description ? (
+              <Text style={styles.entryBody}>{item.description}</Text>
+            ) : null}
             {item.url ? <Text style={styles.meta}>{item.url}</Text> : null}
           </View>
         ))

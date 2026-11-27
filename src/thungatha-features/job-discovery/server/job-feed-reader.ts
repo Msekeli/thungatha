@@ -50,7 +50,10 @@ export async function readJobFeed(
   }
 
   const { data, count, rankWhole, from } = await readJobFeedRows(
-    db, input, queryOpts, profileVersion,
+    db,
+    input,
+    queryOpts,
+    profileVersion,
   );
 
   // Enqueue the complete set of jobs returned for this feed page. Database
@@ -70,8 +73,15 @@ export async function readJobFeed(
   }
 
   const safeJobs = await buildJobFeedResponseRows({
-    db, userId, profileVersion, data, states, hasProfileError,
-    rankWhole, from, pageSize: input.pageSize,
+    db,
+    userId,
+    profileVersion,
+    data,
+    states,
+    hasProfileError,
+    rankWhole,
+    from,
+    pageSize: input.pageSize,
   });
   return {
     jobs: safeJobs,

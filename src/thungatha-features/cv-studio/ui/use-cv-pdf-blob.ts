@@ -21,18 +21,24 @@ export function useCvPdfBlob(document: PdfDocumentElement) {
   useEffect(() => {
     let active = true;
     let objectUrl: string | null = null;
-    void pdf(document).toBlob().then((blob) => {
-      if (!active) return;
-      objectUrl = URL.createObjectURL(blob);
-      setState({ document, url: objectUrl, error: null });
-    }).catch((cause: unknown) => {
-      if (!active) return;
-      setState({
-        document,
-        url: null,
-        error: cause instanceof Error ? cause.message : "The CV PDF could not be generated.",
+    void pdf(document)
+      .toBlob()
+      .then((blob) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setState({ document, url: objectUrl, error: null });
+      })
+      .catch((cause: unknown) => {
+        if (!active) return;
+        setState({
+          document,
+          url: null,
+          error:
+            cause instanceof Error
+              ? cause.message
+              : "The CV PDF could not be generated.",
+        });
       });
-    });
     return () => {
       active = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);

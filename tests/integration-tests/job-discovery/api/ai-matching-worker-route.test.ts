@@ -19,19 +19,23 @@ describe("AI matching worker route", () => {
       unavailable: 0,
       failed: 1,
       durationMs: 1200,
-      tasks: [{
-        taskId: "task-id",
-        jobId: "job-id",
-        outcome: "failed",
-        attempts: 2,
-        error: "Gemini returned HTTP 503.",
-      }],
+      tasks: [
+        {
+          taskId: "task-id",
+          jobId: "job-id",
+          outcome: "failed",
+          attempts: 2,
+          error: "Gemini returned HTTP 503.",
+        },
+      ],
     });
 
-    const response = await POST(new Request("http://localhost/api/internal/ai-matching/worker", {
-      method: "POST",
-      headers: { Authorization: "Bearer worker-secret" },
-    }));
+    const response = await POST(
+      new Request("http://localhost/api/internal/ai-matching/worker", {
+        method: "POST",
+        headers: { Authorization: "Bearer worker-secret" },
+      }),
+    );
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toMatchObject({
@@ -44,10 +48,12 @@ describe("AI matching worker route", () => {
   it("rejects an invalid worker secret", async () => {
     vi.stubEnv("AI_WORKER_SECRET", "worker-secret");
 
-    const response = await POST(new Request("http://localhost/api/internal/ai-matching/worker", {
-      method: "POST",
-      headers: { Authorization: "Bearer wrong-secret" },
-    }));
+    const response = await POST(
+      new Request("http://localhost/api/internal/ai-matching/worker", {
+        method: "POST",
+        headers: { Authorization: "Bearer wrong-secret" },
+      }),
+    );
 
     expect(response.status).toBe(401);
     expect(processJobAiQueue).not.toHaveBeenCalled();

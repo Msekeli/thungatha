@@ -1,7 +1,10 @@
 import "server-only";
 import "pdf-parse/worker";
 import { PDFParse } from "pdf-parse";
-import { emptyCvExtractionFields, type CvExtraction } from "./cv-extraction-types";
+import {
+  emptyCvExtractionFields,
+  type CvExtraction,
+} from "./cv-extraction-types";
 import { parseCvText } from "./cv-extraction-parser";
 
 export type { CvExtraction } from "./cv-extraction-types";

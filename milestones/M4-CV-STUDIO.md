@@ -229,12 +229,12 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 - CV export is separate from application submission.
 - Verification evidence and limitations are recorded and the user explicitly accepts M4.
 
-
 ### M4-C07 — Review and live preview
 
 **Status:** In progress — manual editing, live A4 preview, draft saving and explicit acceptance are implemented in source; AI suggestion review, full editing coverage and runtime verification remain outstanding.
 
 **Implemented partially**
+
 - An owned tailored draft can be created from the current master CV and validated job context.
 - Draft creation enforces the confirmed Profile gate, current master version and owner scope.
 - Candidates can edit contact details, headline, summary, skills, experience descriptions/achievements, project descriptions and languages.
@@ -242,12 +242,12 @@ No tests, build, browser checks or live Supabase verification were run. C05 is n
 - AI suggestion controls remain inactive; no synthetic suggestions are displayed.
 
 **Outstanding**
+
 - Evidence-backed AI suggestions with individual accept/reject decisions after provider selection.
 - Complete editing coverage for all structured CV fields and a clear stale-Profile recovery path.
 - Runtime verification of draft save/accept, live preview and PDF export.
 
 No tests, build, browser checks or live Supabase verification were run. The migration remains unapplied.
-
 
 #### M4-C03 integration correction — 2026-11-24
 
@@ -262,12 +262,12 @@ No tests, build, browser checks or live Supabase verification were run. The migr
 - **Not verified:** local migration state, Supabase connectivity, API execution, browser behaviour, race behaviour and generated document contents. No tests, lint, build or browser checks were run. The M4 migration remains unapplied in this work session.
 - **Next action:** apply the committed M4 migration to the local Supabase project, reload CV Studio and report the resulting screen/API error if any. Confirm that the master CV content reflects the Profile sections before proceeding with further editor work.
 
-
 ### Product correction — CV reuse and no history UI (2026-11-24)
 
 The previous interpretation of M4-C08 as a candidate-facing CV version-history feature is withdrawn.
 
 **Agreed product rules**
+
 - M2 Profile is the only source of candidate facts. The master CV is generated from the current confirmed Profile.
 - Every tailored CV starts from the current master CV. Additional candidate facts must be added to Profile and confirmed there.
 - CV Studio has no CV history/library screen, no historical-version browser and no history refresh action.
@@ -278,6 +278,7 @@ The previous interpretation of M4-C08 as a candidate-facing CV version-history f
 - Internal persistence is retained only where required for the current master, reusable tailored output and M5 application snapshot. It is not a user-facing history feature.
 
 **Code correction completed**
+
 - Removed the CV history/library panel and its associated client state and fetch calls from CV Studio.
 - Deleted GET /api/cv-studio/versions and GET /api/cv-studio/versions/[id].
 - Existing cv_versions database rows and migration are not deleted. They are currently still used by the master/tailored workflow and suitability lookup; data deletion requires a separate migration decision and must not be done blindly.
@@ -391,6 +392,7 @@ The following is the current source-level picture, not a claim of runtime accept
 This follow-up extends the existing mobile-responsiveness prerequisite. It does not create a new M4 checkpoint or change the M4 scope.
 
 **Changes**
+
 - The mobile tailoring workspace now gives its Edit CV / Preview CV navigation a fixed place above a flexible content area. The content panel fills the remaining available height instead of adding a full-height grid below the navigation.
 - The mobile PDF preview keeps the document fitted to the available content width by default. Switching to a different CV document resets zoom to fit width. Desktop zoom controls remain available at the existing small-screen breakpoint and above.
 - Added application-level two-pointer pinch handling for the PDF viewer. Zoom is clamped to the existing 50–200% range and rounded to 5% increments.
@@ -398,12 +400,14 @@ This follow-up extends the existing mobile-responsiveness prerequisite. It does 
 - Added a mobile “Pinch to zoom” hint and unit coverage for pinch zoom calculation.
 
 **Verification**
+
 - Source was inspected on the live `dev` branch before changes.
 - Focused pinch-zoom unit tests were added but **not run**.
 - Lint, TypeScript, formatting, production build, browser/device testing, and regression checks were **not run** in this remote change.
 - No database, API, CV content, Profile, or Job Tracking behaviour was changed.
 
 **Acceptance condition**
+
 - Verify on real touch input or mobile-device emulation at 320px, 360px and a typical phone width: the editor fills the available viewport below its tabs; users can switch between Edit CV and Preview CV; PDF pages fit the phone width initially; pinch-in and pinch-out change document zoom; enlarged pages can be panned horizontally and vertically; download remains accessible; multiple pages scroll naturally.
 - Verify tablet and desktop layouts, including the existing desktop zoom toolbar and two-panel tailoring workspace.
 - Run the focused unit test, then the repository lint, type-check, format check, unit suite and production build. Record actual results before treating this work as verified.

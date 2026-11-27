@@ -15,7 +15,11 @@ export function CvDraftLoadingState({
   onRetry: () => void;
 }) {
   return (
-    <div className="flex h-full flex-col justify-center gap-4" role="status" aria-live="polite">
+    <div
+      className="flex h-full flex-col justify-center gap-4"
+      role="status"
+      aria-live="polite"
+    >
       <p className="text-sm font-medium">Preparing your tailored CV…</p>
       <Skeleton className="h-5 w-2/5" />
       <Skeleton className="h-24 w-full" />

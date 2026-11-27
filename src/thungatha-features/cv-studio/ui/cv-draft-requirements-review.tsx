@@ -11,8 +11,9 @@ export function CvDraftRequirementsReview({
       <div className="shrink-0">
         <h3 className="text-lg font-bold">Job Requirements</h3>
         <p className="text-sm text-fg-muted">
-          Requirements from the job that your confirmed Profile does not currently demonstrate.
-          This assessment is informational and does not change your CV.
+          Requirements from the job that your confirmed Profile does not
+          currently demonstrate. This assessment is informational and does not
+          change your CV.
         </p>
       </div>
       <CvDraftRequirementsSection assessment={assessment} />

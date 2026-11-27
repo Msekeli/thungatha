@@ -27,16 +27,25 @@ export async function POST(request: Request) {
     const profile = mapRowToProfileDto(profileResult.data);
     const completion = getProfileCompletion(profile);
     if (!completion.complete || !profile.confirmedAt) {
-      return apiError("Complete and confirm your Profile before tailoring a CV.", 409);
+      return apiError(
+        "Complete and confirm your Profile before tailoring a CV.",
+        409,
+      );
     }
 
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const prepared = await prepareCvTailoringDraft(
-      db, identity, profile.profileVersion, parsed.data,
+      db,
+      identity,
+      profile.profileVersion,
+      parsed.data,
     );
     if (prepared.response) return prepared.response;
     return generateAndSaveCvTailoringDraft(
-      db, identity.userId, parsed.data, prepared.context,
+      db,
+      identity.userId,
+      parsed.data,
+      prepared.context,
     );
   } catch (error) {
     return apiFailure(error);

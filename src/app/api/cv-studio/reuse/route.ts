@@ -27,12 +27,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profileContext = await getConfirmedCvProfile(
-      identity,
-      (missing) => NextResponse.json({
-        error: "Complete and confirm your Profile before reusing a tailored CV.",
-        missing,
-      }, { status: 409 }),
+    const profileContext = await getConfirmedCvProfile(identity, (missing) =>
+      NextResponse.json(
+        {
+          error:
+            "Complete and confirm your Profile before reusing a tailored CV.",
+          missing,
+        },
+        { status: 409 },
+      ),
     );
     if (profileContext.response) return profileContext.response;
     const profile = profileContext.profile;

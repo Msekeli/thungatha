@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/jobs/route";
-import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
+import {
+  getAuthenticatedIdentity,
+  hasClerkConfiguration,
+} from "@/thungatha-features/authentication/server/identity";
 import { createPublicSupabaseClient } from "@/lib/supabase/server";
-import { createQueryMock, scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
+import {
+  createQueryMock,
+  scoutVacancyRecord,
+} from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
@@ -25,7 +31,11 @@ describe("GET /api/jobs public feed", () => {
   });
 
   it("includes Scout vacancies with unknown publication dates", async () => {
-    const feed = createQueryMock({ data: [scoutVacancyRecord], error: null, count: 1 });
+    const feed = createQueryMock({
+      data: [scoutVacancyRecord],
+      error: null,
+      count: 1,
+    });
     const from = vi.fn().mockReturnValue(feed);
     publicClient.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost/api/jobs"));
@@ -41,10 +51,14 @@ describe("GET /api/jobs public feed", () => {
 
   it("applies supported text, location and publication filters", async () => {
     const feed = createQueryMock({ data: [], error: null, count: 0 });
-    publicClient.mockResolvedValue({ from: vi.fn().mockReturnValue(feed) } as never);
-    const response = await GET(new Request(
-      "http://localhost/api/jobs?query=software&location=Cape%20Town&publishedWithin=7d&page=2&pageSize=10",
-    ));
+    publicClient.mockResolvedValue({
+      from: vi.fn().mockReturnValue(feed),
+    } as never);
+    const response = await GET(
+      new Request(
+        "http://localhost/api/jobs?query=software&location=Cape%20Town&publishedWithin=7d&page=2&pageSize=10",
+      ),
+    );
 
     expect(response.status).toBe(200);
     expect(feed.or).toHaveBeenCalledWith(

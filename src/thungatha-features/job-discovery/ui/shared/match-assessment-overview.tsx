@@ -1,6 +1,10 @@
 import type { MatchAssessment } from "./match-assessment-types";
 
-export function MatchAssessmentOverview({ assessment }: { assessment: MatchAssessment }) {
+export function MatchAssessmentOverview({
+  assessment,
+}: {
+  assessment: MatchAssessment;
+}) {
   return (
     <>
       <div>
@@ -28,7 +32,9 @@ export function MatchAssessmentOverview({ assessment }: { assessment: MatchAsses
           ))}
           {assessment.semanticAlignment.profileEvidence?.map((item) => (
             <p key={item.id} className="rounded-md bg-panel p-2 text-fg-muted">
-              <span className="font-semibold">Your Profile · {item.sourcePath}: </span>
+              <span className="font-semibold">
+                Your Profile · {item.sourcePath}:{" "}
+              </span>
               {item.content}
             </p>
           ))}

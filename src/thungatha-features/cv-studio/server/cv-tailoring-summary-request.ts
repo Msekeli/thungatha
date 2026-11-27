@@ -1,4 +1,7 @@
-import { completeAiTask, completeAiTaskWithProvider } from "@/lib/ai/provider-router";
+import {
+  completeAiTask,
+  completeAiTaskWithProvider,
+} from "@/lib/ai/provider-router";
 import type { JobUnderstanding } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import { buildCvTailoringSystemPrompt } from "./cv-tailoring-prompt";
 import { compactRequirements } from "./cv-tailoring-job-context";
@@ -13,7 +16,11 @@ export async function requestSummarySuggestions(
   schema: SummarySchema,
   jobEvidence: Array<{ id: string; content: string }>,
   profileEvidence: Array<{ id: string; content: string }>,
-  targets: Array<{ path: string; currentText: string | null; profileEvidenceRef: string | null }>,
+  targets: Array<{
+    path: string;
+    currentText: string | null;
+    profileEvidenceRef: string | null;
+  }>,
   provider?: CvTailoringProvider,
 ) {
   const request = {
@@ -25,11 +32,18 @@ export async function requestSummarySuggestions(
     systemPrompt: buildCvTailoringSystemPrompt(),
     userPrompt: JSON.stringify({
       job: [job.title, job.company],
-      understanding: { requirements: compactRequirements(understanding.requirements) },
+      understanding: {
+        requirements: compactRequirements(understanding.requirements),
+      },
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: profileEvidence.map((item) => [
+        item.id,
+        item.content,
+      ]),
       editableTargets: targets.map((item) => [
-        item.path, item.currentText, item.profileEvidenceRef,
+        item.path,
+        item.currentText,
+        item.profileEvidenceRef,
       ]),
     }),
   };

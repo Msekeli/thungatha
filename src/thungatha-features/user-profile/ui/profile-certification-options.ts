@@ -12,13 +12,4 @@ export const certificationTypes = [
   { value: "other", label: "Other certificate" },
 ];
 
-export const licenceCategories = [
-  "A1",
-  "A",
-  "B",
-  "C1",
-  "C",
-  "EB",
-  "EC1",
-  "EC",
-];
+export const licenceCategories = ["A1", "A", "B", "C1", "C", "EB", "EC1", "EC"];

@@ -5,7 +5,9 @@ async function loadLocalEnv() {
   try {
     const contents = await readFile(".env.local", "utf8");
     for (const line of contents.split(/\r?\n/)) {
-      const match = line.match(/^\s*(OLLAMA_LOCAL_BASE_URL|OLLAMA_LOCAL_MODEL)\s*=\s*(.*)\s*$/);
+      const match = line.match(
+        /^\s*(OLLAMA_LOCAL_BASE_URL|OLLAMA_LOCAL_MODEL)\s*=\s*(.*)\s*$/,
+      );
       if (!match || process.env[match[1]]) continue;
       process.env[match[1]] = match[2].replace(/^['"]|['"]$/g, "");
     }
@@ -13,21 +15,34 @@ async function loadLocalEnv() {
 }
 
 function seconds(nanoseconds) {
-  return typeof nanoseconds === "number" ? `${(nanoseconds / 1e9).toFixed(2)}s` : "not reported";
+  return typeof nanoseconds === "number"
+    ? `${(nanoseconds / 1e9).toFixed(2)}s`
+    : "not reported";
 }
 
 async function main() {
   await loadLocalEnv();
-  const baseUrl = (process.env.OLLAMA_LOCAL_BASE_URL || "http://127.0.0.1:11434").replace(/\/+$/, "");
+  const baseUrl = (
+    process.env.OLLAMA_LOCAL_BASE_URL || "http://127.0.0.1:11434"
+  ).replace(/\/+$/, "");
   const model = process.env.OLLAMA_LOCAL_MODEL || "qwen3.5:4b";
 
-  const tagsResponse = await fetch(`${baseUrl}/api/tags`, { signal: AbortSignal.timeout(10_000) });
-  if (!tagsResponse.ok) throw new Error(`Ollama model check failed: HTTP ${tagsResponse.status}`);
+  const tagsResponse = await fetch(`${baseUrl}/api/tags`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!tagsResponse.ok)
+    throw new Error(`Ollama model check failed: HTTP ${tagsResponse.status}`);
   const tags = await tagsResponse.json();
-  const installed = (tags.models || []).some((item) => item.name === model || item.model === model);
+  const installed = (tags.models || []).some(
+    (item) => item.name === model || item.model === model,
+  );
   if (!installed) {
-    const available = (tags.models || []).map((item) => item.name || item.model).join(", ");
-    throw new Error(`Model "${model}" is not installed. Available models: ${available || "none"}`);
+    const available = (tags.models || [])
+      .map((item) => item.name || item.model)
+      .join(", ");
+    throw new Error(
+      `Model "${model}" is not installed. Available models: ${available || "none"}`,
+    );
   }
 
   const systemPrompt = [
@@ -46,8 +61,12 @@ async function main() {
 
   console.log(`Model: ${model}`);
   console.log(`Ollama: ${baseUrl}`);
-  console.log("Task: rewrite a short experience section using source facts only.");
-  console.log("Two identical requests will run; request 1 may or may not include model loading.\n");
+  console.log(
+    "Task: rewrite a short experience section using source facts only.",
+  );
+  console.log(
+    "Two identical requests will run; request 1 may or may not include model loading.\n",
+  );
 
   for (let index = 1; index <= 2; index += 1) {
     const started = performance.now();
@@ -69,13 +88,20 @@ async function main() {
     });
     const elapsed = (performance.now() - started) / 1000;
     const result = await response.json();
-    if (!response.ok) throw new Error(`Ollama request failed: HTTP ${response.status} — ${JSON.stringify(result)}`);
+    if (!response.ok)
+      throw new Error(
+        `Ollama request failed: HTTP ${response.status} — ${JSON.stringify(result)}`,
+      );
 
     console.log(`--- Request ${index} ---`);
     console.log(`Wall-clock: ${elapsed.toFixed(2)}s`);
     console.log(`Model load: ${seconds(result.load_duration)}`);
-    console.log(`Prompt evaluation: ${seconds(result.prompt_eval_duration)} (${result.prompt_eval_count ?? "?"} tokens)`);
-    console.log(`Generation: ${seconds(result.eval_duration)} (${result.eval_count ?? "?"} tokens)`);
+    console.log(
+      `Prompt evaluation: ${seconds(result.prompt_eval_duration)} (${result.prompt_eval_count ?? "?"} tokens)`,
+    );
+    console.log(
+      `Generation: ${seconds(result.eval_duration)} (${result.eval_count ?? "?"} tokens)`,
+    );
     console.log("Output:");
     console.log(result.message?.content || "(no message content)");
     console.log();

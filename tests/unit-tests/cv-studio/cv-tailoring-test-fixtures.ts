@@ -11,12 +11,19 @@ export const master = cvContentSchema.parse({
   linkedinUrl: null,
   portfolioUrl: null,
   professionalSummary: "Builds web applications with React and TypeScript.",
-  workExperience: [{
-    sourceId: "work-1", jobTitle: "Developer", employer: "Example Ltd",
-    location: null, startDate: "2022-01", endDate: null, isCurrent: true,
-    description: "Built internal web applications.",
-    achievements: ["Improved release workflows."],
-  }],
+  workExperience: [
+    {
+      sourceId: "work-1",
+      jobTitle: "Developer",
+      employer: "Example Ltd",
+      location: null,
+      startDate: "2022-01",
+      endDate: null,
+      isCurrent: true,
+      description: "Built internal web applications.",
+      achievements: ["Improved release workflows."],
+    },
+  ],
   projects: [],
   technicalSkills: ["React", "TypeScript"],
   education: [],
@@ -25,13 +32,24 @@ export const master = cvContentSchema.parse({
 });
 
 export const jobEvidence = [
-  { id: "job:description:0", content: "Build and maintain React applications." },
+  {
+    id: "job:description:0",
+    content: "Build and maintain React applications.",
+  },
   { id: "job:description:1", content: "Participate in code reviews." },
 ];
 
 export const requirements = [
-  { id: "req-react", statement: "Experience with React.", sourceEvidenceRefs: ["job:description:0"] },
-  { id: "req-reviews", statement: "Experience with code reviews.", sourceEvidenceRefs: ["job:description:1"] },
+  {
+    id: "req-react",
+    statement: "Experience with React.",
+    sourceEvidenceRefs: ["job:description:0"],
+  },
+  {
+    id: "req-reviews",
+    statement: "Experience with code reviews.",
+    sourceEvidenceRefs: ["job:description:1"],
+  },
 ];
 
 export const createEvidence = (currentDraft = master) =>

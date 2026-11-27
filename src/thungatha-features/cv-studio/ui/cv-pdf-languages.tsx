@@ -3,7 +3,13 @@ import type { CvPdfContent } from "./cv-pdf-types";
 import { styles } from "./cv-pdf-styles";
 import { CvPdfSection } from "./cv-pdf-section";
 
-export function CvPdfLanguages({ content, accent }: { content: CvPdfContent; accent: string }) {
+export function CvPdfLanguages({
+  content,
+  accent,
+}: {
+  content: CvPdfContent;
+  accent: string;
+}) {
   return (
     <CvPdfSection title="Languages" accent={accent}>
       <Text style={styles.body}>

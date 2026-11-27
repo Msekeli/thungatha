@@ -20,11 +20,15 @@ export function getProfileCompletion(profile: UserProfileDto) {
     education: "At least one education record",
   };
   const missing = [
-    ...new Set(result.error.issues.map((issue) => {
-      const path = issue.path.join(".");
-      return labels[path] ??
-        (path.startsWith("education") ? labels.education : path);
-    })),
+    ...new Set(
+      result.error.issues.map((issue) => {
+        const path = issue.path.join(".");
+        return (
+          labels[path] ??
+          (path.startsWith("education") ? labels.education : path)
+        );
+      }),
+    ),
   ];
   return { complete: false, missing };
 }

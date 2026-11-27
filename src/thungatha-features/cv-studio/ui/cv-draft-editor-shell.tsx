@@ -23,7 +23,9 @@ export function CvDraftEditorShell({ state }: CvDraftEditorShellProps) {
       />
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-3 py-3 sm:px-6 sm:py-4 max-[700px]:flex-none max-[700px]:overflow-visible">
         {state.draft ? (
-          <CvDraftEditorReviewBody state={{ ...state, draft: state.draft as CvDraft }} />
+          <CvDraftEditorReviewBody
+            state={{ ...state, draft: state.draft as CvDraft }}
+          />
         ) : (
           <CvDraftLoadingState
             error={state.error}
@@ -38,10 +40,18 @@ export function CvDraftEditorShell({ state }: CvDraftEditorShellProps) {
         activeIndex={state.activeIndex}
         busy={state.busy}
         draftStatus={state.draft?.status ?? null}
-        onPrevious={() => state.setActiveSection(state.reviewSections[Math.max(0, state.activeIndex - 1)].id)}
+        onPrevious={() =>
+          state.setActiveSection(
+            state.reviewSections[Math.max(0, state.activeIndex - 1)].id,
+          )
+        }
         onSave={() => void state.saveDraft()}
         onAccept={() => void state.acceptDraft()}
-        onNext={() => state.setActiveSection(state.reviewSections[Math.min(3, state.activeIndex + 1)].id)}
+        onNext={() =>
+          state.setActiveSection(
+            state.reviewSections[Math.min(3, state.activeIndex + 1)].id,
+          )
+        }
       />
     </section>
   );

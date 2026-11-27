@@ -18,12 +18,20 @@ type ExperienceReviewProps = {
 };
 
 export function CvDraftExperienceReview({
-  experiences, activeIndex, onIndexChange, draft, busy, generation, decisions,
+  experiences,
+  activeIndex,
+  onIndexChange,
+  draft,
+  busy,
+  generation,
+  decisions,
 }: ExperienceReviewProps) {
   const item = experiences[activeIndex];
   const suggestions = item
     ? draft.suggestions.filter((suggestion) =>
-        suggestion.targetPath.startsWith("workExperience[" + item.sourceId + "]."),
+        suggestion.targetPath.startsWith(
+          "workExperience[" + item.sourceId + "].",
+        ),
       )
     : [];
   const isTailoring = item ? generation.busyFor === item.sourceId : false;
@@ -45,26 +53,37 @@ export function CvDraftExperienceReview({
               total={experiences.length}
               employer={item.employer}
               onPrevious={() => onIndexChange(Math.max(0, activeIndex - 1))}
-              onNext={() => onIndexChange(Math.min(experiences.length - 1, activeIndex + 1))}
+              onNext={() =>
+                onIndexChange(Math.min(experiences.length - 1, activeIndex + 1))
+              }
             />
             <CvDraftExperienceCard
               item={item}
               suggestions={suggestions}
               isTailoring={isTailoring}
               isReviewing={isReviewing}
-              hasCompletedReview={suggestions.length > 0 || (!isTailoring && !generation.error)}
+              hasCompletedReview={
+                suggestions.length > 0 || (!isTailoring && !generation.error)
+              }
               tailoringError={generation.error}
               disabled={busy || draft.status !== "draft"}
-              canUndo={decisions.lastApplied?.targetPath === "workExperience[" + item.sourceId + "].description"}
+              canUndo={
+                decisions.lastApplied?.targetPath ===
+                "workExperience[" + item.sourceId + "].description"
+              }
               onUndo={decisions.undo}
               onTailor={() => void generation.generate(item.sourceId)}
-              onReviewOpenChange={(open) => generation.setReviewing(open ? item.sourceId : null)}
+              onReviewOpenChange={(open) =>
+                generation.setReviewing(open ? item.sourceId : null)
+              }
               onDecision={decisions.decide}
               onRegenerate={() => void generation.generate(item.sourceId)}
             />
           </>
         ) : (
-          <p className="text-sm text-fg-muted">No work experience is included in this CV.</p>
+          <p className="text-sm text-fg-muted">
+            No work experience is included in this CV.
+          </p>
         )}
       </div>
     </div>

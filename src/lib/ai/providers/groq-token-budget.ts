@@ -13,9 +13,7 @@ export function getGroqCompletionTokenBudget(
     ? JSON.stringify(request.responseSchema).length
     : 0;
   const requestCharacters =
-    request.systemPrompt.length +
-    request.userPrompt.length +
-    schemaCharacters;
+    request.systemPrompt.length + request.userPrompt.length + schemaCharacters;
   const estimatedInputTokens = Math.ceil(requestCharacters / 3);
   const safetyReserve = 500;
   const availableCompletionTokens = Math.floor(

@@ -20,9 +20,19 @@ type CvDraftExperienceCardProps = {
 };
 
 export function CvDraftExperienceCard({
-  item, suggestions, isTailoring, isReviewing, hasCompletedReview,
-  tailoringError, disabled, canUndo, onUndo, onTailor,
-  onReviewOpenChange, onDecision, onRegenerate,
+  item,
+  suggestions,
+  isTailoring,
+  isReviewing,
+  hasCompletedReview,
+  tailoringError,
+  disabled,
+  canUndo,
+  onUndo,
+  onTailor,
+  onReviewOpenChange,
+  onDecision,
+  onRegenerate,
 }: CvDraftExperienceCardProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-line bg-panel-2 p-3 text-fg sm:p-4">

@@ -7,9 +7,9 @@ import { buildJobEvidence } from "@/thungatha-features/job-discovery/server/job-
 
 describe("job source evidence text", () => {
   it("preserves word boundaries in plain-text descriptions", () => {
-    expect(sourceSegments("Build web applications using React and TypeScript.")).toEqual([
-      "Build web applications using React and TypeScript.",
-    ]);
+    expect(
+      sourceSegments("Build web applications using React and TypeScript."),
+    ).toEqual(["Build web applications using React and TypeScript."]);
   });
 
   it("preserves the exact baseline excerpt and spaces", () => {
@@ -27,43 +27,59 @@ describe("job source evidence text", () => {
   });
 
   it("preserves word boundaries across inline HTML elements", () => {
-    expect(sourceSegments("<p>Build web applications using <strong>React</strong> and TypeScript.</p>")).toEqual([
-      "Build web applications using React and TypeScript.",
-    ]);
+    expect(
+      sourceSegments(
+        "<p>Build web applications using <strong>React</strong> and TypeScript.</p>",
+      ),
+    ).toEqual(["Build web applications using React and TypeScript."]);
   });
 
   it("decodes hexadecimal and decimal entities consistently", () => {
-    expect(jobDescriptionToText("<p>Candidate&#x27;s role &amp; responsibilities</p><p>It&#39;s full-time.</p>"))
-      .toBe("Candidate's role & responsibilities\nIt's full-time.");
+    expect(
+      jobDescriptionToText(
+        "<p>Candidate&#x27;s role &amp; responsibilities</p><p>It&#39;s full-time.</p>",
+      ),
+    ).toBe("Candidate's role & responsibilities\nIt's full-time.");
   });
 
   it("decodes double-encoded entities found in imported job adverts", () => {
-    expect(jobDescriptionToText("Ozow&amp;#x27;s integrations and 1 to 3 years&amp;#x27; experience."))
-      .toBe("Ozow's integrations and 1 to 3 years' experience.");
+    expect(
+      jobDescriptionToText(
+        "Ozow&amp;#x27;s integrations and 1 to 3 years&amp;#x27; experience.",
+      ),
+    ).toBe("Ozow's integrations and 1 to 3 years' experience.");
   });
 
   it("decodes a second layer of numeric and named entities in text nodes", () => {
-    expect(jobDescriptionToText("Ozow&amp;#x27;s role &amp;amp; responsibilities &amp;quot;today&amp;quot;."))
-      .toBe('Ozow\'s role & responsibilities "today".');
+    expect(
+      jobDescriptionToText(
+        "Ozow&amp;#x27;s role &amp;amp; responsibilities &amp;quot;today&amp;quot;.",
+      ),
+    ).toBe('Ozow\'s role & responsibilities "today".');
   });
 
   it("decodes decimal double-encoded references and replaces invalid code points", () => {
-    expect(jobDescriptionToText("It&amp;#39;s available; invalid: &amp;#0;."))
-      .toBe("It's available; invalid: \uFFFD.");
+    expect(
+      jobDescriptionToText("It&amp;#39;s available; invalid: &amp;#0;."),
+    ).toBe("It's available; invalid: \uFFFD.");
   });
 
   it("keeps unknown second-layer entities unchanged", () => {
-    expect(jobDescriptionToText("Keep &amp;unknownentity; as supplied."))
-      .toBe("Keep &unknownentity; as supplied.");
+    expect(jobDescriptionToText("Keep &amp;unknownentity; as supplied.")).toBe(
+      "Keep &unknownentity; as supplied.",
+    );
   });
 
   it("does not expose encoded HTML tags as markup", () => {
-    expect(jobDescriptionToText("&lt;p&gt;Build with React&lt;/p&gt;"))
-      .toBe("<p>Build with React</p>");
+    expect(jobDescriptionToText("&lt;p&gt;Build with React&lt;/p&gt;")).toBe(
+      "<p>Build with React</p>",
+    );
   });
 
   it("keeps evidence excerpts lossless through the job evidence builder", () => {
-    const evidence = buildJobEvidence("<p>Build with React and TypeScript.</p>");
+    const evidence = buildJobEvidence(
+      "<p>Build with React and TypeScript.</p>",
+    );
     expect(evidence[0].content).toBe("Build with React and TypeScript.");
   });
 });

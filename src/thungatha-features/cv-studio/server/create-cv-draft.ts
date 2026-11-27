@@ -12,7 +12,10 @@ export async function createCvDraft(request: Request) {
     await request.json().catch(() => null),
   );
   if (!parsed.success) {
-    return apiError(parsed.error.issues[0]?.message ?? "Invalid draft request.", 400);
+    return apiError(
+      parsed.error.issues[0]?.message ?? "Invalid draft request.",
+      400,
+    );
   }
 
   try {
@@ -21,7 +24,9 @@ export async function createCvDraft(request: Request) {
     const db = await createAuthenticatedSupabaseClient(auth.identity.getToken);
     const { data: master, error: masterError } = await db
       .from("cv_versions")
-      .select("id,source_profile_version,cv_kind,status,content,template_version,accent_colour")
+      .select(
+        "id,source_profile_version,cv_kind,status,content,template_version,accent_colour",
+      )
       .eq("id", parsed.data.masterVersionId)
       .eq("user_id", auth.identity.userId)
       .maybeSingle();
@@ -49,30 +54,41 @@ export async function createCvDraft(request: Request) {
       ? `source_job_id.eq.${job.jobId},source_job_snapshot->>jobId.eq.${job.jobId}`
       : `source_job_snapshot->>descriptionFingerprint.eq.${job.descriptionFingerprint}`;
     const reusable = await findReusableCvDraft(
-      db, auth.identity.userId, auth.profile.profileVersion, matchFilter,
+      db,
+      auth.identity.userId,
+      auth.profile.profileVersion,
+      matchFilter,
     );
-    if (reusable) return NextResponse.json({ draft: reusable, reusedDraft: true });
+    if (reusable)
+      return NextResponse.json({ draft: reusable, reusedDraft: true });
 
-    const { data, error } = await db.from("cv_versions").insert({
-      user_id: auth.identity.userId,
-      cv_kind: "tailored",
-      status: "draft",
-      parent_version_id: master.id,
-      source_profile_version: auth.profile.profileVersion,
-      source_job_id: job.jobId,
-      source_job_snapshot: snapshot,
-      content: master.content,
-      suggestions: [],
-      tailoring_assessment: null,
-      template_version: master.template_version,
-      accent_colour: master.accent_colour,
-    }).select(
-      "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
-    ).single();
+    const { data, error } = await db
+      .from("cv_versions")
+      .insert({
+        user_id: auth.identity.userId,
+        cv_kind: "tailored",
+        status: "draft",
+        parent_version_id: master.id,
+        source_profile_version: auth.profile.profileVersion,
+        source_job_id: job.jobId,
+        source_job_snapshot: snapshot,
+        content: master.content,
+        suggestions: [],
+        tailoring_assessment: null,
+        template_version: master.template_version,
+        accent_colour: master.accent_colour,
+      })
+      .select(
+        "id,version_number,status,content,suggestions,tailoring_assessment,accent_colour,source_job_snapshot,source_profile_version,parent_version_id",
+      )
+      .single();
 
     if (error?.code === "23505") {
       const raced = await findReusableCvDraft(
-        db, auth.identity.userId, auth.profile.profileVersion, matchFilter,
+        db,
+        auth.identity.userId,
+        auth.profile.profileVersion,
+        matchFilter,
       );
       if (raced) return NextResponse.json({ draft: raced, reusedDraft: true });
     }

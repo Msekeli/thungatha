@@ -6,14 +6,18 @@ export function retainApprovedSuggestions(
   reviews: CvTailoringReview["reviews"],
 ) {
   if (reviews.some((review) => review.index >= suggestions.length)) {
-    throw new Error("CV tailoring verification returned an unknown suggestion.");
+    throw new Error(
+      "CV tailoring verification returned an unknown suggestion.",
+    );
   }
   const byIndex = new Map(reviews.map((review) => [review.index, review]));
   if (
     byIndex.size !== suggestions.length ||
     suggestions.some((_, index) => !byIndex.has(index))
   ) {
-    throw new Error("CV tailoring verification did not review every suggestion exactly once.");
+    throw new Error(
+      "CV tailoring verification did not review every suggestion exactly once.",
+    );
   }
   return suggestions.filter(
     (_, index) => byIndex.get(index)?.decision === "approve",

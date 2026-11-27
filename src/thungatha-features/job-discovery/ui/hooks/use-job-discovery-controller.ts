@@ -9,33 +9,70 @@ import type { useJobDiscoveryState } from "./use-job-discovery-state";
 
 type DiscoveryState = ReturnType<typeof useJobDiscoveryState>;
 
-export function useJobDiscoveryController(s: DiscoveryState, userId: string | null, enabled: boolean, activeCategory: string) {
+export function useJobDiscoveryController(
+  s: DiscoveryState,
+  userId: string | null,
+  enabled: boolean,
+  activeCategory: string,
+) {
   const data = useJobDiscoveryData(s, userId, enabled, activeCategory);
   const view = buildJobDiscoveryViewModel({
-    detail: s.detail, selectedId: s.selectedId, feed: s.feed,
-    jobActivity: s.jobActivity, filters: s.filters, sortOrder: s.sortOrder,
+    detail: s.detail,
+    selectedId: s.selectedId,
+    feed: s.feed,
+    jobActivity: s.jobActivity,
+    filters: s.filters,
+    sortOrder: s.sortOrder,
   });
   const application = useJobApplicationActions(
-    s.userSignedIn, s.setStateError, s.setJobActivity, s.setForceAppliedPrompt, s.setDismissedPromptForJobId,
+    s.userSignedIn,
+    s.setStateError,
+    s.setJobActivity,
+    s.setForceAppliedPrompt,
+    s.setDismissedPromptForJobId,
   );
   const confirmApplied = useConfirmJobApplied(
-    view.selectedDetail, s.stateBusy, s.setStateBusy, s.setStateError,
-    s.setStateMessage, s.setJobActivity, s.setForceAppliedPrompt,
-    s.setDismissedPromptForJobId, s.setRetryFeed,
+    view.selectedDetail,
+    s.stateBusy,
+    s.setStateBusy,
+    s.setStateError,
+    s.setStateMessage,
+    s.setJobActivity,
+    s.setForceAppliedPrompt,
+    s.setDismissedPromptForJobId,
+    s.setRetryFeed,
   );
   const filters = useJobFilterActions(
-    s.draft, s.setDraft, s.setFilters, s.setCategory, s.setPage, s.setMobileDetail,
+    s.draft,
+    s.setDraft,
+    s.setFilters,
+    s.setCategory,
+    s.setPage,
+    s.setMobileDetail,
   );
   const workspaceActions = useJobDiscoveryWorkspaceActions(
-    s, view.selectedDetail, view.applicationDestination, data.updateJobState, application.openApplicationLink,
+    s,
+    view.selectedDetail,
+    view.applicationDestination,
+    data.updateJobState,
+    application.openApplicationLink,
   );
   const showApplicationPrompt = Boolean(
-    view.selectedDetail && (s.forceAppliedPrompt ||
+    view.selectedDetail &&
+    (s.forceAppliedPrompt ||
       (Boolean(view.selectedActivity?.application_link_opened_at) &&
-        !view.selectedActivity?.applied_at && s.dismissedPromptForJobId !== s.selectedId)),
+        !view.selectedActivity?.applied_at &&
+        s.dismissedPromptForJobId !== s.selectedId)),
   );
   return {
-    ...data, ...view, ...application, confirmApplied, workspaceActions,
-    showApplicationPrompt, ...filters, formatDate, shown,
+    ...data,
+    ...view,
+    ...application,
+    confirmApplied,
+    workspaceActions,
+    showApplicationPrompt,
+    ...filters,
+    formatDate,
+    shown,
   };
 }

@@ -1,8 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/internal/ai-matching/worker",
-      "schedule": "* * * * *"
-    }
-  ]
-}
+{}

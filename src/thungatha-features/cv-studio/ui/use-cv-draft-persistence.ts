@@ -15,7 +15,12 @@ type CvDraftPersistenceProps = {
 };
 
 export function useCvDraftPersistence({
-  draft, content, setDraft, setBusy, setError, setMessage,
+  draft,
+  content,
+  setDraft,
+  setBusy,
+  setError,
+  setMessage,
 }: CvDraftPersistenceProps) {
   async function saveDraft() {
     if (!draft || draft.status !== "draft") return;
@@ -24,12 +29,17 @@ export function useCvDraftPersistence({
     setMessage(null);
     try {
       const body = await saveCvDraft(
-        draft.id, content, draft.suggestions, draft.accent_colour,
+        draft.id,
+        content,
+        draft.suggestions,
+        draft.accent_colour,
       );
       setDraft(body.draft);
       setMessage("Draft saved. Review the preview before accepting it.");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Draft could not be saved.");
+      setError(
+        cause instanceof Error ? cause.message : "Draft could not be saved.",
+      );
     } finally {
       setBusy(false);
     }
@@ -41,7 +51,10 @@ export function useCvDraftPersistence({
     setError(null);
     try {
       await saveCvDraft(
-        draft.id, content, draft.suggestions, draft.accent_colour,
+        draft.id,
+        content,
+        draft.suggestions,
+        draft.accent_colour,
         "Save your latest edits before accepting the CV.",
       );
       const body = await acceptCvDraft(draft.id);
@@ -50,7 +63,11 @@ export function useCvDraftPersistence({
         "Your tailored CV has been accepted and saved as a new CV version. The master CV and Profile remain unchanged.",
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The CV could not be accepted.");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "The CV could not be accepted.",
+      );
     } finally {
       setBusy(false);
     }

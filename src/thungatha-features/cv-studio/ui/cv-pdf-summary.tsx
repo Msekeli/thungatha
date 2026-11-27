@@ -3,7 +3,13 @@ import type { CvPdfContent } from "./cv-pdf-types";
 import { styles } from "./cv-pdf-styles";
 import { CvPdfSection } from "./cv-pdf-section";
 
-export function CvPdfSummary({ content, accent }: { content: CvPdfContent; accent: string }) {
+export function CvPdfSummary({
+  content,
+  accent,
+}: {
+  content: CvPdfContent;
+  accent: string;
+}) {
   if (!content.professionalSummary) return null;
   return (
     <CvPdfSection title="Professional summary" accent={accent}>

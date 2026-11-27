@@ -29,12 +29,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profileContext = await getConfirmedCvProfile(
-      identity,
-      (missing) => NextResponse.json({
-        status: "profile_required",
-        missing,
-      }, { status: 409 }),
+    const profileContext = await getConfirmedCvProfile(identity, (missing) =>
+      NextResponse.json(
+        {
+          status: "profile_required",
+          missing,
+        },
+        { status: 409 },
+      ),
     );
     if (profileContext.response) return profileContext.response;
     const profile = profileContext.profile;
@@ -54,7 +56,10 @@ export async function POST(request: Request) {
     }
 
     const matchingVersions = await findMatchingAcceptedVersions(
-      db, identity.userId, profile.profileVersion, parsed.data.jobContext,
+      db,
+      identity.userId,
+      profile.profileVersion,
+      parsed.data.jobContext,
     );
     const result = cvSuitabilityResponseSchema.parse({
       status: matchingVersions.length

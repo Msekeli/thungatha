@@ -17,17 +17,19 @@ const cv = cvContentSchema.parse({
   linkedinUrl: null,
   portfolioUrl: null,
   professionalSummary: "Original summary.",
-  workExperience: [{
-    sourceId: "work-1",
-    jobTitle: "Developer",
-    employer: "Example",
-    location: null,
-    startDate: "2022-01",
-    endDate: null,
-    isCurrent: true,
-    description: "Original description.",
-    achievements: [],
-  }],
+  workExperience: [
+    {
+      sourceId: "work-1",
+      jobTitle: "Developer",
+      employer: "Example",
+      location: null,
+      startDate: "2022-01",
+      endDate: null,
+      isCurrent: true,
+      description: "Original description.",
+      achievements: [],
+    },
+  ],
   projects: [],
   technicalSkills: [],
   education: [],
@@ -44,7 +46,11 @@ const suggestion = cvSuggestionSchema.parse({
   evidenceRefs: ["cv:work-1", "job:description:0"],
   evidence: [
     { ref: "cv:work-1", source: "profile", excerpt: "Original description." },
-    { ref: "job:description:0", source: "job", excerpt: "Relevant role requirement." },
+    {
+      ref: "job:description:0",
+      source: "job",
+      excerpt: "Relevant role requirement.",
+    },
   ],
   decision: "accepted",
 });
@@ -53,7 +59,9 @@ describe("undoCvSuggestion", () => {
   it("restores the exact original description after an accepted edit", () => {
     const updated = applyCvSuggestion(cv, suggestion);
     const restored = undoCvSuggestion(updated, suggestion);
-    expect(restored.workExperience[0].description).toBe("Original description.");
+    expect(restored.workExperience[0].description).toBe(
+      "Original description.",
+    );
     expect(cv.workExperience[0].description).toBe("Original description.");
   });
 
@@ -61,10 +69,12 @@ describe("undoCvSuggestion", () => {
     const updated = applyCvSuggestion(cv, suggestion);
     const changed = {
       ...updated,
-      workExperience: [{
-        ...updated.workExperience[0],
-        description: "A later edit.",
-      }],
+      workExperience: [
+        {
+          ...updated.workExperience[0],
+          description: "A later edit.",
+        },
+      ],
     };
     expect(() => undoCvSuggestion(changed, suggestion)).toThrow(
       /can no longer be undone/,

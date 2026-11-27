@@ -29,9 +29,8 @@ export function parseAiResponse<T>(
   try {
     value = JSON.parse(content);
   } catch (cause) {
-    const detail = cause instanceof Error
-      ? cause.message
-      : "unknown JSON parsing error";
+    const detail =
+      cause instanceof Error ? cause.message : "unknown JSON parsing error";
     throw new Error(`${stage}: AI returned invalid JSON (${detail}).`);
   }
   try {

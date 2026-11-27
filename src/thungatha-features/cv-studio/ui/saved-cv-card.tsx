@@ -23,7 +23,9 @@ export function SavedCvCard({ version, onSelect }: SavedCvCardProps) {
         <span className="rounded-full border border-line px-2 py-1 text-xs font-medium text-fg-muted">
           {master ? "Master" : "Tailored"}
         </span>
-        <span className="text-xs text-fg-muted">{master ? "Current" : "Accepted"}</span>
+        <span className="text-xs text-fg-muted">
+          {master ? "Current" : "Accepted"}
+        </span>
       </div>
       <h3 className="line-clamp-2 font-semibold text-fg">
         {version.source_job_snapshot?.title ?? "Master CV"}
@@ -32,9 +34,17 @@ export function SavedCvCard({ version, onSelect }: SavedCvCardProps) {
         {version.source_job_snapshot?.company ?? "General CV"}
       </p>
       <p className="mt-3 text-xs text-fg-muted">
-        Version {version.version_number} · {new Date(version.accepted_at ?? version.updated_at).toLocaleDateString()}
+        Version {version.version_number} ·{" "}
+        {new Date(
+          version.accepted_at ?? version.updated_at,
+        ).toLocaleDateString()}
       </p>
-      <Button className="mt-4 w-full" size="sm" variant="outline" onClick={onSelect}>
+      <Button
+        className="mt-4 w-full"
+        size="sm"
+        variant="outline"
+        onClick={onSelect}
+      >
         Preview and download
       </Button>
     </article>

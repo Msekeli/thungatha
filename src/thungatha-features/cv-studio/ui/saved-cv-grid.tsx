@@ -28,39 +28,67 @@ export function SavedCvGrid() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/cv-studio/versions", { cache: "no-store" });
+      const response = await fetch("/api/cv-studio/versions", {
+        cache: "no-store",
+      });
       const body = await response.json();
-      if (!response.ok) throw new Error(body.error ?? "Saved CVs could not be loaded.");
+      if (!response.ok)
+        throw new Error(body.error ?? "Saved CVs could not be loaded.");
       setVersions(body.versions as SavedCv[]);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Saved CVs could not be loaded.");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Saved CVs could not be loaded.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
-
-
   return (
     <section className="space-y-3">
-      {selected && <SavedCvPreview version={selected} onBack={() => setSelected(null)} />}
-      {!selected && <>
-      <div className="flex justify-end">
-        <Button size="sm" variant="outline" onClick={() => void loadVersions()} disabled={loading}>
-          {loading ? "Refreshing…" : "Refresh CVs"}
-        </Button>
-      </div>
-      {loading && <p className="p-6 text-center text-sm text-fg-muted">Loading your saved CVs…</p>}
-      {error && <p className="p-6 text-sm text-destructive" role="alert">{error}</p>}
-      {!loading && !error && versions.length === 0 && (
-        <p className="p-6 text-center text-sm text-fg-muted">No saved CV versions yet.</p>
+      {selected && (
+        <SavedCvPreview version={selected} onBack={() => setSelected(null)} />
       )}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {versions.map((version) => (
-          <SavedCvCard key={version.id} version={version} onSelect={() => setSelected(version)} />
-        ))}
-      </div>
-      </>}
+      {!selected && (
+        <>
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void loadVersions()}
+              disabled={loading}
+            >
+              {loading ? "Refreshing…" : "Refresh CVs"}
+            </Button>
+          </div>
+          {loading && (
+            <p className="p-6 text-center text-sm text-fg-muted">
+              Loading your saved CVs…
+            </p>
+          )}
+          {error && (
+            <p className="p-6 text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
+          {!loading && !error && versions.length === 0 && (
+            <p className="p-6 text-center text-sm text-fg-muted">
+              No saved CV versions yet.
+            </p>
+          )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {versions.map((version) => (
+              <SavedCvCard
+                key={version.id}
+                version={version}
+                onSelect={() => setSelected(version)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

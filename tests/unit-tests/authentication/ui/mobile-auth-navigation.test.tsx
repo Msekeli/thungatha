@@ -56,5 +56,4 @@ describe("mobile signed-out authentication navigation", () => {
     expect(document.querySelector('a[href="/sign-in"]')).toBeNull();
     expect(document.querySelector('a[href="/sign-up"]')).toBeNull();
   });
-
 });

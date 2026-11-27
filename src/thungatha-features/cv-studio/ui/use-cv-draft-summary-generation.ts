@@ -14,7 +14,11 @@ type SummaryGenerationProps = {
 };
 
 export function useCvDraftSummaryGeneration({
-  draft, jobContext, setDraft, setError, setMessage,
+  draft,
+  jobContext,
+  setDraft,
+  setError,
+  setMessage,
 }: SummaryGenerationProps) {
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -28,19 +32,25 @@ export function useCvDraftSummaryGeneration({
     setMessage(null);
     try {
       const body = await generateCvDraftSuggestions(
-        draftId, jobContext, "professionalSummary",
+        draftId,
+        jobContext,
+        "professionalSummary",
       );
       setDraft((current) =>
-        current ? {
-          ...current,
-          suggestions: [
-            ...current.suggestions.filter(
-              (item) => item.targetPath !== "professionalSummary" || item.decision !== "pending",
-            ),
-            ...body.generatedSuggestions,
-          ],
-          tailoring_assessment: body.assessment ?? null,
-        } : current,
+        current
+          ? {
+              ...current,
+              suggestions: [
+                ...current.suggestions.filter(
+                  (item) =>
+                    item.targetPath !== "professionalSummary" ||
+                    item.decision !== "pending",
+                ),
+                ...body.generatedSuggestions,
+              ],
+              tailoring_assessment: body.assessment ?? null,
+            }
+          : current,
       );
       setMessage(
         body.generatedSuggestions.length
@@ -52,7 +62,9 @@ export function useCvDraftSummaryGeneration({
       setError(
         cause instanceof DOMException && cause.name === "TimeoutError"
           ? "AI tailoring exceeded three minutes. Your draft is still available; retry the summary generation."
-          : cause instanceof Error ? cause.message : "AI summary generation failed.",
+          : cause instanceof Error
+            ? cause.message
+            : "AI summary generation failed.",
       );
     } finally {
       setBusy(false);

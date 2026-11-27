@@ -20,7 +20,11 @@ export function CvDraftSkillsSection({
   function submitSkill(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = newSkill.trim();
-    if (!value || skills.some((skill) => skill.toLowerCase() === value.toLowerCase())) return;
+    if (
+      !value ||
+      skills.some((skill) => skill.toLowerCase() === value.toLowerCase())
+    )
+      return;
     onAddSkill(value);
     setNewSkill("");
   }
@@ -36,12 +40,17 @@ export function CvDraftSkillsSection({
           aria-label="New skill"
           className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-panel px-3 text-sm text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         />
-        <Button type="submit" variant="outline" disabled={disabled || !newSkill.trim()}>
+        <Button
+          type="submit"
+          variant="outline"
+          disabled={disabled || !newSkill.trim()}
+        >
           <Plus className="mr-1 size-4" /> Add skill
         </Button>
       </form>
       <p className="shrink-0 text-xs text-fg-muted">
-        Only add skills you genuinely have. Added skills update this draft and its PDF preview when saved.
+        Only add skills you genuinely have. Added skills update this draft and
+        its PDF preview when saved.
       </p>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-wrap content-start gap-2">
@@ -53,7 +62,11 @@ export function CvDraftSkillsSection({
               {skill}
             </span>
           ))}
-          {!skills.length && <p className="text-sm text-fg-muted">No skills are currently listed.</p>}
+          {!skills.length && (
+            <p className="text-sm text-fg-muted">
+              No skills are currently listed.
+            </p>
+          )}
         </div>
       </div>
     </div>

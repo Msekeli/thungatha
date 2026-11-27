@@ -19,15 +19,26 @@ export function createQueryMock(result: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: Record<string, any> = {};
   for (const method of [
-    "select", "eq", "or", "ilike", "in", "not", "gte",
-    "order", "range", "upsert", "delete",
+    "select",
+    "eq",
+    "or",
+    "ilike",
+    "in",
+    "not",
+    "gte",
+    "order",
+    "range",
+    "upsert",
+    "delete",
   ]) {
     builder[method] = vi.fn(() => builder);
   }
   builder.maybeSingle = vi.fn(async () => result);
   builder.single = vi.fn(async () => result);
-  builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) =>
-    Promise.resolve(result).then(resolve, reject);
+  builder.then = (
+    resolve: (value: unknown) => unknown,
+    reject: (reason: unknown) => unknown,
+  ) => Promise.resolve(result).then(resolve, reject);
   return builder;
 }
 

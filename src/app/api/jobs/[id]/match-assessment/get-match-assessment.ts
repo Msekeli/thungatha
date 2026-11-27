@@ -16,10 +16,7 @@ import {
 import { resolveEvidenceLinkedAssessment } from "./evidence-resolver";
 import type { AuthIdentity } from "./auth-helper";
 
-export async function getMatchAssessment(
-  id: string,
-  identity: AuthIdentity,
-) {
+export async function getMatchAssessment(id: string, identity: AuthIdentity) {
   try {
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const [profileResult, jobResult] = await Promise.all([

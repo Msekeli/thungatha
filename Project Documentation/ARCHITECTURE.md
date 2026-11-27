@@ -16,11 +16,11 @@ The architecture must deliver the approved product specification and milestones 
 2. Application code—not the UI or model—owns identity, authorization, evidence validation, persistence, deterministic invariants, and state transitions.
 3. Confirmed Profile data is authoritative; imported and AI-produced personal claims remain unconfirmed until reviewed.
 4. Unknown data stays unknown; don't turn missing evidence into a negative conclusion.
-4. User-owned reads and writes must use server-derived identity and enforce ownership.
-5. External providers and AI models are replaceable adapters, not sources of authority.
-6. Keep one deployable application. Do not add microservices, a mandatory queue, or a generic agent framework without an approved, evidenced need.
-7. Preserve the approved milestone sequence. Architecture supports the plan; it does not redefine it.
-8. Distinguish current files from planned structure. A folder in the target map is not evidence that the feature has already been implemented.
+5. User-owned reads and writes must use server-derived identity and enforce ownership.
+6. External providers and AI models are replaceable adapters, not sources of authority.
+7. Keep one deployable application. Do not add microservices, a mandatory queue, or a generic agent framework without an approved, evidenced need.
+8. Preserve the approved milestone sequence. Architecture supports the plan; it does not redefine it.
+9. Distinguish current files from planned structure. A folder in the target map is not evidence that the feature has already been implemented.
 
 ## 2. Runtime and deployment
 
@@ -210,14 +210,14 @@ Feature-specific business rules must not drift into generic shared utilities. Av
 
 ## 7. Product module boundaries
 
-| Module/experience | Owns                                                                                                                | Does not own                                                    |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                | Application lifecycle, CV versions, candidate-specific matching in M1 |
-| Profile           | Confirmed professional facts, import drafts, confirmation, profile history                                          | Silent AI-driven edits                                          |
+| Module/experience | Owns                                                                                                                                                                                                       | Does not own                                                                |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Job Discovery     | Normalized job catalogue, source provenance, search/filter/detail, save/dismiss, availability status                                                                                                       | Application lifecycle, CV versions, candidate-specific matching in M1       |
+| Profile           | Confirmed professional facts, import drafts, confirmation, profile history                                                                                                                                 | Silent AI-driven edits                                                      |
 | Matching          | AI-assisted full-context job understanding, semantic candidate comparison, transferable-skill interpretation, evidence validation, Match/Relevant explanations, unavailable assessment state and freshness | Owning job listings or CV versions; identity, authorization, or persistence |
-| CV Studio         | AI-assisted recommendations and tailoring, master CV and tailored versions, review, preview, comparison, export   | Editing Profile silently; application status history            |
-| Job Tracking      | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups | Job-source catalogue ownership or CV authoring                  |
-| Account           | User preferences and account-level settings defined in M6                                                           | Duplicating Clerk identity or feature data                      |
+| CV Studio         | AI-assisted recommendations and tailoring, master CV and tailored versions, review, preview, comparison, export                                                                                            | Editing Profile silently; application status history                        |
+| Job Tracking      | Actual application records, statuses/history, submitted-material reference, contacts, interviews, notes, follow-ups                                                                                        | Job-source catalogue ownership or CV authoring                              |
+| Account           | User preferences and account-level settings defined in M6                                                                                                                                                  | Duplicating Clerk identity or feature data                                  |
 
 Job Tracking links to the exact CV version or submitted-material snapshot used for an application. CV Studio remains the owner of CV versions. A user can record an externally sourced application in Job Tracking without first creating a Job Discovery catalogue record.
 

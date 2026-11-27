@@ -12,8 +12,9 @@ describe("applyCvSuggestion", () => {
       content,
       createSuggestion("workExperience[work-1].description"),
     );
-    expect(result.workExperience[0].description)
-      .toBe("Revised evidence-grounded description.");
+    expect(result.workExperience[0].description).toBe(
+      "Revised evidence-grounded description.",
+    );
     expect(result.fullName).toBe(content.fullName);
     expect(content.workExperience[0].description).toBe("Original description.");
   });
@@ -28,13 +29,14 @@ describe("applyCvSuggestion", () => {
 
   it("does not overwrite text changed after the suggestion was generated", () => {
     const edited = { ...content, professionalSummary: "User's newer edit." };
-    expect(() => applyCvSuggestion(
-      edited, createSuggestion("professionalSummary"),
-    )).toThrow(/stale/);
+    expect(() =>
+      applyCvSuggestion(edited, createSuggestion("professionalSummary")),
+    ).toThrow(/stale/);
   });
 
   it("rejects fields outside the editable target contract", () => {
-    expect(() => applyCvSuggestion(content, createSuggestion("email")))
-      .toThrow(/unsupported field/);
+    expect(() => applyCvSuggestion(content, createSuggestion("email"))).toThrow(
+      /unsupported field/,
+    );
   });
 });

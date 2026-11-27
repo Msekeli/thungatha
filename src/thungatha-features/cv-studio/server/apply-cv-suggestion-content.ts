@@ -18,9 +18,7 @@ export function applyCvSuggestion(
     return { ...content, professionalSummary: proposedText };
   }
 
-  const experience = targetPath.match(
-    /^workExperience\[(.+)\]\.description$/,
-  );
+  const experience = targetPath.match(/^workExperience\[(.+)\]\.description$/);
   if (experience) {
     const item = content.workExperience.find(
       (entry) => entry.sourceId === experience[1],
@@ -64,9 +62,7 @@ export function applyCvSuggestion(
     };
   }
 
-  const project = targetPath.match(
-    /^projects\[(.+)\]\.description$/,
-  );
+  const project = targetPath.match(/^projects\[(.+)\]\.description$/);
   if (project) {
     const item = content.projects.find(
       (entry) => entry.sourceId === project[1],
