@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ExternalLink, MoreHorizontal } from "lucide-react";
+import { Building2, MoreHorizontal } from "lucide-react";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import type { ApplicationRecord } from "../types/application";
 
