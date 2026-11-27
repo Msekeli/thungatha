@@ -1,10 +1,10 @@
 "use client";
 
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import { Download, FileText, Printer } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 
-export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accent?: string }) {
+export function CvPdfPreview({ content, accent, allowDownload = true }: { content: CvPdfContent; accent?: string; allowDownload?: boolean }) {
   const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
 
   return (
@@ -16,6 +16,7 @@ export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accen
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="hidden text-xs text-fg-muted sm:inline">Zoom, page navigation and print controls are in the PDF toolbar.</span>
+{allowDownload && (
           <PDFDownloadLink
             document={<CvPdfDocument content={content} accent={accent} />}
             fileName={fileName}
@@ -28,6 +29,7 @@ export function CvPdfPreview({ content, accent }: { content: CvPdfContent; accen
               </>
             )}
           </PDFDownloadLink>
+          )}
         </div>
       </div>
       <div className="h-[min(78vh,1000px)] min-h-[620px] bg-[#525659]">
