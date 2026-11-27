@@ -10,7 +10,7 @@ Feature boundary for actual job application records, application status, history
 
 ## Current UI implementation
 
-- `ui/job-tracking-dashboard.tsx` — dashboard, summary cards, search/status filtering, list and detail preview.
+- `ui/job-tracking-dashboard.tsx` — dashboard, summary cards, search/status filtering, list and detail preview with editable current status.
 - `ui/application-list.tsx` — responsive application list.
 - `ui/application-stat-card.tsx` — reusable application summary card.
 - `ui/application-status-badge.tsx` — reusable lifecycle status badge.
@@ -19,7 +19,7 @@ Feature boundary for actual job application records, application status, history
 - `ui/record-application-dialog.tsx` — interactive record-application form.
 - `types/application.ts` — frontend-only application types and lifecycle status values.
 
-The current screen is a client-side UI prototype. Records are held in React page state only and disappear when the page session is reset. No application API, database persistence, server validation, ownership enforcement, status history, or reminders are implemented.
+The current screen is a client-side UI prototype. Records are held in React page state only and disappear when the page session is reset. The detail preview allows the current status to be changed; changing it to Rejected or Withdrawn clears the application-specific full job-description snapshot in that preview. This only demonstrates the product rule and is not a secure or durable deletion operation. No application API, database persistence, server validation, ownership enforcement, durable status history, or reminders are implemented.
 
 The status values mirror the approved lifecycle: Draft, Submitted, Under review, Interview, Offer, Accepted, Rejected and Withdrawn. Users must explicitly choose Submitted; opening or saving a job does not imply an application was sent.
 
