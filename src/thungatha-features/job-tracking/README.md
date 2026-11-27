@@ -2,16 +2,24 @@
 
 Feature boundary for actual job application records, application status, history, follow-ups, next actions, and submitted-material references.
 
+## Route
+
+- Canonical route: `/job-tracking`.
+- The legacy `/applications` route redirects to `/job-tracking`.
+- Workspace navigation uses the canonical route.
+
 ## Current UI implementation
 
 - `ui/job-tracking-dashboard.tsx` — Job Tracking overview and application pipeline shell.
 - `ui/application-stat-card.tsx` — reusable application summary card.
 - `ui/application-status-badge.tsx` — reusable lifecycle status badge.
-- `ui/application-filters.tsx` — search and status filter controls.
+- `ui/application-filters.tsx` — search and lifecycle status filter controls.
 - `ui/application-empty-state.tsx` — no-application state.
 - `ui/record-application-dialog.tsx` — record-application form layout.
 
 The current screen is intentionally UI-only. It uses zero-state summary values and does not call an application API, write records, or persist form input. The form displays an explicit notice when submitted. Do not interpret this screen as an implemented application workflow.
+
+The status filter options mirror the application lifecycle statuses: Draft, Submitted, Under review, Interview, Offer, Accepted, Rejected and Withdrawn.
 
 ## Planned ownership
 
