@@ -317,36 +317,14 @@ export function CvStudioStart() {
               </div>
             </form>
 
-            {suitability && jobContext && (
-              <div className="mt-6 border-t border-line pt-6" aria-live="polite">
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">Current recommendation status</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">{suitability.matchingVersions.length ? "An accepted CV version exists for this exact job" : "No accepted CV version found for this exact job"}</h3>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-fg-muted">{suitability.explanation}</p>
-                {suitability.matchingVersions.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    {suitability.matchingVersions.map((version) => (
-                      <div key={version.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel-2 p-3">
-                        <div><p className="text-sm font-medium text-fg">Accepted tailored CV · Version {version.versionNumber}</p><p className="text-xs text-fg-muted">Updated {new Date(version.updatedAt).toLocaleDateString()}</p></div>
-                        <span className="text-xs text-fg-muted">Saved version found</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="mt-4 rounded-lg border border-warn/30 bg-warn-bg p-4">
-                  <p className="text-sm font-medium text-warn">AI suitability assessment is not available yet.</p>
-                  <p className="mt-1 text-sm leading-6 text-warn">This check only finds an accepted CV for the exact same Discovery job or pasted description. It does not assess your skills against the job requirements. CV tailoring will be enabled after the AI stage is implemented.</p>
-                </div>
-              </div>
-            )}
-
-            {jobContext && state.masterCv && (
-              <CvDraftEditor
-                masterVersionId={state.masterCv.id}
-                jobContext={jobContext as Parameters<typeof CvDraftEditor>[0]["jobContext"]}
-                initialContent={state.masterCv.content}
-              />
-            )}
           </section>
+          )}
+          {jobContext && state.masterCv && (
+            <CvDraftEditor
+              masterVersionId={state.masterCv.id}
+              jobContext={jobContext}
+              initialContent={state.masterCv.content}
+            />
           )}
         </div>
       )}
