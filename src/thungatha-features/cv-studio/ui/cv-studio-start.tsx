@@ -322,7 +322,7 @@ export function CvStudioStart() {
           {jobContext && state.masterCv && (
             <CvDraftEditor
               masterVersionId={state.masterCv.id}
-              jobContext={jobContext}
+              jobContext={jobContext as Parameters<typeof CvDraftEditor>[0]["jobContext"]}
               initialContent={state.masterCv.content}
             />
           )}
