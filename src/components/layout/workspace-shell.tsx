@@ -48,6 +48,7 @@ export function WorkspaceShell({
     "has-[.th-profile-page]:p-0",
     "has-[.th-jobs-page]:p-0",
     "has-[.th-cv-studio-page]:p-0",
+    "has-[.th-job-tracking-page]:p-0",
   ].join(" ");
 
   return (
