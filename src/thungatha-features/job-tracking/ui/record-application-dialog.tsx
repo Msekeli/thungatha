@@ -15,13 +15,13 @@ type Props = {
   onCreate: (application: Omit<ApplicationRecord, "id">) => void;
 };
 
-const initialValues = {
+const initialValues: Omit<ApplicationRecord, "id"> = {
   company: "",
   jobTitle: "",
   applicationDate: "",
   source: "",
   url: "",
-  status: "Draft" as const,
+  status: "Draft",
   notes: "",
 };
 
