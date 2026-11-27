@@ -9,7 +9,7 @@ const workspacePages: Record<string, WorkspacePage> = {
     title: "CV Studio",
     subtitle: "Build and tailor your CV with confidence.",
   },
-  "/applications": {
+  "/job-tracking": {
     title: "Job Tracking",
     subtitle: "Keep your applications organised and moving forward.",
   },
