@@ -212,7 +212,8 @@ export function JobTrackingDashboard() {
                   {selectedApplication.jobDescription}
                 </p>
               </div>
-            )}\n            {selectedApplication.notes && (
+            )}
+            {selectedApplication.notes && (
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Notes</h4>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
