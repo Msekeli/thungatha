@@ -117,7 +117,7 @@ export function JobTrackingDashboard() {
 
   return (
     <div className="th-job-tracking-page flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-3 overflow-hidden px-4 py-3 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col gap-2.5 overflow-hidden px-4 py-2 sm:gap-3 sm:px-6 sm:py-2.5 lg:px-8">
         <section className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
             <h2 className="text-xl font-semibold tracking-tight text-foreground">
@@ -133,14 +133,14 @@ export function JobTrackingDashboard() {
           </Button>
         </section>
 
-        <section className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Application overview">
+        <section className="grid shrink-0 gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Application overview">
           {stats.map((item) => (
             <ApplicationStatCard key={item.label} {...item} />
           ))}
         </section>
 
-        <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-5">
-          <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
+        <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card p-3 sm:p-4">
+          <div className="mb-2.5 flex shrink-0 items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold text-card-foreground">Application pipeline</h3>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -157,7 +157,7 @@ export function JobTrackingDashboard() {
               onQueryChange={setQuery}
             />
           </div>
-          <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+          <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
             {applications.length === 0 ? (
               <ApplicationEmptyState onRecord={() => setDialogOpen(true)} />
             ) : filteredApplications.length === 0 ? (
