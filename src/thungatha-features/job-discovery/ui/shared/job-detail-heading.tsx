@@ -1,6 +1,7 @@
 "use client";
 
 import "./job-detail-heading.css";
+import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -27,9 +28,12 @@ export function JobDetailHeading({
   return (
     <div className="th-jobs-redesign-job-head">
       {companyLogoUrl ? (
-        <img
+        <Image
           src={companyLogoUrl}
           alt=""
+          width={48}
+          height={48}
+          unoptimized
           className="th-jobs-employer-mark th-jobs-detail-logo bg-white object-contain p-1"
         />
       ) : (

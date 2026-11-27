@@ -212,23 +212,36 @@ AI is a first-class product capability in Thungatha. It should materially improv
 - **Profile and CV import (M2):** the current approved PDF-import checkpoint remains governed by its explicit local extraction and privacy constraints. AI-based interpretation of imported personal data is not automatically enabled by this product strategy; it requires a separately approved task, privacy review, and user-facing confirmation flow.
 - **Other experiences:** add AI assistance only where an agreed user problem benefits from it. Do not invent autonomous actions or allow AI to submit applications, change application status, or make irreversible decisions.
 
-### AI implementation principles
+AI is a meaningful user-facing capability in Thungatha, not merely an optional implementation detail. It assists users with career decisions and CV preparation, while deterministic application code remains authoritative for professional facts, authorization, validation, persistence and state changes.
 
-- Use AI for semantic understanding, contextual interpretation, comparison, synthesis, and generation where these capabilities materially outperform brittle keyword or title rules.
-- Keep AI provider-neutral. Feature-owned use cases define their task prompts, input preparation, schemas, evidence requirements, and orchestration; shared infrastructure owns provider contracts, adapters, activation, routing, timeouts, and bounded retries.
-- Validate structured output with the owning feature's Zod schema and validate evidence references against trusted application data. Schema validity alone does not prove factual correctness.
-- Treat job descriptions, imported documents, user content, and model responses as untrusted data. External content must never override system or product instructions.
-- Send only task-required information. Do not send raw CVs or unnecessary personal data to hosted providers without a task-specific privacy review and appropriate user notice/consent.
-- Reuse valid prior results when the complete job context, confirmed Profile version, task/prompt/schema version, and applicable policy version have not changed. Do not make repeated AI calls without a reason.
-- Use task-appropriate reasoning settings. Simple extraction or rewriting may use direct generation; semantic comparison must be allowed sufficient contextual interpretation and must be evaluated on representative cases. Do not globally disable model capabilities that a core product task requires.
-- Keep discovery, authentication, authorization, persistence, validation, and application lifecycle operations functional when AI is unavailable. AI-dependent features must fail honestly and recover safely; do not silently downgrade them to keyword-only logic.
+### User-facing AI capabilities
 
-### Provider strategy
+- **Job-fit analysis:** compare the user's confirmed CV/Profile evidence against a selected vacancy. Explain matching evidence, gaps and uncertainty. Preserve the product's Confirmed, Inferred, Missing and Can't verify classifications. Present fit as an evidence-based estimate, not a hiring probability.
+- **CV improvement:** recommend targeted improvements for a selected vacancy using the user's confirmed experience and qualifications. Suggestions must not invent skills, credentials, dates, achievements or employment history.
+- **Career-related assistance:** provide relevant guidance grounded in the user's confirmed profile, goals and vacancy context. Distinguish user-provided facts from AI suggestions.
+- AI output is a proposal. The user remains in control of edits and decisions. AI must not silently overwrite confirmed Profile or master CV data, change application status, submit an application or take irreversible action.
 
-Follow D-048 for explicit environment-specific activation: Ollama Local is the only enabled provider in local development; Gemini Developer API and Groq API are the hosted providers, subject to their available free-tier access. Provider activation is explicit and server-side. Never activate a provider merely because credentials exist, expose credentials to the browser, or silently fall back to paid usage. Ollama Cloud is not part of the current provider plan.
+### AI technology roles
 
-Provider-specific SDKs and keys stay behind server-side adapters. Feature code must call the provider-neutral AI service and must not branch on provider names or environment names. Provider capabilities, context limits, response formats, and rate limits must be checked for the task. Preserve work when all enabled providers are unavailable and expose a clear failure state.
+| Technology | Role in Thungatha |
+|---|---|
+| Google Gemini | Primary hosted AI provider for job-fit analysis, CV improvement and career-related assistance. |
+| Groq | Alternative hosted provider and optional fallback for supported tasks. |
+| Ollama | Default local inference runtime and primary development/testing path; use it for most local AI development. |
+| Qwen 3.5 4B | Initial local model candidate run through Ollama; validate quality, structured outputs and local resource use. |
+| Camber | Cloud coding agent for development assistance and data/scientific work. It is not an application inference provider or runtime dependency. |
 
+### Provider and privacy rules
+
+- Use Ollama for most development and testing. Gemini and Groq may be used occasionally during development for comparison and hosted-integration tests. For hosted workloads, keep provider keys and calls server-side behind a small replaceable provider interface and configure primary/fallback routing; do not call every provider for every request.
+- Select the model for each task based on quality, structured-output reliability, latency, privacy, context limits and cost. Exact production model selection remains subject to validation.
+- Validate structured output using the project's established Zod conventions. Use bounded inputs, output tokens, timeouts and retries. Treat malformed or low-confidence output as a failure or review case, not as truth.
+- Do not send CVs or other personal data to a provider until the task, minimum data required, provider terms and privacy/consent implications have been reviewed. Never send unnecessary personal data.
+- Keep core discovery, deterministic matching rules, persistence and user actions functional when AI is disabled or unavailable.
+- Use Camber as a development coding/data agent for PostgreSQL analysis, crawler-result investigation and long-running experiments; do not make it an application runtime dependency. Verify its tool interfaces and data handling before connecting project databases.
+- The user reports free Gemini student access, but this is not proof of unlimited Gemini Developer API quota or free production inference. Verify the applicable API tier, model limits, data-use terms and costs.
+
+The shared provider/tooling decision is recorded in `../DECISIONS.md` (D-042). The implementation roadmap and evidence determine when each AI capability may be described as available.
 ## 11. Security, privacy, and data ownership
 
 - Resolve identity on the server using the authenticated Clerk identity.

@@ -28,7 +28,6 @@ export async function buildJobFeedResponseRows(input: {
     hasProfileError,
     rankWhole,
     from,
-    pageSize,
   } = input;
   const currentHashes = new Map(
     data.map((job) => [job.id, hashJobContext(createJobMatchingContext(job))]),

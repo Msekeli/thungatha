@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { JobMetadata } from "./job-metadata";
 import type { JobCardData } from "./job-opportunity-card";
 
@@ -29,9 +30,12 @@ export function JobCardButton({
       className={`flex w-full min-w-0 items-center gap-3 rounded-3xl border p-3 pr-12 text-left transition-colors hover:border-[var(--th-accent)] hover:bg-[var(--th-panel-2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--th-accent)] ${selected ? "border-[var(--th-accent)] bg-[var(--th-selected)]" : "border-[var(--th-line)] bg-[var(--th-panel)]"}`}
     >
       {job.company_logo_url ? (
-        <img
+        <Image
           src={job.company_logo_url}
           alt=""
+          width={56}
+          height={56}
+          unoptimized
           className="size-14 shrink-0 rounded-2xl border border-line object-contain bg-white p-1"
         />
       ) : (

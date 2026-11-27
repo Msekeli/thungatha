@@ -251,38 +251,29 @@ A source list found in research is not automatically approved. Confirm source-sp
 
 ## 10. AI provider boundary
 
-Shared AI infrastructure lives in `src/lib/ai/`. It owns provider-neutral contracts, provider adapters, explicit provider activation, task-aware provider selection, timeouts, and bounded retries. Feature-owned AI use cases remain inside their owning feature; prompts, task schemas, input preparation, evidence rules, and orchestration must not drift into a generic AI framework. The shared layer enables AI capabilities; it must not reduce every feature to a deterministic rules engine.
+AI is integrated as a server-side application capability for concrete Thungatha workflows: job-fit analysis, CV improvement and career-related assistance. It must not become the authority for professional facts, authorization, persistence or state transitions.
 
-### Environment-specific provider activation
+### Provider/runtime roles
 
-Provider activation is explicit and server-side. The application must not enable a provider merely because its credentials happen to be present.
+- **Ollama:** default local inference runtime and primary development/testing path. Use it for most local AI development and testing.
+- **Qwen 3.5 4B:** initial local model candidate run through Ollama. Validate quality, structured-output reliability and local resource use.
+- **Gemini:** intended hosted AI provider for supported career workflows.
+- **Groq:** alternative hosted AI provider and optional fallback. Gemini and Groq may be used occasionally during development for comparison; once hosted, configure primary/fallback routing based on measured task quality, privacy, quotas, latency and cost.
+- **Camber:** cloud coding agent for development assistance and data/scientific work, including PostgreSQL/crawler-result analysis and long-running experiments. It is not an inference provider or application runtime dependency; review tool interfaces and data handling before connecting project databases.
 
-- **Local development:** Ollama Local is the only enabled provider. Gemini and Groq may have optional local configuration or credentials, but they remain disabled and must never receive local-development requests.
-- **Hosted production:** Gemini Developer API and Groq API are the enabled hosted providers, using only their currently available free-tier access. Configure credentials and activation in the hosting environment; never expose them to the browser.
-- **Ollama Cloud:** Not part of the current provider plan.
+Keep hosted provider SDKs behind a small server-side interface. Configure one primary provider and optional fallback; do not call both for every request. Select models per task based on quality, structured-output reliability, latency, privacy and cost. Keep API keys out of client code.
 
-The transition from local development to hosted production must be configuration-only. Feature code must not inspect the environment or name a provider; it calls the shared AI service. The router may choose or fall back only among providers explicitly enabled for that environment and allowed by the task's capability, privacy, and fallback policy. Disabled providers must never be contacted.
+### Data and safety boundary
 
-Provider capabilities, model context limits, response formats, and free-tier restrictions differ. Adapters normalize provider-specific protocols, while routing verifies that an enabled provider can perform the requested task. Never silently fall back to paid usage.
+- Send only the minimum profile/CV and vacancy context required for the user's requested task. Review provider terms and privacy/consent implications before sending personal data.
+- Validate all structured responses against explicit runtime schemas using the existing Zod conventions.
+- Treat AI output as untrusted suggestions. It cannot invent credentials or experience, silently overwrite confirmed Profile/CV facts, change application status, submit applications or take irreversible actions.
+- Deterministic application code owns authorization, ownership checks, validation, matching calculations/rules, persistence, snapshots and state transitions.
+- Apply bounded input/output sizes, timeouts and transient retries. Handle provider failure, malformed output and quota exhaustion without corrupting user data.
+- Preserve the no-AI path for discovery, deterministic matching and user actions. AI being unavailable must not block unrelated core functionality.
+- Do not build a generic agent framework for the MVP.
 
-### AI-first feature use, efficiency and failure handling
-
-- Use AI for tasks that genuinely require contextual language understanding, semantic interpretation, comparison, synthesis, or generation. Job-to-Profile matching is one of these core tasks; it must not be reduced to exact keyword overlap or job-title classification.
-- Keep predictable invariants deterministic: identity, authorization, evidence-reference validation, data validation, persistence, deduplication, state transitions, catalogue pagination, and the application of approved categorical outcomes.
-- Do not encode semantic job fit as regex extraction, fixed skill dictionaries, exact-string comparisons, title/role-family gates, or keyword-triggered mandatory rejection. These may be retained only for narrow syntax validation, display normalization, or migration compatibility when they cannot influence the assessment.
-- Interpret detailed requirements (including qualifications, experience, certifications, subject marks, and mandatory/preferred wording) using the complete job context and confirmed candidate evidence. Preserve uncertainty and explain gaps; do not treat one field or requirement as a universal hard gate.
-- Persist AI job-understanding results against a hash of the complete matching context (title, employer, location/work arrangement where available, and original description) plus the relevant parser/prompt/schema version. Retain the raw description hash separately for exact source-evidence validation. Persist candidate assessments against the job-context identity, matching-task/policy versions, and confirmed Profile version. Use asynchronous, idempotent processing with safe retry/defer and stale-task protection; feed reads must use current cached assessments and must not wait for live AI calls.
-- Reuse valid prior AI results only when the source content, confirmed Profile version, task/prompt version, schema version, and relevant policy version still match. Invalidate or refresh results when any dependency changes.
-- Send only the data required for the task. Minimise personal data and do not send raw CVs or full Profile records to a hosted provider without a task-specific privacy review and demonstrated need.
-- Validate structured output with the owning feature's Zod schema, then validate all cited job-source and Profile evidence references against trusted records. Schema validity is not proof of factual correctness.
-- AI output is a proposal, not authorization or unquestioned truth. It cannot create candidate facts, promote imported data to confirmed status, or mutate Profile/CV/application records without the user's explicit workflow.
-- Use task-appropriate model capabilities. Simple extraction may use direct generation; semantic comparison must be allowed sufficient context and interpretation. Evaluate direct versus reasoning-enabled modes against representative cases instead of globally disabling capabilities.
-- Preserve task progress when an enabled provider is temporarily unavailable or reaches an actual provider rate limit. Persist and defer/retry the task safely, then resume it; do not discard work, truncate a valid assessment, or send it to a disabled provider. Show the assessment as unavailable while pending or failed rather than substituting keyword matching and presenting it as equivalent. Retry policies may prevent endless retry loops, but must not impose arbitrary call/token budgets or silently abandon an otherwise valid task.
-- Do not build a separate usage-monitoring or internal quota-budget subsystem for the MVP. Keep basic diagnostics for troubleshooting provider calls (success/failure, latency, token usage when returned, and provider rate-limit/retry information). Diagnostics must not impose arbitrary internal usage caps, token/output truncation, queue-admission caps, or stop valid work. Reduce consumption by reusing valid cached results, deduplicating in-flight work, and sending only necessary evidence—not by cutting off tasks.
-- Respect actual provider rate limits and free-tier terms. Never silently fall back to paid usage.
-
-AI performs semantic interpretation and candidate-to-job evidence comparison. Application code verifies the evidence, applies the approved **Match / Relevant** public classification rules, represents insufficient evidence/provider failure as an unavailable assessment (not a third classification), and owns sorting, user ownership, authentication, persistence, and application state transitions. Keep the job feed, ingestion, and user-record workflows usable when AI is unavailable. Do not build a generic autonomous-agent framework for the MVP.
-
+The confirmed product direction and tool roles are recorded in `DECISIONS.md` D-042. Exact model selection and production provider configuration remain subject to implementation and privacy/cost validation.
 ## 11. CV files and storage
 
 When CV upload and export are implemented, use durable object storage approved for the project, such as Supabase Storage if suitable. Decide file type/size limits, access policies, signed URLs, retention, deletion, and privacy behaviour before release. Do not rely on the function's local filesystem for durable storage.

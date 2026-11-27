@@ -8,6 +8,10 @@ import {
 } from "@testing-library/react";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({ userId: "user_test", isLoaded: true }),
+}));
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();

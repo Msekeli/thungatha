@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { CvPdfDocument, type CvPdfContent } from "./cv-pdf-document";
 import { useCvPdfBlob } from "./use-cv-pdf-blob";
 import { useCvPdfPageRendering } from "./use-cv-pdf-page-rendering";
@@ -17,7 +17,25 @@ export function CvPdfPreviewClient({
   allowDownload?: boolean;
 }) {
   const [containerWidth, setContainerWidth] = useState(0);
-  const [zoom, setZoom] = useState(100);
+  const [zoomState, setZoomState] = useState({ content, accent, value: 100 });
+  const zoom =
+    zoomState.content === content && zoomState.accent === accent
+      ? zoomState.value
+      : 100;
+  const setZoom: Dispatch<SetStateAction<number>> = (nextZoom) => {
+    setZoomState((current) => {
+      const currentZoom =
+        current.content === content && current.accent === accent
+          ? current.value
+          : 100;
+      return {
+        content,
+        accent,
+        value:
+          typeof nextZoom === "function" ? nextZoom(currentZoom) : nextZoom,
+      };
+    });
+  };
   const document = useMemo(
     () => <CvPdfDocument content={content} accent={accent} />,
     [content, accent],
@@ -39,10 +57,6 @@ export function CvPdfPreviewClient({
       .replace(/[^a-z0-9]+/gi, "-")
       .replace(/^-|-$/g, "") || "candidate"
   }-cv.pdf`;
-
-  useEffect(() => {
-    setZoom(100);
-  }, [content, accent]);
 
   function downloadPdf() {
     if (!pdfUrl) return;

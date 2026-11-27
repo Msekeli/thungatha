@@ -3,11 +3,7 @@ import {
   getAuthenticatedIdentity,
   hasClerkConfiguration,
 } from "@/thungatha-features/authentication/server/identity";
-import {
-  apiError,
-  apiFailure,
-  describeApiError,
-} from "@/lib/http/api-response";
+import { apiError, apiFailure } from "@/lib/http/api-response";
 import {
   createAuthenticatedSupabaseClient,
   createPublicSupabaseClient,

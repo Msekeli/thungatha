@@ -17,7 +17,7 @@ test("home page loads successfully", async ({ page }) => {
     page.getByRole("complementary", { name: "Main navigation" }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("combobox", {
+    page.getByRole("textbox", {
       name: "Search roles, skills, or companies",
     }),
   ).toBeVisible();
@@ -38,7 +38,7 @@ test("protected feature routes require authentication or direct to setup", async
   ];
 
   for (const route of routes) {
-    await page.goto(route);
+    await page.goto(route, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/(?:sign-in|auth=setup)/);
   }
 });
