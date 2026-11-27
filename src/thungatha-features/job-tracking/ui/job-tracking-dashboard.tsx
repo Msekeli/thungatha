@@ -52,18 +52,33 @@ export function JobTrackingDashboard() {
   ).length;
 
   function updateApplicationStatus(id: string, status: ApplicationStatus) {
-    setApplications((current) =>
-      current.map((application) =>
-        application.id === id
-          ? { ...application, status, jobDescription: status === "Rejected" || status === "Withdrawn" ? "" : application.jobDescription }
-          : application,
-      ),
-    );
-    setSelectedApplication((current) =>
-      current && current.id === id
-        ? { ...current, status, jobDescription: status === "Rejected" || status === "Withdrawn" ? "" : current.jobDescription }
-        : current,
-    );
+    const changedAt = new Date().toISOString();
+    const historyEntryId = crypto.randomUUID();
+    const updateRecord = (application: ApplicationRecord): ApplicationRecord => {
+      if (application.id !== id || application.status === status) return application;
+
+      return {
+        ...application,
+        status,
+        jobDescription:
+          status === "Rejected" || status === "Withdrawn"
+            ? ""
+            : application.jobDescription,
+        statusHistory: [
+          ...application.statusHistory,
+          {
+            id: historyEntryId,
+            fromStatus: application.status,
+            toStatus: status,
+            changedAt,
+            actor: "user",
+          },
+        ],
+      };
+    };
+
+    setApplications((current) => current.map(updateRecord));
+    setSelectedApplication((current) => current ? updateRecord(current) : current);
   }
 
   function addApplication(application: Omit<ApplicationRecord, "id">) {
@@ -244,6 +259,29 @@ export function JobTrackingDashboard() {
                 </p>
               </div>
             )}
+            <section aria-labelledby="application-history-heading">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 id="application-history-heading" className="text-sm font-semibold text-foreground">Status history</h4>
+                <span className="text-xs text-muted-foreground">{selectedApplication.statusHistory.length} {selectedApplication.statusHistory.length === 1 ? "event" : "events"}</span>
+              </div>
+              {selectedApplication.statusHistory.length > 0 ? (
+                <ol className="space-y-3 border-l border-border pl-4">
+                  {[...selectedApplication.statusHistory].reverse().map((entry) => (
+                    <li key={entry.id} className="relative">
+                      <span aria-hidden="true" className="absolute -left-[21px] top-1.5 size-2.5 rounded-full border-2 border-background bg-primary" />
+                      <p className="text-sm font-medium text-foreground">
+                        {entry.fromStatus ? entry.fromStatus + " → " + entry.toStatus : "Application recorded as " + entry.toStatus}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {new Intl.DateTimeFormat("en-ZA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(entry.changedAt))} · Updated by you
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="text-sm text-muted-foreground">No status changes recorded.</p>
+              )}
+            </section>
             {selectedApplication.notes && (
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Notes</h4>
