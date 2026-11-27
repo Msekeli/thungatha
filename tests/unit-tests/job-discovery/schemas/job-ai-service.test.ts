@@ -1,14 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { completeAiTask } from "@/lib/ai/provider-router";
-import { understandJobWithAi, parseJobUnderstanding, attachCanonicalRequirements } from "@/thungatha-features/job-discovery/server/job-ai-service";
-import { createJobUnderstandingResponseSchema, createMatchAssessmentResponseSchema } from "@/thungatha-features/job-discovery/server/job-ai-schemas";
+import {
+  understandJobWithAi,
+  parseJobUnderstanding,
+  attachCanonicalRequirements,
+} from "@/thungatha-features/job-discovery/server/job-ai-service";
+import {
+  createJobUnderstandingResponseSchema,
+  createMatchAssessmentResponseSchema,
+} from "@/thungatha-features/job-discovery/server/job-ai-schemas";
 import type { JobMatchingContext } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 
 vi.mock("@/lib/ai/provider-router", () => ({
   completeAiTask: vi.fn(),
 }));
 
-const context: JobMatchingContext = { title: "Data Analyst", employerName: "Example Employer", locationText: "Cape Town", description: "Responsible for analysing data. Preparing reports. Maintaining compliance records. Coordinating teams. Supporting audits." };
+const context: JobMatchingContext = {
+  title: "Data Analyst",
+  employerName: "Example Employer",
+  locationText: "Cape Town",
+  description:
+    "Responsible for analysing data. Preparing reports. Maintaining compliance records. Coordinating teams. Supporting audits.",
+};
 
 describe("job understanding service", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -19,11 +32,19 @@ describe("job understanding service", () => {
       model: "test-model",
       content: JSON.stringify({
         summary: "Analyses data and supports compliance.",
-        responsibilities: [{
-          id: "resp-1",
-          statement: "Analyse data and prepare reports.",
-          sourceEvidenceRefs: ["job:segment:1", "job:segment:2", "job:segment:3", "job:segment:4", "job:segment:5"],
-        }],
+        responsibilities: [
+          {
+            id: "resp-1",
+            statement: "Analyse data and prepare reports.",
+            sourceEvidenceRefs: [
+              "job:segment:1",
+              "job:segment:2",
+              "job:segment:3",
+              "job:segment:4",
+              "job:segment:5",
+            ],
+          },
+        ],
         capabilities: [],
         requirements: [],
         coverage: "complete",
@@ -69,20 +90,23 @@ describe("job understanding service", () => {
   });
 
   it("rejects cached evidence references that do not belong to the current description", () => {
-    expect(() => parseJobUnderstanding(context, {
-      summary: "Role",
-      responsibilities: [{
-        id: "resp-1",
-        statement: "Analyse data.",
-        sourceEvidenceRefs: ["job:segment:99"],
-      }],
-      capabilities: [],
-      requirements: [],
-      coverage: "complete",
-    })).toThrow(/outside the current job description/);
+    expect(() =>
+      parseJobUnderstanding(context, {
+        summary: "Role",
+        responsibilities: [
+          {
+            id: "resp-1",
+            statement: "Analyse data.",
+            sourceEvidenceRefs: ["job:segment:99"],
+          },
+        ],
+        capabilities: [],
+        requirements: [],
+        coverage: "complete",
+      }),
+    ).toThrow(/outside the current job description/);
   });
 });
-
 
 describe("candidate assessment response contract", () => {
   const contract = createMatchAssessmentResponseSchema(
@@ -101,22 +125,29 @@ describe("candidate assessment response contract", () => {
       },
       summary: "The evidence aligns with the role.",
       alignmentExplanation: "The supplied evidence supports the core work.",
-      requirements: [{
-        id: "req_1",
-        assessment: "supported",
-        explanation: "The profile demonstrates the required capability.",
-        jobEvidenceRefs: ["job:segment:1"],
-        profileEvidenceRefs: ["profile:skills[0].name"],
-      }, {
-        id: "req_2",
-        assessment: "not_demonstrated",
-        explanation: "The confirmed profile does not demonstrate this requirement.",
-        jobEvidenceRefs: ["job:context:title"],
-        profileEvidenceRefs: [],
-      }],
+      requirements: [
+        {
+          id: "req_1",
+          assessment: "supported",
+          explanation: "The profile demonstrates the required capability.",
+          jobEvidenceRefs: ["job:segment:1"],
+          profileEvidenceRefs: ["profile:skills[0].name"],
+        },
+        {
+          id: "req_2",
+          assessment: "not_demonstrated",
+          explanation:
+            "The confirmed profile does not demonstrate this requirement.",
+          jobEvidenceRefs: ["job:context:title"],
+          profileEvidenceRefs: [],
+        },
+      ],
       gaps: [],
     });
-    expect(parsed.requirements.map((item) => item.id)).toEqual(["req_1", "req_2"]);
+    expect(parsed.requirements.map((item) => item.id)).toEqual([
+      "req_1",
+      "req_2",
+    ]);
     expect(parsed.requirements[0]).not.toHaveProperty("requirement");
     expect(parsed.requirements[0]).not.toHaveProperty("importance");
   });
@@ -147,19 +178,20 @@ describe("candidate assessment response contract", () => {
       },
       summary: "Assessment.",
       alignmentExplanation: "Evidence is limited.",
-      requirements: [{
-        id: "invented_requirement",
-        assessment: "uncertain",
-        explanation: "Uncertain.",
-        jobEvidenceRefs: ["job:segment:1"],
-        profileEvidenceRefs: [],
-      }],
+      requirements: [
+        {
+          id: "invented_requirement",
+          assessment: "uncertain",
+          explanation: "Uncertain.",
+          jobEvidenceRefs: ["job:segment:1"],
+          profileEvidenceRefs: [],
+        },
+      ],
       gaps: [],
     });
     expect(result.success).toBe(false);
   });
 });
-
 
 describe("canonical requirement hydration", () => {
   it("attaches exact extracted wording and importance without asking the model to generate them", () => {
@@ -167,37 +199,48 @@ describe("canonical requirement hydration", () => {
       summary: "Role",
       responsibilities: [],
       capabilities: [],
-      requirements: [{
-        id: "req_1",
-        statement: "At least three years of professional software development experience.",
-        category: "experience" as const,
-        importance: "mandatory" as const,
-        sourceEvidenceRefs: ["job:segment:1"],
-      }],
+      requirements: [
+        {
+          id: "req_1",
+          statement:
+            "At least three years of professional software development experience.",
+          category: "experience" as const,
+          importance: "mandatory" as const,
+          sourceEvidenceRefs: ["job:segment:1"],
+        },
+      ],
       coverage: "complete" as const,
     };
-    const hydrated = attachCanonicalRequirements({
-      semanticAlignment: {
-        level: "meaningful",
-        materialGaps: true,
-        jobEvidenceRefs: ["job:segment:1"],
-        profileEvidenceRefs: ["profile:skills[0].name"],
+    const hydrated = attachCanonicalRequirements(
+      {
+        semanticAlignment: {
+          level: "meaningful",
+          materialGaps: true,
+          jobEvidenceRefs: ["job:segment:1"],
+          profileEvidenceRefs: ["profile:skills[0].name"],
+        },
+        summary: "Relevant transferable experience.",
+        alignmentExplanation:
+          "The candidate has related software development evidence.",
+        requirements: [
+          {
+            id: "req_1",
+            assessment: "not_demonstrated",
+            explanation:
+              "The confirmed profile does not establish the required duration.",
+            jobEvidenceRefs: ["job:segment:1"],
+            profileEvidenceRefs: [],
+          },
+        ],
+        gaps: [],
       },
-      summary: "Relevant transferable experience.",
-      alignmentExplanation: "The candidate has related software development evidence.",
-      requirements: [{
-        id: "req_1",
-        assessment: "not_demonstrated",
-        explanation: "The confirmed profile does not establish the required duration.",
-        jobEvidenceRefs: ["job:segment:1"],
-        profileEvidenceRefs: [],
-      }],
-      gaps: [],
-    }, understanding);
+      understanding,
+    );
 
     expect(hydrated.requirements[0]).toMatchObject({
       id: "req_1",
-      requirement: "At least three years of professional software development experience.",
+      requirement:
+        "At least three years of professional software development experience.",
       importance: "mandatory",
       assessment: "not_demonstrated",
     });
@@ -208,13 +251,15 @@ describe("canonical requirement hydration", () => {
       summary: "Role",
       responsibilities: [],
       capabilities: [],
-      requirements: [{
-        id: "req_1",
-        statement: "Build software.",
-        category: "skill" as const,
-        importance: "preferred" as const,
-        sourceEvidenceRefs: ["job:segment:1"],
-      }],
+      requirements: [
+        {
+          id: "req_1",
+          statement: "Build software.",
+          category: "skill" as const,
+          importance: "preferred" as const,
+          sourceEvidenceRefs: ["job:segment:1"],
+        },
+      ],
       coverage: "complete" as const,
     };
     const output = {
@@ -229,6 +274,8 @@ describe("canonical requirement hydration", () => {
       requirements: [],
       gaps: [],
     };
-    expect(() => attachCanonicalRequirements(output, understanding)).toThrow(/omitted extracted requirement IDs/);
+    expect(() => attachCanonicalRequirements(output, understanding)).toThrow(
+      /omitted extracted requirement IDs/,
+    );
   });
 });

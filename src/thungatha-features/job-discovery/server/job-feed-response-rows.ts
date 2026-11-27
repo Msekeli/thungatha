@@ -1,6 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { FeedJob } from "./job-feed-sorting";
-import { createJobMatchingContext, hashJobContext } from "./job-ai-queue-eligibility";
+import {
+  createJobMatchingContext,
+  hashJobContext,
+} from "./job-ai-queue-eligibility";
 import { relevanceOrder } from "./job-feed-sorting";
 import { fetchFeedAssessmentsAndQueue } from "./job-feed-assessments";
 import { resolveJobMatchStatus } from "./job-feed-status";
@@ -17,8 +20,15 @@ export async function buildJobFeedResponseRows(input: {
   pageSize: number;
 }) {
   const {
-    db, userId, profileVersion, data, states, hasProfileError,
-    rankWhole, from, pageSize,
+    db,
+    userId,
+    profileVersion,
+    data,
+    states,
+    hasProfileError,
+    rankWhole,
+    from,
+    pageSize,
   } = input;
   const currentHashes = new Map(
     data.map((job) => [job.id, hashJobContext(createJobMatchingContext(job))]),

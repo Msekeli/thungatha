@@ -29,10 +29,10 @@ export async function parseGroqResponse(
   }
   const content = payload?.choices?.[0]?.message?.content;
   if (typeof content !== "string" || !content) {
-    throw new AiProviderError(
-      "Groq returned no usable completion content.",
-      { code: "invalid-response", provider: "groq" },
-    );
+    throw new AiProviderError("Groq returned no usable completion content.", {
+      code: "invalid-response",
+      provider: "groq",
+    });
   }
   return {
     content,

@@ -13,19 +13,30 @@ describe("CV tailoring evidence", () => {
       currentText: "Built internal web applications.",
       profileEvidenceRef: "cv:workExperience[work-1].description",
     });
-    expect(result.editableTargets.some((item) => item.path === "email")).toBe(false);
+    expect(result.editableTargets.some((item) => item.path === "email")).toBe(
+      false,
+    );
   });
 
   it("preserves source evidence excerpts", () => {
     const result = createEvidence();
-    expect(result.profileEvidence.find((item) => item.id === "cv:professionalSummary")?.content)
-      .toBe("Builds web applications with React and TypeScript.");
-    expect(result.profileEvidence.find((item) => item.id === "cv:workExperience[work-1].description")?.content)
-      .toBe("Built internal web applications.");
+    expect(
+      result.profileEvidence.find(
+        (item) => item.id === "cv:professionalSummary",
+      )?.content,
+    ).toBe("Builds web applications with React and TypeScript.");
+    expect(
+      result.profileEvidence.find(
+        (item) => item.id === "cv:workExperience[work-1].description",
+      )?.content,
+    ).toBe("Built internal web applications.");
   });
 
   it("uses current draft text as the target baseline, not as evidence", () => {
-    const draft = { ...master, professionalSummary: "My manually edited draft." };
+    const draft = {
+      ...master,
+      professionalSummary: "My manually edited draft.",
+    };
     const result = createEvidence(draft);
     expect(result.profileEvidence).toContainEqual({
       id: "cv:professionalSummary",

@@ -42,7 +42,9 @@ export function ProfileReviewView({
           Professional profile
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight print:text-black">
-          {details.fullName || profile.displayName || "Your professional profile"}
+          {details.fullName ||
+            profile.displayName ||
+            "Your professional profile"}
         </h1>
         {contact && (
           <p className="mt-2 text-sm text-muted-foreground print:text-gray-700">

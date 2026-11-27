@@ -16,17 +16,20 @@ vi.mock("@clerk/nextjs", () => ({
 
 function setupFetch() {
   sessionStorage.clear();
-  vi.stubGlobal("fetch", vi.fn(async () => ({
-    ok: true,
-    status: 200,
-    json: async () => ({
-      jobs: [scoutVacancyRecord],
-      page: 1,
-      pageSize: 30,
-      total: 1,
-      totalPages: 1,
-    }),
-  })));
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        jobs: [scoutVacancyRecord],
+        page: 1,
+        pageSize: 30,
+        total: 1,
+        totalPages: 1,
+      }),
+    })),
+  );
 }
 
 afterEach(() => {
@@ -39,9 +42,11 @@ describe("Scout job discovery feed", () => {
   it("shows a Scout vacancy and keeps an unknown publication date unknown", async () => {
     setupFetch();
     render(<JobsDiscovery configured={false} />);
-    expect(await screen.findByRole("button", {
-      name: "View Software Engineer at Example Technologies",
-    })).toBeTruthy();
+    expect(
+      await screen.findByRole("button", {
+        name: "View Software Engineer at Example Technologies",
+      }),
+    ).toBeTruthy();
     expect(screen.getByText("Date unknown")).toBeTruthy();
   });
 

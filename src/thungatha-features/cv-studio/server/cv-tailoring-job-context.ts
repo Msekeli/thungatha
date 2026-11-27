@@ -11,7 +11,9 @@ export function toJobMatchingContext(job: CvTailoringJob): JobMatchingContext {
   };
 }
 
-export function compactRequirements(requirements: JobUnderstanding["requirements"]) {
+export function compactRequirements(
+  requirements: JobUnderstanding["requirements"],
+) {
   return requirements.map((item) => [
     item.id,
     item.statement.slice(0, 120),

@@ -52,10 +52,12 @@ export async function enqueueImportedJobAssessments(jobIds: string[]) {
     { data: profiles, error: profileError },
     { data: jobs, error: jobError },
   ] = await Promise.all([
-    db.from("profiles")
+    db
+      .from("profiles")
       .select("user_id,profile_version")
       .not("confirmed_at", "is", null),
-    db.from("jobs")
+    db
+      .from("jobs")
       .select("id,title,employer_name,location_text,description")
       .in("id", uniqueIds),
   ]);
@@ -68,7 +70,9 @@ export async function enqueueImportedJobAssessments(jobIds: string[]) {
   let queued = 0;
   for (const profile of profiles ?? []) {
     queued += await enqueueJobRows(
-      profile.user_id, profile.profile_version ?? 1, jobs ?? [],
+      profile.user_id,
+      profile.profile_version ?? 1,
+      jobs ?? [],
     );
   }
   return { users: profiles?.length ?? 0, queued, eligible };
@@ -84,7 +88,8 @@ export async function enqueueAllJobAssessments(userId: string) {
   let eligible = 0;
   let offset = 0;
   while (true) {
-    const { data, error } = await db.from("jobs")
+    const { data, error } = await db
+      .from("jobs")
       .select("id,title,employer_name,location_text,description")
       .order("id", { ascending: true })
       .range(offset, offset + BACKFILL_BATCH_SIZE - 1);

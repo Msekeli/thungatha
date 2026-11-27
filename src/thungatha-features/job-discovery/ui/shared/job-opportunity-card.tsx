@@ -2,10 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { JobCardData } from "./job-card-config";
-import {
-  jobCardClassName,
-  jobCardSelectClassName,
-} from "./job-card-config";
+import { jobCardClassName, jobCardSelectClassName } from "./job-card-config";
 import { JobCardDetails } from "./job-card-details";
 import { JobCardHeader } from "./job-card-header";
 

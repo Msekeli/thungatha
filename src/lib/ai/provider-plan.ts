@@ -25,8 +25,7 @@ export function resolveProviderPlan(): {
   }
 
   const requested =
-    process.env.AI_PROVIDER?.trim() ||
-    process.env.AI_DEFAULT_PROVIDER?.trim();
+    process.env.AI_PROVIDER?.trim() || process.env.AI_DEFAULT_PROVIDER?.trim();
   if (!requested || !(PROVIDERS as readonly string[]).includes(requested)) {
     throw new AiProviderError(
       "Set AI_PROVIDER or AI_DEFAULT_PROVIDER to a supported provider.",

@@ -9,13 +9,20 @@ describe("Gemini adapter", () => {
       properties: { value: { type: "STRING" } },
       required: ["value"],
     };
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
-      candidates: [{
-        content: { parts: [{ text: '{"value":"ok"}' }] },
-        finishReason: "STOP",
-      }],
-      usageMetadata: { promptTokenCount: 20, candidatesTokenCount: 5 },
-    }), { status: 200 }));
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          candidates: [
+            {
+              content: { parts: [{ text: '{"value":"ok"}' }] },
+              finishReason: "STOP",
+            },
+          ],
+          usageMetadata: { promptTokenCount: 20, candidatesTokenCount: 5 },
+        }),
+        { status: 200 },
+      ),
+    );
 
     const result = await createGeminiAdapter({
       apiKey: "test-key",
@@ -45,28 +52,36 @@ describe("Gemini adapter", () => {
   });
 
   it("preserves HTTP status, provider detail, and Retry-After", async () => {
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
-      error: { message: "The service is temporarily overloaded." },
-    }), {
-      status: 503,
-      headers: { "content-type": "application/json", "retry-after": "1" },
-    }));
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: { message: "The service is temporarily overloaded." },
+        }),
+        {
+          status: 503,
+          headers: { "content-type": "application/json", "retry-after": "1" },
+        },
+      ),
+    );
 
-    await expect(createGeminiAdapter({
-      apiKey: "test-key",
-      model: "test-model",
-      fetcher,
-    }).complete({
-      task: "job-requirement-extraction",
-      systemPrompt: "Return JSON.",
-      userPrompt: "Extract.",
-      responseFormat: "json",
-    })).rejects.toMatchObject({
+    await expect(
+      createGeminiAdapter({
+        apiKey: "test-key",
+        model: "test-model",
+        fetcher,
+      }).complete({
+        task: "job-requirement-extraction",
+        systemPrompt: "Return JSON.",
+        userPrompt: "Extract.",
+        responseFormat: "json",
+      }),
+    ).rejects.toMatchObject({
       name: "AiProviderError",
       code: "unavailable",
       retryable: true,
       retryAfterMs: 1_000,
-      message: "Gemini returned HTTP 503. The service is temporarily overloaded.",
+      message:
+        "Gemini returned HTTP 503. The service is temporarily overloaded.",
     } satisfies Partial<AiProviderError>);
   });
 });

@@ -20,7 +20,6 @@ function toJobPayload(context: CvDraftJobContext): JobPayload {
   };
 }
 
-
 export function createCvDraft(
   masterVersionId: string,
   jobContext: CvDraftJobContext,

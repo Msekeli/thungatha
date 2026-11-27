@@ -66,6 +66,7 @@ After each code checkpoint, commit the coherent changes to remote `dev` and repo
 Inspect the real branch and working tree, current routes and feature folders, auth, database configuration, migrations, environment examples, data-access code, tests, theme tokens, shared controls, desktop workspace shell and mobile navigation.
 
 Return a concise report separating:
+
 - working functionality from placeholders/scaffolding;
 - existing versus absent API/database/migration/storage capability;
 - auth and data-access patterns actually present;
@@ -120,7 +121,6 @@ Exit evidence: actual test results, visual comparison evidence, security/privacy
 
 Perform **C00 only**. Return the audit and proposed C01 implementation plan. Do not edit application code, create migrations, change API contracts, install dependencies, or commit until the user approves C00.
 
-
 ## M2-C04 implementation record — 2026-10-24
 
 C04 adds server-side text extraction for staged PDF/DOCX files using `pdf-parse@2.4.5` and `mammoth@1.13.0`. Deterministic parsing returns candidate fields only; it does not write to confirmed Profile or master-CV data. The UI provides an explicit extraction action, busy state, retry, partial/failure messaging and warnings for unreadable/scanned PDFs. Scanned PDFs require OCR and are not supported by this checkpoint.
@@ -128,7 +128,6 @@ C04 adds server-side text extraction for staged PDF/DOCX files using `pdf-parse@
 The extraction endpoint derives identity on the server, validates that the staged storage path is under that user's prefix, downloads through the authenticated Supabase client and limits the object to 5 MB. No AI API is called.
 
 No tests, lint, build, browser checks or Vercel operations were run, per the user's standing instruction. Synchronize local `package.json` and `package-lock.json` changes with the remote checkpoint before a clean install.
-
 
 ## Current CV import scope — 2026-11-19
 
@@ -139,7 +138,6 @@ No tests, lint, build, browser checks or Vercel operations were run, per the use
 - Never block manual Profile creation when extraction fails. Never silently overwrite confirmed Profile facts.
 - Use anonymised test fixtures or generated synthetic PDFs. Do not commit the user's uploaded CVs or their personal information.
 - Do not start DOCX support, OCR, external APIs or AI extraction during this checkpoint.
-
 
 ## Archive notice — 2026-11-23
 

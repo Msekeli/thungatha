@@ -18,12 +18,18 @@ export async function generateAndSaveCvTailoringDraft(
   context: CvTailoringDraftContext,
 ) {
   let generatedSuggestions: CvSuggestion[];
-  let generationMetadata: { provider: string; model: string; taskVersion: string };
+  let generationMetadata: {
+    provider: string;
+    model: string;
+    taskVersion: string;
+  };
   let nextAssessment = context.draft.tailoring_assessment;
 
   if (input.section === "professionalSummary") {
     const result = await generateCvTailoringSuggestions(
-      context.masterContent, context.draftContent, context.job,
+      context.masterContent,
+      context.draftContent,
+      context.job,
     );
     generatedSuggestions = result.suggestions;
     generationMetadata = {
@@ -54,16 +60,22 @@ export async function generateAndSaveCvTailoringDraft(
     };
   }
 
-  const existing = z.array(cvSuggestionSchema).max(200)
+  const existing = z
+    .array(cvSuggestionSchema)
+    .max(200)
     .parse(context.draft.suggestions ?? []);
-  const prefix = input.section === "workExperience"
-    ? `workExperience[${input.experienceSourceId}].`
-    : null;
-  const isTargeted = (path: string) => input.section === "professionalSummary"
-    ? path === "professionalSummary"
-    : Boolean(prefix && path.startsWith(prefix));
+  const prefix =
+    input.section === "workExperience"
+      ? `workExperience[${input.experienceSourceId}].`
+      : null;
+  const isTargeted = (path: string) =>
+    input.section === "professionalSummary"
+      ? path === "professionalSummary"
+      : Boolean(prefix && path.startsWith(prefix));
   const merged = [
-    ...existing.filter((item) => !isTargeted(item.targetPath) || item.decision !== "pending"),
+    ...existing.filter(
+      (item) => !isTargeted(item.targetPath) || item.decision !== "pending",
+    ),
     ...generatedSuggestions,
   ];
   if (merged.length > 200) {

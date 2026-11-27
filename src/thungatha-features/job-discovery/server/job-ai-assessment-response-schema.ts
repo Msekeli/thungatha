@@ -26,20 +26,27 @@ export function createMatchAssessmentResponseSchema(
     }),
     summary: z.string().min(1),
     alignmentExplanation: z.string().min(1),
-    requirements: z.array(z.object({
-      id: requirementId,
-      assessment: z.enum([
-        "supported", "not_demonstrated", "contradictory", "uncertain",
-      ]),
-      explanation: z.string().min(1),
-      jobEvidenceRefs: z.array(jobRef).min(1),
-      profileEvidenceRefs: z.array(profileRef),
-    })),
-    gaps: z.array(z.object({
-      description: z.string().min(1),
-      jobEvidenceRefs: z.array(jobRef).min(1),
-      profileEvidenceRefs: z.array(profileRef),
-    })),
+    requirements: z.array(
+      z.object({
+        id: requirementId,
+        assessment: z.enum([
+          "supported",
+          "not_demonstrated",
+          "contradictory",
+          "uncertain",
+        ]),
+        explanation: z.string().min(1),
+        jobEvidenceRefs: z.array(jobRef).min(1),
+        profileEvidenceRefs: z.array(profileRef),
+      }),
+    ),
+    gaps: z.array(
+      z.object({
+        description: z.string().min(1),
+        jobEvidenceRefs: z.array(jobRef).min(1),
+        profileEvidenceRefs: z.array(profileRef),
+      }),
+    ),
   });
   return {
     validator: modelSchema,

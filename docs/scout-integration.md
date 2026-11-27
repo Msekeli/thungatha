@@ -31,16 +31,16 @@ The manual sync endpoint never exposes Scout credentials to the browser. Do not 
 
 Scout's response remains unchanged. Thungatha maps:
 
-| Scout export field | Thungatha column |
-|---|---|
-| `scout_vacancy_id` | `scout_vacancy_id` |
-| `title` | `title` |
-| `employer_name` | `employer_name` |
-| `logo_url` | `company_logo_url` |
-| `location_text` | `location_text` |
-| `description` | `description` |
-| `application_url` | `application_url` |
-| `published_at` | `published_at` |
+| Scout export field  | Thungatha column    |
+| ------------------- | ------------------- |
+| `scout_vacancy_id`  | `scout_vacancy_id`  |
+| `title`             | `title`             |
+| `employer_name`     | `employer_name`     |
+| `logo_url`          | `company_logo_url`  |
+| `location_text`     | `location_text`     |
+| `description`       | `description`       |
+| `application_url`   | `application_url`   |
+| `published_at`      | `published_at`      |
 | `source_updated_at` | `source_updated_at` |
 
 `first_seen_at` is Scout discovery metadata and is deliberately not substituted for an employer publication or update date.

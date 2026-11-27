@@ -13,7 +13,10 @@ type ExperienceGenerationProps = {
 };
 
 export function useCvDraftExperienceGeneration({
-  draft, jobContext, setDraft, setMessage,
+  draft,
+  jobContext,
+  setDraft,
+  setMessage,
 }: ExperienceGenerationProps) {
   const [reviewing, setReviewing] = useState<string | null>(null);
   const [busyFor, setBusyFor] = useState<string | null>(null);
@@ -22,7 +25,9 @@ export function useCvDraftExperienceGeneration({
   async function generate(sourceId: string) {
     if (!draft || draft.status !== "draft" || busyFor) return;
     const targetPrefix = "workExperience[" + sourceId + "].";
-    const existing = draft.suggestions.filter((item) => item.targetPath.startsWith(targetPrefix));
+    const existing = draft.suggestions.filter((item) =>
+      item.targetPath.startsWith(targetPrefix),
+    );
     if (existing.some((item) => item.decision === "pending")) {
       setReviewing(sourceId);
       return;
@@ -32,18 +37,25 @@ export function useCvDraftExperienceGeneration({
     setError(null);
     try {
       const body = await generateCvDraftSuggestions(
-        draft.id, jobContext, "workExperience", sourceId,
+        draft.id,
+        jobContext,
+        "workExperience",
+        sourceId,
       );
       setDraft((current) =>
-        current ? {
-          ...current,
-          suggestions: [
-            ...current.suggestions.filter(
-              (item) => !item.targetPath.startsWith(targetPrefix) || item.decision !== "pending",
-            ),
-            ...body.generatedSuggestions,
-          ],
-        } : current,
+        current
+          ? {
+              ...current,
+              suggestions: [
+                ...current.suggestions.filter(
+                  (item) =>
+                    !item.targetPath.startsWith(targetPrefix) ||
+                    item.decision !== "pending",
+                ),
+                ...body.generatedSuggestions,
+              ],
+            }
+          : current,
       );
       setMessage(
         body.generatedSuggestions.length
@@ -54,7 +66,9 @@ export function useCvDraftExperienceGeneration({
       setError(
         cause instanceof DOMException && cause.name === "TimeoutError"
           ? "Work experience tailoring exceeded three minutes. Your draft is still available; you can retry."
-          : cause instanceof Error ? cause.message : "Work experience tailoring failed.",
+          : cause instanceof Error
+            ? cause.message
+            : "Work experience tailoring failed.",
       );
     } finally {
       setBusyFor(null);

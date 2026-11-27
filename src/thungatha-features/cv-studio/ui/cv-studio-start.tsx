@@ -16,9 +16,18 @@ function AuthenticatedCvStudioStart() {
   return <CvStudioStartContent userId={userId} enabled={isLoaded} />;
 }
 
-function CvStudioStartContent({ userId, enabled }: { userId: string | null; enabled: boolean }) {
+function CvStudioStartContent({
+  userId,
+  enabled,
+}: {
+  userId: string | null;
+  enabled: boolean;
+}) {
   const router = useRouter();
   const data = useCvStudioData(userId, enabled);
-  const workflow = useCvStudioJobWorkflow({ data, onNavigateToStudio: () => router.replace("/cv-studio") });
+  const workflow = useCvStudioJobWorkflow({
+    data,
+    onNavigateToStudio: () => router.replace("/cv-studio"),
+  });
   return <CvStudioStartView data={data} workflow={workflow} />;
 }

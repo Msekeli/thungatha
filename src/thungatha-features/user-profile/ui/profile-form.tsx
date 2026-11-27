@@ -21,62 +21,170 @@ export function ProfileForm({
   return <ProfileFormContent initialMode={initialMode} userId={null} enabled />;
 }
 
-function AuthenticatedProfileForm({ initialMode }: { initialMode?: "empty" | "view" | "edit" }) {
+function AuthenticatedProfileForm({
+  initialMode,
+}: {
+  initialMode?: "empty" | "view" | "edit";
+}) {
   const { userId, isLoaded } = useAuth();
-  return <ProfileFormContent initialMode={initialMode} userId={userId} enabled={isLoaded} />;
+  return (
+    <ProfileFormContent
+      initialMode={initialMode}
+      userId={userId}
+      enabled={isLoaded}
+    />
+  );
 }
 
-function ProfileFormContent({ initialMode, userId, enabled }: { initialMode?: "empty" | "view" | "edit"; userId: string | null; enabled: boolean }) {
+function ProfileFormContent({
+  initialMode,
+  userId,
+  enabled,
+}: {
+  initialMode?: "empty" | "view" | "edit";
+  userId: string | null;
+  enabled: boolean;
+}) {
   const {
-    profile, draft, setDraft, loading, saving, error, message, dismissError,
-    dismissMessage, loadFailed, mode, setMode, loadProfile, handleSave,
+    profile,
+    draft,
+    setDraft,
+    loading,
+    saving,
+    error,
+    message,
+    dismissError,
+    dismissMessage,
+    loadFailed,
+    mode,
+    setMode,
+    loadProfile,
+    handleSave,
   } = useProfile(userId, enabled);
   const [reviewing, setReviewing] = useState(false);
   const currentMode = reviewing ? "review" : initialMode || mode;
 
-  if (loading) return (
-    <div className="space-y-4 py-6" aria-busy="true" aria-label="Loading profile">
-      <p role="status" className="sr-only">Loading your profile…</p>
-      <Skeleton className="h-6 w-36" /><Skeleton className="h-10 w-64" />
-      <Skeleton className="h-40 w-full rounded-xl" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div
+        className="space-y-4 py-6"
+        aria-busy="true"
+        aria-label="Loading profile"
+      >
+        <p role="status" className="sr-only">
+          Loading your profile…
+        </p>
+        <Skeleton className="h-6 w-36" />
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
 
-  if (loadFailed) return (
-    <div className="space-y-3 rounded-xl border border-line bg-panel p-6 text-center">
-      <p role="alert" className="text-sm text-warn">{error}</p>
-      <button type="button" onClick={() => void loadProfile()} className="rounded-lg border border-line px-4 py-2 text-xs font-semibold text-fg hover:bg-panel-2">Try again</button>
-    </div>
-  );
+  if (loadFailed)
+    return (
+      <div className="space-y-3 rounded-xl border border-line bg-panel p-6 text-center">
+        <p role="alert" className="text-sm text-warn">
+          {error}
+        </p>
+        <button
+          type="button"
+          onClick={() => void loadProfile()}
+          className="rounded-lg border border-line px-4 py-2 text-xs font-semibold text-fg hover:bg-panel-2"
+        >
+          Try again
+        </button>
+      </div>
+    );
 
   return (
-    <div className={currentMode === "edit" ? "th-profile-form-state th-profile-form-state--edit" : currentMode === "view" ? "th-profile-form-state th-profile-form-state--view" : currentMode === "review" ? "th-profile-form-state th-profile-form-state--review" : "space-y-4"}>
+    <div
+      className={
+        currentMode === "edit"
+          ? "th-profile-form-state th-profile-form-state--edit"
+          : currentMode === "view"
+            ? "th-profile-form-state th-profile-form-state--view"
+            : currentMode === "review"
+              ? "th-profile-form-state th-profile-form-state--review"
+              : "space-y-4"
+      }
+    >
       {error && <Toast message={error} tone="error" onDismiss={dismissError} />}
-      {message && <Toast message={message} tone="success" onDismiss={dismissMessage} />}
-      {currentMode === "empty" && <ProfileEmptyState
-        onStartManualEntry={() => setMode("edit")}
-        onExtracted={(fields) => {
-          setDraft({ ...draft, displayName: draft.displayName || fields.fullName,
-            personalDetails: { ...draft.personalDetails, fullName: draft.personalDetails.fullName || fields.fullName,
-              email: draft.personalDetails.email || fields.email, phone: draft.personalDetails.phone || fields.phone,
-              linkedinUrl: draft.personalDetails.linkedinUrl || fields.linkedinUrl,
-              portfolioUrl: draft.personalDetails.portfolioUrl || fields.portfolioUrl },
-            summary: draft.summary || fields.summary, skills: draft.skills.length ? draft.skills : fields.skills,
-            workExperience: draft.workExperience.length ? draft.workExperience : fields.workExperience,
-            education: draft.education.length ? draft.education : fields.education.map(item => ({ ...item, isCurrent: false })) });
-          setReviewing(true); setMode("edit");
-        }}
-      />}
-      {currentMode === "review" && <ProfileReviewView profile={draft} saving={saving}
-        onEdit={() => { setReviewing(false); setMode("edit"); }}
-        onSave={async () => { if (await handleSave(true)) setReviewing(false); }}
-      />}
-      {currentMode === "view" && profile && <ProfileSavedView profile={profile} onEdit={() => { setDraft(profile); setMode("edit"); }} />}
-      {currentMode === "edit" && <ProfileEditorView profile={draft} saving={saving} onChange={setDraft}
-        onReview={() => setReviewing(true)}
-        onSaveDraft={updated => void handleSave(false, updated)}
-        onCancel={() => setMode(profile && (profile.displayName || profile.personalDetails.fullName) ? "view" : "empty")}
-      />}
+      {message && (
+        <Toast message={message} tone="success" onDismiss={dismissMessage} />
+      )}
+      {currentMode === "empty" && (
+        <ProfileEmptyState
+          onStartManualEntry={() => setMode("edit")}
+          onExtracted={(fields) => {
+            setDraft({
+              ...draft,
+              displayName: draft.displayName || fields.fullName,
+              personalDetails: {
+                ...draft.personalDetails,
+                fullName: draft.personalDetails.fullName || fields.fullName,
+                email: draft.personalDetails.email || fields.email,
+                phone: draft.personalDetails.phone || fields.phone,
+                linkedinUrl:
+                  draft.personalDetails.linkedinUrl || fields.linkedinUrl,
+                portfolioUrl:
+                  draft.personalDetails.portfolioUrl || fields.portfolioUrl,
+              },
+              summary: draft.summary || fields.summary,
+              skills: draft.skills.length ? draft.skills : fields.skills,
+              workExperience: draft.workExperience.length
+                ? draft.workExperience
+                : fields.workExperience,
+              education: draft.education.length
+                ? draft.education
+                : fields.education.map((item) => ({
+                    ...item,
+                    isCurrent: false,
+                  })),
+            });
+            setReviewing(true);
+            setMode("edit");
+          }}
+        />
+      )}
+      {currentMode === "review" && (
+        <ProfileReviewView
+          profile={draft}
+          saving={saving}
+          onEdit={() => {
+            setReviewing(false);
+            setMode("edit");
+          }}
+          onSave={async () => {
+            if (await handleSave(true)) setReviewing(false);
+          }}
+        />
+      )}
+      {currentMode === "view" && profile && (
+        <ProfileSavedView
+          profile={profile}
+          onEdit={() => {
+            setDraft(profile);
+            setMode("edit");
+          }}
+        />
+      )}
+      {currentMode === "edit" && (
+        <ProfileEditorView
+          profile={draft}
+          saving={saving}
+          onChange={setDraft}
+          onReview={() => setReviewing(true)}
+          onSaveDraft={(updated) => void handleSave(false, updated)}
+          onCancel={() =>
+            setMode(
+              profile &&
+                (profile.displayName || profile.personalDetails.fullName)
+                ? "view"
+                : "empty",
+            )
+          }
+        />
+      )}
     </div>
   );
 }

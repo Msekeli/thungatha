@@ -20,7 +20,7 @@ It uses a small fictional candidate and two fixed job scenarios. It does not per
 3. Run the baseline scenario:
 
    ```bash
-   curl -sS -X POST 'http://localhost:3000/api/dev/ai/cv-tailoring' 
+   curl -sS -X POST 'http://localhost:3000/api/dev/ai/cv-tailoring'
    ```
 
 4. Run the unsupported-claims scenario:
@@ -38,6 +38,7 @@ The endpoint invokes Groq directly. It does not silently fall back to Gemini or 
 The fictional CV supports React, TypeScript, responsive web development, and REST API integration. The job also asks for code-review experience, which is absent from the CV.
 
 Expected:
+
 - Supported experience may be rephrased with accurate profile and job evidence.
 - Code-review experience should be reported as a gap.
 - No new candidate facts should be introduced.
@@ -47,6 +48,7 @@ Expected:
 The job asks for React/TypeScript, AWS infrastructure, Kubernetes, team leadership, and at least five years of professional experience. The fictional CV only supports the frontend experience described in the baseline scenario.
 
 Expected:
+
 - AWS, Kubernetes, team leadership, and five years of experience should be identified as unsupported gaps.
 - No suggestion should claim Alex has any of those skills or experiences.
 - React/TypeScript may still be tailored where a truthful improvement is justified.

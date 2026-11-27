@@ -14,12 +14,7 @@ export function JobDismissalFooter({
 }) {
   return (
     <div className="mt-4 flex justify-end gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={busy}
-        onClick={onClose}
-      >
+      <Button variant="outline" size="sm" disabled={busy} onClick={onClose}>
         Cancel
       </Button>
       <Button

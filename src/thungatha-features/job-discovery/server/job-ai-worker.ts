@@ -4,9 +4,7 @@ import {
   processJobAiTask,
   type QueueTask,
 } from "./job-ai-task-processor";
-import {
-  deferQueueAfterRateLimit,
-} from "./job-ai-worker-errors";
+import { deferQueueAfterRateLimit } from "./job-ai-worker-errors";
 import {
   recordJobAiTaskFailure,
   recordJobAiTaskOutcome,

@@ -1,13 +1,14 @@
 import "server-only";
-import {
-  assessJobWithAi,
-} from "./job-ai-service";
+import { assessJobWithAi } from "./job-ai-service";
 import { AssessmentUnavailableError } from "./job-ai-classification";
 import {
   JOB_AI_ASSESSMENT_VERSION,
   createServiceClient,
 } from "./job-ai-queue-eligibility";
-import { completeJobAiTask, markJobAiAssessmentUnavailable } from "./job-ai-task-state";
+import {
+  completeJobAiTask,
+  markJobAiAssessmentUnavailable,
+} from "./job-ai-task-state";
 import { loadCurrentJobAiTaskContext } from "./job-ai-task-context";
 import { getOrCreateQueuedJobUnderstanding } from "./job-ai-queued-understanding";
 import { persistJobAiAssessment } from "./job-ai-assessment-persistence";
@@ -46,7 +47,10 @@ export async function processJobAiTask(
     title: job.title,
   });
   const understanding = await getOrCreateQueuedJobUnderstanding(
-    db, task.job_id, context, task.job_context_hash,
+    db,
+    task.job_id,
+    context,
+    task.job_context_hash,
   );
 
   console.info("[AI job matching] Candidate assessment started", {
@@ -71,7 +75,13 @@ export async function processJobAiTask(
     provider: generated.provider,
     model: generated.model,
   });
-  const persisted = await persistJobAiAssessment(db, task, context, facts, generated);
+  const persisted = await persistJobAiAssessment(
+    db,
+    task,
+    context,
+    facts,
+    generated,
+  );
   if (!persisted) {
     console.info(
       "[AI job matching] Assessment became stale before persistence",

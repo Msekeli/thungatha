@@ -1,4 +1,9 @@
-import type { JobContext, JobForm, State, Suitability } from "./cv-studio-types";
+import type {
+  JobContext,
+  JobForm,
+  State,
+  Suitability,
+} from "./cv-studio-types";
 import type { ReusableCv } from "./cv-studio-content-types";
 
 async function requestJson<T>(
@@ -20,7 +25,10 @@ export function loadCvStudio() {
   );
 }
 
-export function assessCvStudioJob(masterVersionId: string, jobContext: JobContext) {
+export function assessCvStudioJob(
+  masterVersionId: string,
+  jobContext: JobContext,
+) {
   return requestJson<Suitability>(
     "/api/cv-studio/suitability",
     {
@@ -56,7 +64,10 @@ export function createCvStudioPastedJob(jobForm: JobForm) {
   );
 }
 
-export function reuseCvStudioVersion(versionId: string, jobContext: JobContext) {
+export function reuseCvStudioVersion(
+  versionId: string,
+  jobContext: JobContext,
+) {
   return requestJson<{ version: ReusableCv }>(
     "/api/cv-studio/reuse",
     {

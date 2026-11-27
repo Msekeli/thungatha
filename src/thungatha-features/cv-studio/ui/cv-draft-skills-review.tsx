@@ -9,7 +9,9 @@ type CvDraftSkillsReviewProps = {
 };
 
 export function CvDraftSkillsReview({
-  skills, disabled, onAddSkill,
+  skills,
+  disabled,
+  onAddSkill,
 }: CvDraftSkillsReviewProps) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 text-fg">

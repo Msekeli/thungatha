@@ -48,8 +48,6 @@ export function parseProviderList(
   return result;
 }
 
-export function providerFlagIsEnabled(
-  provider: SupportedProvider,
-): boolean {
+export function providerFlagIsEnabled(provider: SupportedProvider): boolean {
   return process.env[ENABLED_FLAGS[provider]]?.trim().toLowerCase() === "true";
 }

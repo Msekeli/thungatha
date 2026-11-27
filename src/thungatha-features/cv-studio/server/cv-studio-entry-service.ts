@@ -8,10 +8,7 @@ import {
 import { resolveProfileIdentity } from "@/thungatha-features/user-profile/server/profile-route-auth";
 import { readProfile } from "@/thungatha-features/user-profile/server/repository";
 import { mapRowToProfileDto } from "@/thungatha-features/user-profile/server/user-profile-mapper";
-import {
-  buildMasterCvContent,
-  getProfileCompletion,
-} from "./master-cv";
+import { buildMasterCvContent, getProfileCompletion } from "./master-cv";
 import { getOrCreateMasterCv } from "./cv-master-repository";
 
 async function loadProfile(
@@ -38,7 +35,8 @@ export async function handleCvStudioRequest() {
 
   try {
     const { profile, completion } = await loadProfile(
-      identity.userId, identity.getToken,
+      identity.userId,
+      identity.getToken,
     );
     if (!completion.complete || !profile.confirmedAt) {
       return NextResponse.json({

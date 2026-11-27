@@ -18,13 +18,18 @@ export function CvDraftEditorReviewBody({ state }: ReviewBodyProps) {
     return (
       <CvDraftSummarySection
         summary={content.professionalSummary}
-        suggestions={draft.suggestions.filter((item) => item.targetPath === "professionalSummary")}
+        suggestions={draft.suggestions.filter(
+          (item) => item.targetPath === "professionalSummary",
+        )}
         hasCompletedReview={draft.tailoring_assessment !== null}
         reviewOpen={state.summaryGeneration.reviewOpen}
         generating={state.summaryGeneration.busy}
         generationError={state.summaryGeneration.failed ? error : null}
         disabled={busy || draft.status !== "draft"}
-        canUndo={state.suggestionDecisions.lastApplied?.targetPath === "professionalSummary"}
+        canUndo={
+          state.suggestionDecisions.lastApplied?.targetPath ===
+          "professionalSummary"
+        }
         error={state.summaryGeneration.failed ? null : error}
         onReviewOpenChange={state.summaryGeneration.setReviewOpen}
         onDecision={state.suggestionDecisions.decide}
@@ -32,7 +37,9 @@ export function CvDraftEditorReviewBody({ state }: ReviewBodyProps) {
         onUndo={state.suggestionDecisions.undo}
         onTailor={() => {
           const pending = draft.suggestions.some(
-            (item) => item.targetPath === "professionalSummary" && item.decision === "pending",
+            (item) =>
+              item.targetPath === "professionalSummary" &&
+              item.decision === "pending",
           );
           if (pending) state.summaryGeneration.setReviewOpen(true);
           else void state.summaryGeneration.generate();
@@ -60,14 +67,15 @@ export function CvDraftEditorReviewBody({ state }: ReviewBodyProps) {
       <CvDraftSkillsReview
         skills={content.technicalSkills}
         disabled={busy || draft.status !== "draft"}
-        onAddSkill={(skill) => state.setContent((current) => ({
-          ...current,
-          technicalSkills: [...current.technicalSkills, skill],
-        }))}
+        onAddSkill={(skill) =>
+          state.setContent((current) => ({
+            ...current,
+            technicalSkills: [...current.technicalSkills, skill],
+          }))
+        }
       />
     );
   }
 
   return <CvDraftRequirementsReview assessment={draft.tailoring_assessment} />;
-
 }

@@ -49,8 +49,14 @@ export function CvStudioPreviewPanel({
           <SavedCvGrid />
         ) : (
           <CvPdfPreview
-            content={activeTab === "master" ? masterContent : (tailoredPreview?.content ?? masterContent)}
-            accent={activeTab === "master" ? undefined : tailoredPreview?.accent}
+            content={
+              activeTab === "master"
+                ? masterContent
+                : (tailoredPreview?.content ?? masterContent)
+            }
+            accent={
+              activeTab === "master" ? undefined : tailoredPreview?.accent
+            }
           />
         )}
       </div>

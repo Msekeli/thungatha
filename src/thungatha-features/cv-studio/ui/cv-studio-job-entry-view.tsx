@@ -8,8 +8,16 @@ import type { CvContent } from "./cv-studio-content-types";
 import type { JobForm } from "./cv-studio-types";
 
 export function CvStudioJobEntryView({
-  masterContent, jobForm, busy, error, externalJobOpen,
-  onFormChange, onSubmit, onClose, onReset, onAddExternalJob,
+  masterContent,
+  jobForm,
+  busy,
+  error,
+  externalJobOpen,
+  onFormChange,
+  onSubmit,
+  onClose,
+  onReset,
+  onAddExternalJob,
 }: {
   masterContent: CvContent | null;
   jobForm: JobForm;

@@ -38,10 +38,7 @@ export function AuthenticatedJobResultsPanel({
               : "0 opportunities"}
           </span>
         </div>
-        <JobResultsSortControl
-          value={sortOrder}
-          onChange={onSortOrderChange}
-        />
+        <JobResultsSortControl value={sortOrder} onChange={onSortOrderChange} />
       </div>
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]">
         <JobResultsState

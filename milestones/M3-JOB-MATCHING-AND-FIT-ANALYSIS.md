@@ -4,7 +4,6 @@
 **Outcome:** AI-powered semantic comparison of actual job responsibilities and requirements with confirmed candidate evidence, producing explainable **Match** or **Relevant** classifications. Insufficient evidence or unavailable AI analysis is represented as an unavailable assessment, not a third classification.  
 **Dependencies:** M1 Job Discovery and M2 Profile/CV Import.
 
-
 **Current policy clarification (2026-11-23):** This milestone follows D-052. The only public classifications are Match and Relevant. Insufficient evidence, missing Profile confirmation, unusable job input, provider failure, or invalid output is an unavailable assessment state, not Unclassified or any other third category. Historical implementation notes below may mention Unclassified because they describe earlier code; those references are not current product requirements.
 
 ## Purpose and scope
@@ -45,6 +44,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Goal:** define AI-assisted semantic comparison, evidence boundaries, categorical outcomes, and feed-ordering behaviour before implementation.
 
 **Work**
+
 - Define the evidence contract and source-reference validation for job descriptions and confirmed Profile snapshots.
 - Define how AI interprets responsibilities, capabilities, skills, tools, technologies, experience, qualifications, certifications, licences, languages, and relevant domain context.
 - Define how the model handles equivalent work across different titles, transferable skills, alternative pathways, ambiguous wording, and incomplete evidence.
@@ -54,6 +54,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - No numerical scoring of any kind.
 
 **Requirement-level interpretation**
+
 - Use concise evidence states such as supported, not demonstrated, contradictory, and uncertain.
 - Do not treat a missing Profile field as proof that a requirement is not met.
 - Do not turn subject marks, named credentials, years of experience, qualification levels, or phrases such as must/required into universal hard gates. Interpret their significance in context and explain uncertainty.
@@ -61,12 +62,14 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - The overall category reflects the full semantic comparison, not a checklist total or one isolated requirement.
 
 **Display and sorting**
+
 - Match uses the existing positive/green semantic token; Relevant uses the existing informational/blue semantic token. Unavailable assessments have no classification badge.
 - “Most relevant” orders successfully assessed jobs by Match, then Relevant. Unavailable assessments are not assigned a third rank and use the agreed date-based fallback/tie-break behaviour. Newest and Oldest remain date sorts.
 - Candidate-specific classification requires a confirmed Profile. Without one, do not fabricate relevance; Most relevant falls back to newest-first.
 - Relevance ordering must apply before pagination across the filtered catalogue, not only to the currently loaded page.
 
 **Exit criteria**
+
 - Qualification comparison, experience substitution, mandatory/preferred interpretation, and uncertainty rules are documented.
 - Worked examples cover equivalent work under different titles, cross-industry transferability, met/not-met/unknown requirements, ambiguous descriptions, and insufficient evidence.
 - AI assessments are grounded in source job text and confirmed Profile evidence.
@@ -77,6 +80,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Status:** In progress — the deterministic extractor is an interim legacy implementation and must be replaced as the semantic understanding engine.
 
 **Historical implementation record (preserved for traceability)**
+
 - The existing implementation added description hashing, a versioned schema, regex/pattern extraction for selected requirement categories, fixed skill aliases, role-family vocabulary, source snippets, and a protected backfill path.
 - These mechanisms were useful for the initial prototype but have known coverage and false-positive limitations. They must not determine or gate the final semantic assessment.
 - Existing extraction versions, migration state, backfill status, and test results must be verified during the implementation audit. Do not claim migrations or tests are complete without evidence.
@@ -84,6 +88,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Goal:** produce structured, reviewable, source-grounded understanding of job descriptions using AI.
 
 **Work**
+
 - Use AI to understand the role's purpose, central responsibilities, expected outcomes, capabilities, tools, technologies, experience expectations, qualifications, certifications, licences, languages, and relevant context.
 - Interpret any relevant skills, technologies, industries, and responsibilities present in the supplied text; do not limit understanding to a predefined dictionary.
 - Interpret mandatory, preferred, alternative, and uncertain requirements from the complete advert rather than isolated keyword triggers.
@@ -94,6 +99,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Incomplete, malformed, contradictory, or short descriptions must produce an honest limited/unknown result, not fabricated detail.
 
 **Exit criteria**
+
 - AI understands job content beyond exact keyword and title overlap.
 - No fixed dictionary, regex rule, or role-family mapping gates the interpretation or final category.
 - Every material job-side claim is traceable to the current source text.
@@ -104,6 +110,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Status:** In progress — pure candidate fact derivation and authenticated Profile read path are implemented; evidence mapping and coverage remain.
 
 **Implementation record (2026-11-20)**
+
 - Profile confirmation validates the merged saved Profile plus incoming PATCH fields, rather than validating only the partial request body.
 - A PATCH that omits `confirmedAt` clears confirmation. A caller must explicitly confirm again after making a partial update.
 - Integration-test coverage was added for confirming a partial update against a complete saved Profile and rejecting confirmation when the merged Profile remains incomplete. Tests have not been run.
@@ -115,10 +122,10 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Candidate fact derivation is an initial slice. It does not yet derive role-family evidence, NQF levels, subject marks, or qualification equivalence, and it does not classify job relevance.
 - **2026-11-21 implementation increment:** Added `deriveCandidateFacts(profile, asOfDate)` under `src/thungatha-features/user-profile/server/`. It rejects unconfirmed/incomplete Profiles, preserves source paths across employment, responsibilities, achievements, projects, skills, education, qualifications, certifications/licences, languages and personal attributes, and derives known employment months without double-counting overlaps. Only the supported date formats are counted; unknown periods remain explicitly referenced. Added the user-scoped `readCandidateFacts` entry point and wired the AI worker to pass these derived facts to semantic assessment. Focused unit tests were added but have not been executed. C03 remains in progress pending evidence-coverage review and verification.
 
-
 **Goal:** derive reliable candidate facts from the complete confirmed Profile and map every comparison claim to its supporting evidence. These deterministic facts support, but do not replace, AI semantic interpretation.
 
 **Work**
+
 - Implement a pure `deriveCandidateFacts(profile)` function using the complete saved Profile, not a partial PATCH payload.
 - Initially derive facts on read; do not add a candidate-facts table unless measured cost justifies it.
 - Derive reliable employment periods and experience totals without double-counting overlaps.
@@ -129,6 +136,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 - Never promote unconfirmed CV-import data to confirmed evidence.
 
 **Exit criteria**
+
 - Every candidate-side claim is traceable to confirmed Profile evidence.
 - Positive, absent, contradictory, overlapping-date, and unparseable-date examples are covered.
 - Missing evidence is not misrepresented as proof of absence.
@@ -138,6 +146,7 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 **Status:** In progress — AI semantic assessment and application-owned categorical classification are implemented; representative evaluation and verification remain outstanding.
 
 **Historical implementation record (2026-11-20; preserved as interim baseline)**
+
 - Added a pure classifier that consumes confirmed candidate facts and schema-validated extracted job requirements. It returns one categorical relevance label, a rule version, and requirement-level outcomes; it does not calculate a score.
 - Added deterministic comparisons for exact canonical skills, exact language names, exact named certifications, supported school-leaving aliases, generic diploma/degree type wording, and minimum whole-year experience requirements.
 - Experience uses merged known employment months. If known experience is below the threshold but one or more employment periods are unparseable, the outcome remains Can't tell; it becomes Not met only when all recorded employment periods are reliably known.
@@ -149,9 +158,11 @@ Use only: **Not started**, **In progress**, **Blocked**, **In review**, **Accept
 This record describes the earlier deterministic classifier only. It does not satisfy the approved semantic comparison requirement and must not be used as a substitute for AI assessment.
 
 **2026-11-21 implementation increment:** The AI assessment schema now returns a semantic alignment level, material-gap declaration, and explicit overall evidence references instead of a category. Application code validates all overall, requirement, and gap references against the exact supplied job description and confirmed Profile evidence, then derives Match, Relevant, or Unclassified using a versioned policy. Strong alignment with no material gaps yields Match; meaningful alignment, material gaps, or contradictory requirement evidence yields Relevant; insufficient alignment or no overall Profile evidence yields Unclassified. Supported requirements must cite confirmed Profile evidence. The AI task version was incremented to invalidate prior assessment and understanding cache entries. Focused policy/schema tests were added but have not been run.
+
 - **Requirement-policy hardening:** Assessment output must now account for every AI-extracted requirement exactly once and preserve its mandatory/preferred/uncertain importance. Application validation rejects omitted, duplicate, or reclassified requirements. A mandatory requirement that is not supported prevents a Match result and yields Relevant when overall evidence is otherwise meaningful. The breakdown displays the requirement importance. Focused tests were expanded but have not been executed.
 
 **Interim implementation record (2026-11-20; deterministic classifier only, not acceptance of the AI target)**
+
 - A pure classifier currently compares a limited set of exact canonical skills, language names, named certifications, school-leaving aliases, generic qualification wording, and minimum experience requirements.
 - It demonstrates some deterministic evidence and uncertainty handling, but it cannot adequately recognise equivalent responsibilities across different titles, transferable skills, or contextual relationships across industries.
 - This implementation is not the approved end state. Do not treat exact keyword overlap or deterministic title/role-family rules as equivalent to semantic AI comparison.
@@ -159,6 +170,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Goal:** use AI to interpret job and candidate evidence semantically, then produce validated requirement outcomes and one of the approved categorical labels.
 
 **Work**
+
 - Implement a feature-owned AI use case that compares structured job context with confirmed candidate facts and returns a strict, versioned schema.
 - Require source job evidence references and confirmed Profile evidence references for factual claims; validate every reference in application code.
 - Recognise equivalent responsibilities and transferable skills across different titles and industries; titles and role families are context only.
@@ -169,6 +181,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 - Evaluate model output against representative human-reviewed examples, including misleading similar titles and equivalent work with different titles.
 
 **Exit criteria**
+
 - AI recognises equivalent work across different titles and industries and identifies transferable skills without title gates.
 - Every factual assessment claim is traceable to source job text and confirmed Profile evidence; unsupported claims are rejected or marked unknown.
 - Application-side evidence validation and categorical rules are repeatable and tested independently of the model.
@@ -182,11 +195,13 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Status:** In progress — evidence-linked explanations, user-facing evidence display, extraction-coverage warnings, and atomic assessment persistence are implemented. Database migration application and verification remain.
 
 **2026-11-21 implementation increment:** The worker now delegates persistence to `persist_job_match_assessment`. The function locks the queue task, job, and Profile rows, verifies the exact job description plus Profile version and confirmation timestamp, and atomically writes the assessment and completes the task. Stale inputs complete the task without writing an assessment; database errors roll back the transaction. The former non-atomic pre-write check has been removed.
+
 - **Persistence contract hardening:** A follow-up migration adds a locked queue-task hash comparison before invoking the atomic persistence function. The worker passes the hash it originally claimed, so the task's stored description hash must still match that exact input before an assessment can be written.
 
 **Goal:** make AI-generated results understandable, evidence-grounded, uncertainty-aware, and resistant to stale or unsupported claims.
 
 **Work**
+
 - Explain why actual responsibilities and capabilities align or differ, including equivalent work expressed through different titles and transferable skills.
 - Explain which aspects are supported, not demonstrated, contradictory, or uncertain. Avoid implying that a missing Profile field proves a requirement is not met.
 - Show the source job snippet/reference and corresponding confirmed Profile evidence for each factual claim.
@@ -195,6 +210,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 - Do not persist stale results as current.
 
 **Exit criteria**
+
 - Explanations trace to job and confirmed Profile evidence.
 - Relevant input, task, or rule changes cause recalculation or an explicit stale state.
 - Unknown and partial extraction states remain visible.
@@ -204,6 +220,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Goal:** add matching to Discovery without making the feed dependent on matching availability.
 
 **Work**
+
 - Use persisted, current AI assessments for relevance ordering. Assessments must be generated asynchronously and keyed to the exact job-description and confirmed Profile versions; feed requests must not call AI synchronously.
 - Apply Match then Relevant ordering to successfully assessed jobs across the full filtered catalogue before pagination, using stable date tie-breakers. Unavailable assessments must not be treated as a third category.
 - Do not hard-filter or reject a job based on AI-interpreted candidate fit. Keep user-selected objective discovery filters (such as location, work mode, employment type, date, and explicit search terms) separate from candidate matching.
@@ -212,6 +229,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 - Preserve existing search, filters, sorting, details, save, and dismiss behaviour.
 
 **Exit criteria**
+
 - Discovery never fabricates a match or blocks the feed waiting for analysis.
 - Matching unavailability does not break existing Discovery behaviour.
 - Displayed outcomes agree with the validated AI assessment, evidence references, and application-owned categorical rules. AI unavailability must not be disguised as keyword matching.
@@ -221,6 +239,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 **Goal:** validate the rules across representative jobs and Profiles.
 
 **Work**
+
 - Assemble representative anonymised job descriptions and confirmed Profile examples across multiple industries and role families, including substantially equivalent work with different job titles.
 - Hand-label responsibilities, skills, tools/technologies, mandatory/preferred requirements, experience, education, licences/registrations, languages, transferable skills, and source evidence.
 - Evaluate semantic equivalence and transferable-skill recognition beyond literal wording; include misleading similar titles and unrelated roles with overlapping keywords.
@@ -230,6 +249,7 @@ This record describes the earlier deterministic classifier only. It does not sat
 - Record supported industries, vocabulary coverage, known limitations, and examples.
 
 **Acceptance criteria**
+
 - AI-assisted semantic extraction and comparison are explainable, evidence-grounded, and reviewed against labelled examples.
 - False-positive behaviour for mandatory requirements is explicitly assessed.
 - Can't verify and missing evidence are not treated as negative proof.
@@ -260,7 +280,6 @@ C01 remains in progress for representative semantic evaluation and evidence inte
 - **Verification:** repository changes were committed to `dev`; no local Vitest, type-check, lint, build, database migration, worker, or browser run was executed during this remote edit. The new tests and integration behaviour remain unverified at runtime.
 - **Open M3 work:** representative cross-title/cross-industry evaluation, qualification/alternative-pathway cases, full stale-state and provider-failure verification, authenticated API/database checks, responsive Discovery review, and explicit user acceptance remain outstanding. M3 remains **In progress**.
 
-
 ## 2026-11-21 AI workload reduction implementation
 
 **Status:** Implemented on `dev`; runtime verification intentionally not performed.
@@ -276,11 +295,9 @@ C01 remains in progress for representative semantic evaluation and evidence inte
 
 **Next action:** Pull `dev`, manually review the diff, apply the new migration through the approved Supabase workflow, then run the user's local verification and report any failures. Do not claim runtime correctness until those checks are completed.
 
-
 ### AI workload continuity — current requirement (2026-11-23)
 
 Do not introduce arbitrary internal AI call, token, output-length, per-job budget, queue-depth, or task-count caps that truncate, reject, or abandon valid matching work. Do not drop material job requirements merely to fit an application-defined output count. Reduce unnecessary consumption through complete-context caching, in-flight request deduplication, compact task-specific evidence, and reuse of valid completed results. When actual provider rate limits or outages prevent completion, persist the task and progress, defer/retry safely, and resume it. A task must not be marked complete or presented as Match/Relevant using partial output. Any historical queue/backfill admission caps and model output-count limits recorded above are superseded by this requirement.
-
 
 ## 2026-11-23 — M3 implementation rebuild started
 

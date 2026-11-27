@@ -15,10 +15,7 @@ import {
 } from "@/thungatha-features/job-discovery/server/job-ai-queue-eligibility";
 import type { AuthIdentity } from "./auth-helper";
 
-export async function postMatchAssessment(
-  id: string,
-  identity: AuthIdentity,
-) {
+export async function postMatchAssessment(id: string, identity: AuthIdentity) {
   try {
     const db = await createAuthenticatedSupabaseClient(identity.getToken);
     const [profileResult, jobResult] = await Promise.all([

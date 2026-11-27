@@ -3,8 +3,9 @@ import type { JobUnderstanding } from "./job-ai-schemas";
 import { buildJobAssessmentPrompt } from "./job-ai-prompts";
 import type { createMatchAssessmentResponseSchema } from "./job-ai-schemas";
 
-type AssessmentResponseSchema =
-  ReturnType<typeof createMatchAssessmentResponseSchema>["responseSchema"];
+type AssessmentResponseSchema = ReturnType<
+  typeof createMatchAssessmentResponseSchema
+>["responseSchema"];
 
 export function buildJobAssessmentRequest(
   understanding: JobUnderstanding,
@@ -16,19 +17,28 @@ export function buildJobAssessmentRequest(
   const compactUnderstanding = {
     coverage: understanding.coverage,
     responsibilities: understanding.responsibilities.map((item) => [
-      item.id, item.statement, item.sourceEvidenceRefs,
+      item.id,
+      item.statement,
+      item.sourceEvidenceRefs,
     ]),
     capabilities: understanding.capabilities.map((item) => [
-      item.id, item.name, item.context, item.sourceEvidenceRefs,
+      item.id,
+      item.name,
+      item.context,
+      item.sourceEvidenceRefs,
     ]),
     requirements: understanding.requirements.map((item) => [
-      item.id, item.statement, item.category, item.importance,
+      item.id,
+      item.statement,
+      item.category,
+      item.importance,
       item.sourceEvidenceRefs,
     ]),
   };
   const compactJobEvidence = jobEvidence.map((item) => [item.id, item.content]);
   const compactProfileEvidence = profileEvidence.map((item) => [
-    item.id, item.content,
+    item.id,
+    item.content,
   ]);
   const maxOutputTokens =
     2_048 +

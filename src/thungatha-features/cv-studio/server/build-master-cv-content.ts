@@ -1,18 +1,18 @@
 import "server-only";
-import {
-  cvContentSchema,
-  type CvContent,
-} from "./cv-studio-schema";
+import { cvContentSchema, type CvContent } from "./cv-studio-schema";
 import type { UserProfileDto } from "@/thungatha-features/user-profile/server/user-profile-schema";
 
 export function buildMasterCvContent(profile: UserProfileDto): CvContent {
   const details = profile.personalDetails;
-  const location = [
-    details.residentialSuburb,
-    details.residentialCity,
-    details.residentialProvince,
-    details.country,
-  ].filter(Boolean).join(", ") || details.location;
+  const location =
+    [
+      details.residentialSuburb,
+      details.residentialCity,
+      details.residentialProvince,
+      details.country,
+    ]
+      .filter(Boolean)
+      .join(", ") || details.location;
 
   return cvContentSchema.parse({
     fullName: details.fullName,

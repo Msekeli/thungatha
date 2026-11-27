@@ -36,7 +36,11 @@ export function CvStudioTailoringWorkspace({
           aria-selected={mobileTab === "edit"}
           aria-controls="cv-editor-panel-edit"
           onClick={() => setMobileTab("edit")}
-          className={mobileTab === "edit" ? "rounded-lg bg-panel px-3 py-2 text-sm font-semibold text-fg shadow-sm" : "rounded-lg px-3 py-2 text-sm text-fg-muted"}
+          className={
+            mobileTab === "edit"
+              ? "rounded-lg bg-panel px-3 py-2 text-sm font-semibold text-fg shadow-sm"
+              : "rounded-lg px-3 py-2 text-sm text-fg-muted"
+          }
         >
           Edit CV
         </button>
@@ -47,7 +51,11 @@ export function CvStudioTailoringWorkspace({
           aria-selected={mobileTab === "preview"}
           aria-controls="cv-editor-panel-preview"
           onClick={() => setMobileTab("preview")}
-          className={mobileTab === "preview" ? "rounded-lg bg-panel px-3 py-2 text-sm font-semibold text-fg shadow-sm" : "rounded-lg px-3 py-2 text-sm text-fg-muted"}
+          className={
+            mobileTab === "preview"
+              ? "rounded-lg bg-panel px-3 py-2 text-sm font-semibold text-fg shadow-sm"
+              : "rounded-lg px-3 py-2 text-sm text-fg-muted"
+          }
         >
           Preview CV
         </button>
@@ -58,7 +66,11 @@ export function CvStudioTailoringWorkspace({
           id="cv-editor-panel-edit"
           role="tabpanel"
           aria-labelledby="cv-editor-tab-edit"
-          className={mobileTab === "edit" ? "h-auto min-h-0 min-w-0 lg:h-full" : "hidden min-h-0 min-w-0 lg:block"}
+          className={
+            mobileTab === "edit"
+              ? "h-auto min-h-0 min-w-0 lg:h-full"
+              : "hidden min-h-0 min-w-0 lg:block"
+          }
         >
           <CvDraftEditor
             masterVersionId={masterVersionId}
@@ -73,7 +85,11 @@ export function CvStudioTailoringWorkspace({
           id="cv-editor-panel-preview"
           role="tabpanel"
           aria-labelledby="cv-editor-tab-preview"
-          className={mobileTab === "preview" ? "flex h-[calc(100dvh-150px)] min-h-[520px] min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:h-full lg:min-h-0" : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"}
+          className={
+            mobileTab === "preview"
+              ? "flex h-[calc(100dvh-150px)] min-h-[520px] min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-2 text-fg shadow-sm sm:p-3 lg:h-full lg:min-h-0"
+              : "hidden min-h-0 min-w-0 lg:flex lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-3 lg:text-fg lg:shadow-sm"
+          }
         >
           <CvStudioPreviewPanel
             masterContent={masterContent}

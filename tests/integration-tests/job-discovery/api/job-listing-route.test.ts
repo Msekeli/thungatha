@@ -1,8 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/jobs/[id]/route";
-import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
-import { createAuthenticatedSupabaseClient, createPublicSupabaseClient } from "@/lib/supabase/server";
-import { createQueryMock, scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
+import {
+  getAuthenticatedIdentity,
+  hasClerkConfiguration,
+} from "@/thungatha-features/authentication/server/identity";
+import {
+  createAuthenticatedSupabaseClient,
+  createPublicSupabaseClient,
+} from "@/lib/supabase/server";
+import {
+  createQueryMock,
+  scoutVacancyRecord,
+} from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),
@@ -28,7 +37,9 @@ describe("GET /api/jobs/[id]", () => {
 
   it("returns a public Scout vacancy, including null employer dates", async () => {
     const jobQuery = createQueryMock({ data: scoutVacancyRecord, error: null });
-    publicClient.mockResolvedValue({ from: vi.fn().mockReturnValue(jobQuery) } as never);
+    publicClient.mockResolvedValue({
+      from: vi.fn().mockReturnValue(jobQuery),
+    } as never);
     const response = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
     });
@@ -44,8 +55,14 @@ describe("GET /api/jobs/[id]", () => {
     configured.mockReturnValue(true);
     identity.mockResolvedValue({ userId: "alice", getToken: vi.fn() });
     const jobQuery = createQueryMock({ data: scoutVacancyRecord, error: null });
-    const stateQuery = createQueryMock({ data: { state: "saved" }, error: null });
-    const from = vi.fn().mockReturnValueOnce(jobQuery).mockReturnValueOnce(stateQuery);
+    const stateQuery = createQueryMock({
+      data: { state: "saved" },
+      error: null,
+    });
+    const from = vi
+      .fn()
+      .mockReturnValueOnce(jobQuery)
+      .mockReturnValueOnce(stateQuery);
     client.mockResolvedValue({ from } as never);
     const response = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
@@ -63,7 +80,9 @@ describe("GET /api/jobs/[id]", () => {
       params: Promise.resolve({ id: "bad" }),
     });
     const jobQuery = createQueryMock({ data: null, error: null });
-    publicClient.mockResolvedValue({ from: vi.fn().mockReturnValue(jobQuery) } as never);
+    publicClient.mockResolvedValue({
+      from: vi.fn().mockReturnValue(jobQuery),
+    } as never);
     const missing = await GET(new Request("http://localhost"), {
       params: Promise.resolve({ id }),
     });

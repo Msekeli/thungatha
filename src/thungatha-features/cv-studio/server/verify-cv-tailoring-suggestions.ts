@@ -52,10 +52,14 @@ export async function verifyCvTailoringSuggestions(
   const response = provider
     ? await completeAiTaskWithProvider(provider, request)
     : await completeAiTask(request);
-  if (["MAX_TOKENS", "LENGTH"].includes(
-    response.finishReason?.toUpperCase() ?? "",
-  )) {
-    throw new Error("CV tailoring verification returned an incomplete response.");
+  if (
+    ["MAX_TOKENS", "LENGTH"].includes(
+      response.finishReason?.toUpperCase() ?? "",
+    )
+  ) {
+    throw new Error(
+      "CV tailoring verification returned an incomplete response.",
+    );
   }
   const parsed = cvTailoringReviewSchema.parse(JSON.parse(response.content));
   return retainApprovedSuggestions(suggestions, parsed.reviews);

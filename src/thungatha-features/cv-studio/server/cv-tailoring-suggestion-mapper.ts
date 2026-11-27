@@ -32,7 +32,9 @@ export function mapTailoringSuggestion(
   allowSummaryEvidence = false,
 ): CvSuggestion {
   if (seenTargets.has(item.targetPath)) {
-    throw new Error("AI returned more than one suggestion for the same CV field.");
+    throw new Error(
+      "AI returned more than one suggestion for the same CV field.",
+    );
   }
   seenTargets.add(item.targetPath);
   const target = targetMap.get(item.targetPath);
@@ -40,33 +42,45 @@ export function mapTailoringSuggestion(
     throw new Error("AI returned a suggestion for changed or unknown CV text.");
   }
 
-  const summaryEvidence = allowSummaryEvidence && item.targetPath === "professionalSummary";
+  const summaryEvidence =
+    allowSummaryEvidence && item.targetPath === "professionalSummary";
   if (summaryEvidence) {
     if (
       item.profileEvidenceRefs.length === 0 ||
-      item.profileEvidenceRefs.some((ref) => !evidenceMap.has(ref) ||
-        evidenceMap.get(ref)?.source !== "profile")
+      item.profileEvidenceRefs.some(
+        (ref) =>
+          !evidenceMap.has(ref) || evidenceMap.get(ref)?.source !== "profile",
+      )
     ) {
-      throw new Error("AI summary suggestion must cite confirmed Profile evidence.");
+      throw new Error(
+        "AI summary suggestion must cite confirmed Profile evidence.",
+      );
     }
   } else if (
     !target.profileEvidenceRef ||
     item.profileEvidenceRefs.length !== 1 ||
     item.profileEvidenceRefs[0] !== target.profileEvidenceRef
   ) {
-    throw new Error("AI suggestion must cite only the exact source evidence for its CV field.");
+    throw new Error(
+      "AI suggestion must cite only the exact source evidence for its CV field.",
+    );
   }
 
   const citedRequirements = item.requirementIds.map((id) => {
     const requirement = requirements.find((candidate) => candidate.id === id);
-    if (!requirement) throw new Error("AI returned an unknown job requirement.");
+    if (!requirement)
+      throw new Error("AI returned an unknown job requirement.");
     return requirement;
   });
   const allowedJobRefs = new Set(
-    citedRequirements.flatMap((requirement) => requirement.sourceEvidenceRefs ?? []),
+    citedRequirements.flatMap(
+      (requirement) => requirement.sourceEvidenceRefs ?? [],
+    ),
   );
   if (item.jobEvidenceRefs.some((ref) => !allowedJobRefs.has(ref))) {
-    throw new Error("AI cited job evidence that is not attached to its selected requirement.");
+    throw new Error(
+      "AI cited job evidence that is not attached to its selected requirement.",
+    );
   }
 
   const evidenceRefs = [...item.profileEvidenceRefs, ...item.jobEvidenceRefs];
@@ -79,7 +93,8 @@ export function mapTailoringSuggestion(
     evidenceRefs,
     evidence: evidenceRefs.map((ref) => {
       const evidence = evidenceMap.get(ref);
-      if (!evidence) throw new Error("AI returned an unknown evidence reference.");
+      if (!evidence)
+        throw new Error("AI returned an unknown evidence reference.");
       return { ref, ...evidence };
     }),
     decision: "pending",

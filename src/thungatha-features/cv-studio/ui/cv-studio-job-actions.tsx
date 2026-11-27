@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import type { ReusableCv } from "./cv-studio-content-types";
 
 export function CvStudioJobActions({
-  reusableCv, busy, onStartTailoring, onReturnToMaster,
+  reusableCv,
+  busy,
+  onStartTailoring,
+  onReturnToMaster,
 }: {
   reusableCv: ReusableCv | null;
   busy: boolean;
@@ -14,8 +17,15 @@ export function CvStudioJobActions({
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       {!reusableCv && (
-        <Button size="lg" className="mx-auto w-[98%] rounded-md" disabled={busy} onClick={onStartTailoring}>
-          <span className="font-bold">Create a new CV tailored to this job</span>
+        <Button
+          size="lg"
+          className="mx-auto w-[98%] rounded-md"
+          disabled={busy}
+          onClick={onStartTailoring}
+        >
+          <span className="font-bold">
+            Create a new CV tailored to this job
+          </span>
         </Button>
       )}
       {reusableCv && (

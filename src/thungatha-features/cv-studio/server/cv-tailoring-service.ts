@@ -13,9 +13,14 @@ export async function generateCvTailoringSuggestions(
   draftContent: CvContent,
   job: CvTailoringJob,
 ) {
-  const understanding = await getOrCreateJobUnderstanding(toJobMatchingContext(job));
+  const understanding = await getOrCreateJobUnderstanding(
+    toJobMatchingContext(job),
+  );
   return generateCvTailoringSuggestionsFromUnderstanding(
-    masterContent, draftContent, job, understanding.analysis,
+    masterContent,
+    draftContent,
+    job,
+    understanding.analysis,
   );
 }
 

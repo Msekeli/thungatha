@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AssessmentStatus, MatchAssessment } from "./match-assessment-types";
-import { loadMatchAssessment, retryMatchAssessment } from "./match-assessment-client";
+import type {
+  AssessmentStatus,
+  MatchAssessment,
+} from "./match-assessment-types";
+import {
+  loadMatchAssessment,
+  retryMatchAssessment,
+} from "./match-assessment-client";
 
 export function useMatchAssessment(open: boolean, jobId: string | null) {
   const [status, setStatus] = useState<AssessmentStatus>("idle");
@@ -34,7 +40,10 @@ export function useMatchAssessment(open: boolean, jobId: string | null) {
     if (!open || !jobId || status !== "pending") return;
     const interval = window.setInterval(async () => {
       try {
-        const result = await loadMatchAssessment(jobId, new AbortController().signal);
+        const result = await loadMatchAssessment(
+          jobId,
+          new AbortController().signal,
+        );
         if (result.status === "pending") return;
         setStatus(result.status);
         setAssessment(result.assessment ?? null);
@@ -54,7 +63,11 @@ export function useMatchAssessment(open: boolean, jobId: string | null) {
       setAssessment(null);
       setStatus("pending");
     } catch (error) {
-      setRetryError(error instanceof Error ? error.message : "The assessment could not be retried.");
+      setRetryError(
+        error instanceof Error
+          ? error.message
+          : "The assessment could not be retried.",
+      );
     } finally {
       setIsRetrying(false);
     }

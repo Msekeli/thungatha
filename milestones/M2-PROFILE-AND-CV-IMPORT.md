@@ -57,6 +57,7 @@ Purpose: explain what Profile stores and give the user one obvious next action.
 ### Screen 2 — CV upload
 
 Include:
+
 - Drag-and-drop target and a **Choose file** button.
 - Clearly list the formats and maximum file size only after those limits are confirmed in C01/C04; do not invent unsupported formats in the design.
 - Selected-file row with file name, type/size, and **Remove** or **Choose another file**.
@@ -91,6 +92,7 @@ Do not use a single ambiguous **Done** button. Explain that saving confirms the 
 ### Screen 4 — Saved Profile
 
 Show:
+
 - A readable summary of confirmed profile sections.
 - A **Profile completeness** indicator only if it is based on agreed useful fields; avoid arbitrary percentages.
 - The current master CV file name and available actions, such as **View/download**, **Replace CV**, and **Remove CV**, subject to the confirmed storage/retention policy.
@@ -101,6 +103,7 @@ Show:
 ### Required interaction and visual states
 
 Design for:
+
 - First-time empty profile.
 - Existing profile and existing master CV.
 - File selected and validation failure.
@@ -149,7 +152,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Next action:** Start C03 only after the user approves the upload/storage decisions and implementation plan.
 - **Reviewed/accepted by user:** Yes, 2026-10-24.
 
-
 ## M2-C03 execution record — 2026-10-24
 
 - **Status:** In review; implementation prepared for user review.
@@ -159,7 +161,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Verification:** no tests, lint, build, browser checks, or Vercel operations were run, per user instruction. The migration has not been applied by ChatGPT; the user must apply it to the linked Supabase project before storage works.
 - **Known limitation:** staged upload state is returned to the client and is not yet promoted to master-CV metadata. Extraction/review and safe promotion belong to later checkpoints. Staged-object cleanup policy needs to be addressed before lifecycle closeout.
 - **Next action:** user pulls/reviews the focused commit, applies the migration, and reports acceptance or defects. Do not begin C04 until C03 is accepted.
-
 
 ## M2-C04 — Deterministic extraction and progress/failure states (2026-10-24)
 
@@ -173,7 +174,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 
 **Next action:** user pulls/reconciles the checkpoint, reviews representative CV output, and reports acceptance or defects. Do not start C05 until C04 is accepted.
 
-
 ## Profile role-preference extension — 2026-10-24
 
 - **Status:** Implemented in source; user review pending.
@@ -183,7 +183,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Verification:** No tests, lint, build, browser checks or live migration commands were run by ChatGPT, per user instruction. The user must apply the new migration with the existing linked Supabase CLI workflow before this field can persist remotely.
 - **Next action:** Pull `dev`, apply the new migration, review the role field and confirm persistence before expanding the remaining profile editor sections.
 
-
 ## M2 CV format scope change — 2026-11-19
 
 - **Decision:** PDF is the only supported CV upload and extraction format. DOCX is excluded until PDF extraction has passed review and acceptance.
@@ -192,7 +191,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Implementation:** Remove DOCX from the upload UI, upload API and extraction path; remove Mammoth from application dependencies. Keep pdf-parse local/server-side; no external parsing API or CV data transfer.
 - **Extraction strategy:** Improve layout-aware PDF text extraction and deterministic parsing. Partial extraction is acceptable when clearly surfaced for user correction. Do not invent or auto-confirm professional facts.
 - **Acceptance focus:** Validate with anonymised equivalents of a linear multi-page CV and a two-column CV. Do not commit the supplied personal CV files to the repository.
-
 
 ## M2-C04 implementation update — 2026-11-19
 
@@ -205,7 +203,6 @@ Checkpoint meanings, commit expectations, local-only agent workflow, detailed ex
 - **Verification:** Tests, lint, build, browser checks and migration execution were not run, in accordance with the user's standing instruction. The new tests are authored but unverified.
 - **Known limitations:** Scanned/image-only PDFs remain unsupported. This increment does not guarantee perfect reading order for every multi-column PDF and does not yet extract every Profile section (for example, certifications, projects and languages). Users must review and complete missing or incorrect fields manually.
 - **Next action:** Run the focused extraction tests and review the two representative PDF layouts locally. Keep C04 in progress until the user confirms the results.
-
 
 ## M2 final acceptance and final closeout — 2026-11-23
 

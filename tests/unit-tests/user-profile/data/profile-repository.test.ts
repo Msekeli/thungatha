@@ -1,21 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { PROFILE_SELECT_COLUMNS, readProfile, saveProfile } from "@/thungatha-features/user-profile/server/repository";
+import {
+  PROFILE_SELECT_COLUMNS,
+  readProfile,
+  saveProfile,
+} from "@/thungatha-features/user-profile/server/repository";
 
-vi.mock("@/lib/supabase/server", () => ({ createAuthenticatedSupabaseClient: vi.fn() }));
+vi.mock("@/lib/supabase/server", () => ({
+  createAuthenticatedSupabaseClient: vi.fn(),
+}));
 vi.mock("server-only", () => ({}));
 
 const createClient = vi.mocked(createAuthenticatedSupabaseClient);
 
 function setupQuery(updateData: unknown, insertData: unknown = null) {
-  const readMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+  const readMaybeSingle = vi
+    .fn()
+    .mockResolvedValue({ data: null, error: null });
   const readEq = vi.fn().mockReturnValue({ maybeSingle: readMaybeSingle });
   const select = vi.fn().mockReturnValue({ eq: readEq });
-  const updateMaybeSingle = vi.fn().mockResolvedValue({ data: updateData, error: null });
-  const updateSelect = vi.fn().mockReturnValue({ maybeSingle: updateMaybeSingle });
+  const updateMaybeSingle = vi
+    .fn()
+    .mockResolvedValue({ data: updateData, error: null });
+  const updateSelect = vi
+    .fn()
+    .mockReturnValue({ maybeSingle: updateMaybeSingle });
   const updateEq = vi.fn().mockReturnValue({ select: updateSelect });
   const update = vi.fn().mockReturnValue({ eq: updateEq });
-  const insertSingle = vi.fn().mockResolvedValue({ data: insertData, error: null });
+  const insertSingle = vi
+    .fn()
+    .mockResolvedValue({ data: insertData, error: null });
   const insertSelect = vi.fn().mockReturnValue({ single: insertSingle });
   const insert = vi.fn().mockReturnValue({ select: insertSelect });
   const from = vi.fn().mockReturnValue({ select, update, insert });
@@ -41,20 +55,32 @@ describe("profile repository ownership and partial updates", () => {
     await saveProfile("user_alice", "Alice", vi.fn());
     expect(q.update).toHaveBeenCalledWith({ display_name: "Alice" });
     expect(q.updateEq).toHaveBeenCalledWith("user_id", "user_alice");
-    expect(q.insert).toHaveBeenCalledWith({ user_id: "user_alice", display_name: "Alice" });
+    expect(q.insert).toHaveBeenCalledWith({
+      user_id: "user_alice",
+      display_name: "Alice",
+    });
   });
 
   it("updates only supplied fields and preserves omitted sections", async () => {
     const q = setupQuery({ country: "South Africa", skills: ["TypeScript"] });
-    await saveProfile("user_alice", {
-      personalDetails: { fullName: "Alice", country: "South Africa" },
-      skills: ["TypeScript"],
-      nextRole: "Software Engineer",
-    }, vi.fn());
-    expect(q.update).toHaveBeenCalledWith(expect.objectContaining({
-      display_name: "Alice", full_name: "Alice",
-      country: "South Africa", skills: ["TypeScript"], next_role: "Software Engineer",
-    }));
+    await saveProfile(
+      "user_alice",
+      {
+        personalDetails: { fullName: "Alice", country: "South Africa" },
+        skills: ["TypeScript"],
+        nextRole: "Software Engineer",
+      },
+      vi.fn(),
+    );
+    expect(q.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        display_name: "Alice",
+        full_name: "Alice",
+        country: "South Africa",
+        skills: ["TypeScript"],
+        next_role: "Software Engineer",
+      }),
+    );
     expect(q.insert).not.toHaveBeenCalled();
   });
 });

@@ -13,7 +13,11 @@ export function requestExperienceSuggestions(
   schema: SectionSchema,
   jobEvidence: Array<{ id: string; content: string }>,
   profileEvidence: Array<{ id: string; content: string }>,
-  targets: Array<{ path: string; currentText: string | null; profileEvidenceRef: string | null }>,
+  targets: Array<{
+    path: string;
+    currentText: string | null;
+    profileEvidenceRef: string | null;
+  }>,
 ) {
   return completeAiTask({
     task: "cv-tailoring",
@@ -27,9 +31,14 @@ export function requestExperienceSuggestions(
       selectedExperience: experience,
       jobRequirements: compactRequirements(understanding.requirements),
       jobEvidence: jobEvidence.map((item) => [item.id, item.content]),
-      confirmedCvEvidence: profileEvidence.map((item) => [item.id, item.content]),
+      confirmedCvEvidence: profileEvidence.map((item) => [
+        item.id,
+        item.content,
+      ]),
       editableTargets: targets.map((item) => [
-        item.path, item.currentText, item.profileEvidenceRef,
+        item.path,
+        item.currentText,
+        item.profileEvidenceRef,
       ]),
     }),
   });

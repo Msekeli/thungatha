@@ -29,13 +29,15 @@ export async function enqueueJobRows(
   const db = createServiceClient();
   const jobIds = eligible.map(({ job }) => job.id);
   const [queueResult, assessmentResult] = await Promise.all([
-    db.from("ai_task_queue")
+    db
+      .from("ai_task_queue")
       .select("job_id,job_context_hash")
       .eq("user_id", userId)
       .eq("profile_version", profileVersion)
       .eq("assessment_version", JOB_AI_ASSESSMENT_VERSION)
       .in("job_id", jobIds),
-    db.from("job_match_assessments")
+    db
+      .from("job_match_assessments")
       .select("job_id,job_context_hash")
       .eq("user_id", userId)
       .eq("profile_version", profileVersion)
@@ -53,8 +55,9 @@ export async function enqueueJobRows(
       [item.job_id, item.job_context_hash].join(":"),
     ),
   ]);
-  const candidates = eligible.filter(({ job, context }) =>
-    !handled.has([job.id, hashJobContext(context)].join(":")),
+  const candidates = eligible.filter(
+    ({ job, context }) =>
+      !handled.has([job.id, hashJobContext(context)].join(":")),
   );
   if (!candidates.length) return 0;
 
@@ -62,7 +65,11 @@ export async function enqueueJobRows(
     const contextHash = hashJobContext(context);
     return {
       dedupe_key: [
-        userId, job.id, profileVersion, contextHash, JOB_AI_ASSESSMENT_VERSION,
+        userId,
+        job.id,
+        profileVersion,
+        contextHash,
+        JOB_AI_ASSESSMENT_VERSION,
       ].join(":"),
       task_type: "job_fit_assessment",
       user_id: userId,

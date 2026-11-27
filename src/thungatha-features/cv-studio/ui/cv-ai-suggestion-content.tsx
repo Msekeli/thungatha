@@ -13,7 +13,11 @@ export function CvAiSuggestionContent({
   return (
     <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-panel-2 p-3">
       {generating ? (
-        <div className="space-y-2" role="status" aria-label="Updating this CV section">
+        <div
+          className="space-y-2"
+          role="status"
+          aria-label="Updating this CV section"
+        >
           <Skeleton className="h-3.5 w-full" />
           <Skeleton className="h-3.5 w-full" />
           <Skeleton className="h-3.5 w-11/12" />
@@ -21,7 +25,9 @@ export function CvAiSuggestionContent({
         </div>
       ) : proposal ? (
         <>
-          <p className="whitespace-pre-wrap text-sm leading-5 text-fg">{proposal.proposedText}</p>
+          <p className="whitespace-pre-wrap text-sm leading-5 text-fg">
+            {proposal.proposedText}
+          </p>
           {proposal.reason && (
             <p className="mt-2 whitespace-pre-wrap border-t border-line pt-2 text-xs leading-4 text-fg-muted">
               {proposal.reason}

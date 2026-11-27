@@ -19,10 +19,14 @@ describe("ProfileForm error recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileForm />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
-    expect(await screen.findByRole("button", { name: "Enter details manually" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Enter details manually" }),
+    ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -43,8 +47,12 @@ describe("ProfileForm error recovery", () => {
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and try again");
-    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Check your connection and try again",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 
   it("shows API error message when rejected by server", async () => {
@@ -66,7 +74,11 @@ describe("ProfileForm error recovery", () => {
     fireEvent.change(nameInput, { target: { value: "Sam" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Save section" })[0]);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid profile");
-    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Invalid profile",
+    );
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+    ).toBe(true);
   });
 });

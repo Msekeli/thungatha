@@ -21,7 +21,9 @@ export async function assessJobWithAi(
 ) {
   const allJobEvidence = buildJobEvidence(context.description, context);
   const referencedJobIds = new Set([
-    ...understanding.responsibilities.flatMap((item) => item.sourceEvidenceRefs),
+    ...understanding.responsibilities.flatMap(
+      (item) => item.sourceEvidenceRefs,
+    ),
     ...understanding.capabilities.flatMap((item) => item.sourceEvidenceRefs),
     ...understanding.requirements.flatMap((item) => item.sourceEvidenceRefs),
   ]);
@@ -51,15 +53,21 @@ export async function assessJobWithAi(
     understanding.requirements.map((item) => item.id),
   );
   const request = buildJobAssessmentRequest(
-    understanding, jobEvidence, profileEvidence, facts, modelSchema.responseSchema,
+    understanding,
+    jobEvidence,
+    profileEvidence,
+    facts,
+    modelSchema.responseSchema,
   );
   const response = await completeAiTask(request);
   assertCompleteResponse("Candidate assessment", response);
   const modelOutput = await parseAssessmentWithJsonRepair(
-    response.content, modelSchema,
+    response.content,
+    modelSchema,
   );
   const assessmentInput = attachCanonicalRequirements(
-    modelOutput, understanding,
+    modelOutput,
+    understanding,
   );
   const assessment = validateAndClassifyAssessment(
     assessmentInput,

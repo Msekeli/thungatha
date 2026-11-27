@@ -23,7 +23,10 @@ export function ProfileAccordion({
   const incomplete = status === "Incomplete";
 
   return (
-    <details name="thungatha-profile-sections" className="group overflow-clip rounded-[9px] border border-[var(--th-line)] bg-[var(--th-panel)] transition-colors duration-150 open:border-[var(--th-accent)]">
+    <details
+      name="thungatha-profile-sections"
+      className="group overflow-clip rounded-[9px] border border-[var(--th-line)] bg-[var(--th-panel)] transition-colors duration-150 open:border-[var(--th-accent)]"
+    >
       <summary className="flex min-h-[66px] cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden hover:bg-[var(--th-panel-2)] [&::-webkit-details-marker]:hidden max-[700px]:min-h-[58px] max-[700px]:gap-2 max-[700px]:px-3 max-[700px]:py-[11px]">
         <span className="grid min-w-0 gap-[3px]">
           <span className="text-sm font-semibold text-foreground">{title}</span>

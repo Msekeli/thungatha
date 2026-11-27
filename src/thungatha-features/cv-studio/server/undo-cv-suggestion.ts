@@ -18,9 +18,7 @@ export function undoCvSuggestion(
     return { ...content, professionalSummary: originalText };
   }
 
-  const experience = targetPath.match(
-    /^workExperience\[(.+)\]\.description$/,
-  );
+  const experience = targetPath.match(/^workExperience\[(.+)\]\.description$/);
   if (experience) {
     const item = content.workExperience.find(
       (entry) => entry.sourceId === experience[1],

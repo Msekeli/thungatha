@@ -57,7 +57,9 @@ describe("profile API auth and failure handling", () => {
 
   it("returns 503 when Clerk is not configured", async () => {
     configured.mockReturnValue(false);
-    const res = await PATCH(new Request("http://local/api/profile", { method: "PATCH" }));
+    const res = await PATCH(
+      new Request("http://local/api/profile", { method: "PATCH" }),
+    );
     expect(res.status).toBe(503);
   });
 
@@ -66,7 +68,9 @@ describe("profile API auth and failure handling", () => {
     identity.mockRejectedValue(new Error("sensitive"));
     const res = await GET();
     expect(res.status).toBe(503);
-    expect((await res.json()).error).toBe("Authentication could not be verified");
+    expect((await res.json()).error).toBe(
+      "Authentication could not be verified",
+    );
   });
 
   it("returns 503 when profile storage is not configured", async () => {
@@ -82,6 +86,8 @@ describe("profile API auth and failure handling", () => {
     const res = await GET();
     expect(res.status).toBe(500);
     const body = await res.json();
-    expect(body.error).toBe("The request could not be completed. Please try again.");
+    expect(body.error).toBe(
+      "The request could not be completed. Please try again.",
+    );
   });
 });

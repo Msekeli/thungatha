@@ -6,8 +6,17 @@ import { CvAiSuggestionContent } from "./cv-ai-suggestion-content";
 import { CvAiSuggestionFooter } from "./cv-ai-suggestion-footer";
 
 export function CvAiSuggestions({
-  open, onOpenChange, suggestions, hasCompletedReview, generating,
-  generationError, disabled, onAccept, onReject, onRegenerate, onDiscard,
+  open,
+  onOpenChange,
+  suggestions,
+  hasCompletedReview,
+  generating,
+  generationError,
+  disabled,
+  onAccept,
+  onReject,
+  onRegenerate,
+  onDiscard,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -22,8 +31,13 @@ export function CvAiSuggestions({
   onDiscard: () => void;
 }) {
   const pending = suggestions.find((item) => item.decision === "pending");
-  const rejected = [...suggestions].reverse().find((item) => item.decision === "rejected");
-  const proposal = pending ?? rejected ?? [...suggestions].reverse().find((item) => item.decision === "accepted");
+  const rejected = [...suggestions]
+    .reverse()
+    .find((item) => item.decision === "rejected");
+  const proposal =
+    pending ??
+    rejected ??
+    [...suggestions].reverse().find((item) => item.decision === "accepted");
 
   if (!open && !generating) return null;
 
@@ -33,21 +47,36 @@ export function CvAiSuggestions({
         <div className="min-w-0">
           <h4 className="text-sm font-semibold text-fg">AI suggested update</h4>
           <span className="text-xs font-medium text-fg-muted">
-            {generating ? "Updating…" : proposal ? "Ready to review" : "No change suggested"}
+            {generating
+              ? "Updating…"
+              : proposal
+                ? "Ready to review"
+                : "No change suggested"}
           </span>
         </div>
         {pending && (
           <div className="flex shrink-0 gap-2">
-            <Button type="button" size="sm" variant="outline" disabled={disabled || generating} onClick={() => {
-              onReject(pending.id);
-              onOpenChange(false);
-            }}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={disabled || generating}
+              onClick={() => {
+                onReject(pending.id);
+                onOpenChange(false);
+              }}
+            >
               Reject
             </Button>
-            <Button type="button" size="sm" disabled={disabled || generating} onClick={() => {
-              onAccept(pending.id);
-              onOpenChange(false);
-            }}>
+            <Button
+              type="button"
+              size="sm"
+              disabled={disabled || generating}
+              onClick={() => {
+                onAccept(pending.id);
+                onOpenChange(false);
+              }}
+            >
               Accept and apply
             </Button>
           </div>

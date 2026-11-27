@@ -22,9 +22,20 @@ type CvDraftSummarySectionProps = {
 };
 
 export function CvDraftSummarySection({
-  summary, suggestions, hasCompletedReview, reviewOpen, generating,
-  generationError, disabled, canUndo, error, onReviewOpenChange,
-  onDecision, onRegenerate, onUndo, onTailor,
+  summary,
+  suggestions,
+  hasCompletedReview,
+  reviewOpen,
+  generating,
+  generationError,
+  disabled,
+  canUndo,
+  error,
+  onReviewOpenChange,
+  onDecision,
+  onRegenerate,
+  onUndo,
+  onTailor,
 }: CvDraftSummarySectionProps) {
   const pending = suggestions.some((item) => item.decision === "pending");
 
@@ -33,7 +44,8 @@ export function CvDraftSummarySection({
       <div className="shrink-0">
         <h3 className="text-base font-bold sm:text-lg">Professional Summary</h3>
         <p className="text-xs text-fg-muted sm:text-sm">
-          Review the current wording, then generate a job-specific proposal when ready.
+          Review the current wording, then generate a job-specific proposal when
+          ready.
         </p>
       </div>
       <section className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-xl border border-line bg-panel-2 p-3 sm:p-4">
@@ -68,12 +80,17 @@ export function CvDraftSummarySection({
               />
             </div>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-5 text-fg">
-              {summary || "No professional summary is available in the master CV."}
+              {summary ||
+                "No professional summary is available in the master CV."}
             </p>
           </>
         )}
       </section>
-      {error && <p className="shrink-0 text-xs text-destructive" role="alert">{error}</p>}
+      {error && (
+        <p className="shrink-0 text-xs text-destructive" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

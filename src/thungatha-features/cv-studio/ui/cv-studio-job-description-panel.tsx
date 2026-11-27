@@ -5,7 +5,8 @@ import { jobDescriptionToText } from "@/thungatha-features/job-discovery/server/
 import type { JobContext } from "./cv-studio-types";
 
 export function CvStudioJobDescriptionPanel({
-  jobContext, onClose,
+  jobContext,
+  onClose,
 }: {
   jobContext: JobContext;
   onClose: () => void;
@@ -15,14 +16,25 @@ export function CvStudioJobDescriptionPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-accent-text">
-            {jobContext.source === "discovery" ? "Job from Thungatha Discovery" : "External job opportunity"}
+            {jobContext.source === "discovery"
+              ? "Job from Thungatha Discovery"
+              : "External job opportunity"}
           </p>
-          <h2 className="mt-2 break-words text-xl font-semibold text-fg">{jobContext.title}</h2>
+          <h2 className="mt-2 break-words text-xl font-semibold text-fg">
+            {jobContext.title}
+          </h2>
           <p className="mt-1 text-sm text-fg-muted">
-            {[jobContext.company, jobContext.location].filter(Boolean).join(" · ") || "Company/location not supplied"}
+            {[jobContext.company, jobContext.location]
+              .filter(Boolean)
+              .join(" · ") || "Company/location not supplied"}
           </p>
         </div>
-        <Button className="w-full shrink-0 whitespace-normal sm:w-auto" variant="outline" size="sm" onClick={onClose}>
+        <Button
+          className="w-full shrink-0 whitespace-normal sm:w-auto"
+          variant="outline"
+          size="sm"
+          onClick={onClose}
+        >
           Close job
         </Button>
       </div>

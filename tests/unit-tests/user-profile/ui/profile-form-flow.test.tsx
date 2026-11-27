@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { ProfileForm } from "@/thungatha-features/user-profile/ui/profile-form";
 
 afterEach(() => {
@@ -55,7 +61,9 @@ describe("ProfileForm flow", () => {
       await screen.findByRole("button", { name: "Enter details manually" }),
     );
 
-    fireEvent.click(screen.getByText("Personal details", { selector: "summary span span" }));
+    fireEvent.click(
+      screen.getByText("Personal details", { selector: "summary span span" }),
+    );
 
     const requiredFields: Record<string, string> = {
       "Full name": "Sam",

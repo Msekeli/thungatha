@@ -13,9 +13,8 @@ export function calculatePinchZoom(
     return startZoom;
   }
 
-  const nextZoom = Math.round(
-    ((startZoom * currentDistance) / startDistance) / 5,
-  ) * 5;
+  const nextZoom =
+    Math.round((startZoom * currentDistance) / startDistance / 5) * 5;
 
   return Math.min(200, Math.max(50, nextZoom));
 }

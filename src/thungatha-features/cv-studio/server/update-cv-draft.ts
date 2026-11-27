@@ -11,7 +11,10 @@ export async function updateCvDraft(request: Request) {
     await request.json().catch(() => null),
   );
   if (!parsed.success) {
-    return apiError(parsed.error.issues[0]?.message ?? "Invalid draft update.", 400);
+    return apiError(
+      parsed.error.issues[0]?.message ?? "Invalid draft update.",
+      400,
+    );
   }
 
   try {

@@ -26,13 +26,16 @@ export function checkRequirementCoverage(
 ) {
   const classified = [...coveredIds, ...gapIds];
   const unique = new Set(classified);
-  if (unique.size !== classified.length ||
+  if (
+    unique.size !== classified.length ||
     unique.size !== requirementIds.length ||
-    requirementIds.some((id) => !unique.has(id))) {
+    requirementIds.some((id) => !unique.has(id))
+  ) {
     context.addIssue({
       code: "custom",
       path: ["coveredRequirementIds"],
-      message: "Every job requirement must be classified exactly once as covered or a gap.",
+      message:
+        "Every job requirement must be classified exactly once as covered or a gap.",
     });
   }
 }

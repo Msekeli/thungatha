@@ -11,7 +11,9 @@ export function CvStudioMasterPreview({
       {content ? (
         <CvPdfPreview content={content} />
       ) : (
-        <p className="text-sm text-fg-muted">Your master CV is being prepared.</p>
+        <p className="text-sm text-fg-muted">
+          Your master CV is being prepared.
+        </p>
       )}
     </section>
   );

@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DELETE } from "@/app/api/jobs/[id]/state/route";
-import { getAuthenticatedIdentity, hasClerkConfiguration } from "@/thungatha-features/authentication/server/identity";
+import {
+  getAuthenticatedIdentity,
+  hasClerkConfiguration,
+} from "@/thungatha-features/authentication/server/identity";
 import { createAuthenticatedSupabaseClient } from "@/lib/supabase/server";
-import { createQueryMock, scoutVacancyRecord } from "@/tests/test-support/job-discovery-api-mocks";
+import {
+  createQueryMock,
+  scoutVacancyRecord,
+} from "@/tests/test-support/job-discovery-api-mocks";
 
 vi.mock("@/thungatha-features/authentication/server/identity", () => ({
   getAuthenticatedIdentity: vi.fn(),

@@ -22,7 +22,11 @@ export function useCvStudioJobForm(
   }
 
   return {
-    jobForm, setJobForm, externalJobOpen, setExternalJobOpen,
-    closeExternalJob, resetExternalJob,
+    jobForm,
+    setJobForm,
+    externalJobOpen,
+    setExternalJobOpen,
+    closeExternalJob,
+    resetExternalJob,
   };
 }

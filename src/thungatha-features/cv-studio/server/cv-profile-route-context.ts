@@ -16,10 +16,14 @@ type ProfileResult =
 export async function getConfirmedCvProfile(
   identity: Identity,
   createIncompleteResponse: (missing: string[]) => NextResponse = (missing) =>
-    NextResponse.json({
-      error: "Complete and confirm your Profile before editing a tailored CV.",
-      missing,
-    }, { status: 409 }),
+    NextResponse.json(
+      {
+        error:
+          "Complete and confirm your Profile before editing a tailored CV.",
+        missing,
+      },
+      { status: 409 },
+    ),
 ): Promise<ProfileResult> {
   const result = await readProfile(identity.userId, identity.getToken);
   if (result.error) throw result.error;

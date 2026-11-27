@@ -28,11 +28,16 @@ export function mapCvTailoringOutput(
     ),
   );
   const gaps = parsed.gaps.map((gap) => {
-    const requirement = requirements.find((item) => item.id === gap.requirementId);
-    if (!requirement) throw new Error("AI returned an unknown job requirement.");
+    const requirement = requirements.find(
+      (item) => item.id === gap.requirementId,
+    );
+    if (!requirement)
+      throw new Error("AI returned an unknown job requirement.");
     const allowedJobRefs = new Set(requirement.sourceEvidenceRefs ?? []);
     if (gap.jobEvidenceRefs.some((ref) => !allowedJobRefs.has(ref))) {
-      throw new Error("AI cited job evidence that is not attached to the unsupported requirement.");
+      throw new Error(
+        "AI cited job evidence that is not attached to the unsupported requirement.",
+      );
     }
     return {
       requirement: requirement.statement,

@@ -22,14 +22,23 @@ export function CvPdfPreviewClient({
     () => <CvPdfDocument content={content} accent={accent} />,
     [content, accent],
   );
-  const { pdfUrl, isPreparing, error: generationError } = useCvPdfBlob(document);
-  const { pageCount, canvases, error: renderingError } = useCvPdfPageRendering(
+  const {
     pdfUrl,
-    containerWidth,
-    zoom,
-  );
+    isPreparing,
+    error: generationError,
+  } = useCvPdfBlob(document);
+  const {
+    pageCount,
+    canvases,
+    error: renderingError,
+  } = useCvPdfPageRendering(pdfUrl, containerWidth, zoom);
   const pdfError = generationError ?? renderingError;
-  const fileName = `${content.fullName.trim().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "candidate"}-cv.pdf`;
+  const fileName = `${
+    content.fullName
+      .trim()
+      .replace(/[^a-z0-9]+/gi, "-")
+      .replace(/^-|-$/g, "") || "candidate"
+  }-cv.pdf`;
 
   useEffect(() => {
     setZoom(100);

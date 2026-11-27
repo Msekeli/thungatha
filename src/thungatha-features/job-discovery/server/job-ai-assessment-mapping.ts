@@ -12,7 +12,9 @@ export function attachCanonicalRequirements(
     understanding.requirements.map((item) => [item.id, item]),
   );
   if (extracted.size !== understanding.requirements.length) {
-    throw new Error("Extracted job requirements contain duplicate identifiers.");
+    throw new Error(
+      "Extracted job requirements contain duplicate identifiers.",
+    );
   }
 
   const seen = new Set<string>();
