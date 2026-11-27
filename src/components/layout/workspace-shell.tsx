@@ -3,11 +3,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import "./workspace-shell.css";
-import "./workspace-sidebar-nav.css";
-import "./workspace-content.css";
-import "./workspace-responsive.css";
-import "./workspace-mobile-shell.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SignOutControl } from "@/thungatha-features/authentication";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -31,11 +26,11 @@ export function WorkspaceShell({
   );
   const contentClassName = [
     "th-workspace-content",
-    "flex h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+    "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
   ].join(" ");
   const headerClassName = [
     "th-workspace-header",
-    "flex min-h-[92px] items-center justify-between gap-5",
+    "flex min-h-[92px] shrink-0 items-center justify-between gap-5",
     "border-b border-[var(--th-workspace-header-border)]",
     "bg-[var(--th-workspace-header)] px-6 py-3.5",
     active === "/jobs" && "th-workspace-header--jobs",
@@ -44,24 +39,26 @@ export function WorkspaceShell({
     .join(" ");
   const pageContentClassName = [
     "th-workspace-page-content",
-    "min-h-0 min-w-0 flex-1 overflow-hidden px-6 py-5",
-    "has-[.th-profile-page]:flex has-[.th-profile-page]:flex-col",
+    "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-6 py-5",
     "has-[.th-profile-page]:p-0",
-    "has-[.th-jobs-page]:flex has-[.th-jobs-page]:flex-col",
     "has-[.th-jobs-page]:p-0",
-    "has-[.th-cv-studio-page]:flex has-[.th-cv-studio-page]:flex-col",
     "has-[.th-cv-studio-page]:p-0",
   ].join(" ");
 
   return (
-    <div className="th-workspace-shell">
+    <div className="th-workspace-shell flex h-dvh min-h-0 w-full overflow-hidden">
       <MobileWorkspaceNav configured={configured} />
-      <aside className="th-workspace-sidebar" aria-label="Main navigation">
-        <div className="th-workspace-brand">
+      <aside
+        className="th-workspace-sidebar flex h-dvh min-h-0 shrink-0 flex-col"
+        aria-label="Main navigation"
+      >
+        <div className="th-workspace-brand shrink-0">
           <BrandMark />
         </div>
-        <WorkspaceSidebarNav active={activeDestination} />
-        <div className="th-workspace-sidebar-footer">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <WorkspaceSidebarNav active={activeDestination} />
+        </div>
+        <div className="th-workspace-sidebar-footer shrink-0">
           {configured ? (
             <SignOutControl />
           ) : (
