@@ -54,17 +54,7 @@ export function ApplicationList({ applications, onOpen }: Props) {
                 <span className="sr-only">View application details</span>
               </span>
             </button>
-            {application.url && (
-              <a
-                href={application.url}
-                target="_blank"
-                rel="noreferrer"
-                className="sr-only"
-                aria-label={`Open ${application.company} application link`}
-              >
-                <ExternalLink />
-              </a>
-            )}
+}
           </li>
         ))}
       </ul>
