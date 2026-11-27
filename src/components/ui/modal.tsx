@@ -37,12 +37,12 @@ export function Modal({
       }}
     >
       <section
-        className="th-modal"
+        className="th-modal flex max-h-[calc(100dvh-2rem)] min-h-0 flex-col overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy ?? "th-modal-title"}
       >
-        <header className="th-modal-header">
+        <header className="th-modal-header shrink-0">
           <div>
             <h2 id={labelledBy ?? "th-modal-title"}>{title}</h2>
             {description && (
@@ -58,7 +58,9 @@ export function Modal({
             ×
           </button>
         </header>
-        <div className="th-modal-body">{children}</div>
+        <div className="th-modal-body min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {children}
+        </div>
       </section>
     </div>
   );
